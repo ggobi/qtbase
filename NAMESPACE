@@ -1,0 +1,38 @@
+
+useDynLib(qtbase, .registration = TRUE)
+
+export(qsetStyleSheet, qstyleSheet)
+
+export(".u_tryEval", ".u_eval", ".u_lastValue")
+
+export(print.QWidget, qclose, qheight, qparent, qprint,
+       qresize, qsetContentsMargins, qsetMinimumSize, qsetExpanding,
+       qsetParent, qshow, qisEnabled, qrender, qrenderGraphicsView,
+       qrenderToPixmap, qrenderToSVG, qsetEnabled, qsetWindowTitle,
+       qwindowTitle, qwidth, qlower, qraise, qupdate)
+
+##        , qt.save)
+
+export(qsetDeleteOnClose)
+
+export(qtabWidget, qaddTab, qremoveTab,
+       qstackedWidget, qaddWidgetToStack, qremoveWidgetFromStack,
+       qcurrentIndex, qsetCurrentIndex, qaction, qaddAction,
+       qsetContextMenuPolicy)
+
+export(qwidget, qpushButton, qlabel, qlineEdit, qtext, qsetText,
+       qcheckBox, qisChecked, qsetChecked)
+
+export(qlayout, qsetLayout, qsetSpacing, qsetVerticalSpacing,
+       qsetHorizontalSpacing, qaddWidgetToLayout,
+       qremoveWidgetFromLayout, qaddLayoutToLayout, qcolumnCount,
+       qrowCount, qdim)
+
+
+export(testLabel)
+
+
+S3method(print, QWidget)
+
+
+

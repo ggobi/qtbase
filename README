@@ -1,0 +1,9 @@
+
+
+This package is intended to be the provider of a low-level API
+allowing the manipulation of Qt widgets from R.  Of course, various
+high-level extensions are possible.  Those of particular interest to
+me are (1) a high-level static graphics interface, with capabilities
+similar to lattice, and (2) a high-level dynamic graphics interface,
+similar to Ggobi (?).
+

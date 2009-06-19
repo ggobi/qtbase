@@ -1,0 +1,117 @@
+#include "Reference.hpp"
+
+#include <R.h>
+#include <Rinternals.h>
+
+using namespace QViz;
+
+QHash<void *, int> * Reference::counts = NULL;
+
+Reference::Reference(void *referee) : _referee(referee) {
+  if (!counts)
+    counts = new QHash<void *, int>;
+  counts->insert(referee, count() + 1);
+}
+
+void Reference::clear() {
+  counts->insert(_referee, count() - 1);
+}
+
+void Reference::release() {
+  if (isValid()) {
+    //printf("releasing reference to %p\n", _referee);
+    clear();
+    if (!count()) {
+      //printf("references depleted, deleting %p\n", _referee);
+      deleteReferee();
+    }
+    _referee = NULL;
+  }
+}
+
+void Reference::invalidate() {
+  if (isValid()) {
+    clear();
+    _referee = NULL;
+  }
+}
+
+/* static methods, for managing the hash */
+
+int Reference::count(void *referee) {
+  return counts->value(referee);
+}
+
+/* QObjectReference */
+
+QObjectReference::QObjectReference(QObject *referee, QObject *referer)
+  : Reference(referee)
+{
+  connect(referee, SIGNAL(destroyed()), this, SLOT(refereeDestroyed()));
+  if (referer)
+    connect(referer, SIGNAL(destroyed()), this, SLOT(destroy()));
+}
+
+QObjectReference::~QObjectReference() {
+  release();
+}
+
+void QObjectReference::deleteReferee() {
+  if (!((QObject *)referee())->parent()) { // Qt does not own it, free
+    Rprintf("QObject is parentless, freeing <%p>\n", referee());
+    delete (QObject *)referee();
+  }
+}
+
+// FIXME: probably need to make this recursive, ie consider all ancestors
+void QObjectReference::refereeDestroyed() {
+  const QObjectList child = ((QObject *)referee())->children();
+  for (int i = 0; i < child.size(); i++) {
+    if (count(child[i])) // protect reference children from being freed
+      child[i]->setParent(NULL);
+  }
+  invalidate();
+}
+
+/* QWidgetReference */
+
+QWidgetReference::~QWidgetReference() {
+  release();
+}
+
+void QWidgetReference::deleteReferee() {
+  QWidget *widget = qobject_cast<QWidget *>((QObject *)referee());
+  if (!widget->parent() && widget->isVisible()) {
+    //printf("widget still visible, preserving %p\n", referee());
+    widget->setAttribute(Qt::WA_DeleteOnClose);
+  } else QObjectReference::deleteReferee();
+}
+
+/* QGraphicsWidgetReference */
+
+// Even though referee is a QObject, QGraphicsItem ownership follows
+// the parent item, not the parent object.
+
+QGraphicsWidgetReference::~QGraphicsWidgetReference() {
+  release();
+}
+
+void QGraphicsWidgetReference::deleteReferee() {
+  QGraphicsWidget *widget =
+    qobject_cast<QGraphicsWidget *>((QObject *)referee());
+  // We expect the scene to hold a reference, so that top-level items
+  // do not disappear.
+  if (!widget->parentItem()) {
+    QObjectReference::deleteReferee(); 
+  } 
+  // else printf("graphics widget has parent item, preserving %p\n", referee());
+}
+
+void QGraphicsWidgetReference::refereeDestroyed() {
+  QList<QGraphicsItem *> child = ((QGraphicsItem *)referee())->childItems();
+  for (int i = 0; i < child.size(); i++) {
+    if (count(child[i])) // protect referenced children from being freed
+      child[i]->setParentItem(NULL);
+  }
+  invalidate();
+}
