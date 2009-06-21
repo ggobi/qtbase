@@ -4,25 +4,23 @@
 #include <QAction>
 
 #include "wrappers.h"
-
-static
-QString sexp2qstring(SEXP s) {
-    return QString::fromLocal8Bit(CHAR(asChar(s)));
-}
-
-
+#include "utils.hpp"
 
 extern "C" {
 
-    SEXP qt_qaction(SEXP desc, SEXP shortcut, SEXP parent);
+    SEXP qt_qaction(SEXP desc, SEXP shortcut, SEXP parent, SEXP tooltip,
+                    SEXP checkable);
     SEXP qt_qaddActionToQWidget(SEXP w, SEXP a);
     SEXP qt_qaddActionToQMenu(SEXP w, SEXP a);
     SEXP qt_qsetContextMenuPolicy(SEXP x, SEXP policy);
+    SEXP qt_qsetEnabled(SEXP raction, SEXP enabled);
+    SEXP qt_qchecked(SEXP raction);   
 }
 
 
 SEXP
-qt_qaction(SEXP desc, SEXP shortcut, SEXP parent)
+qt_qaction(SEXP desc, SEXP shortcut, SEXP parent, SEXP tooltip,
+           SEXP checkable)
 {
     QAction *a;
     if (parent == R_NilValue)
@@ -31,6 +29,8 @@ qt_qaction(SEXP desc, SEXP shortcut, SEXP parent)
 	a = new QAction(sexp2qstring(desc), unwrapQObject(parent, QWidget));
     if (shortcut != R_NilValue)
 	a->setShortcut(sexp2qstring(shortcut));
+    a->setCheckable(asLogical(checkable));
+    a->setToolTip(sexp2qstring(tooltip));
     return wrapQObject(a);
 }
 
@@ -68,3 +68,12 @@ qt_qsetContextMenuPolicy(SEXP x, SEXP policy)
     return R_NilValue;
 }
 
+SEXP qt_qsetEnabled_QAction(SEXP raction, SEXP enabled) {
+  QAction *action = unwrapQObject(raction, QAction);
+  action->setEnabled(asLogical(enabled));
+  return R_NilValue;
+}
+SEXP qt_qchecked(SEXP raction) {
+  QAction *action = unwrapQObject(raction, QAction);
+  return ScalarLogical(action->isChecked());
+}

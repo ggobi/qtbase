@@ -1,7 +1,8 @@
 
-qaction <- function(desc = "Action", shortcut = NULL, parent = NULL)
+qaction <- function(desc = "Action", shortcut = NULL, parent = NULL,
+                    tooltip = NULL, checkable = FALSE)
 {
-    .Call(qt_qaction, desc, shortcut, parent)
+    .Call(qt_qaction, desc, shortcut, parent, tooltip, checkable)
 }
 
 qaddAction <- function(x, action)
