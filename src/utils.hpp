@@ -1,15 +1,13 @@
-
-#ifndef WIN32
-#include <unistd.h>
-#endif
-
-#include <R.h>
 #include <Rinternals.h>
-#include <R_ext/Error.h>
-
+#include <QString>
 
 extern "C" {
 
+  // R -> C/Qt
     const char ** asStringArray(SEXP s_strs);
-
+    QString sexp2qstring(SEXP s);
+  
+  // C -> R
+    SEXP asRStringArray(const char * const * strs);
+    SEXP qstring2sexp(QString s);
 }

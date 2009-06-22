@@ -1,11 +1,13 @@
 #ifndef QTBASE_H
 #define QTBASE_H
 
-#include <R.h>
-#include <Rinternals.h>
 #include <QObject>
 #include <QWidget>
 #include <QString>
+#include <QGraphicsWidget>
+
+#include <R.h>
+#include <Rinternals.h>
 
 QObject *unwrapQObjectReferee(SEXP x);
 
@@ -23,19 +25,27 @@ QObject *unwrapQObjectReferee(SEXP x);
       ans;								\
     })
 
+// FIXME: we should not have duplicate header files inside and outside
+// the package. Could use symbolic links.
 extern "C" {
   SEXP wrapQObject(QObject *object);
   SEXP wrapQWidget(QWidget *widget);
   SEXP wrapPointer(void *ptr, const char *className, R_CFinalizer_t finalizer);
+  SEXP wrapQGraphicsWidget(QGraphicsWidget *widget);
+
+  // Conversion routines
+  // R -> C/Qt
+  const char ** asStringArray(SEXP s_strs);
+  QString sexp2qstring(SEXP s);
+  // C -> R
+  SEXP asRStringArray(const char * const * strs);
+  SEXP qstring2sexp(QString s);
+
+  // Reference counting
+  void addQObjectReference(QObject *referee, QObject *referer);
+  void addQWidgetReference(QWidget *referee, QObject *referer);
+  void addQGraphicsWidgetReference(QGraphicsWidget *referee, QObject *referer);
 }
-
-
-
-QString sexp2qstring(SEXP s);
-extern "C" {
-SEXP qstring2sexp(QString s);
-}
-
 
 
 #endif

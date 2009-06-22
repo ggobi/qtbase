@@ -7,18 +7,6 @@
 #include "wrappers.h"
 #include "utils.hpp"
 
-static
-QString sexp2qstring(SEXP s) {
-    return QString::fromLocal8Bit(CHAR(asChar(s)));
-}
-
-extern "C" {
-static
-SEXP qstring2sexp(QString s) {
-    return ScalarString(mkChar(s.toLocal8Bit().data()));
-}
-}
-
 extern "C" {
     SEXP qt_qlayout(SEXP x);
     SEXP qt_qsetLayout(SEXP x, SEXP layout);

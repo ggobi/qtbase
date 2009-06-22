@@ -59,7 +59,10 @@ void init_utils()
     cmdExecRho = eval(install(".uEnv"), rho);
 }
 
-// prototype in utils.hpp
+// conversion routines -- need separate file?
+// prototypes in utils.hpp
+
+#include <QString>
 
 const char ** asStringArray(SEXP s_strs) {
     const char **strs = (const char **)R_alloc(length(s_strs), sizeof(char *));
@@ -67,6 +70,25 @@ const char ** asStringArray(SEXP s_strs) {
 	strs[i] = CHAR(STRING_ELT(s_strs, i));
     return strs;
 }
+QString sexp2qstring(SEXP s) {
+  if (!length(s))
+    return QString();
+  return QString::fromLocal8Bit(CHAR(asChar(s)));
+}
 
+SEXP asRStringArray(const char * const * strs) {
+  SEXP ans;
+  int n = 0;
+  while(strs[n])
+    n++;
+  PROTECT(ans = allocVector(STRSXP, n));
+  for (int i = 0; i < n; i++)
+    SET_STRING_ELT(ans, i, mkChar(strs[i]));
+  UNPROTECT(1);
+  return ans;
+}
+SEXP qstring2sexp(QString s) {
+  return ScalarString(mkChar(s.toLocal8Bit().data()));
+}
 
 

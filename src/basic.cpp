@@ -9,18 +9,7 @@
 
 
 #include "wrappers.h"
-
-static
-QString sexp2qstring(SEXP s) {
-    return QString::fromLocal8Bit(CHAR(asChar(s)));
-}
-
-extern "C" {
-static
-SEXP qstring2sexp(QString s) {
-    return ScalarString(mkChar(s.toLocal8Bit().data()));
-}
-}
+#include "utils.hpp"
 
 extern "C" {
 
@@ -146,6 +135,7 @@ qt_qsetCheckedButton(SEXP x, SEXP status) {
 	unwrapQObject(x, QAbstractButton)->setChecked(true);
     else 
 	unwrapQObject(x, QAbstractButton)->setChecked(false);
+    return x;
 }
 
 

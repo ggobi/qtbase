@@ -19,26 +19,6 @@
 
 extern QApplication *app;
 
-static
-QString sexp2qstring(SEXP s) {
-    return QString::fromLocal8Bit(CHAR(asChar(s)));
-}
-
-extern "C" {
-static
-SEXP qstring2sexp(QString s) {
-    return ScalarString(mkChar(s.toLocal8Bit().data()));
-}
-}
-
-// static
-// QWidget *asQWidget(SEXP x) {
-//     QWidget *ans = qobject_cast<QWidget *>((QObject*) R_ExternalPtrAddr(x));
-//     if (!ans) error("asQWidget: Coercion to QWidget failed");
-//     return ans;
-// }
-
-
 extern "C" {
 
     SEXP qt_qshow(SEXP x);
@@ -177,6 +157,7 @@ qt_setExpanding(SEXP x, SEXP vertical, SEXP horizontal)
 	    policy.setHorizontalPolicy(QSizePolicy::Preferred);
     }
     w->setSizePolicy(policy);
+    return x;
 }
 
 
