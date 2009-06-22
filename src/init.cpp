@@ -312,7 +312,6 @@ addQtEventHandler()
     R_Qt_init();
 
 #ifndef WIN32
-    printf("adding event handler\n");
     int fds[2];
     
     /* Experimental timer-based piping to a file descriptor */
