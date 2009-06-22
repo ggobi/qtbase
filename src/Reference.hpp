@@ -64,7 +64,7 @@ namespace QViz {
     virtual void deleteReferee();
                              
   protected slots:
-    // if any children have positive count, remove from referee, then invalidate
+    // invalidate
     virtual void refereeDestroyed();
   };
 
@@ -90,11 +90,13 @@ namespace QViz {
     
   protected:
     virtual void deleteReferee();
-
-  protected slots:
-    // if any children have positive count, remove from referee, then invalidate
-    virtual void refereeDestroyed();
   };
 
 
+}
+
+extern "C" {
+  void addQObjectReference(QObject *referee, QObject *referer);
+  void addQWidgetReference(QWidget *referee, QObject *referer);
+  void addQGraphicsWidgetReference(QGraphicsWidget *referee, QObject *referer);
 }

@@ -3,12 +3,7 @@
 #include <QLabel>
 
 #include "wrappers.h"
-
-static
-QString sexp2qstring(SEXP s) {
-    return QString::fromLocal8Bit(CHAR(asChar(s)));
-}
-
+#include "utils.hpp"
 
 extern "C" {
     SEXP newLabelWidget(SEXP label);

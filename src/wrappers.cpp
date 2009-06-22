@@ -50,6 +50,9 @@ extern "C" {
   SEXP wrapQObject(QObject *object) {
     return wrapQObjectReference(new QObjectReference(object));
   }
+  SEXP wrapQGraphicsWidget(QGraphicsWidget *widget) {
+    return wrapQObjectReference(new QGraphicsWidgetReference(widget));
+  }
   
   SEXP wrapPointer(void *ptr, const char *className, R_CFinalizer_t finalizer)
   {

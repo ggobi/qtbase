@@ -63,13 +63,8 @@ void QObjectReference::deleteReferee() {
   }
 }
 
-// FIXME: probably need to make this recursive, ie consider all ancestors
 void QObjectReference::refereeDestroyed() {
-  const QObjectList child = ((QObject *)referee())->children();
-  for (int i = 0; i < child.size(); i++) {
-    if (count(child[i])) // protect reference children from being freed
-      child[i]->setParent(NULL);
-  }
+  // printf("QObject referee destroyed, invalidating %p\n", referee());
   invalidate();
 }
 
@@ -107,11 +102,14 @@ void QGraphicsWidgetReference::deleteReferee() {
   // else printf("graphics widget has parent item, preserving %p\n", referee());
 }
 
-void QGraphicsWidgetReference::refereeDestroyed() {
-  QList<QGraphicsItem *> child = ((QGraphicsItem *)referee())->childItems();
-  for (int i = 0; i < child.size(); i++) {
-    if (count(child[i])) // protect referenced children from being freed
-      child[i]->setParentItem(NULL);
+extern "C" {
+  void addQObjectReference(QObject *referee, QObject *referer) {
+    new QObjectReference(referee, referer);
   }
-  invalidate();
+  void addQWidgetReference(QWidget *referee, QObject *referer) {
+    new QWidgetReference(referee, referer);
+  }
+  void addQGraphicsWidgetReference(QGraphicsWidget *referee, QObject *referer) {
+    new QGraphicsWidgetReference(referee, referer);
+  }
 }
