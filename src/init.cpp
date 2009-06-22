@@ -1,22 +1,26 @@
 
 #include <QApplication>
 
+#include "wrappers.h"
+#include "utils.hpp"
+#include "Reference.hpp"
+
 #include <R.h>
 #include <Rinternals.h>
 #include <R_ext/Rdynload.h>
 #include <R_ext/Print.h>
 
 #ifndef WIN32
+#define CSTACK_DEFNS
+#define HAVE_UINTPTR_T
+#include <Rinterface.h>
 #include <R_ext/eventloop.h>
+#include <unistd.h>
+#include <pthread.h>
 #endif
 
 extern "C" {
-
-    //  "wrappers.h"
-
-    SEXP wrapQObject(QObject *object);
-    SEXP wrapQWidget(QWidget *widget);
-
+  
     // Test.cpp
     SEXP newLabelWidget(SEXP label);
 
@@ -76,7 +80,8 @@ extern "C" {
 
     // actions.cpp
 
-    SEXP qt_qaction(SEXP desc, SEXP shortcut, SEXP parent);
+    SEXP qt_qaction(SEXP desc, SEXP shortcut, SEXP parent, SEXP tooltip,
+                    SEXP checkable);
     SEXP qt_qaddActionToQWidget(SEXP w, SEXP a);
     SEXP qt_qaddActionToQMenu(SEXP w, SEXP a);
     SEXP qt_qsetContextMenuPolicy(SEXP x, SEXP policy);
@@ -212,7 +217,7 @@ static R_CallMethodDef CallEntries[] = {
     CALLDEF(qt_qisCheckedButton, 1),
     CALLDEF(qt_qsetCheckedButton, 2),
 
-    CALLDEF(qt_qaction, 3),
+    CALLDEF(qt_qaction, 5),
     CALLDEF(qt_qaddActionToQWidget, 2),
     CALLDEF(qt_qaddActionToQMenu, 2),
     CALLDEF(qt_qsetContextMenuPolicy, 2),
@@ -235,6 +240,7 @@ static R_CallMethodDef CallEntries[] = {
 };
 
 
+#define REG_CALLABLE(fun) R_RegisterCCallable("qtbase", #fun, (DL_FUNC) fun)
 
 void R_init_qtbase(DllInfo *dll)
 {
@@ -244,30 +250,94 @@ void R_init_qtbase(DllInfo *dll)
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 
-    // Register for calling by other packages. FIXME: not sure how this works
-    R_RegisterCCallable("qtbase", "wrapQWidget", (DL_FUNC) wrapQWidget);
-    R_RegisterCCallable("qtbase", "wrapQObject", (DL_FUNC) wrapQObject);
-    R_RegisterCCallable("qtbase", "unwrapQObjectReferee", (DL_FUNC) unwrapQObjectReferee);
+    // Register for calling by other packages.
+    REG_CALLABLE(wrapQWidget);
+    REG_CALLABLE(wrapQObject);
+    REG_CALLABLE(wrapPointer);
+    REG_CALLABLE(unwrapQObjectReferee);
+    REG_CALLABLE(wrapQGraphicsWidget);
+    
+    REG_CALLABLE(asStringArray);
+    REG_CALLABLE(sexp2qstring);
+    REG_CALLABLE(asRStringArray);
+    REG_CALLABLE(qstring2sexp);
+    
+    REG_CALLABLE(addQObjectReference);
+    REG_CALLABLE(addQWidgetReference);
+    REG_CALLABLE(addQGraphicsWidgetReference);
 }
 
+/* Much of this code inspired by Simon Urbanek's CarbonEL package */
+
+#ifndef WIN32
+static int ifd, ofd;
+static int fired = 0, active = 1;
+
+static unsigned long intersleep = 10;
+
+static void
+R_Qt_timerInputHandler(void *data) {
+  char buf[16];
+  read(ifd, buf, 16);
+  R_Qt_eventHandler();  
+  fired=0;
+}
+
+static void millisleep(unsigned long tout) {
+  struct timeval tv;
+  tv.tv_usec = (tout%1000)*1000;
+  tv.tv_sec  = tout/1000;
+  select(0, 0, 0, 0, &tv);
+}
+
+static void*
+R_Qt_thread(void *data) {
+  char buf[16];
+  while (active) {
+    millisleep(intersleep);
+    if (!fired) {
+      fired=1; *buf=0;
+      write(ofd, buf, 1);
+    }
+  }
+  return 0;
+}
+#endif
     
 SEXP 
 addQtEventHandler()
 {
-    // at most one qApp can be running at a time
-    if (!qApp) {
-	R_Qt_init();
+  // at most one qApp can be running at a time
+  if (!qApp) {
+    R_Qt_init();
 
 #ifndef WIN32
+    printf("adding event handler\n");
+    int fds[2];
+    
+    /* Experimental timer-based piping to a file descriptor */
+    if (!pipe(fds)) {
+      pthread_t t;
+      pthread_attr_t ta;
+          
+      ifd = fds[0];
+      ofd = fds[1];
+      addInputHandler(R_InputHandlers, ifd, R_Qt_timerInputHandler, 32);
+      R_CStackLimit = -1;
 
-	R_PolledEvents = R_Qt_eventHandler;
-	if (R_wait_usec > 10000 || R_wait_usec == 0)
-	    R_wait_usec = 10000;
+      pthread_attr_init(&ta);
+      pthread_attr_setdetachstate(&ta, PTHREAD_CREATE_DETACHED);
+      pthread_create(&t,&ta,R_Qt_thread,0);
+    } else error("Failed to establish pipe for event handling");
+
+    // R_PolledEvents = R_Qt_eventHandler;
+    // if (R_wait_usec > 10000 || R_wait_usec == 0)
+    //     R_wait_usec = 10000;
 
 #endif
 
-    }
-    return R_NilValue;
+  }
+  return R_NilValue;
 }
 
 
