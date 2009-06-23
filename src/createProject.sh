@@ -12,18 +12,13 @@ echo "
 
 TEMPLATE = lib
 
-#QT += webkit
-QT += svg
-#QT += opengl
-
 # Input
 HEADERS += Reference.hpp utils.hpp wrappers.h
 
-SOURCES += init.cpp qwidgetWrappers.cpp 
+SOURCES += init.cpp style.cpp
 ## SOURCES += object.cpp 
 SOURCES += Reference.cpp utils.cpp wrappers.cpp 
-SOURCES += Test.cpp containers.cpp actions.cpp
-SOURCES += basic.cpp layout.cpp attributes.cpp
+SOURCES += Test.cpp actions.cpp attributes.cpp
 
 INCLUDEPATH += ${R_INCLUDE_DIR}
 CFLAGS += -g
