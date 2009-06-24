@@ -1,6 +1,6 @@
 
 all:
-	./createProject.sh
+	bash createProject.sh
 	make -f Makefile.qtbase
 	if test -e libqtbase.so; then cp libqtbase.so qtbase.so; fi
 	## for macx:
