@@ -6,7 +6,6 @@
 #include <QString>
 #include <QGraphicsWidget>
 
-#include <R.h>
 #include <Rinternals.h>
 
 QObject *unwrapQObjectReferee(SEXP x);

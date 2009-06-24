@@ -34,6 +34,7 @@ extern "C" {
     SEXP qt_qaction(SEXP desc, SEXP shortcut, SEXP parent, SEXP tooltip,
                     SEXP checkable);
     SEXP qt_qaddActionToQWidget(SEXP w, SEXP a);
+    SEXP qt_qaddAction_QGraphicsWidget(SEXP w, SEXP a);
     SEXP qt_qaddActionToQMenu(SEXP w, SEXP a);
     SEXP qt_qsetContextMenuPolicy(SEXP x, SEXP policy);
 
@@ -101,6 +102,7 @@ static R_CallMethodDef CallEntries[] = {
     CALLDEF(qt_qaction, 5),
     CALLDEF(qt_qaddActionToQWidget, 2),
     CALLDEF(qt_qaddActionToQMenu, 2),
+    CALLDEF(qt_qaddAction_QGraphicsWidget, 2),
     CALLDEF(qt_qsetContextMenuPolicy, 2),
 
     CALLDEF(qt_qsetDeleteOnClose, 2),

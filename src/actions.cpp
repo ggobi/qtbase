@@ -12,9 +12,10 @@ extern "C" {
                     SEXP checkable);
     SEXP qt_qaddActionToQWidget(SEXP w, SEXP a);
     SEXP qt_qaddActionToQMenu(SEXP w, SEXP a);
+    SEXP qt_qaddAction_QGraphicsWidget(SEXP w, SEXP a);
     SEXP qt_qsetContextMenuPolicy(SEXP x, SEXP policy);
-    SEXP qt_qsetEnabled(SEXP raction, SEXP enabled);
-    SEXP qt_qchecked(SEXP raction);   
+    SEXP qt_qsetEnabled_QAction(SEXP raction, SEXP enabled);
+    SEXP qt_qchecked_QAction(SEXP raction);
 }
 
 
@@ -73,7 +74,13 @@ SEXP qt_qsetEnabled_QAction(SEXP raction, SEXP enabled) {
   action->setEnabled(asLogical(enabled));
   return R_NilValue;
 }
-SEXP qt_qchecked(SEXP raction) {
+SEXP qt_qchecked_QAction(SEXP raction) {
   QAction *action = unwrapQObject(raction, QAction);
   return ScalarLogical(action->isChecked());
+}
+
+SEXP qt_qaddAction_QGraphicsWidget(SEXP rself, SEXP raction) {
+  QGraphicsWidget *item = unwrapQObject(rself, QGraphicsWidget);
+  item->addAction(unwrapQObject(raction, QAction));
+  return rself;
 }
