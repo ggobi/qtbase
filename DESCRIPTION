@@ -1,10 +1,11 @@
 Package: qtbase
-Version: 0.0-2
-Date:    2009/06/20
+Version: 0.0-3
+Date:    2009/06/25
 Title: Package providing glue for interface between R and Qt 
 Author: Deepayan Sarkar, Michael Lawrence
 Depends: R (>= 2.6.0), utils
-Maintainer: Deepayan Sarkar <deepayan.sarkar@gmail.com>
+Maintainer: Deepayan Sarkar <deepayan.sarkar@gmail.com>,
+            Michael Lawrence <mflawren@fhcrc.org>
 Description: Basic event-loop and external pointer management to
 	     support interfaces between R and Qt
 License: GPL (>= 2)

@@ -51,6 +51,13 @@ extern "C" {
 
     extern void init_utils();
 
+  // signals
+  SEXP qt_qconnect(SEXP x, SEXP user_data, SEXP handler, SEXP which);
+  SEXP qt_qdisconnect(SEXP x, SEXP receiver);
+
+  // metadata
+  SEXP qt_qnormalizedSignature(SEXP x);
+  SEXP qt_qmethods(SEXP rself);
 }
 
 QObject* unwrapQObjectReferee(SEXP x);
@@ -106,6 +113,12 @@ static R_CallMethodDef CallEntries[] = {
     CALLDEF(qt_qsetContextMenuPolicy, 2),
 
     CALLDEF(qt_qsetDeleteOnClose, 2),
+
+    CALLDEF(qt_qdisconnect, 2),
+    CALLDEF(qt_qconnect, 5),
+
+    CALLDEF(qt_qnormalizedSignature, 1),
+    CALLDEF(qt_qmethods, 1),
 
     {NULL, NULL, 0}
 };

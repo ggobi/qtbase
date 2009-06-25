@@ -12,3 +12,8 @@ export(testLabel)
 
 export(qfont)
 
+# metadata
+export(qmethods, qnormalizedSignature)
+
+# signals
+export(qconnect, qdisconnect)
