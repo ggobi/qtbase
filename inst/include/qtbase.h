@@ -31,6 +31,7 @@ extern "C" {
   SEXP wrapQWidget(QWidget *widget);
   SEXP wrapPointer(void *ptr, const char *className, R_CFinalizer_t finalizer);
   SEXP wrapQGraphicsWidget(QGraphicsWidget *widget);
+  SEXP wrapQGraphicsItem(QGraphicsItem *item);
 
   // Conversion routines
   // R -> C/Qt
@@ -44,6 +45,7 @@ extern "C" {
   void addQObjectReference(QObject *referee, QObject *referer);
   void addQWidgetReference(QWidget *referee, QObject *referer);
   void addQGraphicsWidgetReference(QGraphicsWidget *referee, QObject *referer);
+  void addQGraphicsItemReference(QGraphicsItem *referee, QObject *referer);
 }
 
 

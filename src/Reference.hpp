@@ -1,4 +1,3 @@
-// FIXME: obviously, Q(Graphics)WidgetReference belongs in separate file
 #include <QGraphicsWidget>
 
 #include <QWidget>
@@ -22,7 +21,7 @@ namespace QViz {
       
   public:
     // add a reference to referee's count
-    Reference(void *referee);
+    Reference(void *referee, QObject *referer = NULL);
     // subtract from referee's count and release() if zero reached.
     // NOTE: every subclass must override with call to release(), if
     // deleteReferee is overridden, since destructors do not call
@@ -93,10 +92,23 @@ namespace QViz {
   };
 
 
+  class QGraphicsItemReference : public Reference {
+    Q_OBJECT
+
+    public:
+    QGraphicsItemReference(QGraphicsItem *referee, QObject *referer = NULL)
+      : Reference(referee, referer) { }
+    virtual ~QGraphicsItemReference();
+    
+  protected:
+    virtual void deleteReferee();
+  };
+
 }
 
 extern "C" {
   void addQObjectReference(QObject *referee, QObject *referer);
   void addQWidgetReference(QWidget *referee, QObject *referer);
   void addQGraphicsWidgetReference(QGraphicsWidget *referee, QObject *referer);
+  void addQGraphicsItemReference(QGraphicsItem *referee, QObject *referer);
 }

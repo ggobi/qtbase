@@ -32,6 +32,7 @@ extern "C" {
   SEXP wrapQWidget(QWidget *widget);
   SEXP wrapPointer(void *ptr, const char *className, R_CFinalizer_t finalizer);
   SEXP wrapQGraphicsWidget(QGraphicsWidget *widget);
+  SEXP wrapQGraphicsItem(QGraphicsItem *item);
 }
 
 #endif

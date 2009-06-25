@@ -49,6 +49,15 @@ SEXP wrapQGraphicsWidget(QGraphicsWidget *widget)
   return fun(widget);
 }
 
+SEXP wrapQGraphicsItem(QGraphicsItem *item)
+{
+  static SEXP(*fun)(QGraphicsItem*) = NULL;
+  if (fun == NULL)
+    fun = (SEXP(*)(QGraphicsItem*))
+      R_GetCCallable("qtbase", "wrapQGraphicsItem");
+  return fun(item);
+}
+
 QObject*
 unwrapQObjectReferee(SEXP x)
 {
@@ -112,6 +121,14 @@ void addQGraphicsWidgetReference(QGraphicsWidget *referee, QObject *referer) {
   if (fun == NULL)
     fun = (void(*)(QGraphicsWidget *, QObject *))
       R_GetCCallable("qtbase", "addQGraphicsWidgetReference");
+  fun(referee, referer);
+}
+
+void addQGraphicsItemReference(QGraphicsItem *referee, QObject *referer) {
+  static void (*fun)(QGraphicsItem *, QObject *) = NULL;
+  if (fun == NULL)
+    fun = (void(*)(QGraphicsItem *, QObject *))
+      R_GetCCallable("qtbase", "addQGraphicsItemReference");
   fun(referee, referer);
 }
 

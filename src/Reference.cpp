@@ -7,10 +7,12 @@ using namespace QViz;
 
 QHash<void *, int> * Reference::counts = NULL;
 
-Reference::Reference(void *referee) : _referee(referee) {
+Reference::Reference(void *referee, QObject *referer) : _referee(referee) {
   if (!counts)
     counts = new QHash<void *, int>;
   counts->insert(referee, count() + 1);
+  if (referer)
+    connect(referer, SIGNAL(destroyed()), this, SLOT(destroy()));
 }
 
 void Reference::clear() {
@@ -45,11 +47,9 @@ int Reference::count(void *referee) {
 /* QObjectReference */
 
 QObjectReference::QObjectReference(QObject *referee, QObject *referer)
-  : Reference(referee)
+  : Reference(referee, referer)
 {
   connect(referee, SIGNAL(destroyed()), this, SLOT(refereeDestroyed()));
-  if (referer)
-    connect(referer, SIGNAL(destroyed()), this, SLOT(destroy()));
 }
 
 QObjectReference::~QObjectReference() {
@@ -90,7 +90,7 @@ void QWidgetReference::deleteReferee() {
 QGraphicsWidgetReference::~QGraphicsWidgetReference() {
   release();
 }
-
+  
 void QGraphicsWidgetReference::deleteReferee() {
   QGraphicsWidget *widget =
     qobject_cast<QGraphicsWidget *>((QObject *)referee());
@@ -102,6 +102,20 @@ void QGraphicsWidgetReference::deleteReferee() {
   // else printf("graphics widget has parent item, preserving %p\n", referee());
 }
 
+QGraphicsItemReference::~QGraphicsItemReference() {
+  release();
+}
+
+void QGraphicsItemReference::deleteReferee() {
+  QGraphicsItem *item = reinterpret_cast<QGraphicsItem *>(referee());
+  // We expect the scene to hold a reference, so that top-level items
+  // do not disappear.
+  if (!item->parentItem()) {
+    delete item;
+  } 
+  // else printf("graphics item has parent item, preserving %p\n", referee());
+}
+
 extern "C" {
   void addQObjectReference(QObject *referee, QObject *referer) {
     new QObjectReference(referee, referer);
@@ -111,5 +125,8 @@ extern "C" {
   }
   void addQGraphicsWidgetReference(QGraphicsWidget *referee, QObject *referer) {
     new QGraphicsWidgetReference(referee, referer);
+  }
+  void addQGraphicsItemReference(QGraphicsItem *referee, QObject *referer) {
+    new QGraphicsItemReference(referee, referer);
   }
 }

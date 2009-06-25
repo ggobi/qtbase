@@ -140,6 +140,7 @@ void R_init_qtbase(DllInfo *dll)
     REG_CALLABLE(wrapPointer);
     REG_CALLABLE(unwrapQObjectReferee);
     REG_CALLABLE(wrapQGraphicsWidget);
+    REG_CALLABLE(wrapQGraphicsItem);
     
     REG_CALLABLE(asStringArray);
     REG_CALLABLE(sexp2qstring);
@@ -149,6 +150,7 @@ void R_init_qtbase(DllInfo *dll)
     REG_CALLABLE(addQObjectReference);
     REG_CALLABLE(addQWidgetReference);
     REG_CALLABLE(addQGraphicsWidgetReference);
+    REG_CALLABLE(addQGraphicsItemReference);
 }
 
 /* Much of this code inspired by Simon Urbanek's CarbonEL package */
