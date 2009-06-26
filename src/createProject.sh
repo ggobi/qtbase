@@ -14,9 +14,9 @@ TEMPLATE = lib
 
 # Input
 HEADERS += Reference.hpp utils.hpp wrappers.h
-HEADERS += dynamicqobject.h RDynamicQObject.hpp
+HEADERS += dynamicqobject.h RDynamicQObject.hpp EventLoop.hpp
 
-SOURCES += init.cpp style.cpp
+SOURCES += init.cpp EventLoop.cpp style.cpp
 ## SOURCES += object.cpp 
 SOURCES += Reference.cpp utils.cpp wrappers.cpp 
 SOURCES += Test.cpp actions.cpp attributes.cpp
