@@ -17,19 +17,6 @@ extern "C" {
     SEXP qt_qsetStyleSheet(SEXP x, SEXP s);
     SEXP qt_qstyleSheet(SEXP x);
 
-    // actions.cpp
-
-    SEXP qt_qaction(SEXP desc, SEXP shortcut, SEXP parent, SEXP tooltip,
-                    SEXP checkable);
-    SEXP qt_qaddActionToQWidget(SEXP w, SEXP a);
-    SEXP qt_qaddAction_QGraphicsWidget(SEXP w, SEXP a);
-    SEXP qt_qaddActionToQMenu(SEXP w, SEXP a);
-    SEXP qt_qsetContextMenuPolicy(SEXP x, SEXP policy);
-
-    // attributes.cpp
-
-    SEXP qt_qsetDeleteOnClose(SEXP x, SEXP status);
-
     // this file 
 
     SEXP addQtEventHandler();
@@ -72,16 +59,6 @@ static R_CallMethodDef CallEntries[] = {
 
     CALLDEF(addQtEventHandler, 0),
     CALLDEF(cleanupQtApp, 0),
-
-    CALLDEF(newLabelWidget, 1),
-
-    CALLDEF(qt_qaction, 5),
-    CALLDEF(qt_qaddActionToQWidget, 2),
-    CALLDEF(qt_qaddActionToQMenu, 2),
-    CALLDEF(qt_qaddAction_QGraphicsWidget, 2),
-    CALLDEF(qt_qsetContextMenuPolicy, 2),
-
-    CALLDEF(qt_qsetDeleteOnClose, 2),
 
     CALLDEF(qt_qtimer, 0),
     
