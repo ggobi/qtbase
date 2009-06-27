@@ -39,6 +39,9 @@ extern "C" {
 
     extern void init_utils();
 
+  // timer
+  SEXP qt_qtimer(void);
+  
   // signals
   SEXP qt_qconnect(SEXP x, SEXP user_data, SEXP handler, SEXP which);
   SEXP qt_qdisconnect(SEXP x, SEXP receiver);
@@ -80,6 +83,8 @@ static R_CallMethodDef CallEntries[] = {
 
     CALLDEF(qt_qsetDeleteOnClose, 2),
 
+    CALLDEF(qt_qtimer, 0),
+    
     CALLDEF(qt_qdisconnect, 2),
     CALLDEF(qt_qconnect, 5),
 

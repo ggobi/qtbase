@@ -3,6 +3,11 @@
 #include <R.h>
 #include <Rinternals.h>
 
+/* It may be that defining a new Reference type for every new base
+   class is too much work. We could wrap the referee in QVariant and
+   do everything at run-time, but it would bring more overhead. Note
+   that we would need to define many QMetaTypes ourselves. */
+
 using namespace QViz;
 
 QHash<void *, int> * Reference::counts = NULL;

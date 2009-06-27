@@ -12,6 +12,9 @@ export(testLabel)
 
 export(qfont)
 
+# timer
+export(qtimer)
+
 # metadata
 export(qmethods, qnormalizedSignature, qproperties)
 S3method("$", QObject)
