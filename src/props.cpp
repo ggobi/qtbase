@@ -172,8 +172,10 @@ static QVariant asQVariant(SEXP rvalue) {
 static QVariant asQVariantOfType(SEXP rvalue, QMetaType::Type type) {
   QVariant direct = asQVariant(rvalue);
   QVariant ans;
-  if (direct.canConvert((QVariant::Type)type)) // handles a few cases
-    return direct.convert((QVariant::Type)type);
+  if (direct.canConvert((QVariant::Type)type)) { // handles a few cases
+    direct.convert((QVariant::Type)type);
+    return direct;
+  }
   switch(type) {
     // FIXME: should verify that these pointers are of right R class
   case QMetaType::QObjectStar:
