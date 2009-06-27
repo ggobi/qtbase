@@ -141,18 +141,23 @@ static QVariant asQVariant(SEXP rvalue) {
   QVariant variant;
   switch(TYPEOF(rvalue)) {
   case LGLSXP:
+    // Rprintf("Logical\n");
     variant = QVariant(asLogical(rvalue));
     break;
   case REALSXP:
+    // Rprintf("Real\n");
     variant = QVariant(asReal(rvalue));
     break;
   case INTSXP:
+    // Rprintf("Integer\n");
     variant = QVariant(asInteger(rvalue));
     break;
   case STRSXP:
+    // Rprintf("String\n");
     variant = QVariant(sexp2qstring(rvalue));
     break;
   case EXTPTRSXP:
+    // Rprintf("External pointer\n");
     variant = qVariantFromValue(unwrapPointer(rvalue, void));
     break;
   default:

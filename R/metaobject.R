@@ -44,6 +44,10 @@ qproperties <- function(x) {
   as.data.frame(props, row.names=name)
 }
 
+names.QObject <- function(x) {
+    rownames(qproperties(x))
+}
+
 `$.QObject` <- function(x, name) {
   if (name %in% rownames(qproperties(x)))
     qproperty(x, name)

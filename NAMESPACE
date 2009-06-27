@@ -16,6 +16,7 @@ export(qtimer)
 export(qmethods, qnormalizedSignature, qproperties)
 S3method("$", QObject)
 S3method("$<-", QObject)
+S3method(names, QObject)
 
 # signals
 export(qconnect, qdisconnect)
