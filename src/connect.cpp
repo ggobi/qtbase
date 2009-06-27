@@ -16,7 +16,8 @@ extern "C" {
     QByteArray returnType = QByteArray(method.typeName());
     if (!asLogical(has_user_data))
       user_data = NULL;
-    obj = new RDynamicQObject(paramTypes, returnType, handler, user_data);
+    obj = new RDynamicQObject(paramTypes, returnType, handler, user_data,
+                              sender);
     obj->connectDynamicSlot(sender, signal, signal);
     return wrapQObject(obj);
   }

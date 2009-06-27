@@ -10,9 +10,9 @@
 class RDynamicQObject : public DynamicQObject {
 public:
   RDynamicQObject(QList<QByteArray> paramTypes, QByteArray returnType,
-                  SEXP function, SEXP userData) :
-    _paramTypes(paramTypes), _returnType(returnType), _function(function),
-    _userData(userData)
+                  SEXP function, SEXP userData, QObject *sender) :
+    DynamicQObject(sender), _paramTypes(paramTypes), _returnType(returnType),
+    _function(function), _userData(userData)
   {
     R_PreserveObject(function);
     if (userData)
