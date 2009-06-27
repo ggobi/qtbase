@@ -13,7 +13,15 @@ export(testLabel)
 export(qfont)
 
 # metadata
-export(qmethods, qnormalizedSignature)
+export(qmethods, qnormalizedSignature, qproperties)
+S3method("$", QObject)
+S3method("$<-", QObject)
 
 # signals
 export(qconnect, qdisconnect)
+
+# invoke
+export(qinvoke)
+
+# properties
+export(qproperty, "qproperty<-")

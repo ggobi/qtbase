@@ -46,6 +46,14 @@ extern "C" {
   // metadata
   SEXP qt_qnormalizedSignature(SEXP x);
   SEXP qt_qmethods(SEXP rself);
+  SEXP qt_qproperties(SEXP x);
+
+  // dynamic invocation
+  SEXP qt_qinvoke(SEXP rmethod, SEXP robj, SEXP rargs);
+
+  // properties
+  SEXP qt_qsetProperty(SEXP x, SEXP rname, SEXP rvalue);
+  SEXP qt_qproperty(SEXP x, SEXP name);
 }
 
 QObject* unwrapQObjectReferee(SEXP x);
@@ -77,7 +85,13 @@ static R_CallMethodDef CallEntries[] = {
 
     CALLDEF(qt_qnormalizedSignature, 1),
     CALLDEF(qt_qmethods, 1),
+    CALLDEF(qt_qproperties, 1),
 
+    CALLDEF(qt_qinvoke, 3),
+
+    CALLDEF(qt_qsetProperty, 3),
+    CALLDEF(qt_qproperty, 2),
+    
     {NULL, NULL, 0}
 };
 

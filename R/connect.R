@@ -11,25 +11,7 @@ qconnect <- function(x, signal, handler = NULL, user.data = NULL)
   if (has.user.data && !nargs)
     stop("if 'user.data' specified, handler must take at least one argument")
   
-  ## The user can specify a signal by name or by signature
-  methods <- qmethods(x)
-  signals <- as.character(subset(methods, type == "signal")$signature)
-  if (!length(grep("\\(", signal))) {
-    signals <- signals[grep(paste("^", signal, "\\(", sep = ""), signals)]
-    if (length(signals) > 1) {
-      noargs <- nchar(signals) == nchar(signal)+2
-      if (!any(noargs))
-        stop("ambiguous signal selection: ", signals)
-      signals <- signals[noargs]
-    }
-    if (!length(signals))
-      stop("signal does not exist")
-    signal <- signals[1]
-  } else {
-    signal <- qnormalizedSignature(signal)
-    if (!(signal %in% signals))
-      stop("signal does not exist")
-  }
+  signal <- qresolveSignature(x, signal, "signal")
   
   .Call(qt_qconnect, x, signal, handler, user.data, has.user.data)
 }

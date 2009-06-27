@@ -59,8 +59,9 @@ void init_utils()
     cmdExecRho = eval(install(".uEnv"), rho);
 }
 
-// conversion routines -- need separate file?
+// conversion routines
 // prototypes in utils.hpp
+// probably need to move this to a conversion.cpp/hpp and merge wrappers.*
 
 #include <QString>
 

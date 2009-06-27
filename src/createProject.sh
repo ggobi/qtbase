@@ -20,7 +20,7 @@ SOURCES += init.cpp EventLoop.cpp style.cpp
 ## SOURCES += object.cpp 
 SOURCES += Reference.cpp utils.cpp wrappers.cpp 
 SOURCES += Test.cpp actions.cpp attributes.cpp
-SOURCES += metaobject.cpp connect.cpp
+SOURCES += metaobject.cpp connect.cpp invoke.cpp props.cpp
 SOURCES += dynamicqobject.cpp RDynamicQObject.cpp
 
 INCLUDEPATH += ${R_INCLUDE_DIR}

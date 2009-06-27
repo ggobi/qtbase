@@ -62,7 +62,8 @@ extern "C" {
     SEXP ans = R_MakeExternalPtr(ptr, R_NilValue, R_NilValue);
     if (finalizer)
       R_RegisterCFinalizer(ans, finalizer);
-    SET_CLASS(ans, mkString(className));
+    if (className)
+      SET_CLASS(ans, mkString(className));
     return ans;
   }
 

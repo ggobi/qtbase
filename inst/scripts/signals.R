@@ -7,9 +7,9 @@ htmlErrorHandler <- function(msg, code, domain, line, col, level, filename) {
 setwd("~/research/src/qt-x11-opensource-src-4.5.0/doc/html/")
 files <- dir(pattern="^q[^3]")
 
-strs <- unlist(lapply(f, function(f) {
+strs <- unlist(lapply(files, function(f) {
   dom <- htmlTreeParse(f, useInternalNodes=TRUE, error=htmlErrorHandler)
-  path <- "/html//h3[text() = 'Signals']/following-sibling::ul[1]/li/text()"
+  path <- "/html//h3[text() = 'Public Slots']/following-sibling::ul[1]/li/text()[1]"
   sapply(getNodeSet(dom, path), xmlValue)
 }))
 

@@ -5,8 +5,8 @@
 #include "wrappers.h"
 
 extern "C" {
-  SEXP qt_qmethods(SEXP rself) {
-    QObject *self = unwrapQObject(rself, QObject);
+  SEXP qt_qmethods(SEXP x) {
+    QObject *self = unwrapQObject(x, QObject);
     const QMetaObject *meta = self->metaObject();
     int n = meta->methodCount();
     
@@ -33,5 +33,33 @@ extern "C" {
   SEXP qt_qnormalizedSignature(SEXP x) {
     QByteArray sig = QMetaObject::normalizedSignature(CHAR(asChar(x)));
     return sig.isEmpty() ? R_NilValue : mkString(sig.data());
+  }
+
+  SEXP qt_qproperties(SEXP x) {
+    QObject *self = unwrapQObject(x, QObject);
+    const QMetaObject *meta = self->metaObject();
+    int n = meta->propertyCount();
+    
+    SEXP ans, ans_type, ans_name, ans_readable, ans_writable;
+    PROTECT(ans = allocVector(VECSXP, 4));
+    ans_name = allocVector(STRSXP, n);
+    SET_VECTOR_ELT(ans, 0, ans_name);
+    ans_type = allocVector(STRSXP, n);
+    SET_VECTOR_ELT(ans, 1, ans_type);
+    ans_readable = allocVector(LGLSXP, n);
+    SET_VECTOR_ELT(ans, 2, ans_readable);
+    ans_writable = allocVector(LGLSXP, n);
+    SET_VECTOR_ELT(ans, 3, ans_writable);
+
+    for (int i = 0; i < n; i++) {
+      QMetaProperty metaProperty = meta->property(i);
+      SET_STRING_ELT(ans_type, i, mkChar(metaProperty.typeName()));
+      SET_STRING_ELT(ans_name, i, mkChar(metaProperty.name()));
+      LOGICAL(ans_readable)[i] = metaProperty.isReadable();
+      LOGICAL(ans_writable)[i] = metaProperty.isWritable();
+    }
+    
+    UNPROTECT(1);
+    return ans;
   }
 }
