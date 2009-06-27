@@ -1,12 +1,9 @@
 
 useDynLib(qtbase, .registration = TRUE)
 
-export(qsetStyleSheet, qstyleSheet,
-       qaction, qaddAction, qsetContextMenuPolicy)
+export(qsetStyleSheet, qstyleSheet)
 
 export(".u_tryEval", ".u_eval", ".u_lastValue")
-
-export(qsetDeleteOnClose)
 
 export(testLabel)
 
