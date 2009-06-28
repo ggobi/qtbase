@@ -45,7 +45,7 @@ qproperties <- function(x) {
 }
 
 names.QObject <- function(x) {
-    rownames(qproperties(x))
+    c(rownames(qproperties(x)), sub("\\(.*", "", qmethods(x)$signature))
 }
 
 `$.QObject` <- function(x, name) {
