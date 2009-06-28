@@ -2,15 +2,16 @@ qmethods <- function(x) {
   stopifnot(is(x, "QObject"))
   methods <- .Call(qt_qmethods, x)
   methods[[1]] <- c("method", "signal", "slot", "constructor")[methods[[1]] + 1]
-  names(methods) <- c("type", "signature", "return")
-  as.data.frame(methods, row.names=sub("\\(.*", "", methods$signature))
+  methods <- c(list(sub("\\(.*", "", methods[[2]])), methods)
+  names(methods) <- c("name", "type", "signature", "return", "nargs")
+  as.data.frame(methods, stringsAsFactors=FALSE, row.names = methods$signature)
 }
 
 qnormalizedSignature <- function(x) {
   .Call(qt_qnormalizedSignature, as.character(x))
 }
 
-qresolveSignature <- function(x, sig, type) {
+qresolveSignature <- function(x, sig, type, nargs) {
   ## The user can specify a signal by name or by signature
   methods <- qmethods(x)
   if (!missing(type))
@@ -19,10 +20,12 @@ qresolveSignature <- function(x, sig, type) {
   if (!length(grep("\\(", sig))) {
     sigs <- sigs[grep(paste("^", sig, "\\(", sep = ""), sigs)]
     if (length(sigs) > 1) {
-      noargs <- nchar(sigs) == nchar(sig)+2
-      if (!any(noargs))
-        stop("ambiguous method selection: ", sigs)
-      sigs <- sigs[noargs]
+      argmatch <- (if (missing(nargs)) 0 else nargs) == methods[sigs, "nargs"]
+      if (sum(argmatch) == 0) # just take first, will fail below
+        argmatch[1] <- TRUE
+      if (sum(argmatch) > 1)
+        stop("ambiguous method selection: ", paste(sigs, collapse=", "))
+      sigs <- sigs[argmatch]
     }
     if (!length(sigs))
       stop("method does not exist")
@@ -32,6 +35,9 @@ qresolveSignature <- function(x, sig, type) {
     if (!(sig %in% sigs))
       stop("method does not exist")
   }
+  ## slots cannot have default arguments, usually signals are multiplied
+  if (!missing(nargs) && methods[sig, "nargs"] != nargs)
+    stop("number of arguments does not match method signature")
   sig
 }
 
@@ -45,7 +51,7 @@ qproperties <- function(x) {
 }
 
 names.QObject <- function(x) {
-    c(rownames(qproperties(x)), unique(rownames(qmethods(x))))
+    c(rownames(qproperties(x)), unique(qmethods(x)$name))
 }
 
 `$.QObject` <- function(x, name) {

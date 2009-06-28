@@ -10,7 +10,11 @@
 
 QObject *unwrapQObjectReferee(SEXP x);
 
-#define unwrapPointer(x, type) ((type *) R_ExternalPtrAddr(x))
+#define unwrapPointer(x, type) ({               \
+  if (TYPEOF(x) != EXTPTRSXP)                   \
+    error("unwrapPointer: not an externalptr"); \
+  ((type *) R_ExternalPtrAddr(x));              \
+})
 
 #define unwrapReference(x, type) ({                                     \
       type *ans = qobject_cast<type *>(unwrapPointer(x, QObject));      \
