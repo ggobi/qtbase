@@ -3,7 +3,7 @@ qmethods <- function(x) {
   methods <- .Call(qt_qmethods, x)
   methods[[1]] <- c("method", "signal", "slot", "constructor")[methods[[1]] + 1]
   names(methods) <- c("type", "signature", "return")
-  as.data.frame(methods)
+  as.data.frame(methods, row.names=sub("\\(.*", "", methods$signature))
 }
 
 qnormalizedSignature <- function(x) {
@@ -45,7 +45,7 @@ qproperties <- function(x) {
 }
 
 names.QObject <- function(x) {
-    c(rownames(qproperties(x)), sub("\\(.*", "", qmethods(x)$signature))
+    c(rownames(qproperties(x)), unique(rownames(qmethods(x))))
 }
 
 `$.QObject` <- function(x, name) {
