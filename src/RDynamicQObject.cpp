@@ -6,6 +6,8 @@ DynamicSlot *RDynamicQObject::createSlot(const char *slot) {
   return new RDynamicSlot(this);
 }
 
+// Could we use QVariant::nameToType() here and convert the QVariant?
+// Pointer types will need special handling
 SEXP asRValue(void *val, QByteArray type) {
   if (type == "int")
     return ScalarInteger(*(reinterpret_cast<int *>(val)));

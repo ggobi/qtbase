@@ -43,6 +43,8 @@ SEXP asRVariant(QVariant variant) {
   case QMetaType::QDate:
     break;
   case QMetaType::QSize:
+  case QMetaType::QSizeF:
+    ans = asRSize(variant.value<QSizeF>());
     break;
   case QMetaType::QTime:
     break;
@@ -51,10 +53,11 @@ SEXP asRVariant(QVariant variant) {
   case QMetaType::QPolygon:
     break;
   case QMetaType::QColor:
-    break;
-  case QMetaType::QSizeF:
+    ans = asRColor(variant.value<QColor>());
     break;
   case QMetaType::QRectF:
+  case QMetaType::QRect:
+    ans = asRRect(variant.value<QRectF>());
     break;
   case QMetaType::QLine:
     break;
@@ -74,9 +77,9 @@ SEXP asRVariant(QVariant variant) {
     break;
   case QMetaType::QTextFormat:
     break;
-  case QMetaType::QRect:
-    break;
   case QMetaType::QPoint:
+  case QMetaType::QPointF:
+    ans = asRPoint(variant.value<QPointF>());
     break;
   case QMetaType::QUrl:
     break;
@@ -84,11 +87,10 @@ SEXP asRVariant(QVariant variant) {
     break;
   case QMetaType::QDateTime:
     break;
-  case QMetaType::QPointF:
-    break;
   case QMetaType::QPalette:
     break;
   case QMetaType::QFont:
+    ans = asRFont(variant.value<QFont>());
     break;
   case QMetaType::QBrush:
     break;
@@ -109,6 +111,7 @@ SEXP asRVariant(QVariant variant) {
   case QMetaType::QBitmap:
     break;
   case QMetaType::QMatrix:
+    ans = asRMatrix(variant.value<QMatrix>(), FALSE);
     break;
   case QMetaType::QTransform:
     break;
@@ -175,6 +178,8 @@ QVariant asQVariantOfType(SEXP rvalue, QMetaType::Type type) {
   case QMetaType::QDate:
     break;
   case QMetaType::QSize:
+  case QMetaType::QSizeF:
+    ans = QVariant(asQSizeF(rvalue));
     break;
   case QMetaType::QTime:
     break;
@@ -183,10 +188,11 @@ QVariant asQVariantOfType(SEXP rvalue, QMetaType::Type type) {
   case QMetaType::QPolygon:
     break;
   case QMetaType::QColor:
-    break;
-  case QMetaType::QSizeF:
+    ans = QVariant(asQColor(rvalue));
     break;
   case QMetaType::QRectF:
+  case QMetaType::QRect:
+    ans = QVariant(asQRectF(rvalue));
     break;
   case QMetaType::QLine:
     break;
@@ -206,9 +212,9 @@ QVariant asQVariantOfType(SEXP rvalue, QMetaType::Type type) {
     break;
   case QMetaType::QTextFormat:
     break;
-  case QMetaType::QRect:
-    break;
   case QMetaType::QPoint:
+  case QMetaType::QPointF:
+    ans = QVariant(asQPointF(rvalue));
     break;
   case QMetaType::QUrl:
     break;
@@ -216,11 +222,10 @@ QVariant asQVariantOfType(SEXP rvalue, QMetaType::Type type) {
     break;
   case QMetaType::QDateTime:
     break;
-  case QMetaType::QPointF:
-    break;
   case QMetaType::QPalette:
     break;
   case QMetaType::QFont:
+    ans = QVariant(asQFont(rvalue));
     break;
   case QMetaType::QBrush:
     break;
@@ -241,6 +246,7 @@ QVariant asQVariantOfType(SEXP rvalue, QMetaType::Type type) {
   case QMetaType::QBitmap:
     break;
   case QMetaType::QMatrix:
+    ans = QVariant(asQMatrix(rvalue));
     break;
   case QMetaType::QTransform:
     break;
@@ -253,6 +259,8 @@ QVariant asQVariantOfType(SEXP rvalue, QMetaType::Type type) {
     error("Converting to QVariant: Qt type not yet implemented");
   return ans;
 }
+
+/* string handling */
 
 const char ** asStringArray(SEXP s_strs) {
   const char **strs = (const char **)R_alloc(length(s_strs), sizeof(char *));
@@ -281,3 +289,99 @@ SEXP qstring2sexp(QString s) {
   return ScalarString(mkChar(s.toLocal8Bit().data()));
 }
 
+/* geometry */
+// FIXME: these and other asR functions need to set the class
+
+SEXP asRRect(QRectF rect) {
+  SEXP rrect = allocMatrix(REALSXP, 2, 2);
+  REAL(rrect)[0] = rect.left();
+  REAL(rrect)[1] = rect.right();
+  REAL(rrect)[2] = rect.top();
+  REAL(rrect)[3] = rect.bottom();
+  return rrect;
+}
+QRectF asQRectF(SEXP r) {
+  double *rrect = REAL(r);
+  return QRectF(QPointF(rrect[0], rrect[2]), QPointF(rrect[1], rrect[3]));
+}
+
+SEXP asRMatrix(QMatrix matrix, bool inverted) {
+  bool ok = true;
+  SEXP ans = R_NilValue;
+  if (inverted)
+    matrix = matrix.inverted(&ok);
+  if (ok) {
+    ans = allocMatrix(REALSXP, 3, 2);
+    REAL(ans)[0] = matrix.m11();
+    REAL(ans)[1] = matrix.m21();
+    REAL(ans)[2] = matrix.dx();
+    REAL(ans)[3] = matrix.m12();
+    REAL(ans)[4] = matrix.m22();
+    REAL(ans)[5] = matrix.dy();
+  }
+  return ans;
+}
+QMatrix asQMatrix(SEXP m) {
+  double *rmatrix = REAL(m);
+  return QMatrix(rmatrix[0], rmatrix[3], rmatrix[1], rmatrix[4],
+                 rmatrix[2], rmatrix[5]);
+}
+
+SEXP asRPoint(QPointF point) {
+  SEXP rpoint = allocVector(REALSXP, 2);
+  REAL(rpoint)[0] = point.x(); REAL(rpoint)[1] = point.y();
+  return rpoint;
+}
+QPointF asQPointF(SEXP p) {
+  double *rpoint = REAL(p);
+  return QPointF(rpoint[0], rpoint[1]);
+}
+
+SEXP asRSize(QSizeF size) {
+  SEXP rsize = allocVector(REALSXP, 2);
+  REAL(rsize)[0] = size.width(); REAL(rsize)[1] = size.height();
+  return rsize;
+}
+QSizeF asQSizeF(SEXP s) {
+  double *rsize = REAL(s);
+  return QSizeF(rsize[0], rsize[1]);
+}
+
+/* Graphics */
+
+QColor *asQColors(SEXP c) {
+  QColor *colors = (QColor *)R_alloc(ncols(c), sizeof(QColor));
+  int *rcolors = INTEGER(c);
+  for (int i = 0; i < ncols(c); i++, rcolors += 4)
+    colors[i] = QColor(rcolors[0], rcolors[1], rcolors[2], rcolors[3]);
+  return colors;
+}
+QColor asQColor(SEXP c) {
+  int *rcolor = INTEGER(c);
+  return QColor(rcolor[0], rcolor[1], rcolor[2], rcolor[3]);
+}
+SEXP asRColor(QColor color) {
+  SEXP rcolor = allocMatrix(INTSXP, 1, 4);
+  int *rptr = INTEGER(rcolor);
+  rptr[0] = color.red();
+  rptr[1] = color.green();
+  rptr[2] = color.blue();
+  rptr[3] = color.alpha();
+  return rcolor;
+}
+
+SEXP asRFont(QFont font) {
+  static const char * fontNames[] =
+    { "family", "pointsize", "weight", "italic", NULL };
+  SEXP rfont = allocVector(VECSXP, 4);
+  SET_VECTOR_ELT(rfont, 0, qstring2sexp(font.family()));
+  SET_VECTOR_ELT(rfont, 1, ScalarInteger(font.pointSize()));
+  SET_VECTOR_ELT(rfont, 2, ScalarInteger(font.weight()));
+  SET_VECTOR_ELT(rfont, 3, ScalarLogical(font.italic()));
+  setAttrib(rfont, R_NamesSymbol, asRStringArray(fontNames));
+  return rfont;
+}
+QFont asQFont(SEXP f) {  
+  return QFont(sexp2qstring(VECTOR_ELT(f, 0)), asInteger(VECTOR_ELT(f, 1)),
+               asInteger(VECTOR_ELT(f, 2)), VECTOR_ELT(f, 3));
+}
