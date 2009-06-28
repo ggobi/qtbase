@@ -2,8 +2,7 @@
 #include <QApplication>
 #include <QString>
 
-#include "wrappers.h"
-#include "utils.hpp"
+#include "convert.hpp"
 
 extern QApplication *app;
 

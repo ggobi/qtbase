@@ -1,5 +1,5 @@
 #include <QTimer>
-#include "wrappers.h"
+#include "wrap.hpp"
 
 extern "C" SEXP qt_qtimer(void)
 {

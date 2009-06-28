@@ -1,5 +1,5 @@
 #include "RDynamicQObject.hpp"
-#include "utils.hpp"
+#include "convert.hpp"
 
 DynamicSlot *RDynamicQObject::createSlot(const char *slot) {
   Q_UNUSED(slot);

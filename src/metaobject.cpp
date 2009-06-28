@@ -2,7 +2,7 @@
 #include <QMetaObject>
 #include <QMetaMethod>
 
-#include "wrappers.h"
+#include "wrap.hpp"
 
 extern "C" {
   SEXP qt_qmethods(SEXP x) {

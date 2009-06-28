@@ -2,8 +2,7 @@
 #include <QString>
 #include <QLabel>
 
-#include "wrappers.h"
-#include "utils.hpp"
+#include "convert.hpp"
 
 extern "C" {
     SEXP newLabelWidget(SEXP label);

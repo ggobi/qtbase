@@ -4,8 +4,7 @@
 #include <QMetaMethod>
 #include <QGenericArgument>
 
-#include "wrappers.h"
-#include "utils.hpp"
+#include "convert.hpp"
 
 extern "C" SEXP qt_qinvoke(SEXP robj, SEXP rmethod, SEXP rargs) {
   QObject *obj = unwrapQObject(robj, QObject);

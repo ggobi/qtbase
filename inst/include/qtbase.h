@@ -1,6 +1,9 @@
 #ifndef QTBASE_H
 #define QTBASE_H
 
+// FIXME: we should not have duplicate header files inside and outside
+// the package. Could use symbolic links.
+
 #include <QObject>
 #include <QWidget>
 #include <QString>
@@ -12,7 +15,11 @@
 
 QObject *unwrapQObjectReferee(SEXP x);
 
-#define unwrapPointer(x, type) ((type *) R_ExternalPtrAddr(x))
+#define unwrapPointer(x, type) ({                       \
+      if (TYPEOF(x) != EXTPTRSXP)                       \
+        error("unwrapPointer: not an externalptr");     \
+      ((type *) R_ExternalPtrAddr(x));                  \
+    })
 
 #define unwrapReference(x, type) ({                                         \
       type *ans = qobject_cast<type *>(unwrapPointer(x, QObject));          \
@@ -26,8 +33,6 @@ QObject *unwrapQObjectReferee(SEXP x);
       ans;								\
     })
 
-// FIXME: we should not have duplicate header files inside and outside
-// the package. Could use symbolic links.
 QT_BEGIN_DECLS
 
 SEXP wrapQObject(QObject *object);

@@ -5,7 +5,7 @@
 #include <QByteArray>
 #include "dynamicqobject.h"
 
-#include "wrappers.h"
+#include "wrap.hpp"
 
 class RDynamicQObject : public DynamicQObject {
 public:

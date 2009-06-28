@@ -2,7 +2,7 @@
 #include <QWidget>
 
 #include "Reference.hpp"
-#include "wrappers.h"
+#include "wrap.hpp"
 #include <Rdefines.h>
 
 using namespace QViz;
