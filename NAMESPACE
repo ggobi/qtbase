@@ -7,8 +7,6 @@ export(".u_tryEval", ".u_eval", ".u_lastValue")
 
 export(testLabel)
 
-export(qfont)
-
 # timer
 export(qtimer)
 
@@ -26,3 +24,6 @@ export(qinvoke)
 
 # properties
 export(qproperty, "qproperty<-")
+
+# constructors of simple types
+export(qrect, qpoint, qsize, qcolor, qfont)
