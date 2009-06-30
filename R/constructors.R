@@ -10,7 +10,7 @@ qrect <- function(x0, y0, x1, y1) {
     y0 <-  y0[1]
   }
   r <- matrix(as.numeric(c(x0, x1, y0, y1)), 2, 2)
-  class(r) <- c("QRectF", "matrix")
+  class(r) <- "QRectF"
   r
 }
 
@@ -42,6 +42,6 @@ qfont <-
 
 qcolor <- function(red = 0, green = 0, blue = 0, alpha = 255) {
   col <- t(as.integer(c(red, green, blue, alpha)))
-  class(col) <- c("QColor", "matrix")
+  class(col) <- "QColor"
   col
 }

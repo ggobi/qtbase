@@ -44,7 +44,7 @@ SEXP asRVariant(QVariant variant) {
     break;
   case QMetaType::QSize:
   case QMetaType::QSizeF:
-    ans = asRSize(variant.value<QSizeF>());
+    ans = asRSizeF(variant.value<QSizeF>());
     break;
   case QMetaType::QTime:
     break;
@@ -57,7 +57,7 @@ SEXP asRVariant(QVariant variant) {
     break;
   case QMetaType::QRectF:
   case QMetaType::QRect:
-    ans = asRRect(variant.value<QRectF>());
+    ans = asRRectF(variant.value<QRectF>());
     break;
   case QMetaType::QLine:
     break;
@@ -79,7 +79,7 @@ SEXP asRVariant(QVariant variant) {
     break;
   case QMetaType::QPoint:
   case QMetaType::QPointF:
-    ans = asRPoint(variant.value<QPointF>());
+    ans = asRPointF(variant.value<QPointF>());
     break;
   case QMetaType::QUrl:
     break;
@@ -292,12 +292,13 @@ SEXP qstring2sexp(QString s) {
 /* geometry */
 // FIXME: these and other asR functions need to set the class
 
-SEXP asRRect(QRectF rect) {
+SEXP asRRectF(QRectF rect) {
   SEXP rrect = allocMatrix(REALSXP, 2, 2);
   REAL(rrect)[0] = rect.left();
   REAL(rrect)[1] = rect.right();
   REAL(rrect)[2] = rect.top();
   REAL(rrect)[3] = rect.bottom();
+  setAttrib(rrect, R_ClassSymbol, mkString("QRectF"));
   return rrect;
 }
 QRectF asQRectF(SEXP r) {
@@ -319,6 +320,7 @@ SEXP asRMatrix(QMatrix matrix, bool inverted) {
     REAL(ans)[4] = matrix.m22();
     REAL(ans)[5] = matrix.dy();
   }
+  setAttrib(ans, R_ClassSymbol, mkString("QMatrix"));
   return ans;
 }
 QMatrix asQMatrix(SEXP m) {
@@ -327,9 +329,10 @@ QMatrix asQMatrix(SEXP m) {
                  rmatrix[2], rmatrix[5]);
 }
 
-SEXP asRPoint(QPointF point) {
+SEXP asRPointF(QPointF point) {
   SEXP rpoint = allocVector(REALSXP, 2);
   REAL(rpoint)[0] = point.x(); REAL(rpoint)[1] = point.y();
+  setAttrib(rpoint, R_ClassSymbol, mkString("QPointF"));
   return rpoint;
 }
 QPointF asQPointF(SEXP p) {
@@ -337,9 +340,10 @@ QPointF asQPointF(SEXP p) {
   return QPointF(rpoint[0], rpoint[1]);
 }
 
-SEXP asRSize(QSizeF size) {
+SEXP asRSizeF(QSizeF size) {
   SEXP rsize = allocVector(REALSXP, 2);
   REAL(rsize)[0] = size.width(); REAL(rsize)[1] = size.height();
+  setAttrib(rsize, R_ClassSymbol, mkString("QSizeF"));
   return rsize;
 }
 QSizeF asQSizeF(SEXP s) {
@@ -350,9 +354,10 @@ QSizeF asQSizeF(SEXP s) {
 /* Graphics */
 
 QColor *asQColors(SEXP c) {
-  QColor *colors = (QColor *)R_alloc(ncols(c), sizeof(QColor));
+  int ncolors = length(c) / 4;
+  QColor *colors = (QColor *)R_alloc(ncolors, sizeof(QColor));
   int *rcolors = INTEGER(c);
-  for (int i = 0; i < ncols(c); i++, rcolors += 4)
+  for (int i = 0; i < ncolors; i++, rcolors += 4)
     colors[i] = QColor(rcolors[0], rcolors[1], rcolors[2], rcolors[3]);
   return colors;
 }
