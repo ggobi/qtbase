@@ -3,12 +3,12 @@
 #include <R.h>
 #include <Rinternals.h>
 
-/* It may be that defining a new Reference type for every new base
-   class is too much work. We could wrap the referee in QVariant and
-   do everything at run-time, but it would bring more overhead. Note
-   that we would need to define many QMetaTypes ourselves. */
-
-using namespace QViz;
+/* So far, we handle types derived from QObject and
+   QGraphicsItem. Other types will need their own custom classes. It
+   may be that defining a new Reference type for every new base class
+   is too much work. We could wrap the referee in QVariant and do
+   everything at run-time (but it would bring more overhead). Note that
+   we would need to define many QMetaTypes ourselves. */
 
 QHash<void *, int> * Reference::counts = NULL;
 
@@ -63,7 +63,7 @@ QObjectReference::~QObjectReference() {
 
 void QObjectReference::deleteReferee() {
   if (!((QObject *)referee())->parent()) { // Qt does not own it, free
-    Rprintf("QObject is parentless, freeing <%p>\n", referee());
+    //Rprintf("QObject is parentless, freeing <%p>\n", referee());
     delete (QObject *)referee();
   }
 }
@@ -87,25 +87,7 @@ void QWidgetReference::deleteReferee() {
   } else QObjectReference::deleteReferee();
 }
 
-/* QGraphicsWidgetReference */
-
-// Even though referee is a QObject, QGraphicsItem ownership follows
-// the parent item, not the parent object.
-
-QGraphicsWidgetReference::~QGraphicsWidgetReference() {
-  release();
-}
-  
-void QGraphicsWidgetReference::deleteReferee() {
-  QGraphicsWidget *widget =
-    qobject_cast<QGraphicsWidget *>((QObject *)referee());
-  // We expect the scene to hold a reference, so that top-level items
-  // do not disappear.
-  if (!widget->parentItem()) {
-    QObjectReference::deleteReferee(); 
-  } 
-  // else printf("graphics widget has parent item, preserving %p\n", referee());
-}
+// QGraphicsItem
 
 QGraphicsItemReference::~QGraphicsItemReference() {
   release();
@@ -127,9 +109,6 @@ extern "C" {
   }
   void addQWidgetReference(QWidget *referee, QObject *referer) {
     new QWidgetReference(referee, referer);
-  }
-  void addQGraphicsWidgetReference(QGraphicsWidget *referee, QObject *referer) {
-    new QGraphicsWidgetReference(referee, referer);
   }
   void addQGraphicsItemReference(QGraphicsItem *referee, QObject *referer) {
     new QGraphicsItemReference(referee, referer);

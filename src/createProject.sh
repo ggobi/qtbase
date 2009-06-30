@@ -13,7 +13,7 @@ echo "
 TEMPLATE = lib
 
 # Input
-HEADERS += Reference.hpp convert.hpp wrap.h
+HEADERS += Reference.hpp convert.hpp wrap.hpp
 HEADERS += dynamicqobject.h RDynamicQObject.hpp EventLoop.hpp
 
 SOURCES += init.cpp EventLoop.cpp style.cpp 
