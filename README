@@ -7,3 +7,11 @@ me are (1) a high-level static graphics interface, with capabilities
 similar to lattice, and (2) a high-level dynamic graphics interface,
 similar to Ggobi (?).
 
+
+Questions:
+
+  foo$minimumSize <- qsize(200, 200)  ## works
+  
+  Why is there no foo$setMinimumSize()
+
+

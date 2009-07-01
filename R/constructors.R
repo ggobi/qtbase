@@ -21,7 +21,7 @@ qpoint <- function(x, y) {
 }
 
 qsize <- function(width, height) {
-  s <- as.numeric(c(x, y))
+  s <- as.numeric(c(width, height))
   class(s) <- "QSizeF"
   s
 }
