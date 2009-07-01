@@ -11,11 +11,13 @@
 QObject *unwrapQObjectReferee(SEXP x);
 QGraphicsItem *unwrapQGraphicsItemReferee(SEXP x);
 
-#define unwrapPointer(x, type) ({                        \
-      if (TYPEOF(x) != EXTPTRSXP)                       \
-        error("unwrapPointer: not an externalptr");      \
-      reinterpret_cast<type *>(R_ExternalPtrAddr(x));   \
-})
+#define unwrapPointer(x, type) ({                                       \
+      if (TYPEOF(x) != EXTPTRSXP)                                       \
+        error("unwrapPointer: not an externalptr");                     \
+      if (!inherits(x, #type))                                          \
+        error("unwrapPointer: expected object of class '" # type "'");  \
+      reinterpret_cast<type *>(R_ExternalPtrAddr(x));                   \
+    })
 
 #define unwrapReference(x, type) ({                                     \
       type *ans = qobject_cast<type *>(unwrapPointer(x, QObject));      \

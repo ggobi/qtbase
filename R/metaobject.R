@@ -55,10 +55,18 @@ names.QObject <- function(x) {
 }
 
 `$.QObject` <- function(x, name) {
-  if (name %in% rownames(qproperties(x)))
-    qproperty(x, name)
-  else function(...) qinvoke(x, name, ...)
+  val <- try(qproperty(x, name), silent=TRUE)
+  if (!inherits(val, "try-error"))
+    val
+  else if (name %in% qmethods(x)$name)
+    function(...) qinvoke(x, name, ...)
+  else {
+    msg <- gsub("\n *", "", sub("^[^:]* : *", "", val))
+    stop("Failed to get property '", name, "' (", msg, "), ",
+         "while a dynamic method of that name does not exist")
+  }
 }
+
 `$<-.QObject` <- function(x, name, value) {
   qproperty(x, name) <- value
   x

@@ -7,10 +7,20 @@
 
 #include "convert.hpp"
 
-
-extern "C" SEXP qt_qproperty(SEXP x, SEXP name) {
+static QMetaProperty getMetaProperty(QObject *obj, const char *name) {
+  const QMetaObject *meta = obj->metaObject();
+  int index = meta->indexOfProperty(name);
+  if (index == -1)
+    error("property does not exist");
+  return meta->property(index);
+}
+  
+extern "C" SEXP qt_qproperty(SEXP x, SEXP rname) {
   QObject *obj = unwrapQObject(x, QObject);
-  QVariant variant = obj->property(CHAR(asChar(name)));
+  QMetaProperty prop = getMetaProperty(obj, CHAR(asChar(rname)));
+  if (!prop.isReadable())
+    error("property is not readable");
+  QVariant variant = prop.read(obj);
   return asRVariant(variant);
 }
 
@@ -18,9 +28,9 @@ extern "C" SEXP qt_qproperty(SEXP x, SEXP name) {
 
 extern "C" SEXP qt_qsetProperty(SEXP x, SEXP rname, SEXP rvalue) {
   QObject *obj = unwrapQObject(x, QObject);
-  const QMetaObject *meta = obj->metaObject();
-  const char *name = CHAR(asChar(rname));
-  QMetaProperty prop = meta->property(meta->indexOfProperty(name));
+  QMetaProperty prop = getMetaProperty(obj, CHAR(asChar(rname)));
+  if (!prop.isWritable())
+    error("property is not writable");
   QVariant variant = asQVariantOfType(rvalue, (QMetaType::Type)prop.userType());
   prop.write(obj, variant);
   return x;
