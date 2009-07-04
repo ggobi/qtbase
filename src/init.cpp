@@ -46,6 +46,7 @@ extern "C" {
 }
 
 QObject* unwrapQObjectReferee(SEXP x);
+QGraphicsItem *unwrapQGraphicsItemReferee(SEXP x);
 
 #define CALLDEF(name, n)  {#name, (DL_FUNC) &name, n}
 
