@@ -30,7 +30,7 @@ SEXP asRVariant(QVariant variant) {
     ans = qstring2sexp(variant.value<QString>());
     break;
   case QMetaType::VoidStar:
-    ans = wrapPointer(variant.value<void *>(), NULL, NULL);
+    ans = wrapPointer(variant.value<void *>());
     break;
   case QMetaType::QObjectStar:
     ans = wrapQObject(variant.value<QObject *>());

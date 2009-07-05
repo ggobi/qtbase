@@ -20,38 +20,27 @@ QGraphicsItem *unwrapQGraphicsItemReferee(SEXP x);
       if (TYPEOF(x) != EXTPTRSXP)                                       \
         error("unwrapPointer: not an externalptr");                     \
       if (!inherits(x, #rtype))                                         \
-        error("unwrapPointer: expected object of class '" # rtype "'"); \
+        error("unwrapPointer: expected object of class '" #rtype "'");  \
       reinterpret_cast<ctype *>(R_ExternalPtrAddr(x));                  \
     })
 
 #define unwrapPointer(x, type) unwrapPointerSep(x, type, type)
 
-#define checkReference(x, type) ({                                      \
-      if (!x || !x->isValid())                                          \
-        error("checkReference: invalid reference to '" #type "'");      \
-    })
-
-#define unwrapReferenceSep(x, rtype, ctype) ({                          \
-      ctype *ans =                                                      \
-        qobject_cast<ctype *>(unwrapPointerSep(x, rtype, QObject));     \
-      checkReference(ans, rtype);                                       \
+#define unwrapReference(x, type) ({                                     \
+      type *ans =                                                       \
+        qobject_cast<type *>(unwrapPointer(x, type));                   \
+      if (!ans || !ans->isValid())                                      \
+        error("unwrapReference: Coercion to '" #type "' failed");       \
       ans;                                                              \
     })
 
-#define unwrapReference(x, type) ({                             \
-      type *ans =                                               \
-        qobject_cast<type *>(unwrapPointer(x, QObject));        \
-      checkReference(ans, type);                                \
-      ans;                                                      \
-    })
-
-#define unwrapQObject(x, type) ({                                              \
+#define unwrapQObject(x, type) ({                                       \
       type *ans = qobject_cast<type *>(unwrapQObjectReferee(x));	\
       if (!ans) error("unwrapQObject: Coercion to " #type " failed");	\
       ans;								\
     })
 
-#define unwrapQGraphicsItem(x, type) ({                                      \
+#define unwrapQGraphicsItem(x, type) ({                                 \
       type *ans = qgraphicsitem_cast<type *>(unwrapQGraphicsItemReferee(x)); \
       if (!ans) error("unwrapQGraphicsItem: Coercion to " #type " failed"); \
       ans;                                                              \
@@ -64,9 +53,10 @@ QT_BEGIN_DECLS
 
 SEXP wrapQObject(QObject *object);
 SEXP wrapQWidget(QWidget *widget);
-SEXP wrapPointer(void *ptr, const char * const * classNames,
-                 R_CFinalizer_t finalizer);
-SEXP wrapQGraphicsItem(QGraphicsItem *item);
+SEXP wrapPointer(void *ptr, QList<QString> classNames = QList<QString>(),
+                 R_CFinalizer_t finalizer = NULL);
+SEXP wrapQGraphicsItem(QGraphicsItem *item,
+                       QList<QString> classNames = QList<QString>());
 SEXP wrapQGraphicsWidget(QGraphicsWidget *widget);
 
 // Conversion routines

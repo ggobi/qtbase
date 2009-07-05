@@ -30,23 +30,23 @@ wrapQObject(QObject *object)
 
 
 SEXP
-wrapPointer(void *ptr, const char* const* classNames, R_CFinalizer_t finalizer)
+wrapPointer(void *ptr, QList<QString> classNames, R_CFinalizer_t finalizer)
 {
     static SEXP(*fun)
-        (void*, const char* const*, R_CFinalizer_t) = NULL;
+      (void*, QList<QString>, R_CFinalizer_t) = NULL;
     if (fun == NULL)
-        fun = (SEXP(*)(void*, const char * const *, R_CFinalizer_t))
+      fun = (SEXP(*)(void*, QList<QString>, R_CFinalizer_t))
 	    R_GetCCallable("qtbase", "wrapPointer");
     return fun(ptr, classNames, finalizer);
 }
 
-SEXP wrapQGraphicsItem(QGraphicsItem *item)
+SEXP wrapQGraphicsItem(QGraphicsItem *item, QList<QString> classNames)
 {
-  static SEXP(*fun)(QGraphicsItem*) = NULL;
+  static SEXP(*fun)(QGraphicsItem*,QList<QString>) = NULL;
   if (fun == NULL)
-    fun = (SEXP(*)(QGraphicsItem*))
+    fun = (SEXP(*)(QGraphicsItem*,QList<QString>))
       R_GetCCallable("qtbase", "wrapQGraphicsItem");
-  return fun(item);
+  return fun(item, classNames);
 }
 
 SEXP wrapQGraphicsWidget(QGraphicsWidget *widget)
