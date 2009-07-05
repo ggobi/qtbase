@@ -11,18 +11,32 @@
 QObject *unwrapQObjectReferee(SEXP x);
 QGraphicsItem *unwrapQGraphicsItemReferee(SEXP x);
 
-#define unwrapPointer(x, type) ({                                       \
+#define unwrapPointerSep(x, rtype, ctype) ({                            \
       if (TYPEOF(x) != EXTPTRSXP)                                       \
         error("unwrapPointer: not an externalptr");                     \
-      if (!inherits(x, #type))                                          \
-        error("unwrapPointer: expected object of class '" # type "'");  \
-      reinterpret_cast<type *>(R_ExternalPtrAddr(x));                   \
+      if (!inherits(x, #rtype))                                         \
+        error("unwrapPointer: expected object of class '" # rtype "'"); \
+      reinterpret_cast<ctype *>(R_ExternalPtrAddr(x));                  \
+    })
+
+#define unwrapPointer(x, type) unwrapPointerSep(x, type, type)
+
+#define checkReference(x, type) ({                                      \
+      if (!x || !x->isValid())                                          \
+        error("checkReference: invalid reference to '" #type "'");      \
+    })
+
+#define unwrapReferenceSep(x, rtype, ctype) ({                          \
+      ctype *ans =                                                      \
+        qobject_cast<ctype *>(unwrapPointerSep(x, rtype, QObject));     \
+      checkReference(ans, rtype);                                       \
+      ans;                                                              \
     })
 
 #define unwrapReference(x, type) ({                                     \
-      type *ans = qobject_cast<type *>(unwrapPointer(x, QObject));      \
-      if (!ans || !ans->isValid())                                      \
-        error("unwrapReference: Coercion to '" #type "' failed");       \
+      type *ans =                                                       \
+        qobject_cast<type *>(unwrapPointer(x, QObject));                \
+      checkReference(ans, type);                                        \
       ans;                                                              \
     })
 

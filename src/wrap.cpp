@@ -12,11 +12,11 @@ QObject *unwrapQObjectReferee(SEXP x) {
   QObject *ptr = unwrapPointer(x, QObject);
   Reference *ref = qobject_cast<QObjectReference *>(ptr);
   QObject *ans = NULL;
-  if (ref)
+  if (ref && ref->isValid())
     ans = reinterpret_cast<QObject *>(ref->referee()); 
   else { // Special case for QGraphicsWidget
     Reference *iref = qobject_cast<QGraphicsItemReference*>(ptr);
-    if (iref) {
+    if (iref && iref->isValid()) {
       QGraphicsItem *item = reinterpret_cast<QGraphicsItem *>(iref->referee());
       ans = qgraphicsitem_cast<QGraphicsWidget *>(item);
     }
@@ -25,7 +25,8 @@ QObject *unwrapQObjectReferee(SEXP x) {
 }
 
 QGraphicsItem *unwrapQGraphicsItemReferee(SEXP x) {
-  QGraphicsItemReference *ref = unwrapReference(x, QGraphicsItemReference);
+  QGraphicsItemReference *ref =
+    unwrapReferenceSep(x, QGraphicsItem, QGraphicsItemReference);
   return reinterpret_cast<QGraphicsItem *>(ref->referee());
 }
 

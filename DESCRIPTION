@@ -1,6 +1,6 @@
 Package: qtbase
-Version: 0.0-7
-Date:    2009/06/30
+Version: 0.0-8
+Date:    2009/07/04
 Title: Package providing glue for interface between R and Qt 
 Author: Deepayan Sarkar, Michael Lawrence
 Depends: R (>= 2.6.0), utils
