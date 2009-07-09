@@ -1,4 +1,5 @@
 #include <QGraphicsItem>
+#include <QGraphicsLayoutItem>
 
 #include <QWidget>
 #include <QHash>
@@ -90,8 +91,23 @@ protected:
     virtual void deleteReferee();
 };
 
+// This should only be used on QGraphicsLayoutItems that are NOT
+// QGraphicsItems. In Qt, this means only QGraphicsLayouts.
+class QGraphicsLayoutItemReference : public Reference {
+  Q_OBJECT
+public:
+  QGraphicsLayoutItemReference(QGraphicsLayoutItem *referee,
+                               QObject *referer = NULL)
+    : Reference(referee, referer) { }
+  virtual ~QGraphicsLayoutItemReference();
+protected:
+  virtual void deleteReferee();
+};
+
 extern "C" {
   void addQObjectReference(QObject *referee, QObject *referer);
   void addQWidgetReference(QWidget *referee, QObject *referer);
   void addQGraphicsItemReference(QGraphicsItem *referee, QObject *referer);
+  void addQGraphicsLayoutItemReference(QGraphicsLayoutItem *referee,
+                                       QObject *referer);
 }

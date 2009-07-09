@@ -103,6 +103,18 @@ void QGraphicsItemReference::deleteReferee() {
   // else printf("graphics item has parent item, preserving %p\n", referee());
 }
 
+QGraphicsLayoutItemReference::~QGraphicsLayoutItemReference() {
+  release();
+}
+
+void QGraphicsLayoutItemReference::deleteReferee() {
+  QGraphicsLayoutItem *item = reinterpret_cast<QGraphicsLayoutItem*>(referee());
+  if (!item->parentLayoutItem()) {
+    delete item;
+  }
+  // else printf("graphics layout item has parent, preserving %p\n", referee());
+}
+
 extern "C" {
   void addQObjectReference(QObject *referee, QObject *referer) {
     new QObjectReference(referee, referer);
@@ -112,5 +124,10 @@ extern "C" {
   }
   void addQGraphicsItemReference(QGraphicsItem *referee, QObject *referer) {
     new QGraphicsItemReference(referee, referer);
+  }
+  void addQGraphicsLayoutItemReference(QGraphicsLayoutItem *referee,
+                                       QObject *referer)
+  {
+    new QGraphicsLayoutItemReference(referee, referer);
   }
 }

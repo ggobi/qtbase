@@ -4,12 +4,14 @@
 #include <QObject>
 #include <QWidget>
 #include <QGraphicsItem>
+#include <QGraphicsLayoutItem>
 
 #include <R.h>
 #include <Rinternals.h>
 
 QObject *unwrapQObjectReferee(SEXP x);
 QGraphicsItem *unwrapQGraphicsItemReferee(SEXP x);
+QGraphicsLayoutItem *unwrapQGraphicsLayoutItemReferee(SEXP x);
 
 #define unwrapPointerSep(x, rtype, ctype) ({                            \
       if (TYPEOF(x) != EXTPTRSXP)                                       \
@@ -41,6 +43,9 @@ QGraphicsItem *unwrapQGraphicsItemReferee(SEXP x);
       ans;								     \
     })
 
+#define unwrapQGraphicsLayoutItem(x, type) \
+  reinterpret_cast<type *>(unwrapQGraphicsLayoutItemReferee(x))
+
 #define unwrapQGraphicsWidget(x) unwrapQGraphicsItem(x, QGraphicsWidget)
 #define unwrapQWidget(x) unwrapQObject(x, QWidget)
 
@@ -52,6 +57,8 @@ extern "C" {
   SEXP wrapQGraphicsItem(QGraphicsItem *item,
                          QList<QString> classNames = QList<QString>());
   SEXP wrapQGraphicsWidget(QGraphicsWidget *widget);
+  SEXP wrapQGraphicsLayoutItem(QGraphicsLayoutItem *item,
+                               QList<QString> classes);
 }
 
 #endif

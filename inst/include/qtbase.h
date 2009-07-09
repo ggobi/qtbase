@@ -8,6 +8,7 @@
 #include <QWidget>
 #include <QString>
 #include <QGraphicsItem>
+#include <QGraphicsLayoutItem>
 
 #include <Rinternals.h>
 
@@ -15,6 +16,7 @@
 
 QObject *unwrapQObjectReferee(SEXP x);
 QGraphicsItem *unwrapQGraphicsItemReferee(SEXP x);
+QGraphicsLayoutItem *unwrapQGraphicsLayoutItemReferee(SEXP x);
 
 #define unwrapPointerSep(x, rtype, ctype) ({                            \
       if (TYPEOF(x) != EXTPTRSXP)                                       \
@@ -46,6 +48,9 @@ QGraphicsItem *unwrapQGraphicsItemReferee(SEXP x);
       ans;                                                              \
     })
 
+#define unwrapQGraphicsLayoutItem(x, type) \
+  reinterpret_cast<type *>(unwrapQGraphicsLayoutItemReferee(x))
+
 #define unwrapQGraphicsWidget(x) unwrapQGraphicsItem(x, QGraphicsWidget)
 #define unwrapQWidget(x) unwrapQObject(x, QWidget)
 
@@ -58,6 +63,7 @@ SEXP wrapPointer(void *ptr, QList<QString> classNames = QList<QString>(),
 SEXP wrapQGraphicsItem(QGraphicsItem *item,
                        QList<QString> classNames = QList<QString>());
 SEXP wrapQGraphicsWidget(QGraphicsWidget *widget);
+SEXP wrapQGraphicsLayoutItem(QGraphicsLayoutItem *item, QList<QString> classes);
 
 // Conversion routines
 // R -> C/Qt
@@ -89,6 +95,8 @@ SEXP asRFont(QFont font);
 void addQObjectReference(QObject *referee, QObject *referer);
 void addQWidgetReference(QWidget *referee, QObject *referer);
 void addQGraphicsItemReference(QGraphicsItem *referee, QObject *referer);
+void addQGraphicsLayoutItemReference(QGraphicsLayoutItem *referee,
+                                     QObject *referer);
 
 QT_END_DECLS
 

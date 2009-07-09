@@ -58,6 +58,16 @@ SEXP wrapQGraphicsWidget(QGraphicsWidget *widget)
   return fun(widget);
 }
 
+SEXP wrapQGraphicsLayoutItem(QGraphicsLayoutItem *item,
+                             QList<QString> classNames)
+{
+  static SEXP(*fun)(QGraphicsLayoutItem*,QList<QString>) = NULL;
+  if (fun == NULL)
+    fun = (SEXP(*)(QGraphicsLayoutItem*,QList<QString>))
+      R_GetCCallable("qtbase", "wrapQGraphicsLayoutItem");
+  return fun(item, classNames);
+}
+
 QObject*
 unwrapQObjectReferee(SEXP x)
 {
@@ -77,6 +87,17 @@ unwrapQGraphicsItemReferee(SEXP x)
   if (fun == NULL)
     fun = (QGraphicsItem*(*)(SEXP))
       R_GetCCallable("qtbase", "unwrapQGraphicsItemReferee");
+  return fun(x);
+}
+
+QGraphicsLayoutItem*
+unwrapQGraphicsLayoutItemReferee(SEXP x)
+{
+  static QGraphicsLayoutItem*(*fun)
+    (SEXP) = NULL;
+  if (fun == NULL)
+    fun = (QGraphicsLayoutItem*(*)(SEXP))
+      R_GetCCallable("qtbase", "unwrapQGraphicsLayoutItemReferee");
   return fun(x);
 }
 
@@ -239,6 +260,16 @@ void addQGraphicsItemReference(QGraphicsItem *referee, QObject *referer) {
   if (fun == NULL)
     fun = (void(*)(QGraphicsItem *, QObject *))
       R_GetCCallable("qtbase", "addQGraphicsItemReference");
+  fun(referee, referer);
+}
+
+void addQGraphicsLayoutItemReference(QGraphicsLayoutItem *referee,
+                                     QObject *referer)
+{
+  static void (*fun)(QGraphicsLayoutItem *, QObject *) = NULL;
+  if (fun == NULL)
+    fun = (void(*)(QGraphicsLayoutItem *, QObject *))
+      R_GetCCallable("qtbase", "addQGraphicsLayoutItemReference");
   fun(referee, referer);
 }
 
