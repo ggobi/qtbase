@@ -94,8 +94,10 @@ void R_init_qtbase(DllInfo *dll)
     REG_CALLABLE(wrapPointer);
     REG_CALLABLE(unwrapQObjectReferee);
     REG_CALLABLE(unwrapQGraphicsItemReferee);
+    REG_CALLABLE(unwrapQGraphicsLayoutItemReferee);
     REG_CALLABLE(wrapQGraphicsWidget);
     REG_CALLABLE(wrapQGraphicsItem);
+    REG_CALLABLE(wrapQGraphicsLayoutItem);
     
     REG_CALLABLE(asStringArray);
     REG_CALLABLE(sexp2qstring);
@@ -120,4 +122,5 @@ void R_init_qtbase(DllInfo *dll)
     REG_CALLABLE(addQObjectReference);
     REG_CALLABLE(addQWidgetReference);
     REG_CALLABLE(addQGraphicsItemReference);
+    REG_CALLABLE(addQGraphicsLayoutItemReference);
 }
