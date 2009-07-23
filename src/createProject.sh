@@ -1,6 +1,10 @@
 
 if test -z "${QMAKE}" ; then
-    QMAKE=qmake
+	if test -f /usr/bin/qmake-qt4; then
+		QMAKE=qmake-qt4
+	else
+		QMAKE=qmake
+	fi
 fi
 
 ## REMEMBER: any changes below should also be applied to
