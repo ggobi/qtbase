@@ -8,7 +8,7 @@
 
 ## FIXME: echo and print should default to user-settable options
 
-.u_eval <- function(text, echo = TRUE, print = TRUE)
+.u_eval <- function(text, echo = TRUE, print = TRUE, env = .GlobalEnv)
 {
     ## FIXME: echoing needs to get more sophisticated
     expr <- parse(text = text)
@@ -22,7 +22,7 @@
     {
         if (echo) cat(paste(exprSrc[[i]], collapse = PS2), fill = TRUE)
         assign(".u_expr", expr[[i]], .GlobalEnv)
-        ans <- evalq(withVisible(eval(.u_expr)), .GlobalEnv)
+        ans <- evalq(withVisible(eval(.u_expr)), env)
         if (print && ans$visible) print(ans$value)
         if (echo) cat(PS1)
     }
@@ -32,9 +32,9 @@
 
 .u_tryEval <-
     function(text = .uEnv[["command"]],
-             echo = TRUE, print = TRUE)
+             echo = TRUE, print = TRUE, env = .GlobalEnv)
 {
-    ans <- try(.u_eval(text, echo = echo, print = print),
+    ans <- try(.u_eval(text, echo = echo, print = print, env = env),
                silent = TRUE)
     if (inherits(ans, "try-error"))
     {
