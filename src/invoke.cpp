@@ -6,7 +6,12 @@
 
 #include "convert.hpp"
 
-extern "C" SEXP qt_qinvoke(SEXP robj, SEXP rmethod, SEXP rargs) {
+extern "C" {
+    SEXP qt_qinvoke(SEXP robj, SEXP rmethod, SEXP rargs);
+}
+
+
+SEXP qt_qinvoke(SEXP robj, SEXP rmethod, SEXP rargs) {
   QObject *obj = unwrapQObject(robj, QObject);
   const QMetaObject *meta = obj->metaObject();
   QMetaMethod method = meta->method(meta->indexOfMethod(CHAR(asChar(rmethod))));
@@ -28,11 +33,13 @@ extern "C" SEXP qt_qinvoke(SEXP robj, SEXP rmethod, SEXP rargs) {
     } else if (type == "bool") {
       arg = Q_ARG(bool, asLogical(rarg));
     } else if (type == "QString") { // need "const QString" as well?
-      arg = Q_ARG(QString, sexp2qstring(rarg));
+	const QString s = sexp2qstring(rarg);
+	arg = Q_ARG(QString, s);
     } else if (type == "QWidget*") {
-      arg = Q_ARG(QWidget*, unwrapQWidget(rarg));
+	arg = Q_ARG(QWidget*, unwrapQWidget(rarg));
     } else if (type == "QFont") {
-      arg = Q_ARG(QFont, asQFont(rarg));
+	const QFont f = asQFont(rarg);
+	arg = Q_ARG(QFont, f);
     }
     else Rprintf("Unhandled type: %s\n", type.data());
     args[i] = arg;
@@ -44,7 +51,8 @@ extern "C" SEXP qt_qinvoke(SEXP robj, SEXP rmethod, SEXP rargs) {
   if (!success) {
       error("method invocation failed, check arguments: ");
   }
-  return robj; /*asRGenericReturnArgument(retArg);*/
+  // return robj; /*asRGenericReturnArgument(retArg);*/
+  return R_NilValue;
 }
 
 /* Here are some counts of the types involved in slots:
