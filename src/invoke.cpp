@@ -21,23 +21,29 @@ extern "C" SEXP qt_qinvoke(SEXP robj, SEXP rmethod, SEXP rargs) {
   for (int i = 0; i < length(rargs); i++) {
     SEXP rarg = VECTOR_ELT(rargs, i);
     QByteArray type = paramTypes[i];
+    Rprintf("%d: type: %s\n", i, type.data());
     QGenericArgument arg;
     if (type == "int") {
       arg = Q_ARG(int, asInteger(rarg));
     } else if (type == "bool") {
       arg = Q_ARG(bool, asLogical(rarg));
-    } else if (type == "const QString") {
+    } else if (type == "QString") { // need "const QString" as well?
       arg = Q_ARG(QString, sexp2qstring(rarg));
-    } else if (type == "QWidget*")
+    } else if (type == "QWidget*") {
       arg = Q_ARG(QWidget*, unwrapQWidget(rarg));
+    } else if (type == "QFont") {
+      arg = Q_ARG(QFont, asQFont(rarg));
+    }
+    else Rprintf("Unhandled type: %s\n", type.data());
     args[i] = arg;
     //args[i] = asQGenericArgument(VECTOR_ELT(rargs, i), paramTypes[i]);
   }
   bool success = method.invoke(obj, /*retArg,*/args[0], args[1], args[2],
                                args[3], args[4], args[5], args[6], args[7],
                                args[8], args[9]);
-  if (!success)
-    error("method invocation failed, check arguments");
+  if (!success) {
+      error("method invocation failed, check arguments: ");
+  }
   return robj; /*asRGenericReturnArgument(retArg);*/
 }
 

@@ -387,6 +387,8 @@ SEXP asRFont(QFont font) {
   return rfont;
 }
 QFont asQFont(SEXP f) {  
-  return QFont(sexp2qstring(VECTOR_ELT(f, 0)), asInteger(VECTOR_ELT(f, 1)),
-               asInteger(VECTOR_ELT(f, 2)), VECTOR_ELT(f, 3));
+  return QFont(sexp2qstring(VECTOR_ELT(f, 0)), 
+	       asInteger(VECTOR_ELT(f, 1)),
+               asInteger(VECTOR_ELT(f, 2)), 
+	       (bool) asLogical(VECTOR_ELT(f, 3)));
 }
