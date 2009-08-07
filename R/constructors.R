@@ -40,8 +40,17 @@ qfont <-
   f
 }
 
-qcolor <- function(red = 0, green = 0, blue = 0, alpha = 255) {
-  col <- t(as.integer(c(red, green, blue, alpha)))
-  class(col) <- "QColor"
-  col
+qcolor <- function(red = 0, green = 0, blue = 0, alpha = 255)
+{
+    if (is.character(red))
+    {
+        rgbvals <- col2rgb(red, alpha = TRUE)[,1]
+        red <- rgbvals["red"]
+        green <- rgbvals["green"]
+        blue <- rgbvals["blue"]
+        if (missing(alpha)) alpha <- rgbvals["alpha"]
+    }
+    col <- t(as.integer(c(red, green, blue, alpha)))
+    class(col) <- "QColor"
+    col
 }

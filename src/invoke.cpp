@@ -10,49 +10,83 @@ extern "C" {
     SEXP qt_qinvoke(SEXP robj, SEXP rmethod, SEXP rargs);
 }
 
-
-SEXP qt_qinvoke(SEXP robj, SEXP rmethod, SEXP rargs) {
-  QObject *obj = unwrapQObject(robj, QObject);
-  const QMetaObject *meta = obj->metaObject();
-  QMetaMethod method = meta->method(meta->indexOfMethod(CHAR(asChar(rmethod))));
-  /* Very few slots have return values, might be worth it for bool and int
-  QGenericReturnArgument retArg =
-    genericReturnArgumentForType(meta.typeName());
-  */
-  QGenericArgument args[10];
-  QList<QByteArray> paramTypes = method.parameterTypes();
-  if (length(rargs) > paramTypes.size())
-    error("Too many arguments for method");
-  for (int i = 0; i < length(rargs); i++) {
-    SEXP rarg = VECTOR_ELT(rargs, i);
-    QByteArray type = paramTypes[i];
-    Rprintf("%d: type: %s\n", i, type.data());
+static QGenericArgument convertArg(QByteArray type, SEXP rarg)
+{
     QGenericArgument arg;
     if (type == "int") {
-      arg = Q_ARG(int, asInteger(rarg));
+	return Q_ARG(int, asInteger(rarg));
     } else if (type == "bool") {
-      arg = Q_ARG(bool, asLogical(rarg));
+	return Q_ARG(bool, asLogical(rarg));
     } else if (type == "QString") { // need "const QString" as well?
 	const QString s = sexp2qstring(rarg);
-	arg = Q_ARG(QString, s);
+	return Q_ARG(QString, s);
     } else if (type == "QWidget*") {
-	arg = Q_ARG(QWidget*, unwrapQWidget(rarg));
+	return Q_ARG(QWidget*, unwrapQWidget(rarg));
     } else if (type == "QFont") {
 	const QFont f = asQFont(rarg);
-	arg = Q_ARG(QFont, f);
+	return Q_ARG(QFont, f);
     }
     else Rprintf("Unhandled type: %s\n", type.data());
-    args[i] = arg;
-    //args[i] = asQGenericArgument(VECTOR_ELT(rargs, i), paramTypes[i]);
-  }
-  bool success = method.invoke(obj, /*retArg,*/args[0], args[1], args[2],
-                               args[3], args[4], args[5], args[6], args[7],
-                               args[8], args[9]);
-  if (!success) {
-      error("method invocation failed, check arguments: ");
-  }
-  // return robj; /*asRGenericReturnArgument(retArg);*/
-  return R_NilValue;
+    return QGenericArgument();
+}
+
+
+SEXP qt_qinvoke(SEXP robj, SEXP rmethod, SEXP rargs) {
+    bool success;
+    QObject *obj = unwrapQObject(robj, QObject);
+    const QMetaObject *meta = obj->metaObject();
+    QMetaMethod method = meta->method(meta->indexOfMethod(CHAR(asChar(rmethod))));
+    /* Very few slots have return values, might be worth it for bool and int
+       QGenericReturnArgument retArg =
+       genericReturnArgumentForType(meta.typeName());
+    */
+    QList<QByteArray> paramTypes = method.parameterTypes();
+    if (length(rargs) > paramTypes.size())
+	error("Too many arguments for method");
+
+    if (length(rargs) == 0) {
+	success = method.invoke(obj);
+    }
+    else if (length(rargs) == 1) {
+	SEXP rarg = VECTOR_ELT(rargs, 0);
+	QByteArray type = paramTypes[0];
+	// Rprintf("One-arg case: type: %s\n", type.data());
+	if (type == "int") {
+	    success = method.invoke(obj, Q_ARG(int, asInteger(rarg)));
+	} else if (type == "bool") {
+	    success = method.invoke(obj, Q_ARG(bool, asLogical(rarg)));
+	} else if (type == "QString") {
+	    success = method.invoke(obj, Q_ARG(QString, sexp2qstring(rarg)));
+	} else if (type == "QWidget*") {
+	    success = method.invoke(obj, Q_ARG(QWidget*, unwrapQWidget(rarg)));
+	} else if (type == "QFont") {
+	    success = method.invoke(obj, Q_ARG(QFont, asQFont(rarg)));
+	} else if (type == "QColor") {
+	    success = method.invoke(obj, Q_ARG(QColor, asQColor(rarg)));
+	}
+	else {
+	    Rprintf("Unhandled type: %s\n", type.data());
+	    success = false;
+	}
+    }
+    else {
+	QGenericArgument args[10];
+	for (int i = 0; i < length(rargs); i++) {
+	    SEXP rarg = VECTOR_ELT(rargs, i);
+	    QByteArray type = paramTypes[i];
+	    Rprintf("%d: type: %s\n", i, type.data());
+	    args[i] = convertArg(type, rarg);
+	    //args[i] = asQGenericArgument(VECTOR_ELT(rargs, i), paramTypes[i]);
+	}
+	success = method.invoke(obj, /*retArg,*/args[0], args[1], args[2],
+				args[3], args[4], args[5], args[6], args[7],
+				args[8], args[9]);
+    }
+    if (!success) {
+	error("method invocation failed, check arguments: ");
+    }
+    // return robj; /*asRGenericReturnArgument(retArg);*/
+    return R_NilValue;
 }
 
 /* Here are some counts of the types involved in slots:
