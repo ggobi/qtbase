@@ -53,6 +53,7 @@ QGraphicsItem *unwrapQGraphicsItemReferee(SEXP x);
 static R_CallMethodDef CallEntries[] = {
 
 
+    CALLDEF(newLabelWidget, 1),
 
     CALLDEF(qt_qsetStyleSheet, 2),
     CALLDEF(qt_qstyleSheet, 1),

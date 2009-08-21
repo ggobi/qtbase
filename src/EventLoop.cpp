@@ -56,6 +56,12 @@ void EventLoop::run() {
 
 static EventLoop* eventLoop = NULL;
 
+#else
+
+void EventLoop::run() {
+  return;
+}
+
 #endif
 
 static void 
@@ -68,9 +74,9 @@ R_Qt_init()
 static void 
 R_Qt_cleanup()
 {
-  active = FALSE;
   delete app;
   #ifndef WIN32
+  active = FALSE;
   delete eventLoop;
   #endif
 }
