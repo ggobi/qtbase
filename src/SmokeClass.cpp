@@ -90,11 +90,11 @@ Method *SmokeClass::findMethod(const MethodCall &call) const {
 }
 
 // Caller needs to free the elements
-QList<Class *> SmokeClass::ancestors() const {
-  QList<Class *> classes;
+QList<const Class *> SmokeClass::ancestors() const {
+  QList<const Class *> classes;
   Smoke::Index *parents = _smoke->inheritanceList + _c->parents;
   for(int i = 0; parents[i]; i++) {
-    Class *c = Class::fromSmokeId(_smoke, parents[i]);
+    const Class *c = Class::fromSmokeId(_smoke, parents[i]);
     classes.append(c);
     classes.append(c->ancestors());
   }

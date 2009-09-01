@@ -50,11 +50,11 @@ SEXP asRMethodDesc(Method *method) {
 }
 
 /* Get a list of method names with their argument types */
-SEXP
-qt_qmethods(SEXP klass)
+extern "C"
+SEXP qt_qmethods(SEXP klass)
 {
   SEXP result, resultNames;
-  Class *c = Class::fromSexp(klass);
+  const Class *c = Class::fromSexp(klass);
   QList<Method *> methods = c->methods();
   int i = 0;
   PROTECT(result = allocVector(VECSXP, methods.size()));
@@ -70,19 +70,20 @@ qt_qmethods(SEXP klass)
   return result;
 }
 
-SEXP
-qt_qclasses(SEXP rsmoke) {
+extern "C"
+SEXP qt_qclasses(SEXP rsmoke) {
   Smoke *smoke = asSmoke(rsmoke);
   SEXP rclasses;
   PROTECT(rclasses = allocVector(STRSXP, smoke->numClasses));
-  for (int i = 0; i < length(rclasses); i++)
-    SET_STRING_ELT(rclasses, i, mkChar(smoke->classes[i].className));
+  for (int i = 0; i < length(rclasses); i++) {
+    SET_STRING_ELT(rclasses, i, mkChar(smoke->classes[i+1].className));
+  }
   UNPROTECT(1);
   return rclasses;
 }
 
-SEXP
-qt_qsmokes(void) {
+extern "C"
+SEXP qt_qsmokes(void) {
   SmokeList smokes = RQtModule::smokes();
   SEXP rsmokes, rnames;
   PROTECT(rsmokes = allocVector(VECSXP, smokes.size()));

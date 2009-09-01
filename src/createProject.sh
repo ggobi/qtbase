@@ -47,9 +47,9 @@ SOURCES += MocStack.cpp
 SOURCES += RQtModule.cpp module.cpp RSmokeBinding.cpp SmokeList.cpp
 SOURCES += SmokeObject.cpp smoke.cpp 
 
-INCLUDEPATH += ${R_INCLUDE_DIR} ../inst/local/include
+INCLUDEPATH += ${R_INCLUDE_DIR} ../local/include
 CFLAGS += -g
-LIBS += -L../inst/local/lib -lsmokeqt
+LIBS += -L../local/lib -lsmokeqt
 
 macx{
 LIBS += -framework R

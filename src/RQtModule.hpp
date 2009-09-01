@@ -18,7 +18,6 @@ class RQtModule {
 private:
   
   RSmokeBinding *_binding;
-  const char *_name;
   ResolveClassIdFn _resolveClassId;
   MemoryIsOwnedFn _memoryIsOwned;
   
@@ -26,13 +25,13 @@ private:
   
 public:
 
-  RQtModule(const char *name, RSmokeBinding *binding,
+  RQtModule(RSmokeBinding *binding,
             ResolveClassIdFn resolveClassId, MemoryIsOwnedFn memoryIsOwned)
-    : _binding(binding), _name(name), _resolveClassId(resolveClassId),
+    : _binding(binding), _resolveClassId(resolveClassId),
       _memoryIsOwned(memoryIsOwned) { }
 
   SmokeBinding *binding() { return _binding; }
-  const char *name() { return _name; }
+  const char *name() { return smoke()->moduleName(); }
   Smoke *smoke() { return _binding->getSmoke(); }
   
   int resolveClassId(const SmokeObject *so) {

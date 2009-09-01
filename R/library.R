@@ -8,31 +8,38 @@ qsmokes <- function() {
   .Call(qt_qsmokes)
 }
 
-## Get classes in Smoke module
-qclasses <- function(x) {
-  .Call(qt_qclasses, x)
-}
-
-qlibrary <- function(name) {
-  structure(new.env(), name = name, class = "RQtLibrary")
-}
-
-qinit <- function(lib) {
-  stopifnot(inherits(lib, "RQtLibrary"))
-  nm <- attr(lib, "name")
+qsmoke <- function(x) {
+  nm <- attr(x, "name")
   smoke <- qsmokes()[[nm]]
   if (is.null(smoke))
     stop("Smoke module for library '", nm, "' not found")
-  lapply(qclasses(smoke), function(className) {
+  smoke
+}
+  
+## Get classes in library
+qclasses <- function(x) {
+  .Call(qt_qclasses, qsmoke(x))
+}
+
+qlibrary <- function(lib) {
+  attr(lib, "name") <- tolower(deparse(substitute(lib)))
+  class(lib) <- "RQtLibrary"
+  lapply(qclasses(lib), function(className) {
     getClass <- function() {
-      class <- qclass(smoke, className)
-      rm(list=className, envir=lib)
+      class <- qclass(lib, className)
+      rm(list = className, envir = lib)
       assign(className, class, lib) ## cache for further use
       class
     }
     makeActiveBinding(className, getClass, lib)
   })
+  lib
+}
+
+print.RQtLibrary <- function(x) {
+  cat("Module '", attr(x, "name"), "' with ", length(ls(x)), " classes\n",
+      sep = "")
 }
 
 ### Module object for Qt library.
-Qt <- qlibrary("Qt")
+Qt <- new.env()

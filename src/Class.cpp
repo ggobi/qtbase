@@ -9,7 +9,7 @@
 ClassFactory *Class::_classFactory = NULL;
 QHash<const char *, Class *> Class::_classMap;
 
-Class* Class::fromSmokeId(Smoke *smoke, int classId) {
+const Class* Class::fromSmokeId(Smoke *smoke, int classId) {
   const char *name = smoke->classes[classId].className;
   Class *klass = _classMap[name];
   if (!klass) {
@@ -19,12 +19,12 @@ Class* Class::fromSmokeId(Smoke *smoke, int classId) {
   }
   return klass;
 }
-Class* Class::fromSmokeName(Smoke *smoke, const char *name) {
+const Class* Class::fromSmokeName(Smoke *smoke, const char *name) {
   return fromSmokeId(smoke, smoke->idClass(name).index);
 }
 
 // TODO: R user classes
-Class* Class::fromSexp(SEXP sexp) {
+const Class* Class::fromSexp(SEXP sexp) {
   static SEXP nameSym = install("name");
   static SEXP smokeSym = install("smoke");
   if (TYPEOF(sexp) == CLOSXP) {

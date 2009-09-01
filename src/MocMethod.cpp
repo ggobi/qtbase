@@ -64,7 +64,7 @@ QVector<SmokeType> MocMethod::types() const {
   return _types;
 }
 
-Class* MocMethod::klass() const {
+const Class* MocMethod::klass() const {
   return Class::fromSmokeName(_smoke, _meta->className());
 }
 

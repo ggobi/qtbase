@@ -5,6 +5,7 @@
 
 #include <Rinternals.h>
 
+extern "C"
 SEXP qt_qinvoke(SEXP method, SEXP self, SEXP args) {
   const char * methodName = CHAR(asChar(method));
   DynamicBinding binding(methodName);
@@ -20,9 +21,10 @@ SEXP qt_qinvoke(SEXP method, SEXP self, SEXP args) {
   return ans;
 }
 
+extern "C"
 SEXP qt_qinvokeStatic(SEXP method, SEXP rklass, SEXP args) {
   const char * methodName = CHAR(asChar(method));
-  Class *klass = Class::fromSexp(rklass);
+  const Class *klass = Class::fromSexp(rklass);
   DynamicBinding binding(klass, methodName);
   SEXP ans = binding.invoke(NULL, args);
   if (binding.lastError() == Method::ImplementationMissing)

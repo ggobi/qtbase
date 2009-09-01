@@ -32,7 +32,7 @@ public:
 
   virtual Smoke* smoke() const { return _smoke; }
   virtual const char *name() const { return _method.signature(); }
-  virtual Class* klass() const;
+  virtual const Class* klass() const;
   virtual QVector<SmokeType> types() const;
   virtual Qualifiers qualifiers() const {
     Qualifiers flags = 0;

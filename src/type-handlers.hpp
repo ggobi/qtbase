@@ -221,17 +221,19 @@ SEXP primitive_to_sexp<double>(double sv)
   return ScalarReal(sv);
 }
 
+/*
 template <>
-const char* sexp_to_primitive<const char *>(SEXP rv)
+char* sexp_to_primitive<char *>(SEXP rv)
 {
   return CHAR(asChar(rv));
 }
 
 template <>
-const unsigned char* sexp_to_primitive<const unsigned char *>(SEXP rv)
+unsigned char* sexp_to_primitive<unsigned char *>(SEXP rv)
 {
   return RAW(rv);
 }
+*/
 
 template <>
 SEXP primitive_to_sexp<int*>(int* sv)
@@ -243,25 +245,17 @@ SEXP primitive_to_sexp<int*>(int* sv)
   return primitive_to_sexp<int>(*sv);
 }
 
-#if defined(Q_OS_WIN32)
+#if defined(Q_OS_WIN32) || defined(Q_OS_MAC32)
 template <>
 static WId sexp_to_primitive<WId>(SEXP v)
 {
-#ifdef Q_WS_MAC32
   return (WId) asInteger(v);
-#else
-  return (WId) asInteger(v);
-#endif
 }
 
 template <>
 static SEXP primitive_to_sexp<WId>(WId sv)
 {
-#ifdef Q_WS_MAC32
   return ScalarInteger((unsigned long) sv);
-#else
-  return ScalarInteger((unsigned long) sv);
-#endif
 }
 
 template <>
@@ -402,13 +396,34 @@ void marshal_to_sexp<bool *>(MethodCall *m)
 template <> 
 void marshal_from_sexp<char *>(MethodCall *m) 
 {
-  m->item().s_voidp = sexp_to_primitive<char*>(m->sexp());
+  SEXP rv = m->sexp();
+  const char *str = CHAR(asChar(rv));
+  if (!m->type().isConst())
+    m->item().s_voidp = qstrdup(str);
+  else m->item().s_voidp = const_cast<char *>(str);
+  m->marshal();
+  if(m->cleanup() && !m->type().isConst()) {
+    char *retstr = (char *)m->item().s_voidp;
+    m->setSexp(mkString(retstr));
+    delete[] retstr;
+  }
 }
 
 template <>
 void marshal_from_sexp<unsigned char *>(MethodCall *m)
 {
-  m->item().s_voidp = sexp_to_primitive<unsigned char*>(m->sexp());
+  SEXP rv = m->sexp();
+  const unsigned char *bytes = RAW(rv);
+  if (!m->type().isConst()) {
+    unsigned char *tmp_bytes = new unsigned char[length(rv)];
+    memcpy(tmp_bytes, bytes, length(rv));
+    m->item().s_voidp = tmp_bytes;
+  } else m->item().s_voidp = const_cast<unsigned char *>(bytes);
+  m->marshal();
+  if(m->cleanup() && !m->type().isConst()) {
+    unsigned char *retbytes = (unsigned char *)m->item().s_voidp;
+    delete[] retbytes;
+  }
 }
 
 template <>

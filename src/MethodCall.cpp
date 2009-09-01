@@ -49,7 +49,7 @@ void MethodCall::setSexp(SEXP sexp) {
 }
 
 /* Keep SmokeObject out of header */
-Class *MethodCall::klass() const {
+const Class *MethodCall::klass() const {
    return _target ? _target->klass() : _method->klass();
 }
 
@@ -122,9 +122,9 @@ TypeHandler *MethodCall::typeHandler(const SmokeType &type) {
   return h;
 }
 
-extern TypeHandler::MarshalFn marshal_basetype;
-extern TypeHandler::MarshalFn marshal_void;
-extern TypeHandler::MarshalFn marshal_unknown;
+TypeHandler::MarshalFn marshal_basetype;
+TypeHandler::MarshalFn marshal_void;
+TypeHandler::MarshalFn marshal_unknown;
 
 TypeHandler::MarshalFn MethodCall::marshalFn(const SmokeType &type) {
   if (type.elem())
@@ -146,8 +146,8 @@ int MethodCall::scoreArg(SEXP arg, const SmokeType &type) {
   return scoreArgFn(type)(arg, type);
 }
 
-extern TypeHandler::ScoreArgFn scoreArg_basetype;
-extern TypeHandler::ScoreArgFn scoreArg_unknown;
+TypeHandler::ScoreArgFn scoreArg_basetype;
+TypeHandler::ScoreArgFn scoreArg_unknown;
 
 TypeHandler::ScoreArgFn MethodCall::scoreArgFn(const SmokeType &type) {
   if (type.elem())

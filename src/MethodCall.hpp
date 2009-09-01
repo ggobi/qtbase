@@ -52,7 +52,7 @@ public:
   inline SEXP args() const {
     return _args;
   }
-  Class *klass() const;
+  const Class *klass() const;
   
   /* Marshalling accessors */
 

@@ -17,7 +17,7 @@ public:
   DynamicBinding(const char *methodName)
     : _methodName(methodName), _flags(None) { }
   /* Call a static method */
-  DynamicBinding(Class *klass, const char *methodName)
+  DynamicBinding(const Class *klass, const char *methodName)
     : _klass(klass), _methodName(methodName), _flags(Static) { }
   /* Obtain parameters from an existing Method */
   DynamicBinding(const Method &method)
@@ -28,14 +28,14 @@ public:
   virtual SEXP invoke(SEXP obj, SEXP args);
   
   virtual const char *name() const { return _methodName; }
-  virtual Class *klass() const { return _klass; }
+  virtual const Class *klass() const { return _klass; }
   virtual QVector<SmokeType> types() const { return _types; }
   virtual Qualifiers qualifiers() const {
     return _flags;
   }
   
 private:
-  Class *_klass;
+  const Class *_klass;
   const char *_methodName;
   QVector<SmokeType> _types;
   Qualifiers _flags;

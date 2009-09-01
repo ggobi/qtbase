@@ -9,7 +9,7 @@
    to ensure 1-1 mapping from Qt objects to R objects */
 QHash<void *, SmokeObject *> SmokeObject::instances;
 
-SmokeObject * SmokeObject::fromPtr(void *ptr, Class *klass,
+SmokeObject * SmokeObject::fromPtr(void *ptr, const Class *klass,
                                    bool allocated, bool copy)
 {
   SmokeObject *so = instances[ptr];
@@ -37,7 +37,7 @@ SmokeObject *SmokeObject::fromPtr(void *ptr, Smoke *smoke, int classId,
 }
 
 SEXP
-SmokeObject::externalPtrFromPtr(void *ptr, Class *klass,
+SmokeObject::externalPtrFromPtr(void *ptr, const Class *klass,
                                 bool allocated, bool copy)
 {
   return fromPtr(ptr, klass, allocated, copy)->externalPtr();
@@ -61,7 +61,7 @@ SmokeObject * SmokeObject::fromExternalPtr(SEXP externalPtr)
 /* hash SmokeObject to SEXP externalptr, no reference counting */
 QHash<const SmokeObject *, SEXP> SmokeObject::externalPtrs;
 
-SmokeObject::SmokeObject(void *ptr, Class *klass, bool allocated)
+SmokeObject::SmokeObject(void *ptr, const Class *klass, bool allocated)
   : _ptr(ptr), _klass(klass), _allocated(allocated)
 {
   _klass = Class::fromSmokeId(smoke(), module()->resolveClassId(this));
@@ -74,7 +74,7 @@ static void finalizeSmokeObject(SEXP obj) {
 
 SEXP SmokeObject::createExternalPtr() const {
   QList<QByteArray> classes;
-  Class *c = _klass;
+  const Class *c = _klass;
   classes.append(c->name());
   foreach(c, c->ancestors()) {
     classes.append(c->name());

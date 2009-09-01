@@ -17,7 +17,7 @@ public:
   virtual Method *findMethod(const MethodCall &call);
   virtual const SmokeClass *smokeBase() const;
   virtual QList<Method *> methods() const;
-  virtual QList<Class *> ancestors() const;
+  virtual QList<const Class *> ancestors() const;
   
   /* R specific accessors */
   SEXP env() const;
@@ -25,6 +25,9 @@ public:
   inline bool isNull() const { return _klass == NULL; }
   
 private:
+
+  const Class* parent() const; // support only single inheritance
+  
   SEXP _klass;
 };
 

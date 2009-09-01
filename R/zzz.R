@@ -10,9 +10,11 @@
 
 .onLoad <- function(libname, pkgname) 
 {
-    ## library.dynam("qtbase", pkgname, libname )
+  ## dir <- system.file(file.path("local", "lib"), package=pkgname)
+  ## dyn.load(paste(file.path(dir, "libsmokeqt"), .Platform$dynlib.ext, sep=""))
+  ## library.dynam("qtbase", pkgname, libname )
     .Call(addQtEventHandler)
-    qinit(Qt)
+    qlibrary(Qt)
 }
 
 setHook(packageEvent("qtbase", event = "detach"),

@@ -1,0 +1,2031 @@
+Counted up the types used in all public Qt functions (return and params):
+
+  void 3282
+  int 3217
+  bool 2294
+  const QString& 1223
+  qreal 757
+  QString 601
+  QWidget* 453
+  const char* 288
+  QObject* 230
+  const QModelIndex& 165
+  const QPoint& 152
+  const QByteArray& 128
+  qint64 108
+  QAction* 102
+  const QRect& 97
+  const QRectF& 97
+  const QPointF& 96
+  QByteArray 87
+  QStringList 85
+  const QBrush& 84
+  QString& 83
+  int* 80
+  const QColor& 79
+  QRect 78
+  uint 75
+  const _iterator 72
+  QIODevice* 71
+  const QPixmap& 70
+  const QVariant& 70
+  QChar 65
+  QVariant 64
+  QRectF 60
+  QPointF 59
+  QSize 59
+  const QIcon& 58
+  char 57
+  const QSize& 57
+  Qt::Alignment 56
+  const QStringList& 55
+  Qt::Orientation 53
+  double 52
+  QScriptValue 50
+  QByteArray& 49
+  T& 48
+  QGraphicsItem* 46
+  Qt::CaseSensitivity 45
+  QModelIndex 44
+  const QPainterPath& 44
+  const QUrl& 44
+  QPoint 42
+  bool* 42
+  const QFont& 41
+  qreal* 41
+  const QScriptValue& 40
+  QDataStream& 39
+  QImage 38
+  QTreeWidgetItem* 37
+  const const_iterator& 37
+  QMenu* 36
+  QStringRef 36
+  const QRegion& 36
+  QPixmap 34
+  QTextStream& 34
+  const QLatin1String& 34
+  QIcon 32
+  Type 32
+  const QKeySequence& 31
+  const QImage& 30
+  const QRegExp& 30
+  const iterator& 30
+  QDateTime 29
+  QPainter* 29
+  QPolygonF 29
+  Qt::KeyboardModifiers 29
+  QColor 28
+  QPainterPath 28
+  const QDateTime& 28
+  const _iterator& 27
+  iterator& 27
+  QLayout* 26
+  const QGraphicsItem* 26
+  const QMatrix& 26
+  const QPolygon& 26
+  GLuint 25
+  Mode 24
+  QUrl 24
+  Qt::WindowFlags 24
+  const QPolygonF& 24
+  QAbstractButton* 23
+  QRegion 23
+  const QDate& 23
+  const QObject* 23
+  quint16 23
+  QBrush 22
+  QDomNode 22
+  QFont 22
+  QStandardItem* 22
+  int& 22
+  QGraphicsLayoutItem* 21
+  const QTextCursor& 21
+  const QTransform& 21
+  QAbstractItemModel* 20
+  const QStyleOptionViewItem& 20
+  uchar 20
+  QTextDocument* 19
+  const QTime& 19
+  GLenum 18
+  QList<QGraphicsItem*> 18
+  QPaintDevice* 18
+  QString* 18
+  QTableWidgetItem* 18
+  const QChar* 18
+  const QPen& 18
+  const QWidget* 18
+  const T* 18
+  QScriptEngine* 17
+  QSizeF 17
+  const QSet<T>& 17
+  const QXmlNodeModelIndex& 17
+  void* 17
+  Item 16
+  Policy 16
+  QListWidgetItem* 16
+  char* 16
+  const QPalette& 16
+  OpenMode 15
+  QPolygon 15
+  QSet<T>& 15
+  QTextCursor 15
+  Qt::DropAction 15
+  Qt::ItemSelectionMode 15
+  Qt::MouseButtons 15
+  Qt::SortOrder 15
+  const QDBusArgument& 15
+  const QDomNode& 15
+  const QSizeF& 15
+  const QXmlName& 15
+  QDBusArgument& 14
+  QPrinter* 14
+  QRgb 14
+  Qt::ItemFlags 14
+  const QHostAddress& 14
+  const QTextCharFormat& 14
+  qlonglong 14
+  FormatType 13
+  QAbstractItemDelegate* 13
+  QDate 13
+  QDir::Filters 13
+  QDomNode::NodeType 13
+  QTransform 13
+  Qt::AspectRatioMode 13
+  Qt::DropActions 13
+  Qt::HANDLE 13
+  Qt::ImageConversionFlags 13
+  float 13
+  qulonglong 13
+  ushort 13
+  Format 12
+  QFlags 12
+  QList<QByteArray> 12
+  QTextBlock 12
+  const QDBusMessage& 12
+  const QLineF& 12
+  const QTextBlock& 12
+  const uchar* 12
+  quint32 12
+  QSqlRecord 11
+  QTextCharFormat 11
+  QToolBar* 11
+  QTransform& 11
+  Qt::FillRule 11
+  Qt::LayoutDirection 11
+  Qt::MouseButton 11
+  const QDir& 11
+  const QNetworkRequest& 11
+  const QScriptString& 11
+  const QTreeWidgetItem* 11
+  unsignedlong 11
+  ColorGroup 10
+  Extension 10
+  QDBusMessage 10
+  QDockWidget* 10
+  QDomElement 10
+  QMatrix 10
+  QTextCodec* 10
+  Qt::CheckState 10
+  Qt::GlobalColor 10
+  Qt::TextFormat 10
+  Qt::TransformationMode 10
+  const QColorGroup& 10
+  const QGLFormat& 10
+  const QList<QStandardItem*>& 10
+  const QLocale& 10
+  const QMimeData* 10
+  const QSqlField& 10
+  const QStringRef& 10
+  const QStyleOption* 10
+  uchar* 10
+  ColorRole 9
+  Direction 9
+  QIODevice::OpenMode 9
+  QLayoutItem* 9
+  QList<QAction*> 9
+  QPushButton* 9
+  QStyle* 9
+  QTime 9
+  Qt::BrushStyle 9
+  const QFontMetrics& 9
+  const QLinkedList<T>& 9
+  const QString 9
+  const QVector<T>& 9
+  const QXmlNamePool& 9
+  short 9
+  Filters 8
+  QByteArray* 8
+  QDir 8
+  QDomAttr 8
+  QLineF 8
+  QList<int> 8
+  QRegion& 8
+  QSizePolicy::Policy 8
+  QStringList& 8
+  QTextFrame* 8
+  QVector<T>& 8
+  Qt::ButtonState 8
+  Qt::Corner 8
+  Qt::PenStyle 8
+  Qt::TextElideMode 8
+  Qt::TextInteractionFlags 8
+  StandardButton 8
+  State 8
+  const QBitArray& 8
+  const QFileInfo& 8
+  const QHash<KeyT>& 8
+  const QMap<KeyT>& 8
+  const QNetworkProxy& 8
+  const QPicture& 8
+  const QPoint* 8
+  const QTextFormat& 8
+  Enum 7
+  QBitmap 7
+  QFlags& 7
+  QIcon::Mode 7
+  QKeySequence 7
+  QLinkedList<T>& 7
+  QList<Key> 7
+  QList<T>& 7
+  QMimeData* 7
+  QModelIndexList 7
+  QPalette::ColorRole 7
+  Qt::DockWidgetArea 7
+  Qt::TimeSpec 7
+  Reason 7
+  ViewMode 7
+  const QDBusPendingCall& 7
+  const QLine& 7
+  const QList<QVariant>& 7
+  const QPointF* 7
+  const QRegion 7
+  const QSqlQuery& 7
+  const QSqlRecord& 7
+  const QSslCertificate& 7
+  const QSslConfiguration& 7
+  const QTableWidgetItem* 7
+  quint64 7
+  ButtonRole 6
+  CacheMode 6
+  ColorMode 6
+  Error 6
+  FILE* 6
+  QDesignerFormEditorInterface* 6
+  QFileIconProvider* 6
+  QGraphicsWidget* 6
+  QHeaderView* 6
+  QHostAddress 6
+  QItemSelectionModel::SelectionFlags 6
+  QLine 6
+  QMatrix& 6
+  QNetworkReply* 6
+  QPalette 6
+  QRegExp& 6
+  QSsl::SslProtocol 6
+  QTextList* 6
+  QUndoStack* 6
+  QVariant::Type 6
+  Qt::ClipOperation 6
+  Qt::FocusReason 6
+  Qt::MatchFlags 6
+  Qt::ScrollBarPolicy 6
+  Qt::ShortcutContext 6
+  ResizeMode 6
+  Shape 6
+  StandardButtons 6
+  Status 6
+  Unit 6
+  WId 6
+  const QFontMetricsF& 6
+  const QFuture<T>& 6
+  const QItemSelectionRange& 6
+  const QListWidgetItem* 6
+  const QNetworkCacheMetaData& 6
+  const QRect 6
+  const QSslKey& 6
+  const QTextOption& 6
+  const QXmlQuery& 6
+  const QXmlStreamAttribute& 6
+  const T 6
+  Icon 5
+  IteratorFlags 5
+  QBitArray& 5
+  QColorGroup 5
+  QDomNodeList 5
+  QEvent* 5
+  QGenericArgument 5
+  QIcon::State 5
+  QInputContext* 5
+  QList<QStandardItem*> 5
+  QLocale 5
+  QNetworkAccessManager* 5
+  QPainterPath& 5
+  QPen 5
+  QPoint& 5
+  QReadWriteLock* 5
+  QScriptValue::PropertyFlags 5
+  QSet<T> 5
+  QSize& 5
+  QSsl::EncodingFormat 5
+  QSslCertificate 5
+  QTreeWidget* 5
+  QTreeWidgetItemIterator& 5
+  QWebFrame* 5
+  Qt::SizeMode 5
+  Section 5
+  Size 5
+  char** 5
+  const QBitmap& 5
+  const QCursor& 5
+  const QDomAttr& 5
+  const QNetworkProxyQuery& 5
+  const QPersistentModelIndex& 5
+  const QString* 5
+  const QStyleOptionFrame& 5
+  const QStyleOptionTab& 5
+  const QTextFragment& 5
+  const QXmlItem& 5
+  const QXmlStreamNamespaceDeclaration& 5
+  const ResolveFlags& 5
+  qsreal 5
+  uint* 5
+  Endian 4
+  EventFilter 4
+  FileMode 4
+  HDC 4
+  InsertPolicy 4
+  ItemRole 4
+  LineWrapMode 4
+  MoveMode 4
+  PageBreakFlags 4
+  PageSetupDialogOption 4
+  PageSetupDialogOptions 4
+  PrintDialogOption 4
+  PrintDialogOptions 4
+  PrintRange 4
+  ProcessChannelMode 4
+  QAbstractExtensionFactory* 4
+  QAbstractItemView* 4
+  QCompleter* 4
+  QDBusError 4
+  QDBusReply& 4
+  QDesignerFormWindowInterface* 4
+  QDomNamedNodeMap 4
+  QFileInfo 4
+  QGLFormat 4
+  QGraphicsItemGroup* 4
+  QGraphicsScene* 4
+  QHash<KeyT>& 4
+  QHash<KeyT>::const _iterator 4
+  QHash<KeyT>::iterator 4
+  QHelpContentItem* 4
+  QItemEditorFactory* 4
+  QList<QPair<qrealQPointF>> 4
+  QList<QPolygonF> 4
+  QList<QSslCertificate> 4
+  QListWidget* 4
+  QMap<KeyT>& 4
+  QMap<KeyT>::const _iterator 4
+  QMap<KeyT>::iterator 4
+  QMenuItem* 4
+  QPaintEngine* 4
+  QPointF& 4
+  QRect* 4
+  QScriptContext* 4
+  QScrollBar* 4
+  QSizeF& 4
+  QSpacerItem* 4
+  QSqlError 4
+  QSsl::KeyAlgorithm 4
+  QSslSocket::PeerVerifyMode 4
+  QTabWidget::TabPosition 4
+  QTabWidget::TabShape 4
+  QTextOption::WrapMode 4
+  QValidator::State 4
+  QWebHistoryItem 4
+  QWizardPage* 4
+  QXmlNodeModelIndex 4
+  Qt::DayOfWeek 4
+  Qt::FocusPolicy 4
+  Qt::Orientations 4
+  Qt::PenCapStyle 4
+  Qt::PenJoinStyle 4
+  Qt::ToolBarArea 4
+  Qt::ToolButtonStyle 4
+  Qt::WidgetAttribute 4
+  Scope 4
+  ScrollMode 4
+  SizeConstraint 4
+  Style 4
+  TickPosition 4
+  ViewportAnchor 4
+  WindowOrder 4
+  WizardButton 4
+  const GUID& 4
+  const Key 4
+  const QAbstractItemModel* 4
+  const QAuthenticator& 4
+  const QChar 4
+  const QChar& 4
+  const QDBusError& 4
+  const QDomDocumentType& 4
+  const QDomImplementation& 4
+  const QDomNamedNodeMap& 4
+  const QDomNodeList& 4
+  const QExplicitlySharedDataPointer<T>& 4
+  const QFuture& 4
+  const QGLColormap& 4
+  const QHttpRequestHeader& 4
+  const QList<QTreeWidgetItem*>& 4
+  const QMetaObject* 4
+  const QModelIndexList& 4
+  const QNetworkAddressEntry& 4
+  const QNetworkCookie& 4
+  const QScriptContextInfo& 4
+  const QSharedDataPointer<T>& 4
+  const QSharedPointer<T>& 4
+  const QSourceLocation& 4
+  const QSslCipher& 4
+  const QSslError& 4
+  const QStyleOption& 4
+  const QTextBlockFormat& 4
+  const QTextCodec* 4
+  const QTextDocumentFragment& 4
+  const QTextLength& 4
+  const QTextTableCell& 4
+  const QUrlInfo& 4
+  const QUuid& 4
+  const QValidator* 4
+  const QWeakPointer<T>& 4
+  const QX11Info& 4
+  const QXmlStreamEntityDeclaration& 4
+  const QXmlStreamNotationDeclaration& 4
+  const ushort* 4
+  const void* 4
+  double& 4
+  long 4
+  qptrdiff 4
+  qreal& 4
+  ulong 4
+  Attachment 3
+  BoundaryType 3
+  Capabilities 3
+  ComplexControl 3
+  ControlType 3
+  Display* 3
+  ErrorType 3
+  FindFlags 3
+  FontFamily 3
+  FontSize 3
+  ImageOption 3
+  ItemRole* 3
+  OSMenuRef 3
+  ParsingMode 3
+  ProcessChannel 3
+  ProcessEventsFlags 3
+  QAccessibleInterface* 3
+  QActionGroup* 3
+  QDBus::CallMode 3
+  QDBusPendingCall 3
+  QDBusPendingReply& 3
+  QDir::SortFlags 3
+  QDomDocument 3
+  QDomDocumentType 3
+  QDomText 3
+  QExtensionManager* 3
+  QFile::Permissions 3
+  QFileInfoList 3
+  QFont::StyleHint 3
+  QFont::StyleStrategy 3
+  QGL::FormatOptions 3
+  QGraphicsProxyWidget* 3
+  QIconEngineV2* 3
+  QList<QAbstractButton*> 3
+  QList<QTreeWidgetItem*> 3
+  QList<QUrl> 3
+  QList<QWebHistoryItem> 3
+  QMdiSubWindow* 3
+  QMetaMethod 3
+  QMutex* 3
+  QNetworkProxy 3
+  QPainter::RenderHints 3
+  QRect& 3
+  QRegExp 3
+  QRgb* 3
+  QScriptClass* 3
+  QScriptString 3
+  QScriptValue& 3
+  QSharedPointer<X> 3
+  QSizePolicy 3
+  QSizePolicy::ControlType 3
+  QSizePolicy::ControlTypes 3
+  QSql::ParamType 3
+  QSqlDriver* 3
+  QSqlIndex 3
+  QSslConfiguration 3
+  QSslKey 3
+  QSvgRenderer* 3
+  QTextBlockFormat 3
+  QTextCursor::MoveMode 3
+  QTextFormat 3
+  QTextLength 3
+  QTextLine 3
+  QTextTable* 3
+  QTextTableCell 3
+  QUndoCommand* 3
+  QVector<T> 3
+  QWeakPointer<T> 3
+  QWebPage* 3
+  QXmlNamePool& 3
+  Qt::ArrowType 3
+  Qt::BGMode 3
+  Qt::BackgroundMode 3
+  Qt::ConnectionType 3
+  Qt::CursorShape 3
+  Qt::DateFormat 3
+  Qt::DockWidgetAreas 3
+  Qt::InputMethodQuery 3
+  Qt::Key 3
+  Qt::WindowModality 3
+  Qt::WindowStates 3
+  QueryType 3
+  SocketState 3
+  SortFlags 3
+  Spec 3
+  SpecialAddress 3
+  SplitBehavior 3
+  StyleHint 3
+  StyleStrategy 3
+  Text 3
+  WebAttribute 3
+  XEvent* 3
+  bool& 3
+  const ExtensionOption* 3
+  const PropertyFlags& 3
+  const QFontInfo& 3
+  const QGLContext* 3
+  const QGLWidget* 3
+  const QGradient& 3
+  const QItemSelection& 3
+  const QList<QSslCertificate>& 3
+  const QListWidgetItem& 3
+  const QPixmap* 3
+  const QPrinterInfo& 3
+  const QRect* 3
+  const QRgb* 3
+  const QSizePolicy& 3
+  const QSqlDatabase& 3
+  const QSqlField* 3
+  const QStandardItem* 3
+  const QStyleOptionComplex* 3
+  const QStyleOptionProgressBar& 3
+  const QStyleOptionTabBarBase& 3
+  const QStyleOptionToolBox& 3
+  const QTableWidgetItem& 3
+  const QTextDocument* 3
+  const QTextListFormat& 3
+  const QTreeWidgetItem& 3
+  const QUndoCommand* 3
+  const QWebHistoryItem& 3
+  const QXmlInputSource* 3
+  const QXmlParseException& 3
+  qlonglong& 3
+  qulonglong& 3
+  uint& 3
+  AcceptMode 2
+  AccessMode 2
+  AreaOption 2
+  Attribute 2
+  AutoFormatting 2
+  BackgroundOrigin 2
+  BindMode 2
+  BorderStyle 2
+  ButtonPosition 2
+  ButtonSymbols 2
+  ByteOrder 2
+  Capitalization 2
+  ColorDialogOption 2
+  ColorDialogOptions 2
+  CompletionMode 2
+  CompositionMode 2
+  ConnectionMode 2
+  ConverterState* 2
+  CoordinateMode 2
+  CorrectionMode 2
+  Country 2
+  CursorAction 2
+  CursorMode 2
+  CurveShape 2
+  DialogLabel 2
+  DockOptions 2
+  DockWidgetFeatures 2
+  DragDropMode 2
+  DragMode 2
+  DuplexMode 2
+  EchoMode 2
+  Edge 2
+  EditStrategy 2
+  EditTriggers 2
+  Feature 2
+  FieldAlignment 2
+  FieldGrowthPolicy 2
+  FileFlags 2
+  FileName 2
+  FileOwner 2
+  FileOwnerconst  2
+  FileTime 2
+  Flags 2
+  Flow 2
+  FontDialogOption 2
+  FontDialogOptions 2
+  FontFilters 2
+  FormattingOptions 2
+  FunctionSignature 2
+  GraphicsItemFlags 2
+  HorizontalHeaderFormat 2
+  HostInfoError 2
+  InputDialogOption 2
+  InputDialogOptions 2
+  InputMode 2
+  ItemIndexMethod 2
+  KnownHeaders 2
+  Language 2
+  LayoutMode 2
+  LinkDelegationPolicy 2
+  LoadHints 2
+  LocalSocketState 2
+  MenuRole 2
+  MetaInformation 2
+  ModelSorting 2
+  MoveOperation 2
+  Movement 2
+  NormalizationForm 2
+  Notation 2
+  NumberFlags 2
+  NumberOptions 2
+  Offset 2
+  OptimizationFlags 2
+  Option 2
+  Options 2
+  Orientation 2
+  OutputFormat 2
+  PageOrder 2
+  PageSize 2
+  PaintEngineFeatures 2
+  PaperSize 2
+  PaperSource 2
+  PatternSyntax 2
+  Permissions 2
+  PolygonDrawMode 2
+  Position 2
+  PrintEnginePropertyKey 2
+  PrinterMode 2
+  PrinterOption 2
+  Priority 2
+  QAbstractItemView::SelectionBehavior 2
+  QAbstractItemView::SelectionMode 2
+  QAbstractMessageHandler* 2
+  QAbstractNetworkCache* 2
+  QAbstractProxyModel* 2
+  QAbstractSocket::SocketError 2
+  QAbstractTextDocumentLayout* 2
+  QApplication* 2
+  QAtomicInt& 2
+  QAtomicPointer<T>& 2
+  QBitArray 2
+  QBitRef 2
+  QBitmap& 2
+  QByteRef 2
+  QCalendarWidget* 2
+  QChar& 2
+  QChar* 2
+  QCharRef 2
+  QColor& 2
+  QCursor 2
+  QDBusConnection 2
+  QDBusError::ErrorType 2
+  QDBusMessage& 2
+  QDateTime& 2
+  QDesignerActionEditorInterface* 2
+  QDesignerObjectInspectorInterface* 2
+  QDesignerPropertyEditorInterface* 2
+  QDesignerWidgetBoxInterface* 2
+  QDir& 2
+  QDomCDATASection 2
+  QDomComment 2
+  QDomDocumentFragment 2
+  QDomEntityReference 2
+  QDomProcessingInstruction 2
+  QFont::Capitalization 2
+  QFontDatabase::WritingSystem 2
+  QFontInfo 2
+  QFontMetrics 2
+  QFontMetricsF& 2
+  QGLContext* 2
+  QGenericReturnArgument 2
+  QGraphicsEllipseItem* 2
+  QGraphicsLayout* 2
+  QGraphicsLineItem* 2
+  QGraphicsRectItem* 2
+  QHostAddress& 2
+  QIconEngine* 2
+  QImage* 2
+  QImage::Format 2
+  QImageIOHandler::ImageOption 2
+  QItemSelection 2
+  QItemSelectionModel* 2
+  QItemSelectionRange 2
+  QKeySequence::StandardKey 2
+  QLibrary::LoadHints 2
+  QLineEdit* 2
+  QLineEdit::EchoMode 2
+  QList<QDesignerCustomWidgetInterface*> 2
+  QList<QHelpSearchQuery> 2
+  QList<QListWidgetItem*> 2
+  QList<QPair<QStringQString>> 2
+  QList<QSize> 2
+  QList<QSslCipher> 2
+  QList<QTableWidgetItem*> 2
+  QList<QVariant> 2
+  QList<Tab> 2
+  QList<WritingSystem> 2
+  QList<qreal> 2
+  QMap<QStringQUrl> 2
+  QMap<QStringQVariant> 2
+  QMap<intQVariant> 2
+  QMenuBar* 2
+  QMetaEnum 2
+  QMetaProperty 2
+  QMimeSource* 2
+  QNetworkAccessManager::Operation 2
+  QNetworkCacheMetaData 2
+  QNetworkCookieJar* 2
+  QNetworkProxy::ProxyType 2
+  QNetworkProxyFactory* 2
+  QPalette& 2
+  QPersistentModelIndex& 2
+  QPixmap& 2
+  QPointer<T>& 2
+  QProgressBar::Direction 2
+  QRectF& 2
+  QRunnable* 2
+  QScriptEngineAgent* 2
+  QSessionManager& 2
+  QSharedPointer<T>& 2
+  QSocketNotifier* 2
+  QSplitter* 2
+  QSql::NumericalPrecisionPolicy 2
+  QSql::TableType 2
+  QSqlDatabase 2
+  QSqlField 2
+  QSqlQuery 2
+  QSqlResult* 2
+  QSslCipher 2
+  QStatusBar* 2
+  QStringRef& 2
+  QTcpSocket* 2
+  QTextBlockUserData* 2
+  QTextCursor* 2
+  QTextCursor::MoveOperation 2
+  QTextDocument::FindFlags 2
+  QTextFrame::iterator 2
+  QTextFrameFormat 2
+  QTextListFormat 2
+  QTextListFormat::Style 2
+  QTextObject* 2
+  QTextOption 2
+  QTextTableFormat 2
+  QThread* 2
+  QTimeLine* 2
+  QTreeWidgetItem::ChildIndicatorPolicy 2
+  QUndoGroup* 2
+  QUrl& 2
+  QVector<QTextLength> 2
+  QVector<QXmlName> 2
+  QVector<QXmlNodeModelIndex> 2
+  QVector<qreal> 2
+  QWSEvent* 2
+  QWebHistory* 2
+  QWebPage::WebAction 2
+  QWebPluginFactory* 2
+  QWebSecurityOrigin 2
+  QWebSettings* 2
+  QWidgetList 2
+  QWindowSurface* 2
+  QWizard::WizardButton 2
+  QWizard::WizardPixmap 2
+  QXmlContentHandler* 2
+  QXmlDTDHandler* 2
+  QXmlDeclHandler* 2
+  QXmlEntityResolver* 2
+  QXmlErrorHandler* 2
+  QXmlInputSource* 2
+  QXmlItem 2
+  QXmlLexicalHandler* 2
+  QXmlName 2
+  QXmlStreamEntityResolver* 2
+  Qt::Axis 2
+  Qt::ContextMenuPolicy 2
+  Qt::MaskMode 2
+  Qt::ToolBarAreas 2
+  Qt::WindowType 2
+  QueryFlags 2
+  QueryLanguage 2
+  RealNumberNotation 2
+  RecursionMode 2
+  RegionType 2
+  RenderHint 2
+  RenderHints 2
+  RequiredStatus 2
+  RestartHint 2
+  Role 2
+  RowWrapPolicy 2
+  ScrollHint 2
+  SegmentStyle 2
+  SelectionBehavior 2
+  SelectionMode 2
+  Separator 2
+  Shadow 2
+  ShapeMode 2
+  SizeAdjustPolicy 2
+  SocketType 2
+  SpacingType 2
+  SpecialValue 2
+  Spread 2
+  SslError 2
+  StackingMode 2
+  StandardPixmap 2
+  SubControl 2
+  SubWindowOption 2
+  SubjectInfo 2
+  SubmitPolicy 2
+  System 2
+  TabPosition 2
+  TabShape 2
+  ToggleState 2
+  TokenType 2
+  ToolButtonPopupMode 2
+  TransferType 2
+  UnderlineStyle 2
+  ValueOwnership 2
+  VerticalAlignment 2
+  VerticalHeaderFormat 2
+  ViewportUpdateMode 2
+  WebAction 2
+  WizardOption 2
+  WizardOptions 2
+  WizardPixmap 2
+  WizardStyle 2
+  WrapMode 2
+  char*& 2
+  const Element& 2
+  const QAbstractUriResolver* 2
+  const QAccessibleInterface* 2
+  const QAtomicInt& 2
+  const QAtomicPointer<T>& 2
+  const QBitmap* 2
+  const QByteArrayMatcher& 2
+  const QColormap& 2
+  const QDBusConnection& 2
+  const QDBusPendingReply& 2
+  const QDomCDATASection& 2
+  const QDomCharacterData& 2
+  const QDomComment& 2
+  const QDomDocument& 2
+  const QDomDocumentFragment& 2
+  const QDomElement& 2
+  const QDomEntity& 2
+  const QDomEntityReference& 2
+  const QDomNotation& 2
+  const QDomProcessingInstruction& 2
+  const QDomText& 2
+  const QFile& 2
+  const QFlags& 2
+  const QHostInfo& 2
+  const QHttpHeader& 2
+  const QHttpResponseHeader& 2
+  const QInputMethodEvent& 2
+  const QLine* 2
+  const QLineF* 2
+  const QList<Attribute>& 2
+  const QList<QPair<QStringQString>>& 2
+  const QList<QSslCipher>& 2
+  const QList<QUrl>& 2
+  const QList<int>& 2
+  const QMultiHash& 2
+  const QMultiMap& 2
+  const QNetworkInterface& 2
+  const QObjectList& 2
+  const QPointer<T>& 2
+  const QRectF* 2
+  const QScriptSyntaxCheckResult& 2
+  const QSqlError& 2
+  const QSqlIndex& 2
+  const QStringMatcher& 2
+  const QStyleOptionComplex& 2
+  const QStyleOptionGraphicsItem* 2
+  const QStyleOptionTabV2& 2
+  const QTableWidgetSelectionRange& 2
+  const QTextBoundaryFinder& 2
+  const QTextFrameFormat& 2
+  const QTextImageFormat& 2
+  const QTextTableFormat& 2
+  const QTreeWidgetItemIterator 2
+  const QTreeWidgetItemIterator& 2
+  const QVarLengthArray<TPrealloc>& 2
+  const QVector<QPoint>& 2
+  const QVector<QPointF>& 2
+  const QVector<QTextLength>& 2
+  const QVector<qreal>& 2
+  const QWebDatabase& 2
+  const QWebHitTestResult& 2
+  const QWebSecurityOrigin& 2
+  const Q_IPV6ADDR& 2
+  const Tab& 2
+  const _reference 2
+  const char*const[] 2
+  const sockaddr* 2
+  float& 2
+  long* 2
+  qint32 2
+  quint8* 2
+  quintptr 2
+  std::list<T> 2
+  ushort& 2
+  Access 1
+  Action 1
+  ActionEvent 1
+  Algorithm 1
+  AttributeType 1
+  AttributesMap 1
+  BatchExecutionMode 1
+  BoundaryReasons 1
+  CGImageRef 1
+  Category 1
+  Command 1
+  ConstIterator 1
+  ContentsType 1
+  ControlElement 1
+  ConversionFlags 1
+  CursorPosition 1
+  DebuggerAction 1
+  DebuggerWidget 1
+  Decomposition 1
+  Deleter 1
+  DriverFeature 1
+  ElementType 1
+  Encoding 1
+  EncodingPolicy 1
+  EventHandlerCallRefEventRef 1
+  Exception* 1
+  ExecutionState 1
+  FT_Face 1
+  FieldName 1
+  FileError 1
+  FunctionType 1
+  GraphicsItemFlag 1
+  HBITMAP 1
+  HBitmapFormat 1
+  HCURSOR 1
+  HCURSOR_or_HANDLE 1
+  HFONT 1
+  HMENU 1
+  Handle 1
+  IconType 1
+  IdentifierType 1
+  ImageReaderError 1
+  ImageWriterError 1
+  InterfaceFlags 1
+  IntersectType 1
+  InvertMode 1
+  Iterator 1
+  Iterator* 1
+  Joining 1
+  KeyboardAction 1
+  LocalSocketError 1
+  MSG* 1
+  MeasurementSystem 1
+  MemoryMapFlags 1
+  MessageIcon 1
+  MessageType 1
+  Method 1
+  MethodType 1
+  MovieState 1
+  NetworkError 1
+  NodeType 1
+  OptimizationFlag 1
+  PermissionSpec 1
+  PixelMetric 1
+  PointerType 1
+  PrimitiveElement 1
+  PrinterState 1
+  ProxyType 1
+  QAbstractFileEngine* 1
+  QAbstractSocket::NetworkLayerProtocol 1
+  QAbstractXmlReceiver* 1
+  QAccessibleBridge* 1
+  QAccessibleInterface** 1
+  QAuthenticator& 1
+  QBrush& 1
+  QButtonGroup* 1
+  QByteArrayMatcher& 1
+  QChar::UnicodeVersion 1
+  QColormap& 1
+  QContextMenuEvent* 1
+  QCryptographicHash::Algorithm 1
+  QCursor& 1
+  QDBusConnection& 1
+  QDBusConnectionInterface* 1
+  QDBusObjectPath& 1
+  QDBusPendingCall& 1
+  QDBusSignature& 1
+  QDBusVariant& 1
+  QDate& 1
+  QDesignerFormWindowCursorInterface* 1
+  QDesignerFormWindowManagerInterface* 1
+  QDomAttr& 1
+  QDomCDATASection& 1
+  QDomCharacterData 1
+  QDomCharacterData& 1
+  QDomComment& 1
+  QDomDocument& 1
+  QDomDocumentFragment& 1
+  QDomDocumentType& 1
+  QDomElement& 1
+  QDomEntity 1
+  QDomEntity& 1
+  QDomEntityReference& 1
+  QDomImplementation 1
+  QDomImplementation& 1
+  QDomNamedNodeMap& 1
+  QDomNode& 1
+  QDomNodeList& 1
+  QDomNotation 1
+  QDomNotation& 1
+  QDomProcessingInstruction& 1
+  QDomText& 1
+  QEventLoop::ProcessEventsFlags 1
+  QExplicitlySharedDataPointer& 1
+  QExplicitlySharedDataPointer<T>& 1
+  QFile& 1
+  QFile::FileError 1
+  QFile::MemoryMapFlags 1
+  QFileInfo& 1
+  QFlag 1
+  QFont& 1
+  QFont::Style 1
+  QFontInfo& 1
+  QFontMetrics& 1
+  QFuture& 1
+  QFuture<T> 1
+  QFutureIterator& 1
+  QGLColormap& 1
+  QGLFormat& 1
+  QGradientStops 1
+  QGraphicsPathItem* 1
+  QGraphicsPixmapItem* 1
+  QGraphicsPolygonItem* 1
+  QGraphicsSimpleTextItem* 1
+  QGraphicsTextItem* 1
+  QHash<QStringQVariant> 1
+  QHashIterator& 1
+  QHeaderView::ResizeMode 1
+  QHelpContentModel* 1
+  QHelpContentWidget* 1
+  QHelpEngineCore* 1
+  QHelpIndexModel* 1
+  QHelpIndexWidget* 1
+  QHelpSearchEngine* 1
+  QHelpSearchQueryWidget* 1
+  QHelpSearchResultWidget* 1
+  QHostAddress* 1
+  QHostInfo& 1
+  QHttpHeader& 1
+  QHttpRequestHeader 1
+  QHttpRequestHeader& 1
+  QHttpResponseHeader 1
+  QHttpResponseHeader& 1
+  QIcon& 1
+  QIcon* 1
+  QImage& 1
+  QImageIOHandler* 1
+  QItemEditorCreatorBase* 1
+  QKeySequence& 1
+  QLabel* 1
+  QLatin1Char 1
+  QLatin1String 1
+  QLatin1String& 1
+  QLayoutIterator 1
+  QLinkedList<T> 1
+  QLinkedListIterator& 1
+  QList<ExtraSelection> 1
+  QList<FormatRange> 1
+  QList<PaperSource> 1
+  QList<Plugin> 1
+  QList<QDockWidget*> 1
+  QList<QFuture<T>> 1
+  QList<QGraphicsView*> 1
+  QList<QGraphicsWidget*> 1
+  QList<QHostAddress> 1
+  QList<QImageTextKeyLang> 1
+  QList<QKeySequence> 1
+  QList<QMdiSubWindow*> 1
+  QList<QNetworkAddressEntry> 1
+  QList<QNetworkCookie> 1
+  QList<QNetworkProxy> 1
+  QList<QPair<QByteArrayQByteArray>> 1
+  QList<QPair<qrealqreal>> 1
+  QList<QPrinter::PaperSize> 1
+  QList<QSslError> 1
+  QList<QStringList> 1
+  QList<QTableWidgetSelectionRange> 1
+  QList<QTextEdit::ExtraSelection> 1
+  QList<QTextFrame*> 1
+  QList<QTextOption::Tab> 1
+  QList<QUndoStack*> 1
+  QList<QVariant>& 1
+  QList<QWebDatabase> 1
+  QList<QWebFrame*> 1
+  QList<QWidget*> 1
+  QList<SearchHit> 1
+  QList<TimerInfo> 1
+  QListIterator& 1
+  QListWidgetItem& 1
+  QLocalSocket* 1
+  QLocale& 1
+  QMainWindow* 1
+  QMap<QDateQTextCharFormat> 1
+  QMap<QStringQVariant>& 1
+  QMapIterator& 1
+  QMdiArea* 1
+  QMetaClassInfo 1
+  QMouseEvent* 1
+  QMovie* 1
+  QMultiHash 1
+  QMultiHash& 1
+  QMultiMap 1
+  QMultiMap& 1
+  QMultiMap<QSsl::AlternateNameEntryTypeQString> 1
+  QMultiMap<QStringQString> 1
+  QMutableHashIterator& 1
+  QMutableLinkedListIterator& 1
+  QMutableListIterator& 1
+  QMutableMapIterator& 1
+  QMutableSetIterator& 1
+  QMutableVectorIterator& 1
+  QNetworkAddressEntry& 1
+  QNetworkCacheMetaData& 1
+  QNetworkCookie& 1
+  QNetworkInterface& 1
+  QNetworkProxy& 1
+  QNetworkProxyQuery& 1
+  QNetworkRequest 1
+  QNetworkRequest& 1
+  QNetworkRequest::Attribute 1
+  QNetworkRequest::KnownHeaders 1
+  QPaintDevice::PaintDeviceMetric 1
+  QPaintEngine::DirtyFlags 1
+  QPainter::CompositionMode 1
+  QPainter::RenderHint 1
+  QPair<T1T2>& 1
+  QPen& 1
+  QPicture& 1
+  QPicture* 1
+  QPixmap* 1
+  QPointF* 1
+  QPrintEngine* 1
+  QPrinter::Orientation 1
+  QPrinter::PrinterState 1
+  QPrinterInfo& 1
+  QProcess* 1
+  QProcess::ExitStatus 1
+  QProcess::ProcessError 1
+  QProcess::ProcessState 1
+  QProgressBar* 1
+  QRectF* 1
+  QScriptClassPropertyIterator* 1
+  QScriptContextInfo& 1
+  QScriptEngine::ValueOwnership 1
+  QScriptString& 1
+  QScriptSyntaxCheckResult& 1
+  QScriptValueIterator& 1
+  QSet<Method> 1
+  QSetIterator& 1
+  QSharedDataPointer& 1
+  QSharedDataPointer<T>& 1
+  QSharedPointer<T> 1
+  QSourceLocation& 1
+  QSplitterHandle* 1
+  QSqlDatabase& 1
+  QSqlError& 1
+  QSqlField& 1
+  QSqlIndex& 1
+  QSqlQuery& 1
+  QSqlRecord& 1
+  QSqlRelation 1
+  QSqlTableModel* 1
+  QSsl::KeyType 1
+  QSslCertificate& 1
+  QSslCipher& 1
+  QSslConfiguration& 1
+  QSslError& 1
+  QSslKey& 1
+  QStandardItemModel* 1
+  QStringList* 1
+  QStringMatcher& 1
+  QStyle::ComplexControl 1
+  QStyle::ControlElement 1
+  QStyle::PrimitiveElement 1
+  QStyleOption& 1
+  QStyleOption* 1
+  QStyleOptionFrameV2& 1
+  QStyleOptionFrameV3& 1
+  QStyleOptionProgressBarV2& 1
+  QStyleOptionTabBarBaseV2& 1
+  QStyleOptionTabV2& 1
+  QStyleOptionTabV3& 1
+  QStyleOptionToolBoxV2& 1
+  QStyleOptionViewItemV2& 1
+  QStyleOptionViewItemV3& 1
+  QStyleOptionViewItemV4& 1
+  QTableWidget* 1
+  QTableWidgetItem& 1
+  QTextBlock& 1
+  QTextBoundaryFinder& 1
+  QTextCursor& 1
+  QTextDecoder* 1
+  QTextDocumentFragment 1
+  QTextDocumentFragment& 1
+  QTextEdit* 1
+  QTextEncoder* 1
+  QTextEngine* 1
+  QTextFormat& 1
+  QTextFragment 1
+  QTextFragment& 1
+  QTextFrameFormat::Position 1
+  QTextImageFormat 1
+  QTextLayout* 1
+  QTextObjectInterface* 1
+  QTextOption& 1
+  QTextTableCell& 1
+  QTextTableCellFormat 1
+  QTime& 1
+  QTreeWidgetItem& 1
+  QUrlInfo& 1
+  QUuid& 1
+  QUuid::Variant 1
+  QUuid::Version 1
+  QVarLengthArray<TPrealloc>& 1
+  QVariant& 1
+  QVector<QRect> 1
+  QVector<QRgb> 1
+  QVector<QTextFormat> 1
+  QVector<uint> 1
+  QVectorIterator& 1
+  QWebDatabase& 1
+  QWebHistoryItem& 1
+  QWebHitTestResult 1
+  QWebHitTestResult& 1
+  QWebPage::FindFlags 1
+  QWebSecurityOrigin& 1
+  QWidget*bool 1
+  QX11Info& 1
+  QXmlInputSource*& 1
+  QXmlItem& 1
+  QXmlLocator* 1
+  QXmlName& 1
+  QXmlNamePool 1
+  QXmlNodeModelIndex::DocumentOrder 1
+  QXmlNodeModelIndex::NodeKind 1
+  QXmlQuery& 1
+  QXmlReader* 1
+  QXmlResultItems* 1
+  QXmlStreamAttribute& 1
+  QXmlStreamAttributes 1
+  QXmlStreamEntityDeclaration& 1
+  QXmlStreamEntityDeclarations 1
+  QXmlStreamNamespaceDeclaration& 1
+  QXmlStreamNamespaceDeclarations 1
+  QXmlStreamNotationDeclaration& 1
+  QXmlStreamNotationDeclarations 1
+  QXmlStreamReader* 1
+  Q_INVOKABLE 1
+  Q_IPV6ADDR 1
+  Q_PID 1
+  Qt::HitTestAccuracy 1
+  Qt::SizeHint 1
+  QtMsgType 1
+  RawForm 1
+  RawHeaderList 1
+  RegisterOptions 1
+  Relation 1
+  RelationFlag 1
+  RenderFlags 1
+  SceneLayers 1
+  Sections 1
+  SelectionType 1
+  SequenceFormat 1
+  SequenceMatch 1
+  SharedMemoryError 1
+  SliderAction 1
+  SocketError 1
+  SpecialCharacter 1
+  SslMode 1
+  StandardFormat 1
+  StandardKey 1
+  StatementType 1
+  SubElement 1
+  SystemSemaphoreError 1
+  TabletDevice 1
+  TextPosition 1
+  TransferMode 1
+  TransformationType 1
+  UnicodeVersion 1
+  UnregisterMode 1
+  WritingSystem 1
+  Zero 1
+  ZoomMode 1
+  char& 1
+  const AttributesMap& 1
+  const PaintContext& 1
+  const QAbstractXmlNodeModel* 1
+  const QByteArray 1
+  const QColor 1
+  const QDBusObjectPath& 1
+  const QDBusPendingReply<T>& 1
+  const QDBusReply& 1
+  const QDBusSignature& 1
+  const QDBusVariant& 1
+  const QEvent* 1
+  const QExplicitlySharedDataPointer<X>& 1
+  const QGradient* 1
+  const QGradientStops& 1
+  const QHash<QStringQVariant>& 1
+  const QImageTextKeyLang& 1
+  const QItemSelection 1
+  const QList<ExtraSelection>& 1
+  const QList<FormatRange>& 1
+  const QList<QGraphicsItem*>& 1
+  const QList<QHostAddress>& 1
+  const QList<QKeySequence>& 1
+  const QList<QNetworkCookie>& 1
+  const QList<QPair<QByteArrayQByteArray>>& 1
+  const QList<QString>& 1
+  const QList<QTextEdit::ExtraSelection>& 1
+  const QList<QTextOption::Tab>& 1
+  const QList<QWidget*>& 1
+  const QList<WizardButton>& 1
+  const QMap<QStringQVariant>& 1
+  const QMap<intQVariant>& 1
+  const QPaintEngineState& 1
+  const QPainterPath::Element& 1
+  const QPair<QHostAddressint>& 1
+  const QPair<T1T2>& 1
+  const QPicture* 1
+  const QPixmap 1
+  const QPrinter& 1
+  const QScriptContext* 1
+  const QScriptValueList& 1
+  const QSharedData& 1
+  const QSpan* 1
+  const QSqlDriver* 1
+  const QSqlRelation& 1
+  const QSqlResult* 1
+  const QStandardItem& 1
+  const QStyleOptionButton& 1
+  const QStyleOptionComboBox& 1
+  const QStyleOptionDockWidget& 1
+  const QStyleOptionFocusRect& 1
+  const QStyleOptionFrameV2& 1
+  const QStyleOptionFrameV3& 1
+  const QStyleOptionGraphicsItem& 1
+  const QStyleOptionGroupBox& 1
+  const QStyleOptionHeader& 1
+  const QStyleOptionMenuItem& 1
+  const QStyleOptionProgressBarV2& 1
+  const QStyleOptionQ3DockWindow& 1
+  const QStyleOptionQ3ListView& 1
+  const QStyleOptionQ3ListViewItem& 1
+  const QStyleOptionRubberBand& 1
+  const QStyleOptionSizeGrip& 1
+  const QStyleOptionSlider& 1
+  const QStyleOptionSpinBox& 1
+  const QStyleOptionTabBarBaseV2& 1
+  const QStyleOptionTabV3& 1
+  const QStyleOptionTabWidgetFrame& 1
+  const QStyleOptionTitleBar& 1
+  const QStyleOptionToolBar& 1
+  const QStyleOptionToolBoxV2& 1
+  const QStyleOptionToolButton& 1
+  const QStyleOptionViewItemV2& 1
+  const QStyleOptionViewItemV3& 1
+  const QStyleOptionViewItemV4& 1
+  const QTestEventList& 1
+  const QTextItem& 1
+  const QTextLayout::FormatRange* 1
+  const QVariantList& 1
+  const QVector<FormatRange>& 1
+  const QVector<QColor> 1
+  const QVector<QLine>& 1
+  const QVector<QLineF>& 1
+  const QVector<QRect>& 1
+  const QVector<QRectF>& 1
+  const QVector<QRgb> 1
+  const QVector<QRgb>& 1
+  const QWebNetworkRequest& 1
+  const QXmlAttributes& 1
+  const QXmlInputSource& 1
+  const QXmlStreamAttributes& 1
+  const QXmlStreamNamespaceDeclarations& 1
+  const QXmlStreamReader& 1
+  const RawHeaderList& 1
+  const T1& 1
+  const T2& 1
+  const int* 1
+  const std::map<KeyT>& 1
+  const uchar*const* 1
+  const uint* 1
+  qint16 1
+  qint16& 1
+  qint32& 1
+  qint64& 1
+  qint8 1
+  qint8& 1
+  quint16& 1
+  quint32& 1
+  quint64& 1
+  quint8 1
+  quint8& 1
+  reference 1
+  short& 1
+  signedint 1
+  signedint& 1
+  signedlong 1
+  signedlong& 1
+  signedshort 1
+  signedshort& 1
+  std::map<KeyT> 1
+  std::string 1
+  std::vector<T> 1
+  std::wstring 1
+  uchar& 1
+  uchar** 1
+  unsignedchar 1
+  unsignedchar* 1
+  unsignedint 1
+  unsignedint& 1
+  unsignedlong& 1
+  unsignedshort 1
+  unsignedshort& 1
+  va_list 1
+  wchar_t* 1
+
+Static functions (no big difference):
+
+  const QString& 237
+  int 232
+  void 156
+  bool 119
+  QString 94
+  QWidget* 65
+  const char* 60
+  uint 26
+  QStringList 22
+  QByteArray 20
+  QObject* 20
+  const int 20
+  ushort 20
+  qreal 19
+  const QByteArray& 18
+  QTextCodec* 15
+  QColor 11
+  QFont 11
+  const QPoint& 11
+  QPixmap 10
+  const QStringList& 10
+  QList<QByteArray> 9
+  QRgb 9
+  const QStringRef& 9
+  Qt::CaseSensitivity 8
+  const QFont& 8
+  void* 8
+  Qt::LayoutDirection 7
+  bool* 7
+  const QRect& 7
+  QPaintDevice* 6
+  Qt::HANDLE 6
+  const QUrlInfo& 6
+  double 6
+  QAction* 5
+  QChar 5
+  QDBusConnection 5
+  QDBusMessage 5
+  QDate 5
+  QDateTime 5
+  QList<QSslCertificate> 5
+  Qt::Alignment 5
+  char 5
+  const QColor& 5
+  const QSize& 5
+  Format 4
+  MonthNameType 4
+  QDir 4
+  QGenericArgument 4
+  QPalette 4
+  QSqlDatabase 4
+  QSsl::EncodingFormat 4
+  QStyle* 4
+  QTime 4
+  QTransform 4
+  StandardButton 4
+  StandardButtons 4
+  const QObject* 4
+  const QPolygonF& 4
+  const uchar* 4
+  qint64 4
+  unsignedlong 4
+  QEvent* 3
+  QIODevice* 3
+  QImage 3
+  QList<T> 3
+  QLocale 3
+  QSize 3
+  QTextDocumentFragment 3
+  QTransform& 3
+  QUrl 3
+  Qt::ConnectionType 3
+  Qt::DateFormat 3
+  Qt::TimeSpec 3
+  Type 3
+  const QCursor& 3
+  const QImage& 3
+  const QPaintDevice* 3
+  const QPalette& 3
+  const QWidget* 3
+  Category 2
+  ColorMode 2
+  Direction 2
+  Display* 2
+  Endian 2
+  Icon 2
+  InterfaceFactory 2
+  InvalidDataPolicy 2
+  Joining 2
+  Language 2
+  Permissions 2
+  QBitmap 2
+  QDataStream& 2
+  QDecoration* 2
+  QDesignerFormWindowInterface* 2
+  QEventLoop::ProcessEventsFlags 2
+  QFileInfoList 2
+  QGLFormat 2
+  QGenericReturnArgument 2
+  QGraphicsWidget* 2
+  QIcon 2
+  QKeySequence 2
+  QLineEdit::EchoMode 2
+  QList<QAction*> 2
+  QList<QNetworkProxy> 2
+  QList<QSslCipher> 2
+  QList<int> 2
+  QMatrix 2
+  QNetworkInterface 2
+  QPoint 2
+  QRect 2
+  QString& 2
+  QTemporaryFile* 2
+  QThread* 2
+  QTranslator* 2
+  QVariant 2
+  QVector<T> 2
+  QWebHistoryInterface* 2
+  QWidgetList 2
+  Qt::ApplicationAttribute 2
+  Qt::ImageConversionFlags 2
+  Qt::UIEffect 2
+  RootObjectHandler 2
+  Size 2
+  StandardLocation 2
+  UnicodeVersion 2
+  WId 2
+  WebGraphic 2
+  WritingSystem 2
+  const QGLFormat& 2
+  const QItemSelectionRange& 2
+  const QLatin1String& 2
+  const QList<QSslCertificate>& 2
+  const QList<T>& 2
+  const QMatrix& 2
+  const QNetworkProxyQuery& 2
+  const QPixmap& 2
+  const QTransform& 2
+  const QUrl& 2
+  const std::list<T>& 2
+  const ushort* 2
+  const void* 2
+  picture_io_handler 2
+  qlonglong 2
+  qulonglong 2
+  unsignedchar 2
+  Algorithm 1
+  BusType 1
+  CGImageRef 1
+  ColorDialogOptions 1
+  Country 1
+  DecoderFn 1
+  Decomposition 1
+  EncoderFn 1
+  Encoding 1
+  ErrorType 1
+  Event 1
+  FontDialogOptions 1
+  HBITMAP 1
+  HBitmapFormat 1
+  HPALETTE 1
+  HWND 1
+  LibraryLocation 1
+  OpenGLVersionFlags 1
+  ParsingMode 1
+  QAbstractEventDispatcher* 1
+  QAbstractFileEngine* 1
+  QAccessibleInterface* 1
+  QClipboard* 1
+  QColormap 1
+  QCoreApplication* 1
+  QCursor* 1
+  QDBusError::ErrorType 1
+  QDecoration& 1
+  QDesktopWidget* 1
+  QErrorMessage* 1
+  QFile& 1
+  QFontMetrics 1
+  QHostInfo 1
+  QImage::Format 1
+  QInputContext* 1
+  QItemEditorFactory* 1
+  QItemSelection* 1
+  QLatin1String 1
+  QLineF 1
+  QLinkedList<T> 1
+  QList<Country> 1
+  QList<QHostAddress> 1
+  QList<QKeySequence> 1
+  QList<QNetworkCookie> 1
+  QList<QNetworkInterface> 1
+  QList<QPrinterInfo> 1
+  QList<QWebSecurityOrigin> 1
+  QNetworkProxy 1
+  QNetworkProxyFactory* 1
+  QObjectList 1
+  QPair<QHostAddressint> 1
+  QPixmap& 1
+  QPixmap* 1
+  QPoint* 1
+  QPrinterInfo 1
+  QScriptSyntaxCheckResult 1
+  QSet<T> 1
+  QSqlDriver* 1
+  QSqlDriverCreatorBase* 1
+  QSslConfiguration 1
+  QThreadPool* 1
+  QToolButton* 1
+  QUuid 1
+  QWSDisplay* 1
+  QWebSettings* 1
+  QWidgetMapper* 1
+  QXmlName 1
+  Qt::GUIStyle 1
+  Qt::KeyboardModifiers 1
+  Qt::MacintoshVersion 1
+  Qt::MouseButtons 1
+  Qt::TextElideMode 1
+  Qt::WindowsVersion 1
+  ReadFunc 1
+  Scope 1
+  SequenceFormat 1
+  ShareMode 1
+  StandardKey 1
+  WinVersion 1
+  WriteFunc 1
+  char** 1
+  const MacVersion 1
+  const QChar& 1
+  const QChar* 1
+  const QDBusError& 1
+  const QFontMetrics& 1
+  const QGLContext* 1
+  const QIcon& 1
+  const QItemEditorFactory* 1
+  const QList<QSslCipher>& 1
+  const QLocale& 1
+  const QMetaObject 1
+  const QNetworkProxy& 1
+  const QRegExp& 1
+  const QSet<T>& 1
+  const QSqlDatabase& 1
+  const QSslCertificate& 1
+  const QSslConfiguration& 1
+  const QTextDocument* 1
+  const QVector<T>& 1
+  const QWebDatabase& 1
+  const QXmlNamePool& 1
+  const T& 1
+  const WinVersion 1
+  const std::string& 1
+  const std::vector<T>& 1
+  const std::wstring& 1
+  const uint* 1
+  const wchar_t* 1
+  long 1
+  qint64* 1
+  ulong 1
+
+Protected functions (again, no surprises):
+
+  void 310
+  int 144
+  bool 76
+  const QString& 35
+  const QModelIndex& 29
+  QEvent* 21
+  QPainter* 18
+  QMouseEvent* 14
+  QModelIndex 11
+  QObject* 11
+  QString 11
+  const QRect& 11
+  qint64 11
+  QKeyEvent* 10
+  const QMimeData* 10
+  QVariant 9
+  QFocusEvent* 8
+  QGraphicsSceneDragDropEvent* 8
+  QGraphicsSceneMouseEvent* 8
+  QWidget* 8
+  const char* 8
+  QPaintEvent* 7
+  const QVariant& 7
+  const QStyleOptionViewItem& 6
+  QContextMenuEvent* 5
+  QMimeData* 5
+  QSql::ParamType 5
+  QWebFrame* 5
+  const QRectF& 5
+  const QTextBlock& 5
+  const QTextFormat& 5
+  const QUrl& 5
+  void* 5
+  QItemSelectionModel::SelectionFlags 4
+  QRect 4
+  QResizeEvent* 4
+  QStringList 4
+  QXmlNodeModelIndex 4
+  Qt::DropActions 4
+  const QItemSelection& 4
+  const QPoint& 4
+  CursorAction 3
+  PaintDeviceMetric 3
+  QDragEnterEvent* 3
+  QDragLeaveEvent* 3
+  QDragMoveEvent* 3
+  QDropEvent* 3
+  QGraphicsSceneHoverEvent* 3
+  QInputMethodEvent* 3
+  QStyleOptionButton* 3
+  QStyleOptionSlider* 3
+  QTextInlineObject 3
+  QTreeWidgetItem* 3
+  Qt::DropAction 3
+  Qt::KeyboardModifiers 3
+  const QByteArray& 3
+  const QFont& 3
+  const QNetworkRequest& 3
+  const QSqlError& 3
+  ConverterState* 2
+  QAbstractItemView* 2
+  QCloseEvent* 2
+  QGraphicsItem* 2
+  QGraphicsItem*[] 2
+  QGraphicsSceneContextMenuEvent* 2
+  QGraphicsSceneWheelEvent* 2
+  QHideEvent* 2
+  QLineEdit* 2
+  QListWidgetItem* 2
+  QModelIndexList 2
+  QPaintEngine* 2
+  QRectF 2
+  QRegion 2
+  QShowEvent* 2
+  QSize 2
+  QStyleOption* 2
+  QStyleOptionMenuItem* 2
+  QStyleOptionSpinBox* 2
+  QTabBar* 2
+  QTableWidgetItem* 2
+  QTextBlock 2
+  QTextBlockUserData* 2
+  QTextCharFormat 2
+  QTextDocument* 2
+  QTimerEvent* 2
+  QWheelEvent* 2
+  SliderAction 2
+  State 2
+  char* 2
+  const QAction* 2
+  const QDate& 2
+  const QHostAddress& 2
+  const QModelIndexList& 2
+  const QRegion& 2
+  const QSqlDriver* 2
+  const QSqlRecord& 2
+  const QStandardItem& 2
+  const QStringList& 2
+  const QStyleOptionGraphicsItem[] 2
+  const QXmlNodeModelIndex& 2
+  int* 2
+  qreal 2
+  quint16 2
+  BindingSyntax 1
+  DropIndicatorPosition 1
+  EditTrigger 1
+  EventHandlerCallRef 1
+  EventRef 1
+  GDHandle 1
+  GraphicsItemChange 1
+  HDC 1
+  MSG* 1
+  NavigationType 1
+  NetworkError 1
+  OpenMode 1
+  Operation 1
+  ProcessState 1
+  QAbstractTextDocumentLayout::PaintContext 1
+  QAction* 1
+  QActionEvent* 1
+  QByteArray 1
+  QChildEvent* 1
+  QDateTime 1
+  QFile::FileError 1
+  QGraphicsSceneHelpEvent* 1
+  QGraphicsSceneMoveEvent* 1
+  QGraphicsSceneResizeEvent* 1
+  QIODevice* 1
+  QLayout* 1
+  QLayoutItem* 1
+  QList<QListWidgetItem*> 1
+  QList<QNetworkCookie> 1
+  QList<QTableWidgetItem*> 1
+  QList<QTextBlock> 1
+  QList<QTreeWidgetItem*> 1
+  QList<QWidget*> 1
+  QMenuItem* 1
+  QMoveEvent* 1
+  QNetworkAccessManager::Operation 1
+  QNetworkReply* 1
+  QNetworkRequest::Attribute 1
+  QNetworkRequest::KnownHeaders 1
+  QPicture 1
+  QPoint 1
+  QPointF 1
+  QPrintEngine* 1
+  QSizeF 1
+  QSplitterHandle* 1
+  QSqlDriver* 1
+  QSqlError 1
+  QSqlRecord 1
+  QStandardItem& 1
+  QString* 1
+  QStyleOptionComboBox* 1
+  QStyleOptionDockWidget* 1
+  QStyleOptionFrame* 1
+  QStyleOptionGroupBox* 1
+  QStyleOptionHeader* 1
+  QStyleOptionProgressBar* 1
+  QStyleOptionRubberBand* 1
+  QStyleOptionTab* 1
+  QStyleOptionTabWidgetFrame* 1
+  QStyleOptionToolButton* 1
+  QStyleOptionViewItem 1
+  QStyleOptionViewItem* 1
+  QTabletEvent* 1
+  QTextObject* 1
+  QVariant::Type 1
+  QVector<QVariant>& 1
+  QVector<QXmlNodeModelIndex> 1
+  QWSEvent* 1
+  QWebPage* 1
+  QWebPage::WebWindowType 1
+  QWebView* 1
+  QWizard* 1
+  Qt::CheckState 1
+  Qt::InputMethodQuery 1
+  Qt::SizeHint 1
+  Qt::WindowFrameSection 1
+  QtMsgType 1
+  SimpleAxis 1
+  SliderChange 1
+  SocketError 1
+  SocketState 1
+  StepEnabled 1
+  WId 1
+  WebWindowType 1
+  XEvent* 1
+  const QChar* 1
+  const QColor& 1
+  const QDateTime& 1
+  const QEvent* 1
+  const QGLContext* 1
+  const QList<QListWidgetItem*> 1
+  const QList<QNetworkCookie>& 1
+  const QList<QTableWidgetItem*> 1
+  const QList<QTreeWidgetItem*> 1
+  const QObject* 1
+  const QPixmap& 1
+  const QPointF& 1
+  const QScriptValue& 1
+  const QSizeF& 1
+  const QSourceLocation& 1
+  const QSqlIndex& 1
+  const QSqlQuery& 1
+  const QTextCharFormat& 1
+  long* 1
+  quint32 1
+  quintptr 1
+  uint 1
+
+Here are some counts of the types involved in slots:
+   Feature 1 
+   Priority  1 
+   QAbstractItemView* 1 
+   QAction* 1 
+   QDBusReply<QDBusConnectionInterface::RegisterServiceReply> 1 
+   QDBusReply<QString> 1 
+   QDBusReply<QStringList> 1 
+   QDBusReply<void> 1 
+   QHelpEvent* 1 
+   QMdiSubWindow* 1 
+   QMovie* 1 
+   QPrinter::Orientation 1 
+   QToolButton::TextPosition 1 
+   QUndoGroup* 1 
+   QVariant 1 
+   QXmlStreamReader* 1 
+   Qt::Alignment 1 
+   ServiceQueueOptions 1 
+   ViewMode 1 
+   ZoomMode 1 
+   const QDateTime& 1 
+   const QItemSelection& 1 
+   const QList<QHelpSearchQuery>& 1 
+   const QList<QRectF>& 1 
+   const QListWidgetItem* 1 
+   const QPicture& 1 
+   const QPixmap& 1 
+   const QPoint& 1 
+   const QRect& 1 
+   const QStyleOptionViewItem& 1 
+   const QTableWidgetItem* 1 
+   const QTime& 1 
+   const QUrl& 1 
+   const QVariant& 1 
+   const bool 1 
+   const int 1 
+   QDBusReply<bool> 2 
+   QDBusReply<uint> 2 
+   QObject* 2 
+   QPrinter*   2 
+   QUndoStack* 2 
+   Qt::ToolButtonStyle 2 
+   const QByteArray& 2 
+   const QFont& 2 
+   const QSize& 2 
+   QAbstractItemView::ScrollHint 3 
+   QItemSelectionModel::SelectionFlags 3 
+   QPainter* 3 
+   Qt::Orientation 3 
+   const QColor& 3 
+   const QTreeWidgetItem* 3 
+   double 3 
+   const QDate& 4 
+   QDesignerFormWindowInterface* 5 
+   qreal 5 
+   const QRectF& 6 
+   QWidget* 10 
+   const QModelIndex& 11 
+   const QString& 50 
+   bool 58 
+   int 68
+   void 410
+
+Slot return types specifically:
+   QDBusReply<QDBusConnectionInterface::RegisterServiceReply> 1 
+   QDBusReply<QString> 1 
+   QDBusReply<QStringList> 1 
+   QDBusReply<void> 1 
+   QVariant 1 
+   QDBusReply<bool> 2 
+   QDBusReply<uint> 2 
+   int 4 
+   bool   12 
+   void 410

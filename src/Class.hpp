@@ -19,7 +19,7 @@ public:
   virtual const char* name() const = 0;
   virtual Method *findMethod(const MethodCall &call) const = 0;
   virtual QList<Method *> methods() const = 0;
-  virtual QList<Class *> ancestors() const = 0;
+  virtual QList<const Class *> ancestors() const = 0;
   virtual const SmokeClass *smokeBase() const = 0;
   
   
@@ -46,9 +46,9 @@ public:
      of the Class instances through a factory.
   */
   
-  static Class* fromSmokeId(Smoke *smoke, int classId);
-  static Class* fromSmokeName(Smoke *smoke, const char *name);
-  static Class* fromSexp(SEXP sexp);
+  static const Class* fromSmokeId(Smoke *smoke, int classId);
+  static const Class* fromSmokeName(Smoke *smoke, const char *name);
+  static const Class* fromSexp(SEXP sexp);
   
   static ClassFactory *classFactory() { return _classFactory; }
   static void setClassFactory(ClassFactory *factory) {

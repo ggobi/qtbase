@@ -44,7 +44,7 @@ public:
     return _smoke->methodNames[_m->name];
   }
   inline Smoke::Index classId() const { return _m->classId; }
-  virtual Class *klass() const;
+  virtual const Class *klass() const;
   inline Smoke::Index *args() const { return _smoke->argumentList + _m->args; }
   inline Smoke::Index returnIndex() const { return _m->ret; }
   inline SmokeType returnType() const {
@@ -63,7 +63,6 @@ public:
   inline bool isProtected() const { return _m->flags & Smoke::mf_protected; }
   
   virtual void invoke(SmokeObject *obj, Smoke::Stack stack);
-  virtual SEXP invoke(SEXP obj, SEXP args);
 };
 
 #endif

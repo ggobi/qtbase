@@ -1,5 +1,7 @@
 
+useDynLib(libsmokeqt)
 useDynLib(qtbase, .registration = TRUE)
+
 
 export(qsetStyleSheet, qstyleSheet)
 

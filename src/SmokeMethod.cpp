@@ -36,6 +36,6 @@ QVector<SmokeType> SmokeMethod::types() const {
   return t;
 }
 
-Class *SmokeMethod::klass() const {
+const Class *SmokeMethod::klass() const {
   return Class::fromSmokeId(_smoke, classId());
 }

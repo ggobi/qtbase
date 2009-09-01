@@ -18,7 +18,7 @@
  * for QObjects, QEvents and so on
  */
 Q_DECL_EXPORT int
-resolve_classname_qt(SmokeObject * o)
+resolve_classname_qt(const SmokeObject * o)
 {
   int classId = o->classId();
   Smoke *smoke = o->smoke();
@@ -294,7 +294,7 @@ resolve_classname_qt(SmokeObject * o)
 }
 
 Q_DECL_EXPORT bool
-memory_is_owned_qt(SmokeObject *o)
+memory_is_owned_qt(const SmokeObject *o)
 {
   Smoke *smoke = o->smoke();
   const char *className = o->klass()->name();
@@ -354,4 +354,12 @@ memory_is_owned_qt(SmokeObject *o)
     return true;
   } 	
   return false;
+}
+
+void init_smoke(void) {
+  if (qt_Smoke == 0) init_qt_Smoke();
+  RSmokeBinding *binding = new RSmokeBinding(qt_Smoke);
+  RQtModule *module = new RQtModule(binding, resolve_classname_qt,
+                                    memory_is_owned_qt);
+  RQtModule::registerModule(module);
 }

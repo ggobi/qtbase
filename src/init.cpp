@@ -5,6 +5,7 @@
 #include <R_ext/Rdynload.h>
 #include <R_ext/Print.h>
 
+void init_smoke();
 
 extern "C" {
   
@@ -74,7 +75,6 @@ static R_CallMethodDef CallEntries[] = {
     CALLDEF(qt_qnormalizedSignature, 1),
     CALLDEF(qt_qmethods, 1),
     CALLDEF(qt_qproperties, 1),
-    CALLDEF(qt_qsmokeMethods, 2),
     CALLDEF(qt_qclasses, 1),
     CALLDEF(qt_qsmokes, 0),
     
@@ -93,7 +93,8 @@ static R_CallMethodDef CallEntries[] = {
 void R_init_qtbase(DllInfo *dll)
 {
     init_utils(); // initializes some utilities
-
+    init_smoke();
+    
     // Register C routines
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);

@@ -11,40 +11,27 @@ class Class;
 typedef struct SEXPREC* SEXP;
 
 class SmokeObject {
-  
-private:
-
-  void *_ptr;
-  Class *_klass;
-  bool _allocated;
-  
-  SEXP createExternalPtr() const;
-  
-  static QHash<const SmokeObject *, SEXP> externalPtrs;
-  static QHash<void *, SmokeObject *> instances;
-
-  SmokeObject(void *ptr, Class *klass, bool allocated = false);
-  
+    
 public:
 
   ~SmokeObject();
   
-  static SmokeObject *fromPtr(void *ptr, Class *klass, bool allocated = false,
-                              bool copy = false);
+  static SmokeObject *fromPtr(void *ptr, const Class *klass,
+                              bool allocated = false, bool copy = false);
   static SmokeObject *fromPtr(void *ptr, Smoke *smoke, const char *name,
                               bool allocated = false, bool copy = false);
   static SmokeObject *fromPtr(void *ptr, Smoke *smoke, int classId,
                               bool allocated = false, bool copy = false);
   
   static SmokeObject *fromExternalPtr(SEXP externalPtr);
-  static SEXP externalPtrFromPtr(void *ptr, Class *klass,
+  static SEXP externalPtrFromPtr(void *ptr, const Class *klass,
                                  bool allocated = false, bool copy = false);
   static SEXP externalPtrFromPtr(void *ptr, Smoke *smoke, const char *name,
                                  bool allocated = false, bool copy = false);
   
   inline void *ptr() const { return _ptr; }
   inline bool allocated() const { return _allocated; }
-  inline Class *klass() const { return _klass; }
+  inline const Class *klass() const { return _klass; }
 
   Smoke *smoke() const;
   int classId() const;
@@ -56,9 +43,19 @@ public:
   
   void * cast(const char *className) const;
   bool instanceOf(const char *className) const;
-  
+
 private:
 
+  void *_ptr;
+  const Class *_klass;
+  bool _allocated;
+  
+  SEXP createExternalPtr() const;
+  
+  static QHash<const SmokeObject *, SEXP> externalPtrs;
+  static QHash<void *, SmokeObject *> instances;
+
+  SmokeObject(void *ptr, const Class *klass, bool allocated = false);
 };
 
 #endif
