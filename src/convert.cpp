@@ -271,7 +271,7 @@ const char ** asStringArray(SEXP s_strs) {
 QString sexp2qstring(SEXP s) {
   if (!length(s))
     return QString();
-  return QString::fromLocal8Bit(CHAR(asChar(s)));
+  return QString::fromUtf8(translateCharUTF8(asChar(s)));
 }
 
 SEXP asRStringArray(const char * const * strs) {

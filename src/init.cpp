@@ -36,14 +36,20 @@ extern "C" {
   SEXP qt_qnormalizedSignature(SEXP x);
   SEXP qt_qmethods(SEXP rself);
   SEXP qt_qproperties(SEXP x);
-
+  SEXP qt_qsmokeMethods(SEXP rsmoke, SEXP rclass);
+  SEXP qt_qclasses(SEXP rsmoke);
+  SEXP qt_qsmokes(void);
+  
   // dynamic invocation
-  SEXP qt_qinvoke(SEXP rmethod, SEXP robj, SEXP rargs);
-
+  SEXP qt_qinvoke(SEXP method, SEXP self, SEXP args);
+  SEXP qt_qinvokeStatic(SEXP method, SEXP smoke, SEXP klass, SEXP args);
+  
   // properties
   SEXP qt_qsetProperty(SEXP x, SEXP rname, SEXP rvalue);
   SEXP qt_qproperty(SEXP x, SEXP name);
 }
+
+extern void initMethodSelectors();
 
 QObject* unwrapQObjectReferee(SEXP x);
 QGraphicsItem *unwrapQGraphicsItemReferee(SEXP x);
@@ -51,7 +57,6 @@ QGraphicsItem *unwrapQGraphicsItemReferee(SEXP x);
 #define CALLDEF(name, n)  {#name, (DL_FUNC) &name, n}
 
 static R_CallMethodDef CallEntries[] = {
-
 
     CALLDEF(newLabelWidget, 1),
 
@@ -69,8 +74,12 @@ static R_CallMethodDef CallEntries[] = {
     CALLDEF(qt_qnormalizedSignature, 1),
     CALLDEF(qt_qmethods, 1),
     CALLDEF(qt_qproperties, 1),
-
+    CALLDEF(qt_qsmokeMethods, 2),
+    CALLDEF(qt_qclasses, 1),
+    CALLDEF(qt_qsmokes, 0),
+    
     CALLDEF(qt_qinvoke, 3),
+    CALLDEF(qt_qinvokeStatic, 3),
 
     CALLDEF(qt_qsetProperty, 3),
     CALLDEF(qt_qproperty, 2),
@@ -83,7 +92,7 @@ static R_CallMethodDef CallEntries[] = {
 
 void R_init_qtbase(DllInfo *dll)
 {
-    init_utils(); // initializes some things unrelated to event handling
+    init_utils(); // initializes some utilities
 
     // Register C routines
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);

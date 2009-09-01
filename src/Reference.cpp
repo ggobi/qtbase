@@ -95,9 +95,7 @@ QGraphicsItemReference::~QGraphicsItemReference() {
 
 void QGraphicsItemReference::deleteReferee() {
   QGraphicsItem *item = reinterpret_cast<QGraphicsItem *>(referee());
-  // We expect the scene to hold a reference, so that top-level items
-  // do not disappear.
-  if (!item->parentItem()) {
+  if (!item->parentItem() && !item->scene()) {
     delete item;
   } 
   // else printf("graphics item has parent item, preserving %p\n", referee());

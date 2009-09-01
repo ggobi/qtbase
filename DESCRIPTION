@@ -1,6 +1,6 @@
 Package: qtbase
-Version: 0.0-9
-Date:    2009/07/09
+Version: 0.1-0
+Date:    2009/08/15
 Title: Package providing glue for interface between R and Qt 
 Author: Deepayan Sarkar, Michael Lawrence
 Depends: R (>= 2.6.0), utils
@@ -9,3 +9,5 @@ Maintainer: Deepayan Sarkar <deepayan.sarkar@gmail.com>,
 Description: Basic event-loop, external pointer management and dynamic QObject
              manipulation to support interfaces between R and Qt
 License: GPL (>= 2)
+Acknowledgements: QtRuby and Qyoto projects for head-start on the Smoke-based
+                  interface

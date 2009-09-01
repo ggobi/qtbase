@@ -12,6 +12,7 @@
 {
     ## library.dynam("qtbase", pkgname, libname )
     .Call(addQtEventHandler)
+    qinit(Qt)
 }
 
 setHook(packageEvent("qtbase", event = "detach"),

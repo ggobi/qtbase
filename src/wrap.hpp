@@ -9,6 +9,8 @@
 #include <R.h>
 #include <Rinternals.h>
 
+/* NOTE: everything except unwrapPointer and unwrapSmoke is deprecated */
+
 QObject *unwrapQObjectReferee(SEXP x);
 QGraphicsItem *unwrapQGraphicsItemReferee(SEXP x);
 QGraphicsLayoutItem *unwrapQGraphicsLayoutItemReferee(SEXP x);
@@ -22,6 +24,10 @@ QGraphicsLayoutItem *unwrapQGraphicsLayoutItemReferee(SEXP x);
     })
 
 #define unwrapPointer(x, type) unwrapPointerSep(x, type, type)
+
+void *_unwrapSmoke(SEXP x, const char *type);
+
+#define unwrapSmoke(x, type) reinterpret_cast<type *>(_unwrapSmoke(x, #type))
 
 #define unwrapReference(x, type) ({                                     \
       type *ans =                                                       \
@@ -52,13 +58,14 @@ QGraphicsLayoutItem *unwrapQGraphicsLayoutItemReferee(SEXP x);
 extern "C" {
   SEXP wrapQObject(QObject *object);
   SEXP wrapQWidget(QWidget *widget);
-  SEXP wrapPointer(void *ptr, QList<QString> classNames = QList<QString>(),
+  SEXP wrapPointer(void *ptr,
+                   QList<QByteArray> classNames = QList<QByteArray>(),
                    R_CFinalizer_t finalizer = NULL);
   SEXP wrapQGraphicsItem(QGraphicsItem *item,
-                         QList<QString> classNames = QList<QString>());
+                         QList<QByteArray> classNames = QList<QByteArray>());
   SEXP wrapQGraphicsWidget(QGraphicsWidget *widget);
   SEXP wrapQGraphicsLayoutItem(QGraphicsLayoutItem *item,
-                               QList<QString> classes);
+                               QList<QByteArray> classes);
 }
 
 #endif

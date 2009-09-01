@@ -1,3 +1,5 @@
+#include "SmokeObject.hpp"
+
 #include <QVariant>
 #include <QWidget>
 #include <QGraphicsWidget>
@@ -5,6 +7,14 @@
 #include "Reference.hpp"
 #include "wrap.hpp"
 #include <Rdefines.h>
+
+void *_unwrapSmoke(SEXP x, const char *type) {
+  void *ans = NULL;
+  SmokeObject *so = unwrapPointer(x, SmokeObject);
+  if (so)
+    ans = so->cast(type);
+  return ans;
+}
 
 QObject *unwrapQObjectReferee(SEXP x) {
   QObject *ptr = unwrapPointer(x, QObject);
@@ -50,17 +60,17 @@ extern "C" {
     delete r;
   }
 
-  SEXP wrapReference(Reference *ref, QList<QString> classes) {
+  SEXP wrapReference(Reference *ref, QList<QByteArray> classes) {
     classes.append("Reference");
     SEXP ans = wrapPointer(ref, classes, finalizeReference);
     return ans;
   }
 
-  static QList<QString>
+  static QList<QByteArray>
   getQObjectClasses(QObject *obj)
   {
     const QMetaObject *meta = obj->metaObject(), *m;
-    QList<QString> classes;
+    QList<QByteArray> classes;
     for (m = meta; m; m = m->superClass())
       classes.append(m->className());
     return classes;
@@ -77,12 +87,12 @@ extern "C" {
     return wrapQObjectReference(new QObjectReference(object));
   }
   SEXP wrapQGraphicsItemReference(QGraphicsItemReference *ref,
-                                  QList<QString> classes)
+                                  QList<QByteArray> classes)
   {
     classes.append("QGraphicsItemReference");
     return wrapReference(ref, classes);
   }
-  SEXP wrapQGraphicsItem(QGraphicsItem *item, QList<QString> classes)
+  SEXP wrapQGraphicsItem(QGraphicsItem *item, QList<QByteArray> classes)
   {
     classes.append("QGraphicsItem");
     return wrapQGraphicsItemReference(new QGraphicsItemReference(item),
@@ -92,13 +102,13 @@ extern "C" {
     return wrapQGraphicsItem(widget, getQObjectClasses(widget));
   }
   SEXP wrapQGraphicsLayoutItemReference(QGraphicsLayoutItemReference *ref,
-                                        QList<QString> classes)
+                                        QList<QByteArray> classes)
   {
     classes.append("QGraphicsLayoutItemReference");
     return wrapReference(ref, classes);
   }
   SEXP wrapQGraphicsLayoutItem(QGraphicsLayoutItem *item,
-                               QList<QString> classes)
+                               QList<QByteArray> classes)
   {
     if (!item->ownedByLayout())
       error("Layout item does not follow layout ownership");
@@ -107,7 +117,7 @@ extern "C" {
     return wrapQGraphicsLayoutItemReference(ref, classes);
   }
   
-  SEXP wrapPointer(void *ptr, QList<QString> classNames,
+  SEXP wrapPointer(void *ptr, QList<QByteArray> classNames,
                    R_CFinalizer_t finalizer)
   {
     SEXP ans;
@@ -117,8 +127,7 @@ extern "C" {
     SEXP rclassNames = allocVector(STRSXP, classNames.size());
     SET_CLASS(ans, rclassNames);
     for (int i = 0; i < length(rclassNames); i++)
-      SET_STRING_ELT(rclassNames, i,
-                     mkChar(classNames[i].toLocal8Bit().data()));
+      SET_STRING_ELT(rclassNames, i, mkChar(classNames[i].constData()));
     UNPROTECT(1);
     return ans;
   }

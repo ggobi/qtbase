@@ -20,16 +20,36 @@ TEMPLATE = lib
 HEADERS += Reference.hpp convert.hpp wrap.hpp
 HEADERS += dynamicqobject.h RDynamicQObject.hpp EventLoop.hpp
 
+HEADERS += ClassFactory.hpp
+HEADERS += Class.hpp SmokeClass.hpp MocClass.hpp RClass.hpp
+HEADERS += Method.hpp ForeignMethod.hpp
+HEADERS += SmokeMethod.hpp RMethod.hpp MocMethod.hpp MocInvokable.hpp
+HEADERS += DynamicBinding.hpp MocDynamicBinding.hpp  
+HEADERS += MethodCall.hpp type-handlers.hpp TypeHandler.hpp
+HEADERS += MocStack.hpp SmokeStack.hpp SmokeType.hpp
+HEADERS += RQtModule.hpp RSmokeBinding.hpp SmokeList.hpp
+HEADERS += SmokeObject.hpp
+
+
 SOURCES += init.cpp EventLoop.cpp style.cpp 
 SOURCES += Reference.cpp utils.cpp convert.cpp wrap.cpp 
 SOURCES += Test.cpp timer.cpp
 SOURCES += metaobject.cpp connect.cpp invoke.cpp props.cpp
 SOURCES += dynamicqobject.cpp RDynamicQObject.cpp
 
-INCLUDEPATH += ${R_INCLUDE_DIR}
-CFLAGS += -g
-## LIBS += -L${R_HOME/lib}
+SOURCES += ClassFactory.cpp
+SOURCES += Class.cpp SmokeClass.cpp MocClass.cpp RClass.cpp
+SOURCES += ForeignMethod.cpp
+SOURCES += SmokeMethod.cpp RMethod.cpp MocMethod.cpp
+SOURCES += DynamicBinding.cpp MocDynamicBinding.cpp  
+SOURCES += MethodCall.cpp type-handlers.cpp
+SOURCES += MocStack.cpp
+SOURCES += RQtModule.cpp module.cpp RSmokeBinding.cpp SmokeList.cpp
+SOURCES += SmokeObject.cpp smoke.cpp 
 
+INCLUDEPATH += ${R_INCLUDE_DIR} ../inst/local/include
+CFLAGS += -g
+LIBS += -L../inst/local/lib -lsmokeqt
 
 macx{
 LIBS += -framework R
