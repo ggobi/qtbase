@@ -534,6 +534,7 @@ void marshal_to_sexp<SmokeClassWrapper>(MethodCall *m)
     return;
   }
   void *p = m->item().s_voidp;
+
   /* ML: It's not clear which types of objects we are handling. We
      seem to be handling pointers and references to classes.. These
      can be optionally be 'const'.

@@ -15,17 +15,17 @@ public:
   static void insert(const MethodCall &call,
                      const Smoke::ModuleIndex &method);
 private:
-  static QHash<QByteArray,Smoke::ModuleIndex*> *cache;
+  static QHash<QByteArray,Smoke::ModuleIndex*> cache;
   SmokeMethodCache() { }
 };
 
 // store index as pointer to detect cache misses
-QHash<QByteArray,Smoke::ModuleIndex*>* SmokeMethodCache::cache = NULL;
+QHash<QByteArray,Smoke::ModuleIndex*> SmokeMethodCache::cache;
 
 Smoke::ModuleIndex SmokeMethodCache::find(const MethodCall &call) {
   static Smoke::ModuleIndex missing = { NULL, -1 };
   if (call.args()) { // FIXME: caching does not work yet for foreign calls
-    Smoke::ModuleIndex *index = (*cache)[call.cacheKey()];
+    Smoke::ModuleIndex *index = cache[call.cacheKey()];
     if (index)
       return *index;
   }
@@ -36,13 +36,11 @@ void SmokeMethodCache::insert(const MethodCall &call,
                               const Smoke::ModuleIndex &index)
 {
   if (call.args()) {
-    if (!cache)
-      cache = new QHash<QByteArray,Smoke::ModuleIndex*>;
-    (*cache)[call.cacheKey()] = new Smoke::ModuleIndex(index);
+    cache[call.cacheKey()] = new Smoke::ModuleIndex(index);
   }
 }
 
-Smoke::ModuleIndex SmokeClass::selectIndex(const MethodCall& call) const
+Smoke::ModuleIndex SmokeClass::findIndex(const MethodCall& call) const
 {
   Smoke::ModuleIndex meth = SmokeMethodCache::find(call);
   if (meth.index != -1) // cache hit, return immediately
@@ -89,7 +87,7 @@ Smoke::ModuleIndex SmokeClass::selectIndex(const MethodCall& call) const
 
 Method *SmokeClass::findMethod(const MethodCall &call) const {
   Method *method = NULL;
-  Smoke::ModuleIndex ind = selectIndex(call);
+  Smoke::ModuleIndex ind = findIndex(call);
   if (ind.index > 0)
     method = new SmokeMethod(ind);
   return method;

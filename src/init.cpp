@@ -6,6 +6,7 @@
 #include <R_ext/Print.h>
 
 void init_smoke();
+void init_type_handlers();
 
 extern "C" {
   
@@ -94,6 +95,7 @@ void R_init_qtbase(DllInfo *dll)
 {
     init_utils(); // initializes some utilities
     init_smoke();
+    init_type_handlers();
     
     // Register C routines
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);

@@ -55,7 +55,7 @@ public:
 
 private:
 
-  Smoke::ModuleIndex selectIndex(const MethodCall& call) const;
+  Smoke::ModuleIndex findIndex(const MethodCall& call) const;
   
   Smoke::Class *_c;
   Smoke *_smoke;

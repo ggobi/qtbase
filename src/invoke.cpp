@@ -22,7 +22,7 @@ SEXP qt_qinvoke(SEXP method, SEXP self, SEXP args) {
 }
 
 extern "C"
-SEXP qt_qinvokeStatic(SEXP method, SEXP rklass, SEXP args) {
+SEXP qt_qinvokeStatic(SEXP rklass, SEXP method, SEXP args) {
   const char * methodName = CHAR(asChar(method));
   const Class *klass = Class::fromSexp(rklass);
   DynamicBinding binding(klass, methodName);

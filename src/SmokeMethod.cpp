@@ -3,7 +3,7 @@
 #include "RQtModule.hpp"
 
 void SmokeMethod::invoke(SmokeObject *obj, Smoke::Stack stack) {
-  if (!obj && !isStatic()) {
+  if (!obj && !isStatic() && !isConstructor()) {
     qCritical("'obj' is NULL but %s is not a class method\n", name());
     setLastError(InvocationFailed);
     return;

@@ -109,7 +109,7 @@ private:
       _mode = RToSmoke;
   }
 
-  inline void handle() {
+  inline void marshalItem() {
     TypeHandler::MarshalFn fn = marshalFn(type());
     (*fn)(this);
   }

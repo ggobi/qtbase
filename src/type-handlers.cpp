@@ -141,10 +141,6 @@
 #include "convert.hpp"
 #undef isNull // R causing trouble again
 
-#ifndef HINT_BYTES
-#define HINT_BYTES HINT_BYTE
-#endif
-
 bool
 matches_arg(Smoke *smoke, Smoke::Index meth, Smoke::Index argidx,
             const char *argtype)
@@ -175,8 +171,7 @@ static void marshal_it(MethodCall *m)
   }
 }
 
-void
-marshal_basetype(MethodCall *m)
+void marshal_basetype(MethodCall *m)
 {
   switch(m->type().elem()) {
 
@@ -360,7 +355,7 @@ int scoreArg_basetype(SEXP arg, const SmokeType &type) {
   }
   return score;
 }
-void scoreArg_unknown(SEXP /*arg*/, SmokeType type) {
+void scoreArg_unknown(SEXP /*arg*/, const SmokeType &type) {
   error("unable to score argument of type '%s'", type.name());
 }
 
@@ -1697,3 +1692,8 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
 #endif
   { 0, 0, NULL }
 };
+
+void init_type_handlers() {
+  // FIXME: do we want to integrate this with RQtModule?
+  MethodCall::registerTypeHandlers(Qt_handlers);
+}

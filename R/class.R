@@ -15,12 +15,12 @@
 ## obtain a class object from a smoke module and a name
 qclass <- function(x, name) {
   env <- new.env()
-  cl <- structure(function(...) qinvokeStatic(x, name, ...), name = name,
+  cl <- structure(function(...) qinvokeStatic(cl, name, ...), name = name,
                   smoke = qsmoke(x), env = env, class = "RQtClass")
   methods <- qmethods(cl)
   methods <- subset(methods, !duplicated(name) & static & !protected)
   lapply(methods$name, function(name) {
-    assign(name, function(...) qinvokeStatic(x, name, ...), env)
+    assign(name, function(...) qinvokeStatic(cl, name, ...), env)
   })
   cl
 }

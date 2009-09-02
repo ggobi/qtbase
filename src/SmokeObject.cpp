@@ -79,6 +79,7 @@ SEXP SmokeObject::createExternalPtr() const {
   foreach(c, c->ancestors()) {
     classes.append(c->name());
   }
+  classes.append("SmokeObject");
   return wrapPointer(_ptr, classes, finalizeSmokeObject);
 }
 

@@ -8,8 +8,8 @@
 
 MethodCall::MethodCall(Method *method, SEXP obj, SEXP args)
   : _cur(0), _called(false), _mode(Identity),
-    _target(SmokeObject::fromExternalPtr(obj)), _stack(NULL), _args(args),
-    _method(method), _types(method->types())
+    _target(obj ? SmokeObject::fromExternalPtr(obj) : NULL), _stack(NULL),
+    _args(args), _method(method), _types(method->types())
 { }
 MethodCall::MethodCall(Method *method, SmokeObject *obj, Smoke::Stack args)
   : _cur(0), _called(false), _mode(Identity),
@@ -18,13 +18,13 @@ MethodCall::MethodCall(Method *method, SmokeObject *obj, Smoke::Stack args)
 { }
 MethodCall::MethodCall(RMethod *method, SEXP obj, SEXP args)
   : _cur(0), _called(false), _mode(Identity),
-    _target(SmokeObject::fromExternalPtr(obj)), _stack(NULL), _args(args),
-    _method(method), _types(method->types())
+    _target(obj ? SmokeObject::fromExternalPtr(obj) : NULL), _stack(NULL),
+    _args(args), _method(method), _types(method->types())
 { } 
 MethodCall::MethodCall(ForeignMethod *method, SEXP obj, SEXP args)
   : _cur(0), _called(false), _mode(RToSmoke),
-    _target(SmokeObject::fromExternalPtr(obj)), _stack(NULL), _args(args),
-    _method(method), _types(method->types())
+    _target(obj ? SmokeObject::fromExternalPtr(obj) : NULL), _stack(NULL),
+    _args(args), _method(method), _types(method->types())
 { }
 MethodCall::MethodCall(RMethod *method, SmokeObject *obj, Smoke::Stack args)
   : _cur(0), _called(false), _mode(SmokeToR),
@@ -65,7 +65,7 @@ void MethodCall::marshal() {
   _cur++; // handle arguments
 
   while(!_called && _cur < stackSize()) {
-    handle();
+    marshalItem();
     _cur++;
   }
 
@@ -75,7 +75,7 @@ void MethodCall::marshal() {
     invokeMethod();
     if (_method->lastError() == Method::NoError) {
       flip();
-      handle();
+      marshalItem();
       flip();
     }
   }
@@ -130,9 +130,9 @@ TypeHandler *MethodCall::typeHandler(const SmokeType &type) {
   return h;
 }
 
-TypeHandler::MarshalFn marshal_basetype;
-TypeHandler::MarshalFn marshal_void;
-TypeHandler::MarshalFn marshal_unknown;
+extern void marshal_basetype(MethodCall *m);
+extern void marshal_void(MethodCall *m);
+extern void marshal_unknown(MethodCall *m);
 
 TypeHandler::MarshalFn MethodCall::marshalFn(const SmokeType &type) {
   if (type.elem())
@@ -154,8 +154,8 @@ int MethodCall::scoreArg(SEXP arg, const SmokeType &type) {
   return scoreArgFn(type)(arg, type);
 }
 
-TypeHandler::ScoreArgFn scoreArg_basetype;
-TypeHandler::ScoreArgFn scoreArg_unknown;
+extern int scoreArg_basetype(SEXP arg, const SmokeType &type);
+extern int scoreArg_unknown(SEXP arg, const SmokeType &type);
 
 TypeHandler::ScoreArgFn MethodCall::scoreArgFn(const SmokeType &type) {
   if (type.elem())
