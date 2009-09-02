@@ -14,7 +14,9 @@ public:
   }
   
   virtual const char* name() const { return _delegate->name(); }
-  virtual const SmokeClass *smokeBase() const { return _delegate->smokeBase(); }
+  virtual const SmokeClass *smokeBase() const {
+    return _delegate->smokeBase();
+  }
   virtual QList<const Class *> parents() const {
     return _delegate->parents();
   }

@@ -69,7 +69,16 @@ SmokeObject::SmokeObject(void *ptr, const Class *klass, bool allocated)
 
 static void finalizeSmokeObject(SEXP obj) {
   SmokeObject *so = SmokeObject::fromExternalPtr(obj);
-  delete so;
+  R_ClearExternalPtr(obj);
+  if (so->allocated() && !so->memoryIsOwned()) {
+    //qDebug("Destructing referant");
+    const char *cname = so->klass()->name();
+    char *destructor = new char[strlen(cname) + 2];
+    destructor[0] = '~';
+    strcpy(destructor + 1, cname);
+    so->invokeMethod(destructor); // causes 'so' to be destructed
+    delete[] destructor;
+  }
 }
 
 SEXP SmokeObject::createExternalPtr() const {
@@ -80,7 +89,8 @@ SEXP SmokeObject::createExternalPtr() const {
     classes.append(c->name());
   }
   classes.append("SmokeObject");
-  return wrapPointer(_ptr, classes, finalizeSmokeObject);
+  return wrapPointer(const_cast<SmokeObject *>(this), classes,
+                     finalizeSmokeObject);
 }
 
 SEXP SmokeObject::externalPtr() const {  
@@ -201,15 +211,11 @@ SmokeObject::invokeMethod(const char *name, Smoke::Stack stack) {
 }
 
 SmokeObject::~SmokeObject() {
+  SEXP extptr = externalPtr();
+  if (R_ExternalPtrAddr(extptr)) // R extptr still exists, invalidate class
+    setAttrib(extptr, R_ClassSymbol, ScalarString(R_NaString));
   instances.remove(_ptr);
-  // FIXME: set extptr class to invalid?
   externalPtrs.remove(this);
-  if (_allocated && !memoryIsOwned()) {
-    const char *cname = klass()->name();
-    char *destructor = new char[strlen(cname) + 2];
-    destructor[0] = '~';
-    strcpy(destructor + 1, cname);
-    invokeMethod(destructor);
-    delete[] destructor;
-  }
+  //qDebug("Destructing SmokeObject, allocated=%d, owned=%d", _allocated,
+  //       memoryIsOwned());
 }
