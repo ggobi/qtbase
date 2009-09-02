@@ -19,11 +19,9 @@ const Class* RClass::parent() const {
   return Class::fromSexp(getAttrib(_klass, parentSym));
 }
 
-QList<const Class *> RClass::ancestors() const {
+QList<const Class *> RClass::parents() const {
   QList<const Class *> classes;
-  const Class *p = parent();
-  classes.append(p);
-  classes.append(p->ancestors());
+  classes.append(parent());
   return classes;
 }
 

@@ -21,17 +21,17 @@ private:
   const QMetaObject *_meta;
   int _id;
   Smoke *_smoke;
+  QByteArray _name;
   
 public:
-  MocMethod(Smoke *smoke, const QMetaObject *meta, int id)
-    : _method(meta->method(id)), _meta(meta), _id(id), _smoke(smoke) { }
+  MocMethod(Smoke *smoke, const QMetaObject *meta, int id);
   
   inline QMetaMethod metaMethod() const { return _method; }
   inline const QMetaObject *metaObject() const { return _meta; }
   inline int id() const { return _id; }
 
   virtual Smoke* smoke() const { return _smoke; }
-  virtual const char *name() const { return _method.signature(); }
+  virtual const char *name() const { return _name.constData(); }
   virtual const Class* klass() const;
   virtual QVector<SmokeType> types() const;
   virtual Qualifiers qualifiers() const {

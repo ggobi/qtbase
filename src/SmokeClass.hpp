@@ -29,7 +29,7 @@ public:
   virtual Method *findMethod(const MethodCall &call) const;
   virtual const SmokeClass *smokeBase() const { return this; }
   virtual QList<Method *> methods() const;
-  virtual QList<const Class *> ancestors() const;
+  virtual QList<const Class *> parents() const;
   
   inline const Smoke::Class &c() const { return *_c; }
   inline Smoke::Index classId() const { return _id; }

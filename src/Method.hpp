@@ -35,6 +35,8 @@ public:
                    /*Virtual = 1 << 2*/ };
   Q_DECLARE_FLAGS(Qualifiers, Qualifier)
 
+  virtual ~Method() { };
+  
   virtual const char *name() const = 0;
   virtual QVector<SmokeType> types() const = 0;
   virtual const Class* klass() const = 0;

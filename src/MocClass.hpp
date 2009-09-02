@@ -15,8 +15,8 @@ public:
   
   virtual const char* name() const { return _delegate->name(); }
   virtual const SmokeClass *smokeBase() const { return _delegate->smokeBase(); }
-  virtual QList<const Class *> ancestors() const {
-    return _delegate->ancestors();
+  virtual QList<const Class *> parents() const {
+    return _delegate->parents();
   }
   // cannot access any method information without an instance
   virtual QList<Method *> methods() const;

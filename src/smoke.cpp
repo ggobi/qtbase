@@ -1,3 +1,4 @@
+#include <QByteArray>
 #include <smoke.h>
 
 #include "Method.hpp"
@@ -23,49 +24,61 @@ SEXP asRSmoke(Smoke *smoke) {
 enum {
   MD_NAME,
   MD_RETURN,
-  MD_ARGS,
+  MD_SIG,
   MD_PROTECTED,
   MD_STATIC,
   MD_LAST
 };
 
-SEXP asRMethodDesc(Method *method) {
-  SEXP methodDesc;
-  PROTECT(methodDesc = allocVector(VECSXP, MD_LAST));
-  SET_VECTOR_ELT(methodDesc, MD_NAME,
-                 mkString(method->name()));
-  QVector<SmokeType> types = method->types();
-  SET_VECTOR_ELT(methodDesc, MD_RETURN, mkString(types[0].name()));
-  SEXP args = allocVector(STRSXP, types.size()-1);
-  SET_VECTOR_ELT(methodDesc, MD_ARGS, args);
-  for (int i = 0; i < length(args); i++)
-    SET_STRING_ELT(args, i, mkChar(types[i+1].name()));
-  SET_VECTOR_ELT(methodDesc, MD_PROTECTED,
-                 ScalarLogical(method->qualifiers() & Method::Protected));
-  SET_VECTOR_ELT(methodDesc, MD_STATIC,
-                 ScalarLogical(method->qualifiers() & Method::Static));
-  setAttrib(methodDesc, R_ClassSymbol, mkString("QtMethodDesc"));
-  UNPROTECT(1);
-  return methodDesc;
+static const char* rTypeName(const SmokeType &type) {
+  QByteArray name(type.name());
+  name.replace("const ", "");
+  name.replace("&", "");
+  return name.constData();
 }
 
 /* Get a list of method names with their argument types */
 extern "C"
 SEXP qt_qmethods(SEXP klass)
 {
-  SEXP result, resultNames;
+  SEXP result;
   const Class *c = Class::fromSexp(klass);
   QList<Method *> methods = c->methods();
   int i = 0;
-  PROTECT(result = allocVector(VECSXP, methods.size()));
-  resultNames = allocVector(STRSXP, length(result));
-  setAttrib(result, R_NamesSymbol, resultNames);
+  
+  PROTECT(result = allocVector(VECSXP, MD_LAST));
+  SEXP resultName = allocVector(STRSXP, methods.size());
+  SET_VECTOR_ELT(result, MD_NAME, resultName);
+  SEXP resultReturn = allocVector(STRSXP, methods.size());
+  SET_VECTOR_ELT(result, MD_RETURN, resultReturn);
+  SEXP resultSig = allocVector(STRSXP, methods.size());
+  SET_VECTOR_ELT(result, MD_SIG, resultSig);
+  SEXP resultProtected = allocVector(LGLSXP, methods.size());
+  SET_VECTOR_ELT(result, MD_PROTECTED, resultProtected);
+  SEXP resultStatic = allocVector(LGLSXP, methods.size());
+  SET_VECTOR_ELT(result, MD_STATIC, resultStatic);
+  
   while(!methods.isEmpty()) {
     Method * m = methods.takeFirst();
-    SET_STRING_ELT(resultNames, i, mkChar(m->name()));
-    SET_VECTOR_ELT(result, i++, asRMethodDesc(m));
+    QVector<SmokeType> types = m->types();
+    SET_STRING_ELT(resultName, i, mkChar(m->name()));
+    SEXP ret = types[0].isVoid() ? mkChar(rTypeName(types[0])) : R_BlankString;
+    SET_STRING_ELT(resultReturn, i, ret);
+    QByteArray sig = m->name();
+    sig += "(";
+    for (int j = 1; j < types.size(); j++) {
+      sig += rTypeName(types[j]);
+      if (j+1 < types.size())
+        sig += ", ";
+    }
+    sig += ")";
+    SET_STRING_ELT(resultSig, i, mkChar(sig.constData()));
+    LOGICAL(resultProtected)[i] = m->qualifiers() & Method::Protected;
+    LOGICAL(resultStatic)[i] = m->qualifiers() & Method::Static;
     delete m;
+    i++;
   }
+  
   UNPROTECT(1);
   return result;
 }

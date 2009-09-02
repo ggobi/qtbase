@@ -28,7 +28,7 @@ public:
     findMethod();
   }
     
-  virtual inline Smoke *smoke() const { return _smoke; }
+  inline Smoke *smoke() const { return _smoke; }
   inline Smoke::Index methodId() const { return _id; }
   inline const Smoke::Method &method() const { return *_m; }
   virtual Qualifiers qualifiers() const {

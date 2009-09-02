@@ -19,6 +19,7 @@ void DynamicBinding::invoke(SmokeObject *obj, Smoke::Stack args) {
   Method *method = call.klass()->findMethod(call);
   if (method) {
     method->invoke(obj, args);
+    setLastError(method->lastError());
     delete method;
   } else setLastError(ImplementationMissing);
 }

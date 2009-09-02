@@ -63,6 +63,7 @@ void MethodCall::unsupported() {
 void MethodCall::marshal() {
   int oldcur = _cur;
   _cur++; // handle arguments
+
   while(!_called && _cur < stackSize()) {
     handle();
     _cur++;
@@ -71,9 +72,7 @@ void MethodCall::marshal() {
   if (!_called) {
     _called = true;
     _cur = 0;
-    if (_mode == SmokeToR || (_mode == Identity && _args))
-      _method->invoke(_target->externalPtr(), _args);
-    else _method->invoke(_target, _stack);
+    invokeMethod();
     if (_method->lastError() == Method::NoError) {
       flip();
       handle();
@@ -83,7 +82,13 @@ void MethodCall::marshal() {
 
   _cur = oldcur;
 }
-  
+
+void MethodCall::invokeMethod() {
+  if (_mode == SmokeToR || (_mode == Identity && _args))
+    _method->invoke(_target->externalPtr(), _args);
+  else _method->invoke(_target, _stack);
+}
+
 /* Evaluation */
 
 #undef eval
@@ -93,7 +98,10 @@ void MethodCall::eval() {
     _stack = new Smoke::StackItem[length(_args) + 1];
   else if (_mode == SmokeToR)
     PROTECT(_args = allocVector(VECSXP, stackSize() - 1));
-  marshal();
+  if (_mode != Identity) {
+    marshal();
+    _called = false;
+  } else invokeMethod();
   if (_mode == RToSmoke) {
     delete[] _stack;
     _stack = NULL;
@@ -191,7 +199,8 @@ MethodCall::argKey(SEXP arg) const
   return QByteArray(r);
 }
 
-// NOTE: the assumption is that class name uniquely identifies a class
+// FIXME: this only works from R. Could generalize, but not sure if
+// this caching is worth it yet.
 QByteArray
 MethodCall::cacheKey() const {
   QByteArray mcid(klass()->name());

@@ -17,7 +17,8 @@ void SmokeMethod::invoke(SmokeObject *obj, Smoke::Stack stack) {
     ptr = obj->cast(cl.className);
   }
     
-  (*fn)(_id, ptr, stack);
+  (*fn)(_m->method, ptr, stack);
+  
   if (isConstructor()) {
     Smoke::StackItem s[2];
     s[1].s_voidp = RQtModule::module(_smoke)->binding();

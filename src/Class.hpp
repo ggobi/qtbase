@@ -19,9 +19,12 @@ public:
   virtual const char* name() const = 0;
   virtual Method *findMethod(const MethodCall &call) const = 0;
   virtual QList<Method *> methods() const = 0;
-  virtual QList<const Class *> ancestors() const = 0;
+  virtual QList<const Class *> parents() const = 0;
   virtual const SmokeClass *smokeBase() const = 0;
+
+  /* Some utilities */
   
+  QList<const Class *> ancestors() const;
   
   /* Whether the Class objects represent the same class. */
   bool operator ==(const Class &b) const {

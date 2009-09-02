@@ -25,6 +25,7 @@ public:
   inline unsigned short elem() const { return _t->flags & Smoke::tf_elem; }
   inline const char *name() const { return _t->name; }
   inline Smoke::Index classId() const { return _t->classId; }
+  inline bool isVoid() const { return _id == 0; }
 
   // tests
   inline bool isStack() const {

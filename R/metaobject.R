@@ -1,12 +1,3 @@
-qmethods <- function(x) {
-  stopifnot(is(x, "QObject"))
-  methods <- .Call(qt_qmethods, x)
-  methods[[1]] <- c("method", "signal", "slot", "constructor")[methods[[1]] + 1]
-  methods <- c(list(sub("\\(.*", "", methods[[2]])), methods)
-  names(methods) <- c("name", "type", "signature", "return", "nargs")
-  as.data.frame(methods, stringsAsFactors=FALSE, row.names = methods$signature)
-}
-
 qnormalizedSignature <- function(x) {
   .Call(qt_qnormalizedSignature, as.character(x))
 }

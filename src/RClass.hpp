@@ -17,7 +17,7 @@ public:
   virtual Method *findMethod(const MethodCall &call);
   virtual const SmokeClass *smokeBase() const;
   virtual QList<Method *> methods() const;
-  virtual QList<const Class *> ancestors() const;
+  virtual QList<const Class *> parents() const;
   
   /* R specific accessors */
   SEXP env() const;

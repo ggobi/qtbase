@@ -64,6 +64,7 @@ const QMetaObject *MocClass::findMetaObject() const {
   } else {
     DynamicBinding binding = DynamicBinding(_delegate, "staticMetaObject");
     Smoke::StackItem items[1];
+    items[0].s_voidp = NULL;
     binding.invoke(NULL, items);
     meta = reinterpret_cast<const QMetaObject*>(items[0].s_voidp);
   }
@@ -73,7 +74,7 @@ const QMetaObject *MocClass::findMetaObject() const {
 QList<Method *> MocClass::methods() const {
   const QMetaObject *meta = metaObject();
   int n = meta->methodCount();
-  QList<Method *> methods;
+  QList<Method *> methods = _delegate->methods();
   Smoke *smoke = smokeBase()->smoke();
   for (int i = 0; i < n; i++) {
     if (meta->method(i).access() != QMetaMethod::Private)

@@ -31,5 +31,15 @@ const Class* Class::fromSexp(SEXP sexp) {
     const char * className = CHAR(asChar(getAttrib(sexp, nameSym)));
     Smoke *smoke = asSmoke(getAttrib(sexp, smokeSym));
     return Class::fromSmokeName(smoke, className);
-  } return NULL;
+  }
+  return NULL;
+}
+
+QList<const Class *> Class::ancestors() const {
+  QList<const Class *> _parents = parents();
+  QList<const Class *> classes = _parents;
+  const Class *parent;
+  foreach(parent, _parents)
+    classes.append(parent->ancestors());
+  return classes;
 }

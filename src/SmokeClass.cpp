@@ -24,18 +24,22 @@ QHash<QByteArray,Smoke::ModuleIndex*>* SmokeMethodCache::cache = NULL;
 
 Smoke::ModuleIndex SmokeMethodCache::find(const MethodCall &call) {
   static Smoke::ModuleIndex missing = { NULL, -1 };
-  Smoke::ModuleIndex *index = (*cache)[call.cacheKey()];
-  if (index)
-    return *index;
+  if (call.args()) { // FIXME: caching does not work yet for foreign calls
+    Smoke::ModuleIndex *index = (*cache)[call.cacheKey()];
+    if (index)
+      return *index;
+  }
   return missing;
 }
 
 void SmokeMethodCache::insert(const MethodCall &call,
                               const Smoke::ModuleIndex &index)
 {
-  if (!cache)
-    cache = new QHash<QByteArray,Smoke::ModuleIndex*>;
-  (*cache)[call.cacheKey()] = new Smoke::ModuleIndex(index);
+  if (call.args()) {
+    if (!cache)
+      cache = new QHash<QByteArray,Smoke::ModuleIndex*>;
+    (*cache)[call.cacheKey()] = new Smoke::ModuleIndex(index);
+  }
 }
 
 Smoke::ModuleIndex SmokeClass::selectIndex(const MethodCall& call) const
@@ -48,7 +52,9 @@ Smoke::ModuleIndex SmokeClass::selectIndex(const MethodCall& call) const
   meth = _smoke->findMethod(ind, _smoke->idMethodName(m->name()));
   if (meth.index) {
     Smoke::Index i = _smoke->methodMaps[meth.index].method;
-    if (i < 0) { // uh oh, multiple matches
+    if (i > 0)
+      meth.index = i;
+    else if (i < 0) { // uh oh, multiple matches
       int bestMatch = -1;
       Smoke::Index ambig, bestMethod;
       SEXP rargs = call.args();
@@ -75,7 +81,7 @@ Smoke::ModuleIndex SmokeClass::selectIndex(const MethodCall& call) const
       if (ambiguous)
         error("Unable to disambiguate method %s::%s", name(), m->name());
       meth.index = bestMethod;
-    } else if (i == 0) error("Corrupt method %s::%s", name(), m->name());
+    } else error("Corrupt method %s::%s", name(), m->name());
     SmokeMethodCache::insert(call, meth); // remember for next time
   }
   return meth;
@@ -90,13 +96,12 @@ Method *SmokeClass::findMethod(const MethodCall &call) const {
 }
 
 // Caller needs to free the elements
-QList<const Class *> SmokeClass::ancestors() const {
+QList<const Class *> SmokeClass::parents() const {
   QList<const Class *> classes;
   Smoke::Index *parents = _smoke->inheritanceList + _c->parents;
   for(int i = 0; parents[i]; i++) {
     const Class *c = Class::fromSmokeId(_smoke, parents[i]);
     classes.append(c);
-    classes.append(c->ancestors());
   }
   return classes;
 }

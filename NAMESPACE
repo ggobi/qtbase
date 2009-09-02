@@ -13,7 +13,7 @@ export(testLabel)
 export(qtimer)
 
 # metadata
-export(qmethods, qnormalizedSignature, qproperties)
+export(qnormalizedSignature, qproperties)
 S3method("$", QObject)
 S3method("$<-", QObject)
 S3method(names, QObject)
@@ -29,3 +29,14 @@ export(qproperty, "qproperty<-")
 
 # constructors of simple types
 export(qrect, qpoint, qsize, qcolor, qfont)
+
+# smoke library
+S3method(print, RQtLibrary)
+
+# classes
+S3method("$", RQtClass)
+S3method(print, RQtClass)
+export(qmethods)
+
+# the Qt smoke library
+export(Qt)

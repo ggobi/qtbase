@@ -113,6 +113,8 @@ private:
     TypeHandler::MarshalFn fn = marshalFn(type());
     (*fn)(this);
   }
+
+  void invokeMethod();
   
   int _cur;
   bool _called;

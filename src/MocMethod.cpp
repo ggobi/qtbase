@@ -7,6 +7,13 @@
 #include "RQtModule.hpp"
 #include "Class.hpp"
 
+MocMethod::MocMethod(Smoke *smoke, const QMetaObject *meta, int id)
+  : _method(meta->method(id)), _meta(meta), _id(id), _smoke(smoke)
+{
+  QByteArray signature(_method.signature());
+  _name = signature.mid(0, signature.indexOf('('));
+}
+
 void MocMethod::invoke(SmokeObject *o, Smoke::Stack stack) {
   QVector<SmokeType> _types = types();
   SmokeStack smokeStack = SmokeStack(stack, _types.size());
@@ -27,6 +34,10 @@ void MocMethod::invoke(QObject *obj, void **o) {
 Smoke::Index
 MocMethod::smokeTypeForName(Smoke *smoke, QByteArray name) const {
   Smoke::Index typeId = smoke->idType(name.constData());
+  if (typeId == 0) {
+    name.replace("const ", "");
+    typeId = smoke->idType(name);
+  }
   if (typeId == 0 && !name.contains('*')) {
     if (!name.contains("&")) {
       name += "&";
@@ -37,6 +48,7 @@ MocMethod::smokeTypeForName(Smoke *smoke, QByteArray name) const {
 }
 
 QVector<SmokeType> MocMethod::types() const {
+  int i = 0;
   QList<QByteArray> methodTypes = _method.parameterTypes();
   QVector<SmokeType> _types(methodTypes.size() + 1);
   methodTypes.prepend(QByteArray(_method.typeName()));  
@@ -44,7 +56,6 @@ QVector<SmokeType> MocMethod::types() const {
     Smoke *smoke = _smoke;
     Smoke::Index typeId = 0;
     if (!name.isEmpty()) { // should only be empty for void (return)
-      name.replace("const ", "");
       typeId = smokeTypeForName(smoke, name);
       // Yes, slot arguments can come from different smoke modules
       if (typeId == 0) {
@@ -59,7 +70,7 @@ QVector<SmokeType> MocMethod::types() const {
         qCritical("Cannot handle Moc type '%s'\n", name.constData());
       }
     }
-    _types.append(SmokeType(smoke, typeId));
+    _types[i++] = SmokeType(smoke, typeId);
   }
   return _types;
 }
@@ -67,4 +78,3 @@ QVector<SmokeType> MocMethod::types() const {
 const Class* MocMethod::klass() const {
   return Class::fromSmokeName(_smoke, _meta->className());
 }
-
