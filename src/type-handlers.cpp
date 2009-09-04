@@ -334,7 +334,7 @@ int scoreArg_basetype(SEXP arg, const SmokeType &type) {
     break;
   case EXTPTRSXP:
     if (elem == Smoke::t_class) {
-      SmokeObject *o = SmokeObject::fromExternalPtr(value);
+      SmokeObject *o = SmokeObject::fromSexp(value);
       if (!o || !o->smoke()) // some kind of foreign pointer
         score = 1;
       else {
@@ -515,7 +515,7 @@ void marshal_QDBusVariant(MethodCall *m) {
         break;
       }
 
-      SmokeObject *o = SmokeObject::fromExternalPtr(v);
+      SmokeObject *o = SmokeObject::fromSexp(v);
       if (!o || !o->ptr()) {
         if (m->type().isRef()) {
           m->unsupported();
@@ -537,7 +537,7 @@ void marshal_QDBusVariant(MethodCall *m) {
       void *p = m->item().s_voidp;
       SEXP obj =
         SmokeObject::fromPtr(p, m->smoke(), "QDBusVariant",
-                             m->type().isStack())->externalPtr();
+                             m->type().isStack())->sexp();
 
 #ifdef DEBUG
       Rprintf("allocating %s %p -> %p\n", "Qt::DBusVariant", p, (void*)obj);

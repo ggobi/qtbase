@@ -1,6 +1,7 @@
 #include "SmokeObject.hpp"
 #include "SmokeClass.hpp"
 #include "RQtModule.hpp"
+#include "InstanceObjectTable.hpp"
 
 #include "wrap.hpp"
 
@@ -37,29 +38,25 @@ SmokeObject *SmokeObject::fromPtr(void *ptr, Smoke *smoke, int classId,
 }
 
 SEXP
-SmokeObject::externalPtrFromPtr(void *ptr, const Class *klass,
+SmokeObject::sexpFromPtr(void *ptr, const Class *klass,
                                 bool allocated, bool copy)
 {
-  return fromPtr(ptr, klass, allocated, copy)->externalPtr();
+  return fromPtr(ptr, klass, allocated, copy)->sexp();
 }
 
 SEXP
-SmokeObject::externalPtrFromPtr(void *ptr, Smoke *smoke, const char *name,
+SmokeObject::sexpFromPtr(void *ptr, Smoke *smoke, const char *name,
                                 bool allocated, bool copy)
 {
-  return externalPtrFromPtr(ptr, Class::fromSmokeName(smoke, name), allocated,
-                            copy);
+  return sexpFromPtr(ptr, Class::fromSmokeName(smoke, name), allocated, copy);
 }
 
-SmokeObject * SmokeObject::fromExternalPtr(SEXP externalPtr)
+SmokeObject * SmokeObject::fromSexp(SEXP sexp)
 {
-  if (externalPtr == R_NilValue)
-    return NULL;
-  return unwrapPointer(externalPtr, SmokeObject);
+  if (!isEnvironment(sexp))
+    error("Expected an environment");
+  return InstanceObjectTable::instanceFromSexp(HASHTAB(sexp));
 }
-
-/* hash SmokeObject to SEXP externalptr, no reference counting */
-QHash<const SmokeObject *, SEXP> SmokeObject::externalPtrs;
 
 SmokeObject::SmokeObject(void *ptr, const Class *klass, bool allocated)
   : _ptr(ptr), _klass(klass), _allocated(allocated)
@@ -67,12 +64,16 @@ SmokeObject::SmokeObject(void *ptr, const Class *klass, bool allocated)
   _klass = Class::fromSmokeId(smoke(), module()->resolveClassId(this));
 }
 
-static void finalizeSmokeObject(SEXP obj) {
-  SmokeObject *so = SmokeObject::fromExternalPtr(obj);
-  R_ClearExternalPtr(obj);
+void SmokeObject::invalidateSexp() {
+  _sexp = NULL;
+}
+
+static void finalizeSexpInstance(SEXP obj) {
+  SmokeObject *so = SmokeObject::fromSexp(obj);
+  so->invalidateSexp();
   if (so->allocated() && !so->memoryIsOwned()) {
-    //qDebug("Destructing referant");
-    const char *cname = so->klass()->name();
+    qDebug("Destructing referant");
+    const char *cname = so->className();
     char *destructor = new char[strlen(cname) + 2];
     destructor[0] = '~';
     strcpy(destructor + 1, cname);
@@ -81,30 +82,36 @@ static void finalizeSmokeObject(SEXP obj) {
   }
 }
 
-SEXP SmokeObject::createExternalPtr() const {
-  QList<QByteArray> classes;
-  const Class *c = _klass;
-  classes.append(c->name());
-  foreach(c, c->ancestors()) {
-    classes.append(c->name());
-  }
-  classes.append("SmokeObject");
-  return wrapPointer(const_cast<SmokeObject *>(this), classes,
-                     finalizeSmokeObject);
+SEXP SmokeObject::createSexp() {
+  SEXP env, rclasses;
+  PROTECT(env = allocSExp(ENVSXP));
+  SET_ENCLOS(env, R_EmptyEnv);
+  R_RegisterCFinalizer(env, finalizeSexpInstance);
+  
+  QList<const Class *> classes = _klass->ancestors();
+  classes.prepend(_klass);
+  rclasses = allocVector(STRSXP, classes.size() + 2);
+  setAttrib(env, R_ClassSymbol, rclasses);
+  for (int i = 0; i < classes.size(); i++)
+    SET_STRING_ELT(rclasses, i, mkChar(classes[i]->name()));
+  SET_STRING_ELT(rclasses, length(rclasses) - 2, mkChar("UserDefinedDatabase"));
+  SET_STRING_ELT(rclasses, length(rclasses) - 1, mkChar("environment"));
+
+  SET_HASHTAB(env, _klass->createObjectTable(this)->sexp());
+
+  UNPROTECT(1);
+  return env;
 }
 
-SEXP SmokeObject::externalPtr() const {  
-  SEXP value;
-  value = externalPtrs[this];
-  if (!value) {
-    value = createExternalPtr();
-    externalPtrs[this] = value;
-  }
-  return value;
+SEXP SmokeObject::sexp() {
+  if (!_sexp)
+    _sexp = createSexp();
+  return _sexp;
 }
 
 Smoke *SmokeObject::smoke() const { return _klass->smokeBase()->smoke(); }
 int SmokeObject::classId() const { return _klass->smokeBase()->classId(); }
+const char *SmokeObject::className() const { return _klass->name(); }
 
 RQtModule *SmokeObject::module() const {
   return RQtModule::module(smoke());
@@ -211,11 +218,8 @@ SmokeObject::invokeMethod(const char *name, Smoke::Stack stack) {
 }
 
 SmokeObject::~SmokeObject() {
-  SEXP extptr = externalPtr();
-  if (R_ExternalPtrAddr(extptr)) // R extptr still exists, invalidate class
-    setAttrib(extptr, R_ClassSymbol, ScalarString(R_NaString));
+  if (_sexp) // sexp still exists, invalidate class
+    setAttrib(_sexp, R_ClassSymbol, ScalarString(R_NaString));
   instances.remove(_ptr);
-  externalPtrs.remove(this);
-  //qDebug("Destructing SmokeObject, allocated=%d, owned=%d", _allocated,
-  //       memoryIsOwned());
+  qDebug("Destructing SmokeObject");
 }

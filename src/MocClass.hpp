@@ -20,9 +20,11 @@ public:
   virtual QList<const Class *> parents() const {
     return _delegate->parents();
   }
-  // cannot access any method information without an instance
-  virtual QList<Method *> methods() const;
   
+  virtual QList<Method *> methods(Method::Qualifiers qualifiers = Method::None)
+    const;
+  virtual bool hasMethod(const char *name,
+                         Method::Qualifiers qualifiers = Method::None) const;
   virtual Method *findMethod(const MethodCall &call) const;
 
   const QMetaObject *metaObject() const { return _meta; }
@@ -34,6 +36,7 @@ private:
 
   Class *_delegate;
   const QMetaObject *_meta;
+  mutable QHash<QByteArray, int> _methods; // map from name (not signature)
 };
 
 #endif

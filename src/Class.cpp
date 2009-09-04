@@ -2,6 +2,8 @@
 
 #include "Class.hpp"
 #include "ClassFactory.hpp"
+#include "SmokeObject.hpp"
+#include "InstanceObjectTable.hpp"
 #include "smoke.hpp"
 
 #include <Rinternals.h>
@@ -35,6 +37,8 @@ const Class* Class::fromSexp(SEXP sexp) {
   return NULL;
 }
 
+/* Object methods */
+
 QList<const Class *> Class::ancestors() const {
   QList<const Class *> _parents = parents();
   QList<const Class *> classes = _parents;
@@ -42,4 +46,8 @@ QList<const Class *> Class::ancestors() const {
   foreach(parent, _parents)
     classes.append(parent->ancestors());
   return classes;
+}
+
+InstanceObjectTable *Class::createObjectTable(SmokeObject *obj) const {
+  return new InstanceObjectTable(obj);
 }

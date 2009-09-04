@@ -8,7 +8,7 @@
 
 MethodCall::MethodCall(Method *method, SEXP obj, SEXP args)
   : _cur(0), _called(false), _mode(Identity),
-    _target(obj ? SmokeObject::fromExternalPtr(obj) : NULL), _stack(NULL),
+    _target(obj ? SmokeObject::fromSexp(obj) : NULL), _stack(NULL),
     _args(args), _method(method), _types(method->types())
 { }
 MethodCall::MethodCall(Method *method, SmokeObject *obj, Smoke::Stack args)
@@ -18,12 +18,12 @@ MethodCall::MethodCall(Method *method, SmokeObject *obj, Smoke::Stack args)
 { }
 MethodCall::MethodCall(RMethod *method, SEXP obj, SEXP args)
   : _cur(0), _called(false), _mode(Identity),
-    _target(obj ? SmokeObject::fromExternalPtr(obj) : NULL), _stack(NULL),
+    _target(obj ? SmokeObject::fromSexp(obj) : NULL), _stack(NULL),
     _args(args), _method(method), _types(method->types())
 { } 
 MethodCall::MethodCall(ForeignMethod *method, SEXP obj, SEXP args)
   : _cur(0), _called(false), _mode(RToSmoke),
-    _target(obj ? SmokeObject::fromExternalPtr(obj) : NULL), _stack(NULL),
+    _target(obj ? SmokeObject::fromSexp(obj) : NULL), _stack(NULL),
     _args(args), _method(method), _types(method->types())
 { }
 MethodCall::MethodCall(RMethod *method, SmokeObject *obj, Smoke::Stack args)
@@ -85,7 +85,7 @@ void MethodCall::marshal() {
 
 void MethodCall::invokeMethod() {
   if (_mode == SmokeToR || (_mode == Identity && _args))
-    _method->invoke(_target->externalPtr(), _args);
+    _method->invoke(_target->sexp(), _args);
   else _method->invoke(_target, _stack);
 }
 
@@ -187,7 +187,7 @@ MethodCall::argKey(SEXP arg) const
   else if(TYPEOF(arg) == LGLSXP)
     r = "B";
   else if (TYPEOF(arg) == EXTPTRSXP) {
-    SmokeObject *o = SmokeObject::fromExternalPtr(arg);
+    SmokeObject *o = SmokeObject::fromSexp(arg);
     if (o == 0 || o->smoke() == 0) {
       r = "a";
     } else {

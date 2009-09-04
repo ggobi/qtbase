@@ -35,9 +35,10 @@ public:
   virtual const Class* klass() const;
   virtual QVector<SmokeType> types() const;
   virtual Qualifiers qualifiers() const {
-    Qualifiers flags = 0;
+    Qualifiers flags = NotStatic;
     if (_method.access() == QMetaMethod::Protected)
       flags |= Protected;
+    else flags |= Public;
     return flags;
   }
 

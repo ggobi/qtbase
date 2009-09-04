@@ -75,7 +75,7 @@ extern "C" {
 static QMetaObject* 
 parent_meta_object(SEXP obj) 
 {
-  SmokeObject* o = SmokeObject::fromExternalPtr(obj);
+  SmokeObject* o = SmokeObject::fromSexp(obj);
   Smoke *smoke = o->smoke();
   Smoke::ModuleIndex nameId = smoke->idMethodName("metaObject");
   Smoke::ModuleIndex classIdx = { smoke, o->classId() };
@@ -108,7 +108,7 @@ qt_qnewMetaObject(SEXP obj, SEXP parentMeta, SEXP rstringdata, SEXP rdata)
   } else {
     // The parent class is a custom R class whose metaObject
     // was constructed at runtime
-    SmokeObject* p = SmokeObject::fromExternalPtr(parentMeta);
+    SmokeObject* p = SmokeObject::fromSexp(parentMeta);
     superdata = reinterpret_cast<QMetaObject *>(p->ptr());
   }
   
@@ -199,5 +199,5 @@ qt_qnewMetaObject(SEXP obj, SEXP parentMeta, SEXP rstringdata, SEXP rdata)
   printf("\"\n\n");
 
 #endif
-  return SmokeObject::externalPtrFromPtr(meta, qt_Smoke, "QMetaObject", true);
+  return SmokeObject::sexpFromPtr(meta, qt_Smoke, "QMetaObject", true);
 }

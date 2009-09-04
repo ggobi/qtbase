@@ -492,7 +492,7 @@ void marshal_from_sexp<SmokeClassWrapper>(MethodCall *m)
     return;
   }
 
-  SmokeObject *o = SmokeObject::fromExternalPtr(v);
+  SmokeObject *o = SmokeObject::fromSexp(v);
   if (o == 0 || o->ptr() == 0) {
     if(m->type().isRef()) {
       warning("References can't be nil");
@@ -563,7 +563,7 @@ void marshal_to_sexp<SmokeClassWrapper>(MethodCall *m)
     SmokeObject::fromPtr(p, m->smoke(), m->type().classId(),
                          !m->type().isConst(),
                          m->type().isConst() && m->type().isRef());
-  m->setSexp(o->externalPtr());
+  m->setSexp(o->sexp());
 }
 
 /******************************* MACROS ******************************/
@@ -603,7 +603,7 @@ void marshal_ItemList(MethodCall *m) {
       for(i = 0; i < count; i++) {
         SEXP item = VECTOR_ELT(list, i);
         // TODO do type checking!
-        SmokeObject *o = SmokeObject::fromExternalPtr(item);
+        SmokeObject *o = SmokeObject::fromSexp(item);
         if(!o || !o->ptr())
           continue;
         void *ptr = o->cast(ItemSTR);
@@ -619,7 +619,7 @@ void marshal_ItemList(MethodCall *m) {
           SmokeObject *so =
             SmokeObject::fromPtr((void*)cpplist->at(i), m->smoke(),
                                  m->smoke()->idClass(ItemSTR).index);
-          SEXP obj = so->externalPtr();
+          SEXP obj = so->sexp();
           SET_VECTOR_ELT(list, i, obj);
         }
         UNPROTECT(1);
@@ -646,7 +646,7 @@ void marshal_ItemList(MethodCall *m) {
         SmokeObject *so =
           SmokeObject::fromPtr((void*)cpplist->at(i), m->smoke(),
                                m->smoke()->idClass(ItemSTR).index);
-        SEXP obj = so->externalPtr();
+        SEXP obj = so->sexp();
         SET_VECTOR_ELT(list, i, obj);
       }
       UNPROTECT(1);
@@ -661,7 +661,7 @@ void marshal_ItemList(MethodCall *m) {
         for (i = 0; i < count; i++) {
           SEXP item = VECTOR_ELT(list, i);
           // TODO do type checking!
-          SmokeObject *o = SmokeObject::fromExternalPtr(item);
+          SmokeObject *o = SmokeObject::fromSexp(item);
           if(!o || !o->ptr())
             continue;
           void *ptr = o->cast(ItemSTR);
@@ -701,7 +701,7 @@ void marshal_ValueListItem(MethodCall *m) {
       for(i = 0; i < count; i++) {
         SEXP item = VECTOR_ELT(list, i);
         // TODO do type checking!
-        SmokeObject *o = SmokeObject::fromExternalPtr(item);
+        SmokeObject *o = SmokeObject::fromSexp(item);
 
         if (!o || !o->ptr())
           continue;
@@ -719,7 +719,7 @@ void marshal_ValueListItem(MethodCall *m) {
           SmokeObject *so =
             SmokeObject::fromPtr((void*)&cpplist->at(i), m->smoke(),
                                  m->smoke()->idClass(ItemSTR).index);
-          SEXP obj = so->externalPtr();
+          SEXP obj = so->sexp();
           SET_VECTOR_ELT(list, i, obj);
         }
         UNPROTECT(1);
@@ -746,7 +746,7 @@ void marshal_ValueListItem(MethodCall *m) {
         SmokeObject *so =
           SmokeObject::fromPtr((void*)&(valuelist->at(i)), m->smoke(),
                                m->smoke()->idClass(ItemSTR).index);
-        SEXP obj = so->externalPtr();
+        SEXP obj = so->sexp();
         SET_VECTOR_ELT(list, i, obj);
       }
       UNPROTECT(1);
@@ -790,7 +790,7 @@ void marshal_LinkedItemList(MethodCall *m) {
       for (i = 0; i < count; i++) {
         SEXP item = VECTOR_ELT(list, i);
         // TODO do type checking!
-        SmokeObject *o = SmokeObject::fromExternalPtr(item);
+        SmokeObject *o = SmokeObject::fromSexp(item);
         if (o == 0 || o->ptr() == 0)
           continue;
         void *ptr = o->cast(ItemSTR);
@@ -809,7 +809,7 @@ void marshal_LinkedItemList(MethodCall *m) {
         while (iter.hasNext()) {
           SmokeObject *so =
             SmokeObject::fromPtr((void *) iter.next(), m->smoke(), classId);
-          SET_VECTOR_ELT(list, i++, so->externalPtr());
+          SET_VECTOR_ELT(list, i++, so->sexp());
         }
         m->setSexp(list);
         UNPROTECT(1);   
@@ -845,7 +845,7 @@ void marshal_LinkedItemList(MethodCall *m) {
         SmokeObject *so =
           SmokeObject::fromPtr(p, m->smoke(),
                                m->smoke()->idClass(ItemSTR).index);
-        SEXP obj = so->externalPtr();
+        SEXP obj = so->sexp();
         SET_VECTOR_ELT(av, i++, obj);
       }
 
@@ -881,7 +881,7 @@ void marshal_LinkedValueListItem(MethodCall *m) {
       for(i = 0; i < count; i++) {
         SEXP item = VECTOR_ELT(list, i);
         // TODO do type checking!
-        SmokeObject *o = SmokeObject::fromExternalPtr(item);
+        SmokeObject *o = SmokeObject::fromSexp(item);
         
         if (o == 0 || o->ptr() == 0)
           continue;
@@ -902,7 +902,7 @@ void marshal_LinkedValueListItem(MethodCall *m) {
         while (iter.hasNext()) {
           SmokeObject *so =
             SmokeObject::fromPtr((void*)&(iter.next()), m->smoke(), classId);
-          SET_VECTOR_ELT(list, i++, so->externalPtr());
+          SET_VECTOR_ELT(list, i++, so->sexp());
         }
       }
 
@@ -936,7 +936,7 @@ void marshal_LinkedValueListItem(MethodCall *m) {
         }
 
         SmokeObject *so = SmokeObject::fromPtr(p, m->smoke(), ix);
-        SET_VECTOR_ELT(av, i++, so->externalPtr());
+        SET_VECTOR_ELT(av, i++, so->sexp());
       }
 
       m->setSexp(av);
@@ -973,7 +973,7 @@ void marshal_Hash(MethodCall *m) {
         SEXP key = STRING_ELT(keys, i);
         SEXP value = VECTOR_ELT(hv, i);
         
-        SmokeObject *o = SmokeObject::fromExternalPtr(value);
+        SmokeObject *o = SmokeObject::fromSexp(value);
         if( !o || !o->ptr())
           continue;
         void *val_ptr = o->cast(ValueSTR);
@@ -1007,7 +1007,7 @@ void marshal_Hash(MethodCall *m) {
       for (QHashIterator<QString, Value*> it(*hash); it.hasNext(); it.next()) {
         void *val_p = it.value();
         SmokeObject *so = SmokeObject::fromPtr(val_p, m->smoke(), val_ix);
-        SET_VECTOR_ELT(hv, i, so->externalPtr());
+        SET_VECTOR_ELT(hv, i, so->sexp());
         SET_STRING_ELT(hv, i++, asChar(qstring2sexp(it.key())));
       }
       
@@ -1043,7 +1043,7 @@ void marshal_Map(MethodCall *m) {
         SEXP key = STRING_ELT(keys, i);
         SEXP value = VECTOR_ELT(hv, i);
         
-        SmokeObject *o = SmokeObject::fromExternalPtr(value);
+        SmokeObject *o = SmokeObject::fromSexp(value);
         if( !o || !o->ptr())
           continue;
         void * val_ptr = o->cast(ValueSTR);
@@ -1077,7 +1077,7 @@ void marshal_Map(MethodCall *m) {
       for (QHashIterator<QString, Value*> it(*map); it.hasNext(); it.next()) {
         void *val_p = it.value();
         SmokeObject *so = SmokeObject::fromPtr(val_p, m->smoke(), val_ix);
-        SET_VECTOR_ELT(hv, i, so->externalPtr());
+        SET_VECTOR_ELT(hv, i, so->sexp());
         SET_STRING_ELT(hv, i++, asChar(qstring2sexp(it.key())));
       }
       

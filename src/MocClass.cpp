@@ -71,14 +71,35 @@ const QMetaObject *MocClass::findMetaObject() const {
   return meta;
 }
 
-QList<Method *> MocClass::methods() const {
-  const QMetaObject *meta = metaObject();
-  int n = meta->methodCount();
-  QList<Method *> methods = _delegate->methods();
+QList<Method *> MocClass::methods(Method::Qualifiers qualifiers) const {
+  int n = _meta->methodCount();
+  QList<Method *> methods = _delegate->methods(qualifiers);
   Smoke *smoke = smokeBase()->smoke();
   for (int i = 0; i < n; i++) {
-    if (meta->method(i).access() != QMetaMethod::Private)
-      methods << new MocMethod(smoke, meta, i);
+    if (_meta->method(i).access() != QMetaMethod::Private)
+      if ((MocMethod(smoke, _meta, i).qualifiers() & qualifiers) == qualifiers)
+        methods << new MocMethod(smoke, _meta, i);
   }
   return methods;
+}
+
+bool
+MocClass::hasMethod(const char *name, Method::Qualifiers qualifiers) const {
+  if (_methods.isEmpty()) {
+    QList<Method *> meths = methods();
+    for (int i = 0; i < meths.size(); i++) {
+      _methods.insert(meths[i]->name(), i + 1);
+      delete meths[i];
+    }
+  }
+  bool found = _delegate->hasMethod(name, qualifiers);
+  if (!found) {
+    int index = _methods[name] - 1;
+    if (index != -1) {
+      MocMethod method(smokeBase()->smoke(), _meta, index);
+      if((method.qualifiers() & qualifiers) == qualifiers)
+        found = true;
+    }
+  }
+  return found;
 }

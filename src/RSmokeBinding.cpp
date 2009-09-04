@@ -46,7 +46,7 @@ qt_metacall(SEXP self, QMetaObject::Call _c, int id, void **_o)
 {
   // Assume the target slot is a C++ one
   // FIXME: Is this correct? These methods can be virtual...
-  SmokeObject *o = SmokeObject::fromExternalPtr(self);
+  SmokeObject *o = SmokeObject::fromSexp(self);
   Smoke::StackItem i[4];
   i[1].s_enum = _c;
   i[2].s_int = id;
@@ -93,7 +93,7 @@ bool RSmokeBinding::callMethod(Smoke::Index method, void *obj,
 {
   SmokeObject *o =
     SmokeObject::fromPtr(obj, smoke, smoke->methods[method].classId);
-  SEXP sobj = o->externalPtr();
+  SEXP sobj = o->sexp();
 
 #ifdef DEBUG
     Smoke::Method & meth = smoke->methods[method];

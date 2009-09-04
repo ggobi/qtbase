@@ -45,8 +45,8 @@ Smoke::ModuleIndex SmokeClass::findIndex(const MethodCall& call) const
   Smoke::ModuleIndex meth = SmokeMethodCache::find(call);
   if (meth.index != -1) // cache hit, return immediately
     return meth;
-  Smoke::ModuleIndex ind = { _smoke, _id };
   Method *m = call.method();
+  Smoke::ModuleIndex ind = { _smoke, _id };
   meth = _smoke->findMethod(ind, _smoke->idMethodName(m->name()));
   if (meth.index) {
     Smoke::Index i = _smoke->methodMaps[meth.index].method;
@@ -104,7 +104,7 @@ QList<const Class *> SmokeClass::parents() const {
   return classes;
 }
 
-QList<Method *> SmokeClass::methods() const {
+QList<Method *> SmokeClass::methods(Method::Qualifiers qualifiers) const {
   QList<Method *> meths;
   Smoke::Index imax = _smoke->numMethodMaps;
   Smoke::Index imin = 0, icur = -1, methmin = -1, methmax = -1;
@@ -133,18 +133,42 @@ QList<Method *> SmokeClass::methods() const {
       Smoke::Index ix = _smoke->methodMaps[i].method;
       if (ix >= 0) {	// single match
         if ((_smoke->methods[ix].flags & Smoke::mf_internal) == 0)
-          meths << new SmokeMethod(_smoke, ix);
+          if ((SmokeMethod(_smoke, ix).qualifiers() & qualifiers) == qualifiers)
+            meths << new SmokeMethod(_smoke, ix);
       } else {		// multiple match
         ix = -ix;		// turn into ambiguousMethodList index
-        while (_smoke->ambiguousMethodList[ix]) {
-          Smoke::Method &methodRef =
-            _smoke->methods[_smoke->ambiguousMethodList[ix]];
-          if ((methodRef.flags & Smoke::mf_internal) == 0)
-            meths << new SmokeMethod(_smoke, _smoke->ambiguousMethodList[ix]);
+        Smoke::Index ambig;
+        while ((ambig = _smoke->ambiguousMethodList[ix])) {
+          Smoke::Method &methodRef = _smoke->methods[ambig];
+          if ((methodRef.flags & Smoke::mf_internal) == 0) {
+            SmokeMethod method(_smoke, ambig);
+            if ((method.qualifiers() & qualifiers) == qualifiers)
+              meths << new SmokeMethod(_smoke, ambig);
+          }
           ix++;
         }
       }
     }
   }
+  foreach(const Class *p, parents())
+    meths.append(p->methods());
   return meths;
+}
+
+bool
+SmokeClass::hasMethod(const char *name, Method::Qualifiers qualifiers) const {
+  bool found = false;
+  Smoke::Index nameInd = _smoke->findMethod(this->name(), name).index;
+  if (nameInd) {
+    Smoke::Index i = _smoke->methodMaps[nameInd].method;
+    if (i > 0)
+      found = (SmokeMethod(_smoke, i).qualifiers() & qualifiers) == qualifiers;
+    else if (i < 0) { // uh oh, multiple matches
+      Smoke::Index ambig;
+      while (!found && (ambig = _smoke->ambiguousMethodList[i++]))
+        found = (SmokeMethod(_smoke, ambig).qualifiers() & qualifiers) ==
+          qualifiers;
+    }
+  }
+  return found;
 }

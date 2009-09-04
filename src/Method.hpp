@@ -31,8 +31,8 @@ class Method {
 public:
   enum ErrorType { NoError, InvocationFailed, ImplementationFailed,
                    ImplementationMissing };
-  enum Qualifier { None, Static = 1 << 0, Protected = 1 << 1
-                   /*Virtual = 1 << 2*/ };
+  enum Qualifier { None, Static = 1 << 0, NotStatic = 1 << 1, Public = 1 << 2,
+                   Protected = 1 << 3 /*Virtual = 1 << 2*/ };
   Q_DECLARE_FLAGS(Qualifiers, Qualifier)
 
   virtual ~Method() { };

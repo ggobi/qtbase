@@ -28,7 +28,10 @@ public:
   virtual const char *name() const { return _c->className; }
   virtual Method *findMethod(const MethodCall &call) const;
   virtual const SmokeClass *smokeBase() const { return this; }
-  virtual QList<Method *> methods() const;
+  virtual QList<Method *> methods(Method::Qualifiers qualifiers = Method::None)
+    const;
+  virtual bool hasMethod(const char *name,
+                         Method::Qualifiers qualifiers = Method::None) const;
   virtual QList<const Class *> parents() const;
   
   inline const Smoke::Class &c() const { return *_c; }

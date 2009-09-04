@@ -3,11 +3,13 @@
 
 #include <QHash>
 
-class Method;
+#include "Method.hpp" // for Method::Qualifiers
+
 class MethodCall;
 class SmokeClass;
 class Smoke;
 class ClassFactory;
+class InstanceObjectTable;
 
 typedef struct SEXPREC* SEXP;
 
@@ -18,9 +20,21 @@ public:
   
   virtual const char* name() const = 0;
   virtual Method *findMethod(const MethodCall &call) const = 0;
-  virtual QList<Method *> methods() const = 0;
+  virtual QList<Method *> methods(Method::Qualifiers qualifiers = Method::None)
+    const = 0;
+  virtual bool hasMethod(const char *name,
+                         Method::Qualifiers qualifiers = Method::None)
+    const = 0;
+  
+  //TODO: virtual QList<const char *> enumNames() const = 0;
+  //TODO: virtual Enum enum(const char *name) const = 0;
+  //TODO: virtual QList<const char *> propertyNames(Property::Access) const = 0;
+  //TODO: virtual Property property(const char *name) = 0;
   virtual QList<const Class *> parents() const = 0;
   virtual const SmokeClass *smokeBase() const = 0;
+
+  /* Factory of instance databases for R environments */
+  virtual InstanceObjectTable *createObjectTable(SmokeObject *obj) const;
 
   /* Some utilities */
   

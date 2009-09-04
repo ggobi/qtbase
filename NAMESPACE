@@ -14,7 +14,7 @@ export(qtimer)
 
 # metadata
 export(qnormalizedSignature, qproperties)
-S3method("$", QObject)
+##S3method("$", QObject)
 S3method("$<-", QObject)
 S3method(names, QObject)
 

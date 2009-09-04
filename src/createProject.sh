@@ -28,7 +28,7 @@ HEADERS += DynamicBinding.hpp MocDynamicBinding.hpp
 HEADERS += MethodCall.hpp type-handlers.hpp TypeHandler.hpp
 HEADERS += MocStack.hpp SmokeStack.hpp SmokeType.hpp
 HEADERS += RQtModule.hpp RSmokeBinding.hpp SmokeList.hpp
-HEADERS += SmokeObject.hpp
+HEADERS += SmokeObject.hpp ObjectTable.hpp InstanceObjectTable.hpp
 
 
 SOURCES += init.cpp EventLoop.cpp style.cpp 
@@ -45,7 +45,7 @@ SOURCES += DynamicBinding.cpp MocDynamicBinding.cpp
 SOURCES += MethodCall.cpp type-handlers.cpp
 SOURCES += MocStack.cpp
 SOURCES += RQtModule.cpp module.cpp RSmokeBinding.cpp SmokeList.cpp
-SOURCES += SmokeObject.cpp smoke.cpp 
+SOURCES += SmokeObject.cpp ObjectTable.cpp InstanceObjectTable.cpp smoke.cpp 
 
 INCLUDEPATH += ${R_INCLUDE_DIR} ../local/include
 CFLAGS += -g

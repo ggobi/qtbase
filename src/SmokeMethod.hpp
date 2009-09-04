@@ -35,8 +35,10 @@ public:
     Qualifiers flags = 0;
     if (_m->flags & Smoke::mf_protected)
       flags |= Protected;
+    else flags |= Public;
     if (_m->flags & Smoke::mf_static)
       flags |= Static;
+    else flags |= NotStatic;
     return flags;
   }
 
