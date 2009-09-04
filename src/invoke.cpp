@@ -6,7 +6,7 @@
 #include <Rinternals.h>
 
 extern "C"
-SEXP qt_qinvoke(SEXP method, SEXP self, SEXP args) {
+SEXP qt_qinvoke(SEXP self, SEXP method, SEXP args) {
   const char * methodName = CHAR(asChar(method));
   DynamicBinding binding(methodName);
   SEXP ans = binding.invoke(self, args);

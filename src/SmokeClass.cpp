@@ -40,14 +40,30 @@ void SmokeMethodCache::insert(const MethodCall &call,
   }
 }
 
+QByteArray SmokeClass::mungedMethodName(const MethodCall &call) const {
+  SEXP args = call.args();
+  QByteArray munged = QByteArray(call.method()->name());
+  if (!args) // does not yet work for foreign calls
+    return munged;
+  for (int i = 0; i < length(args); i++) {
+    SEXP arg = VECTOR_ELT(args, i);
+    if (isVectorAtomic(arg) && length(arg) == 1)
+      munged += "$";
+    else if (isEnvironment(arg))
+      munged += "#";
+    else munged += "?";
+  }
+  return munged;   
+}
+
 Smoke::ModuleIndex SmokeClass::findIndex(const MethodCall& call) const
 {
   Smoke::ModuleIndex meth = SmokeMethodCache::find(call);
   if (meth.index != -1) // cache hit, return immediately
     return meth;
   Method *m = call.method();
-  Smoke::ModuleIndex ind = { _smoke, _id };
-  meth = _smoke->findMethod(ind, _smoke->idMethodName(m->name()));
+  QByteArray munged = mungedMethodName(call);
+  meth = _smoke->findMethod(name(), munged);
   if (meth.index) {
     Smoke::Index i = _smoke->methodMaps[meth.index].method;
     if (i > 0)
@@ -158,7 +174,8 @@ QList<Method *> SmokeClass::methods(Method::Qualifiers qualifiers) const {
 bool
 SmokeClass::hasMethod(const char *name, Method::Qualifiers qualifiers) const {
   bool found = false;
-  Smoke::Index nameInd = _smoke->findMethod(this->name(), name).index;
+  QByteArray munged = mungedMethodName(name);
+  Smoke::Index nameInd = _smoke->findMethod(this->name(), munged).index;
   if (nameInd) {
     Smoke::Index i = _smoke->methodMaps[nameInd].method;
     if (i > 0)

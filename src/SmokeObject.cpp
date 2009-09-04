@@ -54,7 +54,7 @@ SmokeObject::sexpFromPtr(void *ptr, Smoke *smoke, const char *name,
 SmokeObject * SmokeObject::fromSexp(SEXP sexp)
 {
   if (!isEnvironment(sexp))
-    error("Expected an environment");
+    error("Expected an environment, but got '%s'", type2char(TYPEOF(sexp)));
   return InstanceObjectTable::instanceFromSexp(HASHTAB(sexp));
 }
 

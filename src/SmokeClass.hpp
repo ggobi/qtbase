@@ -59,6 +59,7 @@ public:
 private:
 
   Smoke::ModuleIndex findIndex(const MethodCall& call) const;
+  QByteArray mungedMethodName(const MethodCall &call) const;
   
   Smoke::Class *_c;
   Smoke *_smoke;
