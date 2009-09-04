@@ -504,10 +504,9 @@ void marshal_from_sexp<SmokeClassWrapper>(MethodCall *m)
   }
 		
   void *ptr = o->ptr();
-  m->marshal();
   
   if (!m->cleanup() && m->type().isStack()) {
-    ptr = o->constructCopy();
+    o = o->clone();
 #ifdef DEBUG
     qWarning("copying %s %p to %p\n", o->klass()->name(), o->ptr(), ptr);
 #endif
@@ -515,13 +514,8 @@ void marshal_from_sexp<SmokeClassWrapper>(MethodCall *m)
 
 
   const Smoke::Class &cl = m->smoke()->classes[m->type().classId()];
-	
-  ptr = o->smoke()->cast(
-                         ptr,				// pointer
-                         o->classId(),				// from
-                         o->smoke()->idClass(cl.className, true).index	// to
-                         );
-
+  ptr = o->cast(cl.className);
+  
   m->item().s_class = ptr;
   return;
 }

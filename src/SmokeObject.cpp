@@ -17,7 +17,7 @@ SmokeObject * SmokeObject::fromPtr(void *ptr, const Class *klass,
   if (!so) {
     so = new SmokeObject(ptr, klass, allocated);
     if (copy) { // copy the data before storing in hash
-      so->_ptr = so->constructCopy();
+      so->_ptr = so->clonePtr();
       so->_allocated = true;
     }
     instances[so->ptr()] = so;
@@ -59,7 +59,7 @@ SmokeObject * SmokeObject::fromSexp(SEXP sexp)
 }
 
 SmokeObject::SmokeObject(void *ptr, const Class *klass, bool allocated)
-  : _ptr(ptr), _klass(klass), _allocated(allocated)
+  : _ptr(ptr), _klass(klass), _allocated(allocated), _sexp(NULL)
 {
   _klass = Class::fromSmokeId(smoke(), module()->resolveClassId(this));
 }
@@ -107,7 +107,7 @@ bool SmokeObject::memoryIsOwned() const {
 }
 
 // only works for pure Smoke instances, but that may be OK
-void * SmokeObject::constructCopy() {
+void * SmokeObject::clonePtr() const {
   Smoke *smoke = this->smoke();
   const char *className = _klass->name();
   int classNameLen = strlen(className);
@@ -170,6 +170,10 @@ void * SmokeObject::constructCopy() {
   (*fn)(0, args[0].s_voidp, s);
 
   return args[0].s_voidp;
+}
+
+SmokeObject *SmokeObject::clone() const {
+  return SmokeObject::fromPtr(clonePtr(), _klass, _allocated);
 }
 
 void *

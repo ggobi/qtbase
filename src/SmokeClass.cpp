@@ -173,19 +173,15 @@ QList<Method *> SmokeClass::methods(Method::Qualifiers qualifiers) const {
 
 bool
 SmokeClass::hasMethod(const char *name, Method::Qualifiers qualifiers) const {
-  bool found = false;
-  QByteArray munged = mungedMethodName(name);
-  Smoke::Index nameInd = _smoke->findMethod(this->name(), munged).index;
-  if (nameInd) {
-    Smoke::Index i = _smoke->methodMaps[nameInd].method;
-    if (i > 0)
-      found = (SmokeMethod(_smoke, i).qualifiers() & qualifiers) == qualifiers;
-    else if (i < 0) { // uh oh, multiple matches
-      Smoke::Index ambig;
-      while (!found && (ambig = _smoke->ambiguousMethodList[i++]))
-        found = (SmokeMethod(_smoke, ambig).qualifiers() & qualifiers) ==
-          qualifiers;
+  /* Smoke requires a munged name, but we do not have one without a
+     call, thus we precompute combined qualifiers of each name. */
+  if (_methodQuals.isEmpty()) {
+    QList<Method *> meths = methods();
+    foreach(Method *m, meths) {
+      _methodQuals[m->name()] = _methodQuals[m->name()] | m->qualifiers();
+      delete m;
     }
   }
-  return found;
+  Method::Qualifiers q = _methodQuals[name];
+  return q && ((q & qualifiers) == qualifiers);
 }

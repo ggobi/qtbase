@@ -64,7 +64,7 @@ private:
   Smoke::Class *_c;
   Smoke *_smoke;
   Smoke::Index _id;
-
+  mutable QHash<QByteArray, Method::Qualifiers> _methodQuals;
 };
 
 #endif

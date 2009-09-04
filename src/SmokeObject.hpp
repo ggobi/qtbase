@@ -51,7 +51,8 @@ public:
   const char *className() const;
   RQtModule *module() const;
   void invokeMethod(const char *name, Smoke::Stack stack = NULL);
-  void * constructCopy();  
+  void * clonePtr() const;
+  SmokeObject *clone() const;
   void * cast(const char *className) const;
   bool instanceOf(const char *className) const;
   
