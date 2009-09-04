@@ -514,7 +514,7 @@ void marshal_from_sexp<SmokeClassWrapper>(MethodCall *m)
 
 
   const Smoke::Class &cl = m->smoke()->classes[m->type().classId()];
-  ptr = o->cast(cl.className);
+  ptr = o->castPtr(cl.className);
   
   m->item().s_class = ptr;
   return;
@@ -600,7 +600,7 @@ void marshal_ItemList(MethodCall *m) {
         SmokeObject *o = SmokeObject::fromSexp(item);
         if(!o || !o->ptr())
           continue;
-        void *ptr = o->cast(ItemSTR);
+        void *ptr = o->castPtr(ItemSTR);
         cpplist->append((Item*)ptr);
       }
 
@@ -658,7 +658,7 @@ void marshal_ItemList(MethodCall *m) {
           SmokeObject *o = SmokeObject::fromSexp(item);
           if(!o || !o->ptr())
             continue;
-          void *ptr = o->cast(ItemSTR);
+          void *ptr = o->castPtr(ItemSTR);
           cpplist->append((Item*)ptr);
         }
       }
@@ -700,7 +700,7 @@ void marshal_ValueListItem(MethodCall *m) {
         if (!o || !o->ptr())
           continue;
 				
-        void *ptr = o->cast(ItemSTR);
+        void *ptr = o->castPtr(ItemSTR);
         cpplist->append(*(Item*)ptr);
       }
 
@@ -787,7 +787,7 @@ void marshal_LinkedItemList(MethodCall *m) {
         SmokeObject *o = SmokeObject::fromSexp(item);
         if (o == 0 || o->ptr() == 0)
           continue;
-        void *ptr = o->cast(ItemSTR);
+        void *ptr = o->castPtr(ItemSTR);
         cpplist->append((Item*)ptr);
       }
 
@@ -880,7 +880,7 @@ void marshal_LinkedValueListItem(MethodCall *m) {
         if (o == 0 || o->ptr() == 0)
           continue;
 				
-        void *ptr = o->cast(ItemSTR);
+        void *ptr = o->castPtr(ItemSTR);
         cpplist->append(*(Item*)ptr);
       }
 
@@ -970,7 +970,7 @@ void marshal_Hash(MethodCall *m) {
         SmokeObject *o = SmokeObject::fromSexp(value);
         if( !o || !o->ptr())
           continue;
-        void *val_ptr = o->cast(ValueSTR);
+        void *val_ptr = o->castPtr(ValueSTR);
         (*hash)[QString(CHAR(key))] = (Value*)val_ptr;
       }
 	    
@@ -1040,7 +1040,7 @@ void marshal_Map(MethodCall *m) {
         SmokeObject *o = SmokeObject::fromSexp(value);
         if( !o || !o->ptr())
           continue;
-        void * val_ptr = o->cast(ValueSTR);
+        void * val_ptr = o->castPtr(ValueSTR);
         (*map)[QString(CHAR(key))] = (Value*)val_ptr;
       }
       	    

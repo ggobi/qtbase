@@ -18,7 +18,7 @@ void MocMethod::invoke(SmokeObject *o, Smoke::Stack stack) {
   QVector<SmokeType> _types = types();
   SmokeStack smokeStack = SmokeStack(stack, _types.size());
   MocStack mocStack = MocStack(smokeStack, _types);
-  invoke(reinterpret_cast<QObject *>(o->cast("QObject")), mocStack.items());
+  invoke(reinterpret_cast<QObject *>(o->castPtr("QObject")), mocStack.items());
   mocStack.returnToSmoke(smokeStack, _types[0]);
 }
 

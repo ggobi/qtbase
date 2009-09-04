@@ -5,6 +5,14 @@
  * This class will intercept all virtual method calls and will get
  * notified when an instance created by smoke gets destroyed.
  */
+
+// FIXME: this should be constructed by the Class, with a special
+// Moc subclass that handles the metacall stuff. In the current design
+// a singleton instance is provided by the RQtModule. Each Class class
+// can statically store its own singleton.
+
+typedef struct SEXPREC* SEXP;
+
 class RSmokeBinding : public SmokeBinding
 {
 public:
@@ -16,4 +24,8 @@ public:
   char *className(Smoke::Index classId);
 
   Smoke *getSmoke() { return smoke; }
+
+private:
+  int qt_metacall(SEXP self, QMetaObject::Call _c, int id, void **_o);
+
 };

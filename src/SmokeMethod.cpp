@@ -14,7 +14,7 @@ void SmokeMethod::invoke(SmokeObject *obj, Smoke::Stack stack) {
   void * ptr = 0;
     
   if (obj != 0) {
-    ptr = obj->cast(cl.className);
+    ptr = obj->castPtr(cl.className);
   }
     
   (*fn)(_m->method, ptr, stack);

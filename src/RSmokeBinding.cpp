@@ -41,8 +41,8 @@ void RSmokeBinding::deleted(Smoke::Index classId, void *obj) {
 }
 
 /* We catch all qt_metacall invocations on user objects */
-static int
-qt_metacall(SEXP self, QMetaObject::Call _c, int id, void **_o)
+int
+RSmokeBinding::qt_metacall(SEXP self, QMetaObject::Call _c, int id, void **_o)
 {
   // Assume the target slot is a C++ one
   // FIXME: Is this correct? These methods can be virtual...
@@ -51,7 +51,7 @@ qt_metacall(SEXP self, QMetaObject::Call _c, int id, void **_o)
   i[1].s_enum = _c;
   i[2].s_int = id;
   i[3].s_voidp = _o;
-  o->invokeMethod("qt_metacall$$?");
+  o->invokeMethod("qt_metacall$$?", i);
   int ret = i[0].s_int;
   if (ret < 0) {
     return ret;
@@ -61,7 +61,7 @@ qt_metacall(SEXP self, QMetaObject::Call _c, int id, void **_o)
     return id;
   }
 
-  QObject * qobj = reinterpret_cast<QObject *>(o->cast("QObject"));
+  QObject * qobj = reinterpret_cast<QObject *>(o->castPtr("QObject"));
   // get obj metaobject with a virtual call
   const QMetaObject *metaobject = qobj->metaObject();
 

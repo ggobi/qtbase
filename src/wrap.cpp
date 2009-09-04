@@ -12,7 +12,7 @@ void *_unwrapSmoke(SEXP x, const char *type) {
   void *ans = NULL;
   SmokeObject *so = unwrapPointer(x, SmokeObject);
   if (so)
-    ans = so->cast(type);
+    ans = so->castPtr(type);
   return ans;
 }
 

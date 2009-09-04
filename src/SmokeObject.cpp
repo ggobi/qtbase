@@ -16,11 +16,15 @@ SmokeObject * SmokeObject::fromPtr(void *ptr, const Class *klass,
   SmokeObject *so = instances[ptr];
   if (!so) {
     so = new SmokeObject(ptr, klass, allocated);
-    if (copy) { // copy the data before storing in hash
-      so->_ptr = so->clonePtr();
+    instances[so->ptr()] = so; // record this ASAP
+    so->cast(Class::fromSmokeId(so->smoke(), so->module()->resolveClassId(so)));
+    if (copy) { // copy the data
+      void *tmp_ptr = so->ptr();
+      so->_ptr = so->clonePtr(); 
+      instances[so->ptr()] = so; // update the instances hash after cloning
+      instances.remove(tmp_ptr);
       so->_allocated = true;
     }
-    instances[so->ptr()] = so;
   }
   return so;
 }
@@ -61,7 +65,6 @@ SmokeObject * SmokeObject::fromSexp(SEXP sexp)
 SmokeObject::SmokeObject(void *ptr, const Class *klass, bool allocated)
   : _ptr(ptr), _klass(klass), _allocated(allocated), _sexp(NULL)
 {
-  _klass = Class::fromSmokeId(smoke(), module()->resolveClassId(this));
 }
 
 void SmokeObject::invalidateSexp() {
@@ -176,8 +179,13 @@ SmokeObject *SmokeObject::clone() const {
   return SmokeObject::fromPtr(clonePtr(), _klass, _allocated);
 }
 
+void
+SmokeObject::cast(const Class *klass) {
+  _klass = klass;
+}
+
 void *
-SmokeObject::cast(const char *className) const {
+SmokeObject::castPtr(const char *className) const {
   Smoke *smoke = this->smoke();
   return smoke->cast(_ptr, classId(), smoke->idClass(className, true).index);
 }

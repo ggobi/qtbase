@@ -306,7 +306,7 @@ memory_is_owned_qt(const SmokeObject *o)
   {
     return true;
   } else if (smoke->isDerivedFromByName(className, "QLayoutItem")) {
-    QLayoutItem * item = (QLayoutItem *) o->cast("QLayoutItem");
+    QLayoutItem * item = (QLayoutItem *) o->castPtr("QLayoutItem");
     if (item->layout() != 0 || item->widget() != 0 || item->spacerItem() != 0) {
       return true;
     }
@@ -316,17 +316,17 @@ memory_is_owned_qt(const SmokeObject *o)
       return true;
     }
   } else if (smoke->isDerivedFromByName(className, "QTableWidgetItem")) {
-    QTableWidgetItem * item = (QTableWidgetItem *) o->cast("QTableWidgetItem");
+    QTableWidgetItem * item = (QTableWidgetItem *) o->castPtr("QTableWidgetItem");
     if (item->tableWidget() != 0) {
       return true;
     }
   } else if (smoke->isDerivedFromByName(className, "QTreeWidgetItem")) {
-    QTreeWidgetItem * item = (QTreeWidgetItem *) o->cast("QTreeWidgetItem");
+    QTreeWidgetItem * item = (QTreeWidgetItem *) o->castPtr("QTreeWidgetItem");
     if (item->treeWidget() != 0) {
       return true;
     }
   } else if (smoke->isDerivedFromByName(className, "QWidget")) {
-    QWidget * qwidget = (QWidget *) o->cast("QWidget");
+    QWidget * qwidget = (QWidget *) o->castPtr("QWidget");
     if (qwidget->parentWidget() != 0) {
       return true;
     }
@@ -335,18 +335,18 @@ memory_is_owned_qt(const SmokeObject *o)
     Smoke::ModuleIndex classId = smoke->idClass(meta->className());
     return (classId.index == 0);
   } else if (smoke->isDerivedFromByName(className, "QGraphicsItem")) {
-    QGraphicsItem * item = (QGraphicsItem *) o->cast("QGraphicsItem");
+    QGraphicsItem * item = (QGraphicsItem *) o->castPtr("QGraphicsItem");
     if (item->scene() != 0 || item->parentItem() != 0) {
       return true;
     }
   } else if (smoke->isDerivedFromByName(className, "QGraphicsLayoutItem")) {
     QGraphicsLayoutItem * item =
-      (QGraphicsLayoutItem *) o->cast("QGraphicsLayoutItem");
+      (QGraphicsLayoutItem *) o->castPtr("QGraphicsLayoutItem");
     if (item->parentLayoutItem() != 0) {
       return true;
     }
   } else if (smoke->isDerivedFromByName(className, "QObject")) {
-    QObject * qobject = (QObject *) o->cast("QObject");
+    QObject * qobject = (QObject *) o->castPtr("QObject");
     if (qobject->parent() != 0) {
       return true;
     }

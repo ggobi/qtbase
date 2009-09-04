@@ -44,7 +44,7 @@ MocClass::findMethod(const MethodCall& call) const {
   /* only QObjects have meta methods */
   if (o && o->ptr() && o->instanceOf("QObject") && o->klass() == this) {
     /* unwrap the call */
-    QObject * qobject = reinterpret_cast<QObject *>(o->cast("QObject"));
+    QObject * qobject = reinterpret_cast<QObject *>(o->castPtr("QObject"));
     const QMetaObject * meta = qobject->metaObject();
     /* get the method id */
     int id = findMethodId(o->smoke(), meta, call.method()->name(),

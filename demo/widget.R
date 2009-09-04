@@ -12,3 +12,31 @@ window$show()
 button <- Qt$QPushButton("Press me", window)
 button$move(100, 100)
 button$show()
+
+## layout
+window <- Qt$QWidget()
+label <- Qt$QLabel("Name:")
+lineEdit <- Qt$QLineEdit()
+
+layout <- Qt$QHBoxLayout()
+layout$addWidget(label)
+layout$addWidget(lineEdit)
+window$setLayout(layout)
+
+## a bit more complex
+
+window <- Qt$QWidget()
+queryLabel <- Qt$QLabel("Query:")
+queryEdit <- Qt$QLineEdit()
+resultView <- Qt$QTableView()
+
+queryLayout <- Qt$QHBoxLayout()
+queryLayout$addWidget(queryLabel)
+queryLayout$addWidget(queryEdit)
+
+mainLayout <- Qt$QVBoxLayout()
+mainLayout$addLayout(queryLayout)
+mainLayout$addWidget(resultView)
+window$setLayout(mainLayout)
+window$show()
+
