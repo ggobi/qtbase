@@ -68,25 +68,10 @@ void SmokeObject::invalidateSexp() {
   _sexp = NULL;
 }
 
-static void finalizeSexpInstance(SEXP obj) {
-  SmokeObject *so = SmokeObject::fromSexp(obj);
-  so->invalidateSexp();
-  if (so->allocated() && !so->memoryIsOwned()) {
-    qDebug("Destructing referant");
-    const char *cname = so->className();
-    char *destructor = new char[strlen(cname) + 2];
-    destructor[0] = '~';
-    strcpy(destructor + 1, cname);
-    so->invokeMethod(destructor); // causes 'so' to be destructed
-    delete[] destructor;
-  }
-}
-
 SEXP SmokeObject::createSexp() {
   SEXP env, rclasses;
   PROTECT(env = allocSExp(ENVSXP));
   SET_ENCLOS(env, R_EmptyEnv);
-  R_RegisterCFinalizer(env, finalizeSexpInstance);
   
   QList<const Class *> classes = _klass->ancestors();
   classes.prepend(_klass);
@@ -221,5 +206,5 @@ SmokeObject::~SmokeObject() {
   if (_sexp) // sexp still exists, invalidate class
     setAttrib(_sexp, R_ClassSymbol, ScalarString(R_NaString));
   instances.remove(_ptr);
-  qDebug("Destructing SmokeObject");
+  //  qDebug("Destructing SmokeObject");
 }

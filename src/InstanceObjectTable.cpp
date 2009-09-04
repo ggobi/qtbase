@@ -6,7 +6,7 @@
 #include "wrap.hpp"
 
 SmokeObject *InstanceObjectTable::instanceFromSexp(SEXP sexp) {
-  checkPointer(sexp, "InstanceObjectTable");
+  checkPointer(sexp, InstanceObjectTable);
   ObjectTable *table = ObjectTable::fromSexp(sexp);
   return static_cast<InstanceObjectTable *>(table)->instance();
 }
@@ -75,4 +75,18 @@ SEXP InstanceObjectTable::objects() {
     delete methods.takeFirst();  
   
   return nameVector;
+}
+
+InstanceObjectTable::~InstanceObjectTable() {
+  SmokeObject *so = _instance;
+  so->invalidateSexp();
+  if (so->allocated() && !so->memoryIsOwned()) {
+    //qDebug("Destructing referant");
+    const char *cname = so->className();
+    char *destructor = new char[strlen(cname) + 2];
+    destructor[0] = '~';
+    strcpy(destructor + 1, cname);
+    so->invokeMethod(destructor); // causes 'so' to be destructed
+    delete[] destructor;
+  }
 }

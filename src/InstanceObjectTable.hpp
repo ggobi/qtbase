@@ -17,6 +17,8 @@ public:
   InstanceObjectTable(SmokeObject *instance) : _instance(instance) { }
   inline SmokeObject *instance() { return _instance; }
 
+  virtual ~InstanceObjectTable();
+  
   virtual Rboolean exists(const char * name, Rboolean *canCache);
   virtual SEXP get(const char * name, Rboolean *canCache);
   virtual int remove(const char * name);
