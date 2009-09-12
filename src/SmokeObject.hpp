@@ -40,7 +40,11 @@ public:
   /* Core behaviors */
   inline void *ptr() const { return _ptr; }
   SEXP sexp();
+  SEXP internalSexp(SEXP env);
   void invalidateSexp();
+  void invalidateInternalTable();
+  SEXP fieldEnv() const;
+  
   inline const Class *klass() const { return _klass; }
   inline bool allocated() const { return _allocated; }
   bool memoryIsOwned() const;
@@ -56,15 +60,22 @@ public:
   void * castPtr(const char *className) const;
   void cast(const Class *klass);
   bool instanceOf(const char *className) const;
+  SEXP enclose(SEXP fun);
   
 private:
 
+  SEXP createSexp(SEXP parentEnv);
+  void orphanTable(SEXP sexp) const;
+  SEXP internalTable();
+  void maybeDestroy();
+  void castSexp(SEXP sexp);
+  
   void *_ptr;
   const Class *_klass;
   bool _allocated;
-  SEXP _sexp;
-  
-  SEXP createSexp();
+  SEXP _sexp;  
+  SEXP _internalTable;
+  mutable SEXP _fieldEnv;
   
   static QHash<void *, SmokeObject *> instances;
 

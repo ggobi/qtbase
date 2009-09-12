@@ -6,32 +6,34 @@
 
 class SmokeClass : public Class {
 public:
-  SmokeClass() : _c(NULL), _smoke(NULL), _id(0) { }
-  SmokeClass(const SmokeType &t) {
-    _smoke = t.smoke();
-    _id = t.classId();
-    _c = _smoke->classes + _id;
+  SmokeClass() : _c(NULL), _smoke(NULL), _id(0), enumValuesCached(false) { }
+  SmokeClass(const SmokeType &t) : _smoke(t.smoke()), _id(t.classId())  {
+    init();
   }
-  SmokeClass(Smoke *smoke, Smoke::Index id) : _smoke(smoke), _id(id) {
-    _c = _smoke->classes + _id;
+  SmokeClass(Smoke *smoke, Smoke::Index id) : _smoke(smoke), _id(id)
+  {
+    init();
   }
   SmokeClass(Smoke *smoke, const char *name)
     : _smoke(smoke), _id(smoke->idClass(name).index)
   {
-    _c = _smoke->classes + _id;
+    init();
   }
-  SmokeClass(Smoke::ModuleIndex ind) : _smoke(ind.smoke), _id(ind.index) {
-    _c = _smoke->classes + _id;
+  SmokeClass(Smoke::ModuleIndex ind) : _smoke(ind.smoke), _id(ind.index)
+  {
+    init();
   }
 
   /* Class implementation */
   virtual const char *name() const { return _c->className; }
-  virtual Method *findMethod(const MethodCall &call) const;
   virtual const SmokeClass *smokeBase() const { return this; }
+  
   virtual QList<Method *> methods(Method::Qualifiers qualifiers = Method::None)
     const;
   virtual bool hasMethod(const char *name,
                          Method::Qualifiers qualifiers = Method::None) const;
+  virtual Method *findMethod(const MethodCall &call) const;
+  virtual QHash<const char *, int> enumValues() const;
   virtual QList<const Class *> parents() const;
   
   inline const Smoke::Class &c() const { return *_c; }
@@ -60,11 +62,22 @@ private:
 
   Smoke::ModuleIndex findIndex(const MethodCall& call) const;
   QByteArray mungedMethodName(const MethodCall &call) const;
+  QHash<const char *, int> createEnumValuesMap() const;
+  void findMethodRange();
+  void init() { // common initialization code
+    _c = _smoke->classes + _id;
+    findMethodRange();
+    enumValuesCached = false;
+  }
   
   Smoke::Class *_c;
   Smoke *_smoke;
   Smoke::Index _id;
   mutable QHash<QByteArray, Method::Qualifiers> _methodQuals;
+  int methmin;
+  int methmax;
+  mutable QHash<const char *, int> _enumValues;
+  mutable bool enumValuesCached;
 };
 
 #endif

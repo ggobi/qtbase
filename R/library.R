@@ -23,12 +23,13 @@ qclasses <- function(x) {
 
 qlibrary <- function(lib) {
   attr(lib, "name") <- tolower(deparse(substitute(lib)))
-  class(lib) <- "RQtLibrary"
+  class(lib) <- c("RQtLibrary", "environment")
   lapply(qclasses(lib), function(className) {
     getClass <- function() {
-      class <- qclass(lib, className)
+      class <- qsmokeClass(lib, className)
       rm(list = className, envir = lib)
       assign(className, class, lib) ## cache for further use
+      lockBinding(className, lib)
       class
     }
     makeActiveBinding(className, getClass, lib)
@@ -43,3 +44,4 @@ print.RQtLibrary <- function(x) {
 
 ### Module object for Qt library.
 Qt <- new.env()
+

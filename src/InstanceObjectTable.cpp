@@ -36,57 +36,118 @@ SEXP InstanceObjectTable::methodClosure(const char *name) {
 
 Rboolean
 InstanceObjectTable::exists(const char * name, Rboolean *canCache) {
+  bool found = FALSE;
+  checkInstance();
   if (canCache) *canCache = TRUE;
-  return (Rboolean)
-    _instance->klass()->hasMethod(name, Method::NotStatic | Method::Public);
+  if (_internal)
+    found = !qstrcmp(name, "this") ||
+      findVarInFrame(fieldEnv(), install(name)) != R_UnboundValue ||
+      enumValue(name) != R_UnboundValue;
+  if (!found) {
+    Method::Qualifiers qual = Method::None;
+    if (!_internal)
+      qual |= Method::Public | Method::NotStatic;
+    found = _instance->klass()->hasMethod(name, qual);
+  }
+  return (Rboolean)found;
 }
-SEXP InstanceObjectTable::get(const char * name, Rboolean* canCache) {
-  if (canCache) *canCache = TRUE;
+
+SEXP InstanceObjectTable::enumValue(const char *name) {
   SEXP ans = R_UnboundValue;
-  if (exists(name, canCache)) // we have a method, make a wrapper
-    ans = methodClosure(name);
+  int val = _instance->klass()->enumValues().value(name, NA_INTEGER);
+  if (val != NA_INTEGER) {
+    PROTECT(ans = ScalarInteger(val));
+    setAttrib(ans, R_ClassSymbol, mkString("QtEnum"));
+    UNPROTECT(1);
+  }
   return ans;
 }
+   
+SEXP InstanceObjectTable::get(const char * name, Rboolean* canCache) {
+  SEXP ans = R_UnboundValue;
+  checkInstance();
+  if (canCache) *canCache = TRUE;
+  if (_internal) {
+    if (!qstrcmp(name, "this"))
+      ans = _instance->internalSexp(R_EmptyEnv);
+    else ans = findVarInFrame(fieldEnv(), install(name));
+    if (ans == R_UnboundValue)
+      ans = enumValue(name);
+  }
+  if (ans == R_UnboundValue && exists(name, canCache))
+    ans = methodClosure(name); // make a wrapper for method
+  return ans;
+}
+
 int InstanceObjectTable::remove(const char * name) {
+  checkInstance();
   Q_UNUSED(name);
   return 0;
 }
+
 SEXP InstanceObjectTable::assign(const char * name, SEXP value) {
-  Q_UNUSED(name);
-  Q_UNUSED(value);
+  checkInstance();
+  if (_internal) {
+    SEXP sym = install(name);
+    defineVar(sym, value, fieldEnv());
+    return sym;
+  }
   return R_NilValue;
 }
+
 SEXP InstanceObjectTable::objects() {
-  QList<Method *> methods =
-    _instance->klass()->methods(Method::NotStatic | Method::Public);
+  Method::Qualifiers qual = Method::NotStatic;
+  QList<Method *> methods; 
   SEXP nameVector;
   QSet<const char *> nameSet;
 
+  checkInstance();
+
+  if (!_internal)
+    qual |= Method::Public;
+  methods = _instance->klass()->methods(qual);
+  
   foreach(Method *m, methods) // put names into set to get unique ones
     nameSet.insert(m->name());
+
+  int numFields = 0;
+  SEXP fields;
+  if (_internal) {
+    PROTECT(fields = R_lsInternal(fieldEnv(), TRUE));
+    numFields = length(fields);
+  }
   
-  PROTECT(nameVector = allocVector(STRSXP, nameSet.size()));
+  PROTECT(nameVector = allocVector(STRSXP, nameSet.size() + numFields));
   int i = 0; // iterate over set, populate R vector
   foreach(const char *name, nameSet)
     SET_STRING_ELT(nameVector, i++, mkChar(name));
-  UNPROTECT(1);
-  
+  for(int j = 0; i < length(nameVector); i++, j++)
+    SET_STRING_ELT(nameVector, i, STRING_ELT(fields, j));
+
   while(!methods.isEmpty())
     delete methods.takeFirst();  
+
+  UNPROTECT(1);
+  if (_internal)
+    UNPROTECT(1);
   
   return nameVector;
 }
 
+SEXP InstanceObjectTable::fieldEnv() {
+  return _instance->fieldEnv();
+}
+
+void InstanceObjectTable::checkInstance() {
+  if (!_instance)
+    error("Attempt to access invalid instance");
+}
+
+// We (R) have taken ownership of the instance
 InstanceObjectTable::~InstanceObjectTable() {
-  SmokeObject *so = _instance;
-  so->invalidateSexp();
-  if (so->allocated() && !so->memoryIsOwned()) {
-    //qDebug("Destructing referant");
-    const char *cname = so->className();
-    char *destructor = new char[strlen(cname) + 2];
-    destructor[0] = '~';
-    strcpy(destructor + 1, cname);
-    so->invokeMethod(destructor); // causes 'so' to be destructed
-    delete[] destructor;
+  if (_instance) { // might have been orphaned
+    if (_internal)
+      _instance->invalidateInternalTable();
+    else _instance->invalidateSexp();
   }
 }

@@ -1,7 +1,7 @@
 #include "DynamicBinding.hpp"
 #include "MethodCall.hpp"
 #include "Class.hpp"
-
+  
 SEXP DynamicBinding::invoke(SEXP obj, SEXP args) {
   SEXP ans = NULL;
   MethodCall call(this, obj, args);
@@ -10,8 +10,8 @@ SEXP DynamicBinding::invoke(SEXP obj, SEXP args) {
     ans = method->invoke(obj, args);
     setLastError(method->lastError());
     delete method;
-  } else setLastError(ImplementationMissing);
-  return ans;  
+  } else setLastError(methodNotFound(call));
+  return ans;
 }
 
 void DynamicBinding::invoke(SmokeObject *obj, Smoke::Stack args) {
@@ -21,6 +21,11 @@ void DynamicBinding::invoke(SmokeObject *obj, Smoke::Stack args) {
     method->invoke(obj, args);
     setLastError(method->lastError());
     delete method;
-  } else setLastError(ImplementationMissing);
+  } else setLastError(methodNotFound(call));
 }
 
+Method::ErrorType DynamicBinding::methodNotFound(const MethodCall &call) {
+  if (!call.klass()->hasMethod(call.method()->name()))
+    return ImplementationMissing;
+  return BadArguments;
+}

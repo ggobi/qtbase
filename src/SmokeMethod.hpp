@@ -32,7 +32,7 @@ public:
   inline Smoke::Index methodId() const { return _id; }
   inline const Smoke::Method &method() const { return *_m; }
   virtual Qualifiers qualifiers() const {
-    Qualifiers flags = 0;
+    Qualifiers flags = NotPrivate;
     if (_m->flags & Smoke::mf_protected)
       flags |= Protected;
     else flags |= Public;

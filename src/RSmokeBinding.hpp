@@ -11,6 +11,8 @@
 // a singleton instance is provided by the RQtModule. Each Class class
 // can statically store its own singleton.
 
+class SmokeObject;
+
 typedef struct SEXPREC* SEXP;
 
 class RSmokeBinding : public SmokeBinding
@@ -26,6 +28,6 @@ public:
   Smoke *getSmoke() { return smoke; }
 
 private:
-  int qt_metacall(SEXP self, QMetaObject::Call _c, int id, void **_o);
+  int qt_metacall(SmokeObject *so, QMetaObject::Call _c, int id, void **_o);
 
 };

@@ -36,7 +36,8 @@ extern "C" {
 
   // metadata
   SEXP qt_qnormalizedSignature(SEXP x);
-  SEXP qt_qmethods(SEXP rself);
+  SEXP qt_qmethods(SEXP klass);
+  SEXP qt_qenums(SEXP klass);
   SEXP qt_qproperties(SEXP x);
   SEXP qt_qsmokeMethods(SEXP rsmoke, SEXP rclass);
   SEXP qt_qclasses(SEXP rsmoke);
@@ -49,6 +50,10 @@ extern "C" {
   // properties
   SEXP qt_qsetProperty(SEXP x, SEXP rname, SEXP rvalue);
   SEXP qt_qproperty(SEXP x, SEXP name);
+
+  // user classes
+  SEXP qt_qcast(SEXP x, SEXP className);
+  SEXP qt_qenclose(SEXP x, SEXP fun);
 }
 
 extern void initMethodSelectors();
@@ -75,6 +80,7 @@ static R_CallMethodDef CallEntries[] = {
 
     CALLDEF(qt_qnormalizedSignature, 1),
     CALLDEF(qt_qmethods, 1),
+    CALLDEF(qt_qenums, 1),
     CALLDEF(qt_qproperties, 1),
     CALLDEF(qt_qclasses, 1),
     CALLDEF(qt_qsmokes, 0),
@@ -84,7 +90,10 @@ static R_CallMethodDef CallEntries[] = {
 
     CALLDEF(qt_qsetProperty, 3),
     CALLDEF(qt_qproperty, 2),
-    
+
+    CALLDEF(qt_qcast, 2),
+    CALLDEF(qt_qenclose, 2),
+ 
     {NULL, NULL, 0}
 };
 

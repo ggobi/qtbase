@@ -24,11 +24,9 @@ public:
     const = 0;
   virtual bool hasMethod(const char *name,
                          Method::Qualifiers qualifiers = Method::None)
-    const = 0;
-  
-  //TODO: virtual QList<const char *> enumNames() const = 0;
-  //TODO: virtual Enum enum(const char *name) const = 0;
-  //TODO: virtual QList<const char *> propertyNames(Property::Access) const = 0;
+    const = 0;  
+  virtual QHash<const char *, int> enumValues() const = 0;
+  //TODO: virtual QSet<const char *> propertyNames(Property::Access) const = 0;
   //TODO: virtual Property property(const char *name) = 0;
   virtual QList<const Class *> parents() const = 0;
   virtual const SmokeClass *smokeBase() const = 0;
@@ -36,6 +34,11 @@ public:
   /* Factory of instance databases for R environments */
   virtual InstanceObjectTable *createObjectTable(SmokeObject *obj) const;
 
+  /* TODO if we support user static methods
+  SEXP staticEnv() const;
+  virtual SEXP createClassObjectTable() const;
+  */
+  
   /* Some utilities */
   
   QList<const Class *> ancestors() const;
@@ -71,10 +74,10 @@ public:
   static void setClassFactory(ClassFactory *factory) {
     if (factory) _classFactory = factory;
   }
-
+  
 private:
   static ClassFactory *_classFactory;
-  static QHash<const char *, Class *> _classMap;
+  static QHash<const char *, const Class *> _classMap;
 
 };
 

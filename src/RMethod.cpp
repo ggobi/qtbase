@@ -32,3 +32,22 @@ void RMethod::invoke(SmokeObject *obj, Smoke::Stack stack) {
   call.eval();
 }
 
+Method::Qualifiers RMethod::qualifiers() const {
+  static SEXP accessSym = install("access");
+  static SEXP staticSym = install("static");
+  Qualifiers qual;
+  SEXP staticAttr = getAttrib(_closure, staticSym);
+  if (staticAttr != R_NilValue && asLogical(staticAttr))
+    qual |= Static;
+  else qual |= NotStatic;
+  const char *access = CHAR(asChar(getAttrib(_closure, accessSym)));
+  if (!qstrcmp(access, "private"))
+    qual |= Private;
+  else {
+    qual |= NotPrivate;
+    if (!qstrcmp(access, "protected"))
+      qual |= Protected;
+    else qual |= Public;
+  }
+  return qual;
+}

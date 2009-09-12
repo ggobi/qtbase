@@ -5,15 +5,16 @@
 
 #include <Rinternals.h>
 
-/* This class consists mostly of stubs right now. */
-
 const char *RClass::name() const {
   static SEXP nameSym = install("name");
   return CHAR(asChar(getAttrib(_klass, nameSym)));
 }
 
 SEXP RClass::env() const {
-  static SEXP envSym = install("env");
+  /* Eventually we might have one 'env' attribute that holds all user
+     symbols, with the environment of static symbols becoming dynamic.
+  */
+  static SEXP envSym = install("instanceEnv");
   return getAttrib(_klass, envSym);
 }
 
@@ -31,28 +32,43 @@ QList<const Class *> RClass::parents() const {
 const SmokeClass *RClass::smokeBase() const {
   return parent()->smokeBase();
 }
-  
+
 QList<Method *> RClass::methods(Method::Qualifiers qualifiers) const {
   SEXP _env = env();
   SEXP names = R_lsInternal(_env, (Rboolean)false);
   QList<Method *> meths;
   for (int i = 0; i < length(names); i++) {
-    const char *methodName = CHAR(STRING_ELT(names, i));
-    meths << new RMethod(this, methodName, findFun(install(methodName), _env));
+    const char *name = CHAR(STRING_ELT(names, i));
+    SEXP fun = findVarInFrame(_env, install(name));
+    if ((RMethod(this, name, fun).qualifiers() & qualifiers) == qualifiers)
+      meths << new RMethod(this, name, fun);
   }
-  meths.append(smokeBase()->methods(qualifiers));
+  meths.append(parent()->methods(qualifiers | Method::NotPrivate));
   return meths;
 }
 
-Method *RClass::findMethod(const MethodCall &call) {
+Method *RClass::findMethod(const MethodCall &call) const {
   const char * methodName = call.method()->name();
-  return new RMethod(this, methodName, findFun(env(), install(methodName)));
+  SEXP fun = findVarInFrame(env(), install(methodName));
+  Method *meth = NULL;
+  if (fun != R_UnboundValue && TYPEOF(fun) == CLOSXP)
+    meth = new RMethod(this, methodName, fun);
+  else meth = parent()->findMethod(call);
+  return meth;
 }
 
 bool
 RClass::hasMethod(const char *name, Method::Qualifiers qualifiers) const {
-  bool found = smokeBase()->hasMethod(name, qualifiers);
-  if (!found)
-    found = findFun(install(name), env()) != R_UnboundValue;
+  bool found = parent()->hasMethod(name, qualifiers | Method::NotPrivate);
+  if (!found) {
+    SEXP fun = findVarInFrame(env(), install(name));
+    if (fun != R_UnboundValue && TYPEOF(fun) == CLOSXP)
+      found = (RMethod(this, name, fun).qualifiers() & qualifiers) ==
+        qualifiers;
+  }
   return found;
+}
+
+QHash<const char *, int> RClass::enumValues() const {
+  return smokeBase()->enumValues();
 }

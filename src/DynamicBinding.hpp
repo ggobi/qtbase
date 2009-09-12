@@ -5,6 +5,7 @@
 #include "SmokeType.hpp"
 
 class MethodSelector;
+class MethodCall;
 
 /*
   DynamicBindings enable method calls between runtimes. The binding is
@@ -35,6 +36,9 @@ public:
   }
   
 private:
+
+  Method::ErrorType methodNotFound(const MethodCall &call);
+  
   const Class *_klass;
   const char *_methodName;
   QVector<SmokeType> _types;

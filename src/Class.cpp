@@ -1,6 +1,6 @@
 #include <smoke.h>
 
-#include "Class.hpp"
+#include "RClass.hpp"
 #include "ClassFactory.hpp"
 #include "SmokeObject.hpp"
 #include "InstanceObjectTable.hpp"
@@ -9,11 +9,11 @@
 #include <Rinternals.h>
 
 ClassFactory *Class::_classFactory = NULL;
-QHash<const char *, Class *> Class::_classMap;
+QHash<const char *, const Class *> Class::_classMap;
 
 const Class* Class::fromSmokeId(Smoke *smoke, int classId) {
   const char *name = smoke->classes[classId].className;
-  Class *klass = _classMap[name];
+  const Class *klass = _classMap[name];
   if (!klass) {
     if (!_classFactory) _classFactory = new ClassFactory;
     klass = _classFactory->createClass(smoke, classId);
@@ -22,19 +22,30 @@ const Class* Class::fromSmokeId(Smoke *smoke, int classId) {
   return klass;
 }
 const Class* Class::fromSmokeName(Smoke *smoke, const char *name) {
+  if (!smoke) {
+    smoke = Smoke::classMap[name];
+    if (!smoke)
+      return NULL;
+  }
   return fromSmokeId(smoke, smoke->idClass(name).index);
 }
 
-// TODO: R user classes
 const Class* Class::fromSexp(SEXP sexp) {
   static SEXP nameSym = install("name");
-  static SEXP smokeSym = install("smoke");
-  if (TYPEOF(sexp) == CLOSXP) {
-    const char * className = CHAR(asChar(getAttrib(sexp, nameSym)));
-    Smoke *smoke = asSmoke(getAttrib(sexp, smokeSym));
-    return Class::fromSmokeName(smoke, className);
-  }
-  return NULL;
+  const Class *klass = NULL;
+  if (inherits(sexp, "RQtClass")) {
+    const char *name = CHAR(asChar(getAttrib(sexp, nameSym)));
+    klass = _classMap[name];
+    if (!klass) {
+      if (inherits(sexp, "RQtSmokeClass"))
+        klass = Class::fromSmokeName(NULL, name);
+      else if (inherits(sexp, "RQtUserClass")) {
+        klass = new RClass(sexp);
+        _classMap[name] = klass;
+      }
+    }
+  } else qCritical("Unknown R class representation");
+  return klass;
 }
 
 /* Object methods */

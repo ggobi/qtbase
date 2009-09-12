@@ -84,6 +84,29 @@ SEXP qt_qmethods(SEXP klass)
 }
 
 extern "C"
+SEXP qt_qenums(SEXP klass) {
+  SEXP result, resultNames;
+  const Class *c = Class::fromSexp(klass);
+  QHash<const char *, int> enumValues = c->enumValues();
+  QList<const char *> enumNames = enumValues.keys();
+  QList<int> enumInts = enumValues.values();
+  
+  PROTECT(result = allocVector(INTSXP, enumValues.size()));
+  resultNames = allocVector(STRSXP, length(result));
+  setAttrib(result, R_NamesSymbol, resultNames);
+  
+  for (int i = 0; i < length(result); i++) {
+    INTEGER(result)[i] = enumInts[i];
+    SET_STRING_ELT(resultNames, i, mkChar(enumNames[i]));
+  }
+  
+  setAttrib(result, R_ClassSymbol, mkString("QtEnum"));
+  
+  UNPROTECT(1);
+  return result;
+}
+
+extern "C"
 SEXP qt_qclasses(SEXP rsmoke) {
   Smoke *smoke = asSmoke(rsmoke);
   SEXP rclasses;

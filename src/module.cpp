@@ -1,7 +1,7 @@
 #include <QEvent>
 #include <QGraphicsItem>
 #include <QGraphicsLayoutItem>
-#include <QLayoutItem>
+#include <QLayout>
 
 #include <QListWidgetItem>
 #include <QTableWidgetItem>
@@ -307,9 +307,12 @@ memory_is_owned_qt(const SmokeObject *o)
     return true;
   } else if (smoke->isDerivedFromByName(className, "QLayoutItem")) {
     QLayoutItem * item = (QLayoutItem *) o->castPtr("QLayoutItem");
-    if (item->layout() != 0 || item->widget() != 0 || item->spacerItem() != 0) {
-      return true;
-    }
+    QLayout * layout = item->layout();
+    if (layout) { // we really have a QLayout
+      if (layout->parent() || layout->parentWidget())
+        return true;
+    } else if (item->widget() != 0 || item->spacerItem() != 0)
+      return true; // NOTE: this will leak spacer items not in a layout
   } else if (qstrcmp(className, "QListWidgetItem") == 0) {
     QListWidgetItem * item = (QListWidgetItem *) o->ptr();
     if (item->listWidget() != 0) {
@@ -330,10 +333,12 @@ memory_is_owned_qt(const SmokeObject *o)
     if (qwidget->parentWidget() != 0) {
       return true;
     }
-    // Don't garbage collect custom subclasses of QWidget classes for now
+    // Qt avoided garbage collecting custom QWidget subclasses here -- why?
+    /*
     const QMetaObject * meta = qwidget->metaObject();
     Smoke::ModuleIndex classId = smoke->idClass(meta->className());
     return (classId.index == 0);
+    */
   } else if (smoke->isDerivedFromByName(className, "QGraphicsItem")) {
     QGraphicsItem * item = (QGraphicsItem *) o->castPtr("QGraphicsItem");
     if (item->scene() != 0 || item->parentItem() != 0) {

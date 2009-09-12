@@ -2,8 +2,14 @@
 #define MOC_CLASS_H
 
 /* Decorator that looks for methods in a QMetaObject. Delegates all
-   other behaviors. If the delegate is not a QObject, the search is
-   pointless, but nothing will really break. */
+   other behaviors. If the delegate does not represent a QObject, the
+   search is pointless, but nothing will really break. */
+
+// FIXME: metaObject() is a virtual, so subclasses can actually
+// override it to provide per-instance methods. This does not fit into
+// the conventional paradigm, so we may need to provide a custom
+// InstanceObjectTable that performs a instance-specific
+// query. Otherwise, this class is pretty useless.
 
 #include "Class.hpp"
 
@@ -26,7 +32,8 @@ public:
   virtual bool hasMethod(const char *name,
                          Method::Qualifiers qualifiers = Method::None) const;
   virtual Method *findMethod(const MethodCall &call) const;
-
+  virtual QHash<const char *, int> enumValues() const;
+  
   const QMetaObject *metaObject() const { return _meta; }
   
 private:

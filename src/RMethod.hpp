@@ -13,10 +13,8 @@ class MethodCall;
 class RMethod : public Method {
 public:
   RMethod(const Class *klass, const char *name, SEXP closure,
-          QVector<SmokeType> types = QVector<SmokeType>(),
-          Qualifiers flags = 0)
-    : _closure(closure),  _klass(klass), _name(name), _types(types),
-      _flags(flags)
+          QVector<SmokeType> types = QVector<SmokeType>())
+    : _closure(closure),  _klass(klass), _name(name), _types(types)
   { }
 
   virtual const Class * klass() const { return _klass; }
@@ -24,7 +22,7 @@ public:
   /* R is dynamic, but the method can be typed if associated with a
      statically typed method (e.g. virtual callback or slot). */
   virtual QVector<SmokeType> types() const { return _types; }
-  virtual Qualifiers qualifiers() const { return _flags; }
+  virtual Qualifiers qualifiers() const;
   
   virtual SEXP invoke(SEXP self, SEXP args);
   virtual void invoke(SmokeObject *obj, Smoke::Stack stack);

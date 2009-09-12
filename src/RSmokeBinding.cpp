@@ -40,18 +40,18 @@ void RSmokeBinding::deleted(Smoke::Index classId, void *obj) {
   delete o;
 }
 
-/* We catch all qt_metacall invocations on user objects */
+/* We catch all qt_metacall invocations */
 int
-RSmokeBinding::qt_metacall(SEXP self, QMetaObject::Call _c, int id, void **_o)
+RSmokeBinding::qt_metacall(SmokeObject *so, QMetaObject::Call _c, int id,
+                           void **_o)
 {
   // Assume the target slot is a C++ one
   // FIXME: Is this correct? These methods can be virtual...
-  SmokeObject *o = SmokeObject::fromSexp(self);
   Smoke::StackItem i[4];
   i[1].s_enum = _c;
   i[2].s_int = id;
   i[3].s_voidp = _o;
-  o->invokeMethod("qt_metacall$$?", i);
+  so->invokeMethod("qt_metacall$$?", i);
   int ret = i[0].s_int;
   if (ret < 0) {
     return ret;
@@ -61,7 +61,7 @@ RSmokeBinding::qt_metacall(SEXP self, QMetaObject::Call _c, int id, void **_o)
     return id;
   }
 
-  QObject * qobj = reinterpret_cast<QObject *>(o->castPtr("QObject"));
+  QObject * qobj = reinterpret_cast<QObject *>(so->castPtr("QObject"));
   // get obj metaobject with a virtual call
   const QMetaObject *metaobject = qobj->metaObject();
 
@@ -93,7 +93,6 @@ bool RSmokeBinding::callMethod(Smoke::Index method, void *obj,
 {
   SmokeObject *o =
     SmokeObject::fromPtr(obj, smoke, smoke->methods[method].classId);
-  SEXP sobj = o->sexp();
 
 #ifdef DEBUG
     Smoke::Method & meth = smoke->methods[method];
@@ -117,8 +116,8 @@ bool RSmokeBinding::callMethod(Smoke::Index method, void *obj,
     methodName += (sizeof("operator") - 1);
   }
 
-  if (!qstrcmp(methodName, "qt_metacall"))
-    qt_metacall(sobj, (QMetaObject::Call)args[1].s_enum, args[2].s_int,
+  if (!qstrcmp(methodName, "qt_metacall") && o->instanceOf("QObject"))
+    qt_metacall(o, (QMetaObject::Call)args[1].s_enum, args[2].s_int,
                 (void **)args[3].s_voidp);
   
   // If the virtual method hasn't been overriden, just call C++

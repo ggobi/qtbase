@@ -1,3 +1,7 @@
+====================================================
+R Design
+====================================================
+
 General organization: modules contain classes, which contain methods
 
 Modules: A module (i.e. all of Qt) roughly corresponds to an R
@@ -74,7 +78,7 @@ every class, though. Rather, the environment for a class (or rather
 two environments, to separate static and instance methods) should be
 populated upon first retrieval of the class from the Smoke
 module. This suggests that the module environment needs to be
-dynamically bound, probably using ObjectTable, to avoid any overhead.
+dynamically bound, using makeActiveBinding(), to avoid any overhead.
 
 Instance methods: Use the $ syntax on the instance.
 Static methods: Use $ syntax on a class object.
@@ -111,8 +115,44 @@ The 'MyWindow' object is a class object, like Qt$QWidget.
 
 User Methods: Methods stored in a class-level environment, which is
 referenced from each instance. The methods will be enclosed within the
-instance environment. One question is disambiguation of overloaded
-virtuals. In such cases, it may be necessary to do something like:
+instance environment.
+
+Do we really want to bind every method (wrapper) to the class
+environments, or do we want them dynamic, e.g. through ObjectTable?
+
+Static binding would mean generating wrappers for each method. We
+already have this working for static methods. For object methods, the
+wrappers would be similar, just using qinvoke() rather than
+qinvokeStatic(). We would want the static symbols in a separate
+environment from the object symbols. For R classes, the wrapper could
+directly invoke the class, after enclosing it, or call qinvoke(),
+relying on RMethod to do the enclosing. I would favor the direct
+invocation mechanism, at least at first. Of course, the instance could
+remain as a dynamic environment, feeding off the field and class
+environments. This design makes sense, because:
+
+- The symbols for R classes are already stored in an environment.
+
+- There are not that many classes, so storing them (lazily) into
+  environments will not incur much overhead, though it is unfortunate
+  that we cannot use chaining due to multiple inheritance.
+
+- While there is some redundancy between the Class objects and these
+  environments, they are really different. The former is a database of
+  actual methods, while the latter is just a database of wrappers. The
+  Class should hold a reference to the environment.
+
+The main concerns is that this does not gracefully handle evaluation
+of user static methods. Need to change the parent of the static
+environment to the original function enclosure. However, we are not
+sure yet if we are going to support user static symbols.
+
+As a compromise, we could keep the static symbols in "static" R
+environments and place the object symbols (for R classes) in a
+separate environment.
+
+One question is disambiguation of overloaded virtuals. In such cases,
+it may be necessary to do something like:
 
 > MyWindow$overloadedMethod <- qmethod(function(x) { }, c("integer", "integer"))
 
@@ -130,7 +170,9 @@ Another issue is chaining up to the parent class. Here is one syntax:
 
 Where 'Parent' is the name of a class from which this instance is
 derived. This means the classes need to behave specially inside the
-instance method.
+instance method. Or we can use 'super' like in Java:
+
+> super$foo()
 
 User objects: Should support storing fields in an environment. Should
 not need to declare these, unless they are properties. The instance
@@ -237,3 +279,129 @@ Thoughts:
    making a new object, or just changing the state of the existing
    one? In some ways, this is identical to opening and closing a
    connection. We don't use different classes for that, so....
+
+========================================================
+User Classes Design
+========================================================
+
+One of the main reasons we are using Qt from R, rather than from C++,
+is the dynamic nature of R. Thus, we should retain flexibility when
+defining new Qt-based classes. This follows the route of 'proto'.
+
+To define a class, we need to specify the name of the parent and the
+constructor. Only single inheritance is allowed, mostly due to
+technical limitations. This also makes things easier to implement with
+environments. Note that there is only one constructor (and only one
+method of a given name), because overloading is a difficult problem in
+dynamic languages. S4 already does a good job of dispatch, so users
+are encouraged to leverage it to simulate overloading.
+
+Example:
+MyClass <- qclass(Qt$QWidget, function() { this$x <- 0 })
+
+The class, like the other classes, is simply an environment, although
+it is unlocked by default. Methods, static fields and enums may be
+defined/replaced at any time. It would even be possible to extract a
+method and insert it into another class. Sometimes, simple casts are
+required. Examples:
+
+MyClass$method <- function(...) { }
+MyClass$staticMethod <- qstatic(function(...) { })
+MyClass$staticField <- "foobar"
+MyClass$enum <- qenum(c("small", "medium", "large"))
+
+There is some debate as to whether we really require static method
+support. The examples seem to use static methods for:
+
+- Private utility functions. In R, we can often define these inline,
+  inside the client functions. Obviously, this is not possible in C++.
+- Easy namespacing of functions
+- Singletons
+
+The last two can be handled by simple closure tricks like local(), but
+it might be nice to have the name match the class name, which may not
+always be possible...
+
+Since we are following the bundling idiom, methods do not take a
+'this' or 'self' argument. Rather, the methods are enclosed,
+transiently during evaluation, in an instance environment. This
+environment has the special symbol 'this' that refers to the instance.
+
+The MyClass object needs to be serializable, so it cannot consist of
+any external pointers. The link to the base Smoke class should be
+encoded by the module name and class name.
+
+Upon construction, we need to create an instance of the parent class
+(eventually chaining up to an actual Smoke class). This has to happen
+first, though we do not know how to invoke the base constructor. C++
+uses initializer lists to solve this. R does not have them, so we can
+take the Java route, where the base constructor must come first,
+defaulting to the no-arg constructor. As in:
+
+MyClass <- qclass(Qt$QWidget, function(parent = NULL) { super(parent); ... })
+
+The next challenge is specifying then class name. We want to enforce,
+if possible, the symbol in the environment to have the same name as
+the class. One way is the assign()/setClass()-like syntax:
+
+qclass("MyClass", Qt$QWidget, constructor, where = topenv())
+
+Which has the side-effect of assigning "MyClass" into the 'where'
+env. That seems reasonable; it's the same contract of setGeneric().
+
+How is the reference to the parent class stored? At first thought,
+simply storing the base class object with the new class seems
+reasonable. The base environment could become the parent of the
+environment for the new class, which facilitates propagating changes
+on the base class. However, note that lazy loading will cause
+trouble. Consider:
+- To define subclass, access a class, thus caching it in the library
+- Load package, library is regenerated, class envs are different
+Anyway, users need to disable lazy loading to make that work.
+
+Is there an inconsistency when accessing methods from the class? We
+are storing both object and static methods into the class, but object
+methods obviously cannot be invoked like static methods. Thus, this
+would be an error:
+
+> MyClass$method <- function(...) { }
+> MyClass$method()
+
+One approach would be to implicitly add a 'this' argument to the function, so
+that this would work:
+
+> MyClass$method(obj)
+
+This Python-like approach might be convenient, e.g:
+
+> lapply(listOfObjs, MyClass$method)
+
+As opposed to the already possible:
+
+> lapply(listOfObjs, qinvoke, "method") # or better
+> lapply(listOfObjs, with, method())
+
+One issue is that MyClass$method implies the actual method as
+implemented by MyClass, disregarding inheritance. That dramatically
+limits its usefulness. Alternatively, we could just put the methods
+somewhere else:
+
+> qmethods(MyClass)$method <- function(...) { }
+
+This has a number of advantages. First, qmethods(MyClass)$method
+retrieves the unmodified function (i.e. we might want to have
+qmethods() anyway). It also makes it obvious that we are setting a
+method. What about:
+
+- Fields: We probably do not need to define fields; just set them at run-time.
+
+- Properties: These require special treatment, as they have a type,
+  permissions, etc. Use qproperties() accessor. Properties are nice,
+  because they are type-checked, introspectable, encapsulated fields.
+
+  > qproperties(MyClass)$prop <- qproperty("integer", writable = FALSE)
+  > qproperties(MyClass)$prop <- 0L # read/write, integer, defaults to 0
+
+- Enums: Are these really necessary?
+
+  > qenums(MyClass)$enum <- c("small", "medium", "large")

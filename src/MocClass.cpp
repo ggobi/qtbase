@@ -93,7 +93,9 @@ MocClass::hasMethod(const char *name, Method::Qualifiers qualifiers) const {
     }
   }
   bool found = _delegate->hasMethod(name, qualifiers);
-  if (!found) {
+  /* Simple optimization: do not check for method if the delegate is
+     a smoke class, because we will not have any more methods. */
+  if (!found && _delegate != smokeBase()) {
     int index = _methods[name] - 1;
     if (index != -1) {
       MocMethod method(smokeBase()->smoke(), _meta, index);
@@ -102,4 +104,9 @@ MocClass::hasMethod(const char *name, Method::Qualifiers qualifiers) const {
     }
   }
   return found;
+}
+
+// yes, we could access the QMetaEnums, but is there a use case?
+QHash<const char *, int> MocClass::enumValues() const {
+  return _delegate->enumValues();
 }

@@ -38,7 +38,7 @@ SOURCES += metaobject.cpp connect.cpp invoke.cpp props.cpp
 SOURCES += dynamicqobject.cpp RDynamicQObject.cpp
 
 SOURCES += ClassFactory.cpp
-SOURCES += Class.cpp SmokeClass.cpp MocClass.cpp RClass.cpp
+SOURCES += Class.cpp SmokeClass.cpp MocClass.cpp RClass.cpp classes.cpp
 SOURCES += ForeignMethod.cpp
 SOURCES += SmokeMethod.cpp RMethod.cpp MocMethod.cpp
 SOURCES += DynamicBinding.cpp MocDynamicBinding.cpp  

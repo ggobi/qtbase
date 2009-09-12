@@ -53,6 +53,7 @@ public:
     return _args;
   }
   const Class *klass() const;
+  int numArgs() const; 
   
   /* Marshalling accessors */
 
@@ -83,7 +84,7 @@ public:
       
   /* Utilities */
   
-  void unsupported();  
+  void unsupported();
   QByteArray cacheKey() const;
 
   /* TypeHandler registration and utilities */

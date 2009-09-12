@@ -60,6 +60,10 @@ void MethodCall::unsupported() {
         type().name(), dir, klass()->name(), _method->name());
 }
 
+int MethodCall::numArgs() const {
+  return _args ? length(_args) : (stackSize() - 1);
+}
+
 void MethodCall::marshal() {
   int oldcur = _cur;
   _cur++; // handle arguments
