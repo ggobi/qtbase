@@ -5,6 +5,14 @@
 
 #include <Rinternals.h>
 
+RClass::RClass(SEXP klass) : _klass(klass) {
+  R_PreserveObject(klass);
+}
+
+RClass::~RClass() {
+  R_ReleaseObject(_klass);
+}
+
 const char *RClass::name() const {
   static SEXP nameSym = install("name");
   return CHAR(asChar(getAttrib(_klass, nameSym)));

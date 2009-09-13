@@ -21,3 +21,4 @@ qsetClass("AddressBook", Qt$QWidget,
           })
 
 ab <- AddressBook()
+ab$show()

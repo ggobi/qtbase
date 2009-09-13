@@ -10,7 +10,9 @@ typedef struct SEXPREC* SEXP;
 class RClass : public Class {
 public:
   RClass() : _klass(NULL) { }
-  RClass(SEXP klass) : _klass(klass) { }
+  explicit RClass(SEXP klass);
+
+  virtual ~RClass();
 
   /* Class implementation */
   virtual const char* name() const;

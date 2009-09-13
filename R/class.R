@@ -98,7 +98,11 @@ qsetClass <- function(x, parent, constructor = function(...) parent(...),
   ## mangle the class name to prevent conflicts
   module <- getPackageName(where)
   name <- paste("R", module, x, sep = "::")
-  ### NOTE: this simple, but will have issues, e.g. with lazy loading
+  ### FIXME: May want to support reregistration of classes. This requires:
+  ### 1) chaining up at the C++ Class level, rather than at instanceEnv
+  ### 2) reducing the 'parent' attribute to a light-weight reference
+  ### 3) add ability to unregister classes from cache
+  ### NOTE: Not sure if this is a good idea, since it breaks instances
   parentEnv <- attr(parent, "instanceEnv")
   if (is.null(parentEnv))
     parentEnv <- emptyenv() # a smoke class, no instance symbols

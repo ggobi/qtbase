@@ -17,6 +17,8 @@ class Class {
 public:
 
   /* Virtual interface */
+
+  virtual ~Class() { }
   
   virtual const char* name() const = 0;
   virtual Method *findMethod(const MethodCall &call) const = 0;
