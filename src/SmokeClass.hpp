@@ -34,6 +34,7 @@ public:
                          Method::Qualifiers qualifiers = Method::None) const;
   virtual Method *findMethod(const MethodCall &call) const;
   virtual QHash<const char *, int> enumValues() const;
+  virtual Property *property(const char *name) const;
   virtual QList<const Class *> parents() const;
   
   inline const Smoke::Class &c() const { return *_c; }

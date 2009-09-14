@@ -80,3 +80,7 @@ RClass::hasMethod(const char *name, Method::Qualifiers qualifiers) const {
 QHash<const char *, int> RClass::enumValues() const {
   return smokeBase()->enumValues();
 }
+
+Property *RClass::property(const char *name) const {
+  return parent()->property(name);
+}

@@ -219,3 +219,7 @@ QHash<const char *, int> SmokeClass::createEnumValuesMap() const {
   return values;
 }
 
+Property *SmokeClass::property(const char *name) const {
+  Q_UNUSED(name);
+  return NULL;
+}

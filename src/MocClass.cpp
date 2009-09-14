@@ -1,5 +1,6 @@
 #include "MocClass.hpp"
 #include "MocMethod.hpp"
+#include "MocProperty.hpp"
 #include "MethodCall.hpp"
 #include "SmokeObject.hpp"
 #include "DynamicBinding.hpp"
@@ -109,4 +110,12 @@ MocClass::hasMethod(const char *name, Method::Qualifiers qualifiers) const {
 // yes, we could access the QMetaEnums, but is there a use case?
 QHash<const char *, int> MocClass::enumValues() const {
   return _delegate->enumValues();
+}
+
+Property *MocClass::property(const char *name) const {
+  int index = _meta->indexOfProperty(name);
+  Property *prop = NULL;
+  if (index >= 0)
+    prop = new MocProperty(_meta->property(index));
+  return prop;
 }

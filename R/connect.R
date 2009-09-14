@@ -15,10 +15,3 @@ qconnect <- function(x, signal, handler = NULL, user.data = NULL)
   
   .Call(qt_qconnect, x, signal, handler, user.data, has.user.data)
 }
-
-qdisconnect <- function(x, receiver = NULL)
-{
-  stopifnot(is(x, "QObject"))
-  stopifnot(is.null(receiver) || is(receiver, "QObject"))
-  .Call(qt_qdisconnect, x, receiver)
-}

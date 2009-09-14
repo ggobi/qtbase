@@ -32,7 +32,6 @@ extern "C" {
   
   // signals
   SEXP qt_qconnect(SEXP x, SEXP user_data, SEXP handler, SEXP which);
-  SEXP qt_qdisconnect(SEXP x, SEXP receiver);
 
   // metadata
   SEXP qt_qnormalizedSignature(SEXP x);
@@ -75,7 +74,6 @@ static R_CallMethodDef CallEntries[] = {
 
     CALLDEF(qt_qtimer, 0),
     
-    CALLDEF(qt_qdisconnect, 2),
     CALLDEF(qt_qconnect, 5),
 
     CALLDEF(qt_qnormalizedSignature, 1),

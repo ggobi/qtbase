@@ -27,6 +27,7 @@ HEADERS += SmokeMethod.hpp RMethod.hpp MocMethod.hpp MocInvokable.hpp
 HEADERS += DynamicBinding.hpp MocDynamicBinding.hpp  
 HEADERS += MethodCall.hpp type-handlers.hpp TypeHandler.hpp
 HEADERS += MocStack.hpp SmokeStack.hpp SmokeType.hpp
+HEADERS += Property.hpp MocProperty.hpp
 HEADERS += RQtModule.hpp RSmokeBinding.hpp SmokeList.hpp
 HEADERS += SmokeObject.hpp ObjectTable.hpp InstanceObjectTable.hpp
 
@@ -44,6 +45,7 @@ SOURCES += SmokeMethod.cpp RMethod.cpp MocMethod.cpp
 SOURCES += DynamicBinding.cpp MocDynamicBinding.cpp  
 SOURCES += MethodCall.cpp type-handlers.cpp
 SOURCES += MocStack.cpp
+SOURCES += MocProperty.cpp
 SOURCES += RQtModule.cpp module.cpp RSmokeBinding.cpp SmokeList.cpp
 SOURCES += SmokeObject.cpp ObjectTable.cpp InstanceObjectTable.cpp smoke.cpp 
 

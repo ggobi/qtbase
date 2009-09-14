@@ -72,89 +72,76 @@ stripCall <- function(x) {
   x
 }
 
-### Some stuff from QtRuby for creating a MetaData blob
-##
-## From the enum MethodFlags in qt-copy/src/tools/moc/generator.cpp
-##
-## AccessPrivate = 0x00
-## AccessProtected = 0x01
-## AccessPublic = 0x02
-## MethodMethod = 0x00
-## MethodSignal = 0x04
-## MethodSlot = 0x08
-## MethodCompatibility = 0x10
-## MethodCloned = 0x20
-## MethodScriptable = 0x40
+### Some stuff derived from QtRuby for creating a MetaData blob
 
-## ## Keeps a hash of strings against their corresponding offsets
-## ## within the qt_meta_stringdata sequence of null terminated
-## ## strings. Returns a proc to get an offset given a string.
-## ## That proc also adds new strings to the 'data' array, and updates 
-## ## the corresponding 'pack_str' Array#pack template.
-## def Internal.string_table_handler(data, pack_str)
-## hsh = {}
-## offset = 0
-## return lambda do |str|
-## if !hsh.has_key? str
-## hsh[str] = offset
-## data << str
-## pack_str << "a*x"
-## offset += str.length + 1
-## end
+## 'x' is a class
+## 'metadata' is list of classinfos, signals and slots
 
-## return hsh[str]
-## end
-## end
+### NOTE: This does not work yet.
+### It would let us support:
+### - Slots: useful for providing dbus services, and easy
+### - Signals: very useful
+### - Properties: Encapsulated fields are nice, but do we want to be bound
+###   by QValue? Could just implement our own custom properties.
+### - Class info: useful for describing dbus services
+### X Enums: probably not necessary
 
-## def Internal.makeMetaData(classname, classinfos, dbus, signals, slots)
-## ## Each entry in 'stringdata' corresponds to a string in the
-## ## qt_meta_stringdata_<classname> structure.
-## ## 'pack_string' is used to convert 'stringdata' into the
-## ## binary sequence of null terminated strings for the metaObject
-## stringdata = []
-## pack_string = ""
-## string_table = string_table_handler(stringdata, pack_string)
+compileMetaData <- function(x) {
+  metadata <- attr(x, "metadata")
+  
+  infos <- metadata[["classinfos"]]
+  signals <- metadata[["signals"]]
+  slots <- metadata[["slots"]]
+  
+  ## generate 'stringdata' table
+  allNames <- unique(unlist(metadata))
+  offsets <- cumsum(c(0, head(nchar(allNames), -1) + 1))
+  names(offsets) <- allNames
+  
+  stringdata <- charToRaw(paste(allNames, collapse=";"))
+  stringdata[stringdata == charToRaw(";")] <- 0
 
-## ## This is used to create the array of uints that make up the
-## ## qt_meta_data_<classname> structure in the metaObject
-## data = [1, # revision
-##         string_table.call(classname), 	# classname
-##         classinfos.length, classinfos.length > 0 ? 10 : 0, 	# classinfo
-##         signals.length + slots.length, 
-##         10 + (2*classinfos.length), 	# methods
-##         0, 0, # properties
-##         0, 0] # enums/sets
+  ## generate 'data' table
 
-## classinfos.each do |entry|
-## data.push string_table.call(entry[0])		# key
-## data.push string_table.call(entry[1])		# value
-## end
+  ##
+  ## From the enum MethodFlags in qt-copy/src/tools/moc/generator.cpp
+  ##
+  AccessPrivate <- 0x00
+  AccessProtected <- 0x01
+  AccessPublic <- 0x02
+  MethodMethod <- 0x00
+  MethodSignal <- 0x04
+  MethodSlot <- 0x08
+  MethodCompatibility <- 0x10
+  MethodCloned <- 0x20
+  MethodScriptable <- 0x40
 
-## signals.each do |entry|
-## data.push string_table.call(entry.full_name) # signature
-## data.push string_table.call(entry.full_name.delete("^,"))	# parameters
-## data.push string_table.call(entry.reply_type) # type, "" means void
-## data.push string_table.call("")				# tag
-## if dbus
-## data.push MethodScriptable | MethodSignal | AccessPublic
-## else
-##   data.push MethodSignal | AccessProtected # flags, always protected for now
-## end
-## end
+  access <- c(private = AccessPrivate, protected = AccessProtected,
+              public = AccessPublic)
+  
+  data <-
+    c(1, # revision
+      offsets[attr(x, "name")], 	# classname
+      length(infos), if (length(infos)) 10 else 0, # class info
+      length(signals) + length(slots), 10 + (2*length(infos)), # methods
+      0, 0, # properties
+      0, 0) # enums
 
-## slots.each do |entry|
-## data.push string_table.call(entry.full_name) # signature
-## data.push string_table.call(entry.full_name.delete("^,"))	# parameters
-## data.push string_table.call(entry.reply_type) # type, "" means void
-## data.push string_table.call("")				# tag
-## if dbus
-## data.push MethodScriptable | MethodSlot | AccessPublic
-## else
-##   data.push MethodSlot | AccessPublic # flags, always public for now
-## end
-## end
+  ## the class info
+  data <- c(data, offsets[rbind(names(infos), infos)])
 
-## data.push 0		# eod
+  methodData <- function(methods, flag) {
+    do.call("c", lapply(methods, function(method) {
+      c(offsets[c(method$signature, methods$args, "", "")],
+        access[method$access] + flag + MethodScriptable)
+    }))
+  }
+  
+  ## the signals
+  data <- c(data, methodData(signals, MethodSignal))
+  
+  ## the slots
+  data <- c(data, methodData(slots, MethodSlot))
 
-## return [stringdata.pack(pack_string), data]
-## end
+  .Call(qt_qnewMetaObject, x, stringdata, data)
+}

@@ -43,6 +43,7 @@ private:
   SEXP enumValue(const char *name);
   SEXP fieldEnv();
   void checkInstance();
+  bool methodExists(const char *name);
   
   SmokeObject *_instance;
   bool _internal;

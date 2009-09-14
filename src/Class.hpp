@@ -10,6 +10,7 @@ class SmokeClass;
 class Smoke;
 class ClassFactory;
 class InstanceObjectTable;
+class Property;
 
 typedef struct SEXPREC* SEXP;
 
@@ -21,15 +22,19 @@ public:
   virtual ~Class() { }
   
   virtual const char* name() const = 0;
+  
   virtual Method *findMethod(const MethodCall &call) const = 0;
   virtual QList<Method *> methods(Method::Qualifiers qualifiers = Method::None)
     const = 0;
   virtual bool hasMethod(const char *name,
                          Method::Qualifiers qualifiers = Method::None)
     const = 0;  
+
   virtual QHash<const char *, int> enumValues() const = 0;
-  //TODO: virtual QSet<const char *> propertyNames(Property::Access) const = 0;
-  //TODO: virtual Property property(const char *name) = 0;
+
+  // or virtual QHash<const char *, Property*> properties() const = 0;
+  virtual Property *property(const char *name) const = 0;
+  
   virtual QList<const Class *> parents() const = 0;
   virtual const SmokeClass *smokeBase() const = 0;
 

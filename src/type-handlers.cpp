@@ -553,6 +553,30 @@ void marshal_QDBusVariant(MethodCall *m) {
   }
 }
 
+void marshal_QVariant(MethodCall *m) {
+  switch(m->mode()) {
+  case MethodCall::RToSmoke: 
+    {
+      SEXP v = m->sexp();
+      QVariant variant = asQVariant(v);
+      m->item().s_class = &variant;
+      break;
+    }
+
+  case MethodCall::SmokeToR: 
+    {
+      QVariant variant = *(const QVariant *)m->item().s_voidp;
+      SEXP obj = asRVariant(variant);
+      m->setSexp(obj);
+      break;
+    }
+	
+  default:
+    m->unsupported();
+    break;
+  }
+}
+
 static void marshal_charP_array(MethodCall *m) {
   switch(m->mode()) {
   case MethodCall::RToSmoke:
@@ -1600,6 +1624,8 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   { "QMap<QString,QVariant>", marshal_QMapQStringQVariant, NULL },
   // FIXME: need QHash variant for the above
   { "QMap<QString,QVariant>&", marshal_QMapQStringQVariant, NULL },
+  { "QVariant", marshal_QVariant, NULL },
+  { "QVariant&", marshal_QVariant, NULL },
   { "QVariantMap", marshal_QMapQStringQVariant, NULL },
   { "QVariantMap&", marshal_QMapQStringQVariant, NULL },
   { "QModelIndexList", marshal_QModelIndexList, NULL },

@@ -3,6 +3,8 @@
 #include "InstanceObjectTable.hpp"
 #include "SmokeObject.hpp"
 #include "Class.hpp"
+#include "Property.hpp"
+
 #include "wrap.hpp"
 
 SmokeObject *InstanceObjectTable::instanceFromSexp(SEXP sexp) {
@@ -34,6 +36,13 @@ SEXP InstanceObjectTable::methodClosure(const char *name) {
   return f;
 }
 
+bool InstanceObjectTable::methodExists(const char *name) {
+  Method::Qualifiers qual = Method::None;
+  if (!_internal)
+    qual |= Method::Public | Method::NotStatic;
+  return _instance->klass()->hasMethod(name, qual);
+}
+
 Rboolean
 InstanceObjectTable::exists(const char * name, Rboolean *canCache) {
   bool found = FALSE;
@@ -43,11 +52,14 @@ InstanceObjectTable::exists(const char * name, Rboolean *canCache) {
     found = !qstrcmp(name, "this") ||
       findVarInFrame(fieldEnv(), install(name)) != R_UnboundValue ||
       enumValue(name) != R_UnboundValue;
+  if (!found)
+    found = methodExists(name);
   if (!found) {
-    Method::Qualifiers qual = Method::None;
-    if (!_internal)
-      qual |= Method::Public | Method::NotStatic;
-    found = _instance->klass()->hasMethod(name, qual);
+    Property *prop = _instance->klass()->property(name);
+    if (prop) {
+      found = true;
+      delete prop;
+    }
   }
   return (Rboolean)found;
 }
@@ -74,8 +86,16 @@ SEXP InstanceObjectTable::get(const char * name, Rboolean* canCache) {
     if (ans == R_UnboundValue)
       ans = enumValue(name);
   }
-  if (ans == R_UnboundValue && exists(name, canCache))
+  if (ans == R_UnboundValue && methodExists(name))
     ans = methodClosure(name); // make a wrapper for method
+  else if (ans == R_UnboundValue) {
+    Property *prop = _instance->klass()->property(name);
+    if (prop) { // FIXME: throw error if not readable?
+      if (prop->isReadable())
+        ans = prop->read(_instance->sexp());
+      delete prop;
+    }
+  }
   return ans;
 }
 
@@ -87,12 +107,23 @@ int InstanceObjectTable::remove(const char * name) {
 
 SEXP InstanceObjectTable::assign(const char * name, SEXP value) {
   checkInstance();
-  if (_internal) {
-    SEXP sym = install(name);
-    defineVar(sym, value, fieldEnv());
-    return sym;
+  SEXP sym = R_NilValue;
+  Property *prop = _instance->klass()->property(name);
+  if (prop) {
+    bool writable = prop->isWritable();
+    if (writable) {
+      prop->write(_instance->sexp(), value);
+      sym = install(name);
+    }
+    delete prop;
+    if (!writable)
+      error("Property '%s' is read-only", name);
   }
-  return R_NilValue;
+  if (sym == R_NilValue && _internal) {
+    sym = install(name);
+    defineVar(sym, value, fieldEnv());
+  }
+  return sym;
 }
 
 SEXP InstanceObjectTable::objects() {

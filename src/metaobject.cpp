@@ -111,8 +111,10 @@ qt_qnewMetaObject(SEXP obj, SEXP parentMeta, SEXP rstringdata, SEXP rdata)
     SmokeObject* p = SmokeObject::fromSexp(parentMeta);
     superdata = reinterpret_cast<QMetaObject *>(p->ptr());
   }
+
+  char *stringdata = new char[length(rstringdata)];
+  memcpy((void *) stringdata, RAW(rstringdata), length(rstringdata));
   
-  char *stringdata = qstrdup(CHAR(asChar(rstringdata)));
   int count = length(rdata);
   uint * data = new uint[count];
   for (long i = 0; i < count; i++) {
@@ -127,7 +129,7 @@ qt_qnewMetaObject(SEXP obj, SEXP parentMeta, SEXP rstringdata, SEXP rdata)
   *meta = ob;
 
 #ifdef DEBUG
-  printf("make_metaObject() superdata: %p %s\n", meta->d.superdata, superdata->className());
+  printf("qt_qnewMetaObject() superdata: %p %s\n", meta->d.superdata, superdata->className());
 	
   printf(
          " // content:\n"

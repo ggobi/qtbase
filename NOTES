@@ -90,11 +90,33 @@ Signals:
 Emitting a signal: just like an instance method
 Connecting a signal handler: qconnect() or some fancy syntax?
 
-Accessing properties: $ for getting and $<- for setting. Potential
-for conflicts between property getting and method invocation. Could
-try fancy call parsing for determining which is desired, but
-simpler to favor properties. qinvoke() and qproperty() are always
-available. Note properties are based on QVariant, not Smoke.
+Accessing properties: Should be be consistent with accessor patterns
+in R. One idea is to use the element extraction operator:
+
+> val <- obj$prop
+> obj$prop <- val
+
+However, vector element extraction/replacement is somewhat different
+from setting fields on an object. The closest thing to a 'field' in R
+is the S4 slot. Slots are internally accessed via '@' but externally
+via accessors of the form:
+
+> val <- prop(obj)
+> prop(obj) <- val
+
+Unfortunately, it is technically too difficult to support this syntax
+dynamically. Both of the above rely on the replacement function
+'<-'. The underlying logic is that the left hand side is being
+replaced by the modified copy of the original object. With mutable
+objects, however, this becomes unecessary, and we can use the
+C++/Java-like set syntax:
+
+> obj$prop()
+> obj$setProp(val)
+
+This means a bit more typing, but might make it clear that we are
+dealing with mutable objects. Then again, since our objects are
+environments, the '$<-' syntax is perfectly consistent with R.
 
 Instances: Need to store the pointer somewhere. Could just make this
 an external pointer, but might be more useful as an environment, with
@@ -280,6 +302,13 @@ Thoughts:
    one? In some ways, this is identical to opening and closing a
    connection. We don't use different classes for that, so....
 
+   How do properties integrate with this? Properties seem general
+   enough to be included in the base Class interface, even though
+   Smoke does not implement them. The question is the abstraction:
+   what type system? QVariant is convenient for Moc, but it is limited
+   by compile-time support. The MocProperty could be implemented via a
+   Moc call to setProperty(), with a QVariant type handler.
+   
 ========================================================
 User Classes Design
 ========================================================
@@ -305,10 +334,10 @@ defined/replaced at any time. It would even be possible to extract a
 method and insert it into another class. Sometimes, simple casts are
 required. Examples:
 
-MyClass$method <- function(...) { }
-MyClass$staticMethod <- qstatic(function(...) { })
+qmethods(MyClass)$method <- function(...) { }
+qmethods(MyClass)$staticMethod <- qstatic(function(...) { })
+qenums(MyClass)$enum <- c("small", "medium", "large")
 MyClass$staticField <- "foobar"
-MyClass$enum <- qenum(c("small", "medium", "large"))
 
 There is some debate as to whether we really require static method
 support. The examples seem to use static methods for:
@@ -321,6 +350,86 @@ support. The examples seem to use static methods for:
 The last two can be handled by simple closure tricks like local(), but
 it might be nice to have the name match the class name, which may not
 always be possible...
+
+Anyway, do we like the qmethods()$<- syntax, or would qsetMethod() be
+better? The latter is more like qsetClass() and the setGeneric/Method
+from the methods package. Compare:
+
+> qmethods(MyClass)$method <- qprotected(function(...) { })
+> qsetMethod(MyClass, "method", function(...) { }, "protected")
+
+The main difference is that the former requires three method calls,
+while the latter consists of a single call. It is much easier to
+document the process of defining a method as a single call. For
+example, how many casting functions are available, and which can be
+combined? This would be made immediately obvious by qsetMethod().
+
+While it is nice to be consistent with familiar syntax from S4, the
+requirements of this design are completely different: we are bundling
+a method, identified by a name, into a class. However, let us consider
+a more complex case, that of slot definition. We need to specify the
+signature of the slot. Compare:
+
+> qmethods(MyClass)$slotName <- qslot(function(...) { }, "int")
+> qsetSlot(MyClass, "slotName(int)", function(...) { })
+
+Now what happens when defining a new signature on the same name?
+
+> qmethods(MyClass)$slotName <- qslot(function(...) { }, "double") # oops!
+> qsetSlot(MyClass, "slotName(double)", function(...) { })
+
+The former syntax is misleading, because it appears as if we are
+replacing the previous slot. There is this alternative:
+
+> qslots(MyClass)$"slotName(double)" <- function(...) { }
+
+A bit ugly, but it works. Now let us consider signals, where there is
+no function to set.
+
+> qsignals(MyClass)$"signalName(int, int)" <- what goes here? access?
+> qsetSignal(MyClass, "signalName(int, int)", "protected")
+
+Thus, we will take the simpler qset* route for now.
+
+Do we really want a separate function for each slot? As a
+dynamically-typed language, we could implement multiple slots (of the
+same name) with the same function. If we need more advanced dispatch,
+there is always S4. Going this route:
+
+> qsetMethod(MyClass, "methodName", function(...) { })
+> qsetSlot(MyClass, "methodName(int)")
+
+In other words, we are simply advertising our function to the
+statically-typed world. The above could certainly be the default
+behavior, even if we support functions per slot, which would be a lot
+more complicated. We would need to perform method selection within
+RClass. It is not common within Qt to have multiple signatures for a
+slot, but when this does occur it is limited to leaving off a single
+argument (remember that 95% of slots have one argument or less). This
+is why QtRuby based Moc method selection merely on argument count.
+
+For now, we go the single function route. To make this easier, what
+about adding a 'slot' argument to qsetMethod?
+
+> qsetMethod(MyClass, "methodName", function() { }, slot = "methodName()")
+
+Saves a bit of typing, but still suffers from the redundancy.
+
+> qsetMethod(MyClass, "methodName", function() { }, slot = "")
+
+No more typing, but a bit odd looking.
+
+> qsetMethod(MyClass, "methodName", function() { }, slot = TRUE)
+
+Looks nice, but what about when we have arguments?
+
+> qsetMethod(MyClass, "methodName", function(x) { }, slot = "int")
+
+Ok, but what if 'x' is optional?
+
+> qsetMethod(MyClass, "methodName", function(x = 0) { }, slot = c("", "int"))
+
+Could be worse.
 
 Since we are following the bundling idiom, methods do not take a
 'this' or 'self' argument. Rather, the methods are enclosed,
@@ -359,32 +468,6 @@ trouble. Consider:
 - Load package, library is regenerated, class envs are different
 Anyway, users need to disable lazy loading to make that work.
 
-Is there an inconsistency when accessing methods from the class? We
-are storing both object and static methods into the class, but object
-methods obviously cannot be invoked like static methods. Thus, this
-would be an error:
-
-> MyClass$method <- function(...) { }
-> MyClass$method()
-
-One approach would be to implicitly add a 'this' argument to the function, so
-that this would work:
-
-> MyClass$method(obj)
-
-This Python-like approach might be convenient, e.g:
-
-> lapply(listOfObjs, MyClass$method)
-
-As opposed to the already possible:
-
-> lapply(listOfObjs, qinvoke, "method") # or better
-> lapply(listOfObjs, with, method())
-
-One issue is that MyClass$method implies the actual method as
-implemented by MyClass, disregarding inheritance. That dramatically
-limits its usefulness. Alternatively, we could just put the methods
-somewhere else:
 
 > qmethods(MyClass)$method <- function(...) { }
 
@@ -396,12 +479,9 @@ method. What about:
 - Fields: We probably do not need to define fields; just set them at run-time.
 
 - Properties: These require special treatment, as they have a type,
-  permissions, etc. Use qproperties() accessor. Properties are nice,
-  because they are type-checked, introspectable, encapsulated fields.
-
+  permissions, etc. Use qproperties() accessor. 
   > qproperties(MyClass)$prop <- qproperty("integer", writable = FALSE)
   > qproperties(MyClass)$prop <- 0L # read/write, integer, defaults to 0
 
 - Enums: Are these really necessary?
-
   > qenums(MyClass)$enum <- c("small", "medium", "large")

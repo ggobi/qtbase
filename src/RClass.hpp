@@ -24,6 +24,7 @@ public:
   virtual QList<Method *> methods(Method::Qualifiers qualifiers = Method::None)
     const;
   virtual QHash<const char *, int> enumValues() const;
+  virtual Property *property(const char *name) const;
   
   /* R specific accessors */
   SEXP env() const;

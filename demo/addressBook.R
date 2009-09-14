@@ -6,6 +6,7 @@ qsetClass("AddressBook", Qt$QWidget,
             super(parent)
             nameLabel <- Qt$QLabel(tr("Name:"))
             this$nameLine <- Qt$QLineEdit()
+            nameLine$readOnly <- TRUE
 
             addressLabel <- Qt$QLabel(tr("Address:"))
             this$addressText <- Qt$QTextEdit()
@@ -20,5 +21,18 @@ qsetClass("AddressBook", Qt$QWidget,
             setWindowTitle(tr("Simple Address Book"))
           })
 
+qsetMethod(AddressBook, "addContact", function() {
+  
+});
+
+qsetMethod(AddressBook, "submitContact", function() {
+  
+});
+
+qsetMethod(AddressBook, "cancel", function() {
+  
+});
+
 ab <- AddressBook()
 ab$show()
+
