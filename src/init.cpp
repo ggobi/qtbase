@@ -34,13 +34,17 @@ extern "C" {
   SEXP qt_qconnect(SEXP x, SEXP user_data, SEXP handler, SEXP which);
 
   // metadata
-  SEXP qt_qnormalizedSignature(SEXP x);
   SEXP qt_qmethods(SEXP klass);
   SEXP qt_qenums(SEXP klass);
   SEXP qt_qproperties(SEXP x);
-  SEXP qt_qsmokeMethods(SEXP rsmoke, SEXP rclass);
   SEXP qt_qclasses(SEXP rsmoke);
+
+  // Smoke-specific metadata
   SEXP qt_qsmokes(void);
+
+  // Moc-specific metadata
+  SEXP qt_qnormalizedSignature(SEXP x);
+  SEXP qt_qmocMethods(SEXP x);
   
   // dynamic invocation
   SEXP qt_qinvoke(SEXP method, SEXP self, SEXP args);
@@ -76,6 +80,8 @@ static R_CallMethodDef CallEntries[] = {
     
     CALLDEF(qt_qconnect, 5),
 
+    CALLDEF(qt_qmocMethods, 1),
+    
     CALLDEF(qt_qnormalizedSignature, 1),
     CALLDEF(qt_qmethods, 1),
     CALLDEF(qt_qenums, 1),

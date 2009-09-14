@@ -27,6 +27,8 @@ void
 MocStack::returnFromSmoke(const SmokeStack &stack, const SmokeType &type) {
   Smoke::StackItem item = stack.ret();
   void *val = _o[0];
+  if (type.isVoid())
+    return;
   switch(type.elem()) {
   case Smoke::t_bool:
     *reinterpret_cast<bool *>(val) = item.s_bool;
@@ -90,6 +92,8 @@ void MocStack::setFromSmoke(Smoke::Stack stack, QVector<SmokeType> types)
     Smoke::StackItem *si = stack + i;
     SmokeType t = types[i];
     void *p;
+    if (t.isVoid())
+      continue;
     switch(t.elem()) {
     case Smoke::t_bool:
       p = &si->s_bool;
@@ -219,6 +223,7 @@ void MocStack::setSmoke(Smoke::Stack stack, QVector<SmokeType> types)
 {
   for (int i = 0; i < _size; i++) {
     SmokeType t = types[i];
-    setSmokeItem(stack + i, _o[i], t);
+    if (!t.isVoid())
+      setSmokeItem(stack + i, _o[i], t);
   }
 }

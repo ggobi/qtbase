@@ -9,7 +9,7 @@
 
 extern "C" {
   SEXP qt_qmocMethods(SEXP x) {
-    QObject *self = unwrapQObject(x, QObject);
+    QObject *self = unwrapSmoke(x, QObject);
     const QMetaObject *meta = self->metaObject();
     int n = meta->methodCount();
     
@@ -42,7 +42,7 @@ extern "C" {
   }
 
   SEXP qt_qproperties(SEXP x) {
-    QObject *self = unwrapQObject(x, QObject);
+    QObject *self = unwrapSmoke(x, QObject);
     const QMetaObject *meta = self->metaObject();
     int n = meta->propertyCount();
     

@@ -1,10 +1,19 @@
+qmocMethods <- function(x) {
+  stopifnot(is(x, "QObject"))
+  methods <- .Call(qt_qmocMethods, x)
+  methods[[1]] <- c("method", "signal", "slot", "constructor")[methods[[1]] + 1]
+  methods <- c(list(sub("\\(.*", "", methods[[2]])), methods)
+  names(methods) <- c("name", "type", "signature", "return", "nargs")
+  as.data.frame(methods, stringsAsFactors=FALSE, row.names = methods$signature)
+}
+
 qnormalizedSignature <- function(x) {
   .Call(qt_qnormalizedSignature, as.character(x))
 }
 
 qresolveSignature <- function(x, sig, type, nargs) {
   ## The user can specify a signal by name or by signature
-  methods <- qmethods(x)
+  methods <- qmocMethods(x)
   if (!missing(type))
     methods <- subset(methods, type == type)
   sigs <- as.character(methods$signature)
@@ -39,37 +48,6 @@ qproperties <- function(x) {
   name <- props$name
   props$name <- NULL
   as.data.frame(props, row.names=name)
-}
-
-names.QObject <- function(x) {
-    c(rownames(qproperties(x)), unique(qmethods(x)$name))
-}
-
-stripCall <- function(x) {
-  gsub("\n *", "", sub("^[^:]* : *", "", x))
-}
-
-## Look for a property, then fall back to method. We could reverse
-## this, but then we would have to ignore requests for accessors.
-`$.QObject` <- function(x, name) {
-  val <- try(qproperty(x, name), silent = TRUE)
-  if (!inherits(val, "try-error"))
-    val
-  else {
-    val2 <- try(NextMethod(), silent = TRUE)
-    if (!inherits(val2, "try-error")) {
-      msg <- stripCall(val)
-      msg2 <- stripCall(val2)
-      stop("Failed to select a method (", msg2,
-           "), and failed to get a property (", msg, ")")
-    } else val2
-  }
-}
-
-## Just property setting
-`$<-.QObject` <- function(x, name, value) {
-  qproperty(x, name) <- value
-  x
 }
 
 ### Some stuff derived from QtRuby for creating a MetaData blob

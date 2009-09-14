@@ -51,7 +51,7 @@ QVector<SmokeType> MocMethod::types() const {
   int i = 0;
   QList<QByteArray> methodTypes = _method.parameterTypes();
   QVector<SmokeType> _types(methodTypes.size() + 1);
-  methodTypes.prepend(QByteArray(_method.typeName()));  
+  methodTypes.prepend(QByteArray(_method.typeName()));
   foreach (QByteArray name, methodTypes) {
     Smoke *smoke = _smoke;
     Smoke::Index typeId = 0;

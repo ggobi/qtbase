@@ -1,20 +1,22 @@
 #include "RMethod.hpp"
 #include "MethodCall.hpp"
+#include "SmokeObject.hpp"
 
 #include <Rinternals.h>
 
-/* TODO: 'self' may be either an object or NULL (static method).
-   Obtain an environment as set as enclosure of our closure. */
-SEXP RMethod::invoke(SEXP /*self*/, SEXP args) {
-  SEXP lang, lang_tmp;
-  int problem;
-  PROTECT(lang = allocVector(LANGSXP, length(args) + 2));
-  SETCAR(lang, _closure);
+SEXP RMethod::invoke(SEXP self, SEXP args) {
+  SEXP lang, lang_tmp, fun;
+  int problem = 0;
+  
+  PROTECT(lang = allocVector(LANGSXP, length(args) + 1));
+  
+  if (self) {
+    SmokeObject *so = SmokeObject::fromSexp(self);
+    fun = so->enclose(_closure);
+  } else fun = _closure;
+  SETCAR(lang, fun);
+  
   lang_tmp = CDR(lang);
-  /*
-    SETCAR(lang_tmp, self);
-    lang_tmp = CDR(lang_tmp);
-  */
   for (int i = 0; i < length(args); i++) {
     SETCAR(lang_tmp, VECTOR_ELT(args, i));
     lang_tmp = CDR(lang_tmp);
@@ -23,6 +25,7 @@ SEXP RMethod::invoke(SEXP /*self*/, SEXP args) {
   UNPROTECT(1);
   if (problem)
     setLastError(ImplementationFailed);
+  else setLastError(NoError);
   return ans;
 }
 

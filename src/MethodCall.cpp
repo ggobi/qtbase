@@ -89,7 +89,7 @@ void MethodCall::marshal() {
 
 void MethodCall::invokeMethod() {
   if (_mode == SmokeToR || (_mode == Identity && _args))
-    _method->invoke(_target->sexp(), _args);
+    _method->invoke(_target ? _target->sexp() : NULL, _args);
   else _method->invoke(_target, _stack);
 }
 
