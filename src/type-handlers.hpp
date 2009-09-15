@@ -471,13 +471,14 @@ template <>
 void marshal_to_sexp<SmokeEnumWrapper>(MethodCall *m)
 {
   long val = m->item().s_enum;
-  SEXP e = ScalarInteger(val);
-  SEXP classes;
-  PROTECT(classes = allocVector(STRSXP, 2));
+  SEXP e, classes;
+  PROTECT(e = ScalarInteger(val));
+  classes = allocVector(STRSXP, 2);
+  setAttrib(e, R_ClassSymbol, classes);
   SET_STRING_ELT(classes, 0, mkChar(m->type().name()));
   SET_STRING_ELT(classes, 1, mkChar("QtEnum"));
-  setAttrib(e, R_ClassSymbol, classes);
   m->setSexp(e);
+  UNPROTECT(1);
 }
 
 extern QHash<QByteArray, TypeHandler*> type_handlers;

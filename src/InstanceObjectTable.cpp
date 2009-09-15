@@ -86,9 +86,7 @@ SEXP InstanceObjectTable::get(const char * name, Rboolean* canCache) {
     if (ans == R_UnboundValue)
       ans = enumValue(name);
   }
-  if (ans == R_UnboundValue && methodExists(name))
-    ans = methodClosure(name); // make a wrapper for method
-  else if (ans == R_UnboundValue) {
+  if (ans == R_UnboundValue) {
     Property *prop = _instance->klass()->property(name);
     if (prop) { // FIXME: throw error if not readable?
       if (prop->isReadable())
@@ -96,6 +94,9 @@ SEXP InstanceObjectTable::get(const char * name, Rboolean* canCache) {
       delete prop;
     }
   }
+  if (ans == R_UnboundValue && methodExists(name))
+    ans = methodClosure(name); // make a wrapper for method
+  
   return ans;
 }
 
@@ -119,9 +120,11 @@ SEXP InstanceObjectTable::assign(const char * name, SEXP value) {
     if (!writable)
       error("Property '%s' is read-only", name);
   }
-  if (sym == R_NilValue && _internal) {
-    sym = install(name);
-    defineVar(sym, value, fieldEnv());
+  if (sym == R_NilValue) {
+    if (_internal) {
+      sym = install(name);
+      defineVar(sym, value, fieldEnv());
+    } else error("No such property '%s'", name);
   }
   return sym;
 }

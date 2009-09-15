@@ -39,6 +39,8 @@ static void reportBindingError(const DynamicBinding &binding,
   else if (err == Method::BadArguments)
     error("Wrong number or types of arguments passed to '%s::%s'", className,
           methodName);
-  else if (binding.lastError() > Method::NoError)
+  else if (err == Method::ImplementationFailed)
+    error("Implementation failed for method '%s::%s'", className, methodName);
+  else if (err > Method::NoError)
     error("Invocation failed for method '%s::%s'", className, methodName);
 }
