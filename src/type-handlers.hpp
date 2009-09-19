@@ -493,17 +493,7 @@ void marshal_from_sexp<SmokeClassWrapper>(MethodCall *m)
     return;
   }
 
-  SmokeObject *o = SmokeObject::fromSexp(v);
-  if (o == 0 || o->ptr() == 0) {
-    if(m->type().isRef()) {
-      warning("References can't be nil");
-      m->unsupported();
-    }
-					
-    m->item().s_class = 0;
-    return;
-  }
-		
+  SmokeObject *o = SmokeObject::fromSexp(v);		
   void *ptr = o->ptr();
   
   if (!m->cleanup() && m->type().isStack()) {
@@ -512,8 +502,7 @@ void marshal_from_sexp<SmokeClassWrapper>(MethodCall *m)
     qWarning("copying %s %p to %p\n", o->klass()->name(), o->ptr(), ptr);
 #endif
   }
-
-
+  
   const Smoke::Class &cl = m->smoke()->classes[m->type().classId()];
   ptr = o->castPtr(cl.className);
   

@@ -38,5 +38,9 @@ S3method("$", RQtClass)
 S3method(print, RQtClass)
 export(qmethods, qsetClass, qsetMethod)
 
+# enums
+S3method("|", QtEnum)
+S3method("&", QtEnum)
+
 # the Qt smoke library
 export(Qt)

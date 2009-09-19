@@ -483,5 +483,22 @@ method. What about:
   > qproperties(MyClass)$prop <- qproperty("integer", writable = FALSE)
   > qproperties(MyClass)$prop <- 0L # read/write, integer, defaults to 0
 
-- Enums: Are these really necessary?
+- Enums: 
   > qenums(MyClass)$enum <- c("small", "medium", "large")
+
+  Are these necessary? R already has enumerations in the form of
+  factors. Enumerations are mostly useful for type safety. The
+  possible values are fixed, and consistency can be verified by the
+  compiler. The same is true in many respects for factors, even though
+  R is dynamically typed. For example, we can protect against setting
+  an illegal value:
+
+  > f <- factor("small", levels = c("small", "big"))
+  > f[] <- "huge" # error
+
+  When passing an enumeration to a function, there is the match.arg()
+  idiom:
+
+  > fun <- function(x = levels(f)) { x <- match.arg(x); ... }
+
+  Thus, we will hold off on formal enums.

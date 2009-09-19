@@ -14,6 +14,6 @@ all:
 clean:
 	rm -f *.so *.o *.a libqt* qtbase.pro Makefile.qtbase moc*.cpp
 	make -C ../inst/kdebindings clean
-	rm -rf ../inst/local
+	rm -rf ../local
 
 

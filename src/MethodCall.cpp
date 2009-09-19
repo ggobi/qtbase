@@ -9,43 +9,43 @@
 MethodCall::MethodCall(Method *method, SEXP obj, SEXP args)
   : _cur(0), _called(false), _mode(Identity),
     _target(obj ? SmokeObject::fromSexp(obj) : NULL), _stack(NULL),
-    _args(args), _method(method), _types(method->types())
+    _args(args), _ret(R_NilValue), _method(method), _types(method->types())
 { }
 MethodCall::MethodCall(Method *method, SmokeObject *obj, Smoke::Stack args)
   : _cur(0), _called(false), _mode(Identity),
-    _target(obj), _stack(args), _args(NULL),
+    _target(obj), _stack(args), _args(NULL), _ret(R_NilValue),
     _method(method), _types(method->types())
 { }
 MethodCall::MethodCall(RMethod *method, SEXP obj, SEXP args)
   : _cur(0), _called(false), _mode(Identity),
     _target(obj ? SmokeObject::fromSexp(obj) : NULL), _stack(NULL),
-    _args(args), _method(method), _types(method->types())
+    _args(args), _ret(R_NilValue), _method(method), _types(method->types())
 { } 
 MethodCall::MethodCall(ForeignMethod *method, SEXP obj, SEXP args)
   : _cur(0), _called(false), _mode(RToSmoke),
     _target(obj ? SmokeObject::fromSexp(obj) : NULL), _stack(NULL),
-    _args(args), _method(method), _types(method->types())
+    _args(args), _ret(R_NilValue), _method(method), _types(method->types())
 { }
 MethodCall::MethodCall(RMethod *method, SmokeObject *obj, Smoke::Stack args)
   : _cur(0), _called(false), _mode(SmokeToR),
-    _target(obj), _stack(args), _args(NULL),
+    _target(obj), _stack(args), _args(NULL), _ret(R_NilValue), 
     _method(method), _types(method->types())
 { }
 MethodCall::MethodCall(ForeignMethod *method, SmokeObject *obj,
                        Smoke::Stack args)
   : _cur(0), _called(false), _mode(Identity),
-    _target(obj), _stack(args), _args(NULL),
+    _target(obj), _stack(args), _args(NULL), _ret(R_NilValue),
     _method(method), _types(method->types())
 { }
 
 /* These two are in cpp, because we do not want Rinternals.h in header */
 SEXP MethodCall::sexp() const {
   if (_cur) return VECTOR_ELT(_args, _cur-1);
-  else return _sret;
+  else return _ret;
 }
 void MethodCall::setSexp(SEXP sexp) {
   if (_cur) SET_VECTOR_ELT(_args, _cur-1, sexp);
-  else _sret = sexp;
+  else _ret = sexp;
 }
 
 /* Keep SmokeObject out of header */
@@ -165,7 +165,7 @@ TypeHandler::ScoreArgFn MethodCall::scoreArgFn(const SmokeType &type) {
   if (type.elem())
     return scoreArg_basetype;
   TypeHandler *h = typeHandler(type);
-  if (h != 0) {
+  if (h != 0 && h->scoreArgFn) {
     return h->scoreArgFn;
   }
   return scoreArg_unknown;

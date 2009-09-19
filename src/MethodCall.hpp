@@ -123,7 +123,7 @@ private:
   SmokeObject* _target;
   Smoke::Stack _stack;
   SEXP _args;
-  SEXP _sret;
+  SEXP _ret;
   Method* _method;
   QVector<SmokeType> _types;
 };

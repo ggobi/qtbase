@@ -279,8 +279,8 @@ int scoreArg_basetype(SEXP arg, const SmokeType &type) {
   case INTSXP:
     switch(elem) {
     case Smoke::t_enum:
-      if (inherits(value, "QtEnum") && className == type.name())
-        score = 3;
+      if (inherits(value, "QtEnum"))
+        score = 2;
       else score = 1;
       break;
     case Smoke::t_int:
@@ -308,10 +308,10 @@ int scoreArg_basetype(SEXP arg, const SmokeType &type) {
       score = 3;
       break;
     case Smoke::t_float:
+    case Smoke::t_uint: // to distinguish int/uint
       score = 2;
       break;
     case Smoke::t_int:
-    case Smoke::t_uint:
     case Smoke::t_long:
     case Smoke::t_ulong:
     case Smoke::t_short:
@@ -332,16 +332,14 @@ int scoreArg_basetype(SEXP arg, const SmokeType &type) {
     if (elem == Smoke::t_char && strlen(CHAR(asChar(value))) == 1)
       score = 2;
     break;
-  case EXTPTRSXP:
+  case ENVSXP:
     if (elem == Smoke::t_class) {
       SmokeObject *o = SmokeObject::fromSexp(value);
-      if (!o || !o->smoke()) // some kind of foreign pointer
-        score = 1;
-      else {
-        const char *smokeClass = o->smoke()->classes[o->classId()].className;
+      if (o) {
+        const char *smokeClass = o->smoke()->classes[type.classId()].className;
         if (className == smokeClass)
           score = 3;
-        else if (o->instanceOf(className))
+        else if (o->instanceOf(smokeClass))
           score = 2;
       }
     }
@@ -453,6 +451,12 @@ static void marshal_QString(MethodCall *m) {
     m->unsupported();
     break;
   }
+}
+
+static int scoreArg_QString(SEXP arg, const SmokeType &/*type*/) {
+  if (TYPEOF(arg) == STRSXP)
+    return 3;
+  else return 0;
 }
 
 static void marshal_QByteArray(MethodCall *m) {
@@ -1640,9 +1644,9 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   { "QStringList", marshal_QStringList, NULL },
   { "QStringList*", marshal_QStringList, NULL },
   { "QStringList&", marshal_QStringList, NULL },
-  { "QString", marshal_QString, NULL },
-  { "QString*", marshal_QString, NULL },
-  { "QString&", marshal_QString, NULL },
+  { "QString", marshal_QString, scoreArg_QString },
+  { "QString*", marshal_QString, scoreArg_QString },
+  { "QString&", marshal_QString, scoreArg_QString },
   { "QByteArray", marshal_QByteArray, NULL },
   { "QByteArray*", marshal_QByteArray, NULL },
   { "QByteArray&", marshal_QByteArray, NULL },

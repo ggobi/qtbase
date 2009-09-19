@@ -88,12 +88,14 @@ Smoke::ModuleIndex SmokeClass::findIndex(const MethodCall& call) const
         for (int j = 0; args[j]; j++) {
           curMatch +=
             MethodCall::scoreArg(VECTOR_ELT(rargs, j), _smoke, args[j]);
+          //qDebug("curMatch: %d", curMatch);
         }
+        ambiguous = curMatch == bestMatch; 
         if (curMatch > bestMatch) {
+          //qDebug("new best match: %d, old: %d", curMatch, bestMatch);
           bestMatch = curMatch;
           bestMethod = ambig;
         }
-        ambiguous = curMatch == bestMatch; 
         i++;
       }
       if (ambiguous)
@@ -209,6 +211,8 @@ QHash<const char *, int> SmokeClass::createEnumValuesMap() const {
   Smoke::StackItem stack[1];
   for (int i = methmin; i <= methmax; i++) {
     Smoke::Method m = _smoke->methods[_smoke->methodMaps[i].method];
+    if ((m.flags & Smoke::mf_ctor))
+      continue; // constructors are capitalized, so can be mixed-in
     if ((m.flags & Smoke::mf_enum) == 0)
       break;
     (*_c->classFn)(m.method, 0, stack);
