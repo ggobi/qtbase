@@ -28,8 +28,9 @@ public:
     const = 0;
   virtual bool hasMethod(const char *name,
                          Method::Qualifiers qualifiers = Method::None)
-    const = 0;  
-
+    const = 0;
+  virtual bool implementsMethod(const char *name) const = 0;
+  
   virtual QHash<const char *, int> enumValues() const = 0;
 
   // or virtual QHash<const char *, Property*> properties() const = 0;
@@ -40,7 +41,7 @@ public:
 
   /* Factory of instance databases for R environments */
   virtual InstanceObjectTable *createObjectTable(SmokeObject *obj) const;
-
+  
   /* TODO if we support user static methods
   SEXP staticEnv() const;
   virtual SEXP createClassObjectTable() const;
@@ -49,6 +50,9 @@ public:
   /* Some utilities */
   
   QList<const Class *> ancestors() const;
+
+  // Often want to know this to optimize e.g. callback handlers
+  bool userImplementsMethod(const char *methodName) const;
   
   /* Whether the Class objects represent the same class. */
   bool operator ==(const Class &b) const {

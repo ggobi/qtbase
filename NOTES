@@ -196,6 +196,22 @@ instance method. Or we can use 'super' like in Java:
 
 > super$foo()
 
+But what is 'super'? It needs to be some object, most conveniently
+another reference to the instance, like 'this'. This does not make
+sense though. There is no such thing as a "super instance" -- only a
+"super class". The user could do weird things, like pass 'super' as an
+argument to other methods. Instead, we could take the S3/S4 route,
+with a special function that calls a super method, as in:
+
+> callSuper(...)
+
+But unlike S3/S4, it makes sense when bundling to allow an alternative
+method name.
+
+> callSuper("foo", ...)
+
+A little extra typing, but it is more explicit.
+
 User objects: Should support storing fields in an environment. Should
 not need to declare these, unless they are properties. The instance
 environment should inherit from this field environment.

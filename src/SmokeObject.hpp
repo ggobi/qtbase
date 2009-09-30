@@ -64,11 +64,11 @@ public:
   
 private:
 
-  SEXP createSexp(SEXP parentEnv);
   void orphanTable(SEXP sexp) const;
   SEXP internalTable();
   void maybeDestroy();
   void castSexp(SEXP sexp);
+  SEXP createSexp(SEXP parentEnv);
   
   void *_ptr;
   const Class *_klass;

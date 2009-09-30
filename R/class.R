@@ -122,24 +122,24 @@ qenclose <- function(x, fun) {
   .Call(qt_qenclose, x, fun)
 }
 
-qsetMethod <- function(x, name, FUN,
+qsetMethod <- function(name, class, FUN,
                        access = c("public", "protected", "private"),
                        slot = FALSE) # 'slot' not supported yet
 {
   attr(FUN, "access") <- match.arg(access)
-  assign(name, FUN, attr(x, "instanceEnv"))
+  assign(name, FUN, attr(class, "instanceEnv"))
   if (isTRUE(slot))
     slot <- ""
   if (is.character(slot)) {
     for (s in slot)
-      qsetSlot(x, name, s)
-  }  
+      qsetSlot(name, class, s)
+  }
 }
 
-qsetSlot <- function(x, name, params)
+qsetSlot <- function(name, class, params)
 {
   sig <- paste(name, "(", params, ")", sep = "")
-  fun <- get(name, attr(x, "instanceEnv"))
+  fun <- get(name, attr(class, "instanceEnv"))
   qmetadata(x)$slots[[sig]] <-
     list(signature = sig, args = names(formals(fun)),
          access = attr(fun, "access"))

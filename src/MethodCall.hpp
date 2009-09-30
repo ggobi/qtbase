@@ -30,12 +30,15 @@ public:
      mode for the marshalling. Too bad there is no constructor
      chaining in C++. */
   
-  MethodCall(Method *method, SEXP obj, SEXP args);
-  MethodCall(Method *method, SmokeObject *obj, Smoke::Stack args);
-  MethodCall(RMethod *method, SEXP obj, SEXP args);
-  MethodCall(ForeignMethod *method, SEXP obj, SEXP args);
-  MethodCall(RMethod *method, SmokeObject *obj, Smoke::Stack args);
-  MethodCall(ForeignMethod *method, SmokeObject *obj, Smoke::Stack args);
+  MethodCall(Method *method, SEXP obj, SEXP args, bool super = false);
+  MethodCall(Method *method, SmokeObject *obj, Smoke::Stack args,
+             bool super = false);
+  MethodCall(RMethod *method, SEXP obj, SEXP args, bool super = false);
+  MethodCall(ForeignMethod *method, SEXP obj, SEXP args, bool super = false);
+  MethodCall(RMethod *method, SmokeObject *obj, Smoke::Stack args,
+             bool super = false);
+  MethodCall(ForeignMethod *method, SmokeObject *obj, Smoke::Stack args,
+             bool super = false);
   
   /* General Accessors */
   
@@ -52,8 +55,10 @@ public:
   inline SEXP args() const {
     return _args;
   }
+  inline QVector<SmokeType> types() const { return _types; }
   const Class *klass() const;
   int numArgs() const; 
+  inline bool super() const { return _super; }  
   
   /* Marshalling accessors */
 
@@ -120,6 +125,7 @@ private:
   int _cur;
   bool _called;
   MethodCall::Mode _mode;
+  bool _super;
   SmokeObject* _target;
   Smoke::Stack _stack;
   SEXP _args;

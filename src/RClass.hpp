@@ -23,8 +23,10 @@ public:
                          Method::Qualifiers qualifiers = Method::None) const;
   virtual QList<Method *> methods(Method::Qualifiers qualifiers = Method::None)
     const;
+  virtual bool implementsMethod(const char *name) const;
   virtual QHash<const char *, int> enumValues() const;
   virtual Property *property(const char *name) const;
+  
   
   /* R specific accessors */
   SEXP env() const;

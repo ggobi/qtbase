@@ -18,14 +18,15 @@ MocClass::findMethodId(Smoke *smoke, const QMetaObject *meta, const char *name,
   while (classId == 0) {
     // go in reverse to choose most derived method first
     for (int id = meta->methodCount()-1; id >= 0; id--) {
-      if (meta->method(id).methodType() == QMetaMethod::Slot) {
+      QMetaMethod meth = meta->method(id);
+      if (meth.access() != QMetaMethod::Private) {
         QByteArray signature(meta->method(id).signature());
         QByteArray methodName = signature.mid(0, signature.indexOf('('));
         // Don't check that the types of the R args match
         // the c++ ones for now,
         // only that the name and arg count is the same.
         if (methodName == name &&
-            meta->method(id).parameterTypes().count() == length(args))
+            meth.parameterTypes().count() == length(args))
           result = id;
       }
     }
@@ -48,8 +49,7 @@ MocClass::findMethod(const MethodCall& call) const {
     QObject * qobject = reinterpret_cast<QObject *>(o->castPtr("QObject"));
     const QMetaObject * meta = qobject->metaObject();
     /* get the method id */
-    int id = findMethodId(o->smoke(), meta, call.method()->name(),
-                          call.args());
+    int id = findMethodId(o->smoke(), meta, call.method()->name(), call.args());
     if (id >= 0)
       method = new MocMethod(o->smoke(), meta, id);
   }
@@ -105,6 +105,13 @@ MocClass::hasMethod(const char *name, Method::Qualifiers qualifiers) const {
     }
   }
   return found;
+}
+
+bool MocClass::implementsMethod(const char *name) const {
+  bool impl = _delegate->implementsMethod(name);
+  if (!impl)
+    impl = _meta->indexOfMethod(name) >= _meta->methodOffset();
+  return impl;
 }
 
 // yes, we could access the QMetaEnums, but is there a use case?

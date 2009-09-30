@@ -82,8 +82,6 @@ Smoke::ModuleIndex SmokeClass::findIndex(const MethodCall& call) const
       while ((ambig = _smoke->ambiguousMethodList[i])) {
         int curMatch = 0;
         Smoke::Index *args = _smoke->argumentList + _smoke->methods[ambig].args;
-        if (_smoke->methods[ambig].numArgs != length(rargs))
-          continue; // obvious mismatch
         // score each argument
         for (int j = 0; args[j]; j++) {
           curMatch +=
@@ -115,15 +113,15 @@ Method *SmokeClass::findMethod(const MethodCall &call) const {
   return method;
 }
 
-// Caller needs to free the elements
 QList<const Class *> SmokeClass::parents() const {
-  QList<const Class *> classes;
-  Smoke::Index *parents = _smoke->inheritanceList + _c->parents;
-  for(int i = 0; parents[i]; i++) {
-    const Class *c = Class::fromSmokeId(_smoke, parents[i]);
-    classes.append(c);
+  if (_parents.isEmpty()) {
+    Smoke::Index *parents = _smoke->inheritanceList + _c->parents;
+    for(int i = 0; parents[i]; i++) {
+      const Class *c = Class::fromSmokeId(_smoke, parents[i]);
+      _parents.append(c);
+    }
   }
-  return classes;
+  return _parents;
 }
 
 void SmokeClass::findMethodRange() {
@@ -195,6 +193,11 @@ SmokeClass::hasMethod(const char *name, Method::Qualifiers qualifiers) const {
   return q && ((q & qualifiers) == qualifiers);
 }
 
+bool SmokeClass::implementsMethod(const char *name) const {
+  Smoke::Index nameInd = _smoke->idMethodName(name).index;
+  Smoke::Index methInd = _smoke->idMethod(_id, nameInd).index;
+  return methInd > 0;
+}
 
 /* Enums */
 

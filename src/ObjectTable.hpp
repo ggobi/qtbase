@@ -15,11 +15,11 @@ public:
   virtual ~ObjectTable();
   
   /* R_ObjectTable interface */
-  virtual Rboolean exists(const char * name, Rboolean *canCache) = 0;
-  virtual SEXP get(const char * name, Rboolean *canCache) = 0;
+  virtual Rboolean exists(const char * name, Rboolean *canCache) const = 0;
+  virtual SEXP get(const char * name, Rboolean *canCache) const = 0;
   virtual int remove(const char * name) = 0;
   virtual SEXP assign(const char * name, SEXP value) = 0;
-  virtual SEXP objects() = 0;
+  virtual SEXP objects() const = 0;
 
   SEXP sexp(); // get wrapped sexp (externalptr for hashtab)
 

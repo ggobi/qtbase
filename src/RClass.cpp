@@ -59,8 +59,10 @@ Method *RClass::findMethod(const MethodCall &call) const {
   const char * methodName = call.method()->name();
   SEXP fun = findVarInFrame(env(), install(methodName));
   Method *meth = NULL;
-  if (fun != R_UnboundValue && TYPEOF(fun) == CLOSXP)
-    meth = new RMethod(this, methodName, fun);
+  if (fun != R_UnboundValue && TYPEOF(fun) == CLOSXP &&
+      (!call.super() ||
+       (RMethod(this, methodName, fun).qualifiers() & Method::Private) == 0))
+    meth = new RMethod(this, methodName, fun, call.types());
   else meth = parent()->findMethod(call);
   return meth;
 }
@@ -83,4 +85,9 @@ QHash<const char *, int> RClass::enumValues() const {
 
 Property *RClass::property(const char *name) const {
   return parent()->property(name);
+}
+
+bool RClass::implementsMethod(const char *name) const {
+  SEXP fun = findVarInFrame(env(), install(name));
+  return fun != R_UnboundValue && TYPEOF(fun) == CLOSXP;
 }

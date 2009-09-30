@@ -4,7 +4,7 @@
   
 SEXP DynamicBinding::invoke(SEXP obj, SEXP args) {
   SEXP ans = NULL;
-  MethodCall call(this, obj, args);
+  MethodCall call(this, obj, args, _super);
   Method *method = call.klass()->findMethod(call);
   if (method) {
     ans = method->invoke(obj, args);
@@ -15,7 +15,7 @@ SEXP DynamicBinding::invoke(SEXP obj, SEXP args) {
 }
 
 void DynamicBinding::invoke(SmokeObject *obj, Smoke::Stack args) {
-  MethodCall call(this, obj, args);
+  MethodCall call(this, obj, args, _super);
   Method *method = call.klass()->findMethod(call);
   if (method) {
     method->invoke(obj, args);

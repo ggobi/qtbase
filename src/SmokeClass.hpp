@@ -36,6 +36,7 @@ public:
   virtual QHash<const char *, int> enumValues() const;
   virtual Property *property(const char *name) const;
   virtual QList<const Class *> parents() const;
+  virtual bool implementsMethod(const char *name) const;
   
   inline const Smoke::Class &c() const { return *_c; }
   inline Smoke::Index classId() const { return _id; }
@@ -79,6 +80,7 @@ private:
   int methmax;
   mutable QHash<const char *, int> _enumValues;
   mutable bool enumValuesCached;
+  mutable QList<const Class *> _parents;
 };
 
 #endif

@@ -79,7 +79,7 @@ qsetClass("AddressBook", Qt$QWidget, function(parent = NULL) {
   this$dialog <- FindDialog()
 })
 
-qsetMethod(AddressBook, "addContact", function() {
+qsetMethod("addContact", AddressBook, function() {
   this$oldName <- nameLine$text
   this$oldAddress <- addressText$plainText
 
@@ -89,7 +89,7 @@ qsetMethod(AddressBook, "addContact", function() {
   updateInterface("adding")
 })
 
-qsetMethod(AddressBook, "submitContact", function() {
+qsetMethod("submitContact", AddressBook, function() {
   name <- nameLine$text
   address <- addressText$plainText
 
@@ -131,14 +131,14 @@ qsetMethod(AddressBook, "submitContact", function() {
   updateInterface("navigation")
 })
 
-qsetMethod(AddressBook, "cancel", function() {
+qsetMethod("cancel", AddressBook, function() {
   nameLine$text <- oldName
   addressText$plainText <- oldAddress
 
   updateInterface("navigation")
 })
 
-qsetMethod(AddressBook, "nextContact", function() {
+qsetMethod("nextContact", AddressBook, function() {
   i <- match(nameLine$text, names(contacts), length(contacts))
   if (i == length(contacts))
     i <- 1
@@ -148,7 +148,7 @@ qsetMethod(AddressBook, "nextContact", function() {
   addressText$plainText <- contacts[i]
 })
 
-qsetMethod(AddressBook, "prevContact", function() {
+qsetMethod("prevContact", AddressBook, function() {
   i <- match(nameLine$text, names(contacts))
 
   if (is.na(i)) {
@@ -165,14 +165,14 @@ qsetMethod(AddressBook, "prevContact", function() {
   addressText$plainText <- contacts[i]
 })
 
-qsetMethod(AddressBook, "editContact", function() {
+qsetMethod("editContact", AddressBook, function() {
   oldName <<- nameLine$text
   oldAddress <<- addressText$plainText
 
   updateInterface("editing")
 })
 
-qsetMethod(AddressBook, "removeContact", function() {
+qsetMethod("removeContact", AddressBook, function() {
   name <- nameLine$text
   address <- addressText$plainText
 
@@ -191,7 +191,7 @@ qsetMethod(AddressBook, "removeContact", function() {
   updateInterface("navigation")
 })
 
-qsetMethod(AddressBook, "findContact", function() {
+qsetMethod("findContact", AddressBook, function() {
   dialog$show()
 
   if (dialog$exec() == Qt$QDialog$Accepted) {
@@ -210,7 +210,7 @@ qsetMethod(AddressBook, "findContact", function() {
   updateInterface("navigation")
 })
 
-qsetMethod(AddressBook, "saveToFile", function() {
+qsetMethod("saveToFile", AddressBook, function() {
   fileName <-
     Qt$QFileDialog$getSaveFileName(this, "Save Address Book", "",
                                    "Address Book (*.abk);;All Files (*)")
@@ -219,7 +219,7 @@ qsetMethod(AddressBook, "saveToFile", function() {
   else save(contacts, file = fileName)
 })
 
-qsetMethod(AddressBook, "loadFromFile", function() {
+qsetMethod("loadFromFile", AddressBook, function() {
   fileName <-
     Qt$QFileDialog$getOpenFileName(this, "Open Address Book", "",
                                    "Address Book (*.abk);;All Files (*)")
@@ -237,7 +237,7 @@ qsetMethod(AddressBook, "loadFromFile", function() {
   updateInterface("navigation")
 })
 
-qsetMethod(AddressBook, "updateInterface", function(mode)
+qsetMethod("updateInterface", AddressBook, function(mode)
 {
   currentMode[] <<- mode
   switch (as.character(currentMode),
@@ -305,7 +305,7 @@ qsetClass("FindDialog", Qt$QDialog, function(parent = NULL) {
   qconnect(findButton, "clicked", accept)
 })
 
-qsetMethod(FindDialog, "findClicked", function() {
+qsetMethod("findClicked", FindDialog, function() {
   text <- lineEdit$text
 
   if (!nchar(text)) {
@@ -318,7 +318,7 @@ qsetMethod(FindDialog, "findClicked", function() {
   }
 })
 
-qsetMethod(FindDialog, "getFindText", function() findText)
+qsetMethod("getFindText", FindDialog, function() findText)
 
 ab <- AddressBook()
 ab$show()

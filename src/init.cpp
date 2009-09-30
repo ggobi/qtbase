@@ -89,7 +89,7 @@ static R_CallMethodDef CallEntries[] = {
     CALLDEF(qt_qclasses, 1),
     CALLDEF(qt_qsmokes, 0),
     
-    CALLDEF(qt_qinvoke, 3),
+    CALLDEF(qt_qinvoke, 4),
     CALLDEF(qt_qinvokeStatic, 3),
 
     CALLDEF(qt_qsetProperty, 3),

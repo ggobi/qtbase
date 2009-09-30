@@ -296,16 +296,14 @@ resolve_classname_qt(const SmokeObject * o)
 Q_DECL_EXPORT bool
 memory_is_owned_qt(const SmokeObject *o)
 {
-  Smoke *smoke = o->smoke();
   const char *className = o->klass()->name();
-  
   if (	qstrcmp(className, "QListBoxItem") == 0
         || qstrcmp(className, "QStyleSheetItem") == 0
         || qstrcmp(className, "QSqlCursor") == 0
         || qstrcmp(className, "QModelIndex") == 0 )
   {
     return true;
-  } else if (smoke->isDerivedFromByName(className, "QLayoutItem")) {
+  } else if (o->instanceOf("QLayoutItem")) {
     QLayoutItem * item = (QLayoutItem *) o->castPtr("QLayoutItem");
     QLayout * layout = item->layout();
     if (layout) { // we really have a QLayout
@@ -318,46 +316,50 @@ memory_is_owned_qt(const SmokeObject *o)
     if (item->listWidget() != 0) {
       return true;
     }
-  } else if (smoke->isDerivedFromByName(className, "QTableWidgetItem")) {
-    QTableWidgetItem * item = (QTableWidgetItem *) o->castPtr("QTableWidgetItem");
+  } else if (o->instanceOf("QTableWidgetItem")) {
+    QTableWidgetItem * item =
+      (QTableWidgetItem *) o->castPtr("QTableWidgetItem");
     if (item->tableWidget() != 0) {
       return true;
     }
-  } else if (smoke->isDerivedFromByName(className, "QTreeWidgetItem")) {
+  } else if (o->instanceOf("QTreeWidgetItem")) {
     QTreeWidgetItem * item = (QTreeWidgetItem *) o->castPtr("QTreeWidgetItem");
     if (item->treeWidget() != 0) {
       return true;
     }
-  } else if (smoke->isDerivedFromByName(className, "QWidget")) {
+  } else if (o->instanceOf("QWidget")) {
     QWidget * qwidget = (QWidget *) o->castPtr("QWidget");
     if (qwidget->parentWidget() != 0) {
       return true;
+    } else if (qwidget->isVisible()) {
+      qwidget->setAttribute(Qt::WA_DeleteOnClose);
+      return true;
     }
-    // Qt avoided garbage collecting custom QWidget subclasses here -- why?
+    // QtRuby avoided garbage collecting custom QWidget subclasses here -- why?
     /*
     const QMetaObject * meta = qwidget->metaObject();
     Smoke::ModuleIndex classId = smoke->idClass(meta->className());
     return (classId.index == 0);
     */
-  } else if (smoke->isDerivedFromByName(className, "QGraphicsItem")) {
+  } else if (o->instanceOf("QGraphicsItem")) {
     QGraphicsItem * item = (QGraphicsItem *) o->castPtr("QGraphicsItem");
     if (item->scene() != 0 || item->parentItem() != 0) {
       return true;
     }
-  } else if (smoke->isDerivedFromByName(className, "QGraphicsLayoutItem")) {
+  } else if (o->instanceOf("QGraphicsLayoutItem")) {
     QGraphicsLayoutItem * item =
       (QGraphicsLayoutItem *) o->castPtr("QGraphicsLayoutItem");
     if (item->parentLayoutItem() != 0) {
       return true;
     }
-  } else if (smoke->isDerivedFromByName(className, "QObject")) {
+  } else if (o->instanceOf("QObject")) {
     QObject * qobject = (QObject *) o->castPtr("QObject");
     if (qobject->parent() != 0) {
       return true;
     }
-  } else if (smoke->isDerivedFromByName(className, "QTextBlockUserData")) {
+  } else if (o->instanceOf("QTextBlockUserData")) {
     return true;
-  } 	
+  }
   return false;
 }
 

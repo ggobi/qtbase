@@ -4,7 +4,7 @@
 #include "MethodCall.hpp"
 #include "SmokeObject.hpp"
 
-#include <Rinternals.h>
+#include "convert.hpp"
 
 template <class T> T* smoke_ptr(MethodCall *m) {
   return (T*) m->item().s_voidp;
@@ -488,6 +488,17 @@ void marshal_from_sexp<SmokeClassWrapper>(MethodCall *m)
 {
   SEXP v = m->sexp();
 
+  /* special-case QVariant[*&], convert from R value */
+  const char *name = m->type().name();
+  if (!qstrncmp(name, "QVariant", 8) && strlen(name) <= 9) {
+    QVariant *variant = new QVariant(asQVariant(v));
+    m->item().s_class = variant;
+    m->marshal();
+    if (m->cleanup())
+      delete variant;
+    return;
+  }
+  
   if (v == R_NilValue) {
     m->item().s_class = 0;
     return;
@@ -513,12 +524,20 @@ void marshal_from_sexp<SmokeClassWrapper>(MethodCall *m)
 template <>
 void marshal_to_sexp<SmokeClassWrapper>(MethodCall *m)
 {
-  if (m->item().s_voidp == 0) {
+  void *p = m->item().s_voidp;
+  
+  /* special-case QVariant[*&], convert to R value */
+  const char *name = m->type().name();
+  if (!qstrncmp(name, "QVariant", 8) && strlen(name) <= 9) {
+    m->setSexp(asRVariant(*reinterpret_cast<QVariant *>(p)));
+    return;
+  }
+  
+  if (p == 0) {
     m->setSexp(R_NilValue);
     return;
   }
-  void *p = m->item().s_voidp;
-
+  
   /* ML: It's not clear which types of objects we are handling. We
      seem to be handling pointers and references to classes.. These
      can be optionally be 'const'.

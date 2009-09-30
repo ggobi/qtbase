@@ -1,9 +1,13 @@
+#include <smoke/qt_smoke.h>
+
+#include "SmokeObject.hpp"
 #include "convert.hpp"
 
 SEXP asRVariant(QVariant variant) {
   SEXP ans = NULL;
   switch(variant.type()) {
   case QMetaType::Void:
+    ans = R_NilValue;
     break;
   case QMetaType::Bool:
     ans = ScalarLogical(variant.value<bool>());
@@ -33,10 +37,12 @@ SEXP asRVariant(QVariant variant) {
     ans = wrapPointer(variant.value<void *>());
     break;
   case QMetaType::QObjectStar:
-    ans = wrapQObject(variant.value<QObject *>());
+    ans = SmokeObject::sexpFromPtr(variant.value<QObject *>(), qt_Smoke,
+                                   "QObject");
     break;
   case QMetaType::QWidgetStar:
-    ans = wrapQWidget(variant.value<QWidget *>());
+    ans = SmokeObject::sexpFromPtr(variant.value<QWidget *>(), qt_Smoke,
+                                   "QWidget");
     break;
   case QMetaType::QCursor:
     break;
@@ -149,6 +155,16 @@ QVariant asQVariant(SEXP rvalue) {
     // Rprintf("External pointer\n");
     variant = qVariantFromValue(unwrapPointer(rvalue, void));
     break;
+  case ENVSXP: {
+    SmokeObject *so = SmokeObject::fromSexp(rvalue);
+    if (so->instanceOf("QWidget"))
+      variant =
+        qVariantFromValue(reinterpret_cast<QWidget *>(so->castPtr("QWidget")));
+    else if (so->instanceOf("QObject"))
+      variant =
+        qVariantFromValue(reinterpret_cast<QObject *>(so->castPtr("QObject")));
+    else variant = qVariantFromValue(so->ptr());
+  }
   default:
     error("Converting to QVariant: unhandled R type");
   }

@@ -6,6 +6,11 @@
 
 #include "RSmokeBinding.hpp"
 #include "SmokeObject.hpp"
+#include "Class.hpp"
+#include "DynamicBinding.hpp"
+#include "SmokeMethod.hpp"
+
+#include <Rinternals.h>
 
 typedef struct SEXPREC* SEXP;
 
@@ -46,7 +51,6 @@ RSmokeBinding::qt_metacall(SmokeObject *so, QMetaObject::Call _c, int id,
                            void **_o)
 {
   // Assume the target slot is a C++ one
-  // FIXME: Is this correct? These methods can be virtual...
   Smoke::StackItem i[4];
   i[1].s_enum = _c;
   i[2].s_int = id;
@@ -57,10 +61,9 @@ RSmokeBinding::qt_metacall(SmokeObject *so, QMetaObject::Call _c, int id,
     return ret;
   }
   
-  if (_c != QMetaObject::InvokeMetaMethod) {
+  if (_c != QMetaObject::InvokeMetaMethod)
     return id;
-  }
-
+  
   QObject * qobj = reinterpret_cast<QObject *>(so->castPtr("QObject"));
   // get obj metaobject with a virtual call
   const QMetaObject *metaobject = qobj->metaObject();
@@ -89,7 +92,7 @@ RSmokeBinding::qt_metacall(SmokeObject *so, QMetaObject::Call _c, int id,
 }
 
 bool RSmokeBinding::callMethod(Smoke::Index method, void *obj,
-                               Smoke::Stack args, bool /*isAbstract*/)
+                               Smoke::Stack args, bool isAbstract)
 {
   SmokeObject *o =
     SmokeObject::fromPtr(obj, smoke, smoke->methods[method].classId);
@@ -107,30 +110,41 @@ bool RSmokeBinding::callMethod(Smoke::Index method, void *obj,
       signature += " const";
     }
     qDebug("module: %s virtual %p->%s::%s called", smoke->moduleName(),
-           ptr, smoke->classes[smoke->methods[method].classId].className,
+           o->ptr(), smoke->classes[smoke->methods[method].classId].className,
            (const char *) signature);
 #endif
 
   const char *methodName = smoke->methodNames[smoke->methods[method].name];
-  if (qstrncmp(methodName, "operator", sizeof("operator") - 1) == 0) {
-    methodName += (sizeof("operator") - 1);
-  }
-
+  
+  /* TODO: instead, have MocClass provide a hard-coded 'qt_metacall'
+     method to which we implicitly delegate.
   if (!qstrcmp(methodName, "qt_metacall") && o->instanceOf("QObject"))
     qt_metacall(o, (QMetaObject::Call)args[1].s_enum, args[2].s_int,
                 (void **)args[3].s_voidp);
-  
-  // If the virtual method hasn't been overriden, just call C++
-  /* TODO
-  if (rb_respond_to(obj, rb_intern(methodName)) == 0) {
-    return false;
-  }
-  // TODO: Make sure to check 'isAbstract' if not found
-  QtRuby::VirtualMethodCall c(smoke, method, args, obj, ALLOCA_N(SEXP, smoke->methods[method].numArgs));
-  c.next();
-  return true;
   */
-  return false; // C++ always handles right now
+  
+  const Class *c = o->klass();
+  bool success = false;
+  bool impl = false;
+  QList<const Class *> p = c->parents();
+  while(p.size() == 1 && c->smokeBase() == p[0]->smokeBase() && !impl) {
+    impl = c->implementsMethod(methodName);
+    c = p[0];
+    p = c->parents();
+  }
+  if (impl) {
+    //qDebug("user implements: %s", methodName);
+    DynamicBinding binding(SmokeMethod(smoke, method));
+    binding.invoke(o, args);
+    success = binding.lastError() == Method::NoError;
+    if (!success)
+      warning("Virtual method invocation failed for %s::%s", c->name(),
+              methodName);
+  }
+  if (!success && isAbstract)
+    warning("Class '%s' does not implement pure virtual '%s'", c->name(),
+            methodName);
+  return success;
 }
  
 char * RSmokeBinding::className(Smoke::Index classId) {

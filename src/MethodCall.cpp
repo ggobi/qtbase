@@ -6,34 +6,36 @@
 
 #include <Rinternals.h>
 
-MethodCall::MethodCall(Method *method, SEXP obj, SEXP args)
-  : _cur(0), _called(false), _mode(Identity),
+MethodCall::MethodCall(Method *method, SEXP obj, SEXP args, bool super)
+  : _cur(0), _called(false), _mode(Identity), _super(super),
     _target(obj ? SmokeObject::fromSexp(obj) : NULL), _stack(NULL),
     _args(args), _ret(R_NilValue), _method(method), _types(method->types())
 { }
-MethodCall::MethodCall(Method *method, SmokeObject *obj, Smoke::Stack args)
-  : _cur(0), _called(false), _mode(Identity),
+MethodCall::MethodCall(Method *method, SmokeObject *obj, Smoke::Stack args,
+                       bool super)
+  : _cur(0), _called(false), _mode(Identity), _super(super),
     _target(obj), _stack(args), _args(NULL), _ret(R_NilValue),
     _method(method), _types(method->types())
 { }
-MethodCall::MethodCall(RMethod *method, SEXP obj, SEXP args)
-  : _cur(0), _called(false), _mode(Identity),
+MethodCall::MethodCall(RMethod *method, SEXP obj, SEXP args, bool super)
+  : _cur(0), _called(false), _mode(Identity), _super(super),
     _target(obj ? SmokeObject::fromSexp(obj) : NULL), _stack(NULL),
     _args(args), _ret(R_NilValue), _method(method), _types(method->types())
 { } 
-MethodCall::MethodCall(ForeignMethod *method, SEXP obj, SEXP args)
-  : _cur(0), _called(false), _mode(RToSmoke),
+MethodCall::MethodCall(ForeignMethod *method, SEXP obj, SEXP args, bool super)
+  : _cur(0), _called(false), _mode(RToSmoke), _super(super),
     _target(obj ? SmokeObject::fromSexp(obj) : NULL), _stack(NULL),
     _args(args), _ret(R_NilValue), _method(method), _types(method->types())
 { }
-MethodCall::MethodCall(RMethod *method, SmokeObject *obj, Smoke::Stack args)
-  : _cur(0), _called(false), _mode(SmokeToR),
+MethodCall::MethodCall(RMethod *method, SmokeObject *obj, Smoke::Stack args,
+                       bool super)
+  : _cur(0), _called(false), _mode(SmokeToR), _super(super),
     _target(obj), _stack(args), _args(NULL), _ret(R_NilValue), 
     _method(method), _types(method->types())
 { }
 MethodCall::MethodCall(ForeignMethod *method, SmokeObject *obj,
-                       Smoke::Stack args)
-  : _cur(0), _called(false), _mode(Identity),
+                       Smoke::Stack args, bool super)
+  : _cur(0), _called(false), _mode(Identity), _super(super),
     _target(obj), _stack(args), _args(NULL), _ret(R_NilValue),
     _method(method), _types(method->types())
 { }
@@ -50,7 +52,10 @@ void MethodCall::setSexp(SEXP sexp) {
 
 /* Keep SmokeObject out of header */
 const Class *MethodCall::klass() const {
-   return _target ? _target->klass() : _method->klass();
+   const Class *c = _target ? _target->klass() : _method->klass();
+   if (_super)
+     c = c->parents()[0];
+   return c;
 }
 
 void MethodCall::unsupported() {

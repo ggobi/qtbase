@@ -9,9 +9,10 @@ static void reportBindingError(const DynamicBinding &binding,
                                const char *className);
 
 extern "C"
-SEXP qt_qinvoke(SEXP self, SEXP method, SEXP args) {
+SEXP qt_qinvoke(SEXP self, SEXP method, SEXP super, SEXP args) {
   const char * methodName = CHAR(asChar(method));
-  DynamicBinding binding(methodName);
+  bool sup = asLogical(super);
+  DynamicBinding binding(methodName, sup);
   SEXP ans = binding.invoke(self, args);
   if (binding.lastError() > Method::NoError)
     reportBindingError(binding, CHAR(asChar(getAttrib(self, R_ClassSymbol))));

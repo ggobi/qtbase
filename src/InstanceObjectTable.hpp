@@ -25,12 +25,12 @@ public:
   
   inline bool internal() { return _internal; }
   inline void setInternal(bool internal) { _internal = internal; }
-  
-  virtual Rboolean exists(const char * name, Rboolean *canCache);
-  virtual SEXP get(const char * name, Rboolean *canCache);
+
+  virtual Rboolean exists(const char * name, Rboolean *canCache) const;
+  virtual SEXP get(const char * name, Rboolean *canCache) const;
   virtual int remove(const char * name);
   virtual SEXP assign(const char * name, SEXP value);
-  virtual SEXP objects();
+  virtual SEXP objects() const;
   
   static SmokeObject *instanceFromSexp(SEXP sexp);
 
@@ -39,11 +39,12 @@ protected:
   
 private:
 
-  SEXP methodClosure(const char *name);
-  SEXP enumValue(const char *name);
-  SEXP fieldEnv();
-  void checkInstance();
-  bool methodExists(const char *name);
+  SEXP methodClosure(const char *name) const;
+  SEXP enumValue(const char *name) const;
+  SEXP fieldEnv() const;
+  void checkInstance() const;
+  bool methodExists(const char *name) const;
+  SEXP superClosure() const;
   
   SmokeObject *_instance;
   bool _internal;

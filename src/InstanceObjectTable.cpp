@@ -19,7 +19,7 @@ QList<QByteArray> InstanceObjectTable::sexpClasses() const {
   return classes;
 }
 
-SEXP InstanceObjectTable::methodClosure(const char *name) {
+SEXP InstanceObjectTable::methodClosure(const char *name) const {
   static SEXP qtbaseNS = R_FindNamespace(mkString("qtbase"));
   static SEXP qinvokeSym = install("qinvoke");
   SEXP f, pf, body;
@@ -36,7 +36,27 @@ SEXP InstanceObjectTable::methodClosure(const char *name) {
   return f;
 }
 
-bool InstanceObjectTable::methodExists(const char *name) {
+SEXP InstanceObjectTable::superClosure() const {
+  static SEXP qtbaseNS = R_FindNamespace(mkString("qtbase"));
+  static SEXP qinvokeSym = install("qinvokeSuper");
+  SEXP f, pf, body;
+  PROTECT(f = allocSExp(CLOSXP));
+  SET_CLOENV(f, qtbaseNS);
+  pf = allocList(2);
+  SET_FORMALS(f, pf);
+  SET_TAG(pf, R_NameSymbol);
+  SETCAR(pf, R_MissingArg);
+  pf = CDR(pf);
+  SET_TAG(pf, R_DotsSymbol);
+  SETCAR(pf, R_MissingArg);
+  PROTECT(body =
+          lang4(qinvokeSym, _instance->sexp(), R_NameSymbol, R_DotsSymbol));
+  SET_BODY(f, body);
+  UNPROTECT(2);
+  return f;
+}
+
+bool InstanceObjectTable::methodExists(const char *name) const {
   Method::Qualifiers qual = Method::None;
   if (!_internal)
     qual |= Method::Public | Method::NotStatic;
@@ -44,7 +64,7 @@ bool InstanceObjectTable::methodExists(const char *name) {
 }
 
 Rboolean
-InstanceObjectTable::exists(const char * name, Rboolean *canCache) {
+InstanceObjectTable::exists(const char * name, Rboolean *canCache) const {
   bool found = FALSE;
   checkInstance();
   if (canCache) *canCache = TRUE;
@@ -64,7 +84,7 @@ InstanceObjectTable::exists(const char * name, Rboolean *canCache) {
   return (Rboolean)found;
 }
 
-SEXP InstanceObjectTable::enumValue(const char *name) {
+SEXP InstanceObjectTable::enumValue(const char *name) const {
   SEXP ans = R_UnboundValue;
   int val = _instance->klass()->enumValues().value(name, NA_INTEGER);
   if (val != NA_INTEGER) {
@@ -75,13 +95,15 @@ SEXP InstanceObjectTable::enumValue(const char *name) {
   return ans;
 }
    
-SEXP InstanceObjectTable::get(const char * name, Rboolean* canCache) {
+SEXP InstanceObjectTable::get(const char * name, Rboolean* canCache) const {
   SEXP ans = R_UnboundValue;
   checkInstance();
   if (canCache) *canCache = TRUE;
   if (_internal) {
     if (!qstrcmp(name, "this"))
       ans = _instance->internalSexp(R_EmptyEnv);
+    else if (!qstrcmp(name, "super"))
+      ans = superClosure();
     else ans = findVarInFrame(fieldEnv(), install(name));
     if (ans == R_UnboundValue)
       ans = enumValue(name);
@@ -129,7 +151,7 @@ SEXP InstanceObjectTable::assign(const char * name, SEXP value) {
   return sym;
 }
 
-SEXP InstanceObjectTable::objects() {
+SEXP InstanceObjectTable::objects() const {
   Method::Qualifiers qual = Method::NotStatic;
   QList<Method *> methods; 
   SEXP nameVector;
@@ -168,11 +190,11 @@ SEXP InstanceObjectTable::objects() {
   return nameVector;
 }
 
-SEXP InstanceObjectTable::fieldEnv() {
+SEXP InstanceObjectTable::fieldEnv() const {
   return _instance->fieldEnv();
 }
 
-void InstanceObjectTable::checkInstance() {
+void InstanceObjectTable::checkInstance() const {
   if (!_instance)
     error("Attempt to access invalid instance");
 }

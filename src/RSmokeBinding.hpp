@@ -6,11 +6,6 @@
  * notified when an instance created by smoke gets destroyed.
  */
 
-// FIXME: this should be constructed by the Class, with a special
-// Moc subclass that handles the metacall stuff. In the current design
-// a singleton instance is provided by the RQtModule. Each Class class
-// can statically store its own singleton.
-
 class SmokeObject;
 
 typedef struct SEXPREC* SEXP;

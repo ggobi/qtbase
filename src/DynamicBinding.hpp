@@ -15,15 +15,15 @@ class MethodCall;
 class DynamicBinding : public virtual Method {
 public:
   /* Call an object method */
-  DynamicBinding(const char *methodName)
-    : _methodName(methodName), _flags(None) { }
+  DynamicBinding(const char *methodName, bool super = false)
+    : _methodName(methodName), _flags(None), _super(super) { }
   /* Call a static method */
   DynamicBinding(const Class *klass, const char *methodName)
-    : _klass(klass), _methodName(methodName), _flags(Static) { }
+    : _klass(klass), _methodName(methodName), _flags(Static), _super(false) { }
   /* Obtain parameters from an existing Method */
   DynamicBinding(const Method &method)
     : _klass(method.klass()), _methodName(method.name()),
-      _types(method.types()), _flags(method.qualifiers()) { }
+      _types(method.types()), _flags(method.qualifiers()), _super(false) { }
   
   virtual void invoke(SmokeObject *obj, Smoke::Stack stack);  
   virtual SEXP invoke(SEXP obj, SEXP args);
@@ -34,6 +34,8 @@ public:
   virtual Qualifiers qualifiers() const {
     return _flags;
   }
+
+  inline bool super() { return _super; }
   
 private:
 
@@ -43,6 +45,7 @@ private:
   const char *_methodName;
   QVector<SmokeType> _types;
   Qualifiers _flags;
+  bool _super;
 };
 
 #endif

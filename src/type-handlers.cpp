@@ -138,7 +138,6 @@
 
 #include <smoke.h>
 #include "type-handlers.hpp"
-#include "convert.hpp"
 #undef isNull // R causing trouble again
 
 bool
@@ -412,19 +411,22 @@ rstringFromQByteArray(QByteArray * s) {
 static void marshal_QString(MethodCall *m) {
   switch(m->mode()) {
   case MethodCall::RToSmoke:
-    { // MFL: changed 's' to static allocation
-      QString s;
-      if( m->sexp() != R_NilValue) {
-        s = sexp2qstring(m->sexp());
+    { 
+      QString *s = NULL;
+      if(!m->type().isPtr() || m->sexp() != R_NilValue) {
+        s = new QString(sexp2qstring(m->sexp()));
       }
       
-      m->item().s_voidp = &s;
+      m->item().s_voidp = s;
       m->marshal();
 
-      // FIXME: shouldn't we check that we have a pointer/ref? 
-      if (!m->type().isConst() && m->sexp() != R_NilValue && !s.isNull())
+      if (m->cleanup())
+        delete s;
+      
+      if (!m->type().isStack() && !m->type().isConst() &&
+          m->sexp() != R_NilValue && !s->isNull())
       { 
-        m->setSexp(qstring2sexp(s));
+        m->setSexp(qstring2sexp(*s));
       }
     }
     break;
@@ -1628,8 +1630,10 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   { "QMap<QString,QVariant>", marshal_QMapQStringQVariant, NULL },
   // FIXME: need QHash variant for the above
   { "QMap<QString,QVariant>&", marshal_QMapQStringQVariant, NULL },
-  { "QVariant", marshal_QVariant, NULL },
-  { "QVariant&", marshal_QVariant, NULL },
+  /*  { "QVariant", marshal_QVariant, NULL }, strangely a class type
+      { "QVariant&", marshal_QVariant, NULL },
+      { "QVariant*", marshal_QVariant, NULL },
+  */
   { "QVariantMap", marshal_QMapQStringQVariant, NULL },
   { "QVariantMap&", marshal_QMapQStringQVariant, NULL },
   { "QModelIndexList", marshal_QModelIndexList, NULL },

@@ -32,6 +32,7 @@ public:
   virtual bool hasMethod(const char *name,
                          Method::Qualifiers qualifiers = Method::None) const;
   virtual Method *findMethod(const MethodCall &call) const;
+  virtual bool implementsMethod(const char *name) const;
   virtual QHash<const char *, int> enumValues() const;
   virtual Property *property(const char *name) const;
   
