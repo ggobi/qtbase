@@ -109,7 +109,7 @@
 #include <QtGui/qtoolbar.h>
 #include <QtGui/qtreewidget.h>
 #include <QtGui/qwidget.h>
-#endif
+
 #ifdef QT_QTNETWORK
 #include <QtNetwork/qhostaddress.h>
 #include <QtNetwork/qnetworkinterface.h>
