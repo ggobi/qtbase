@@ -109,10 +109,12 @@
 #include <QtGui/qtoolbar.h>
 #include <QtGui/qtreewidget.h>
 #include <QtGui/qwidget.h>
+#endif
+#ifdef QT_QTNETWORK
 #include <QtNetwork/qhostaddress.h>
 #include <QtNetwork/qnetworkinterface.h>
 #include <QtNetwork/qurlinfo.h>
-
+#endif
 
 #if QT_VERSION >= 0x40200
 #include <QtGui/qgraphicsitem.h>
@@ -125,15 +127,21 @@
 
 #if QT_VERSION >= 0x40300
 #include <QtGui/qmdisubwindow.h>
+#ifdef QT_QTNETWORK
 #include <QtNetwork/qsslcertificate.h>
 #include <QtNetwork/qsslcipher.h>
 #include <QtNetwork/qsslerror.h>
+#endif
+#ifdef QT_QTXML
 #include <QtXml/qxmlstream.h>
+#endif
 #endif
 
 #if QT_VERSION >= 0x040400
 #include <QtGui/qprinterinfo.h>
+#ifdef QT_QTNETWORK
 #include <QtNetwork/qnetworkcookie.h>
+#endif
 #endif
 
 #include <smoke.h>
@@ -1500,14 +1508,18 @@ DEF_LIST_MARSHALLER( QMdiSubWindowList, QList<QMdiSubWindow*>, QMdiSubWindow )
 
 DEF_VALUELIST_MARSHALLER( QColorVector, QVector<QColor>, QColor )
 DEF_VALUELIST_MARSHALLER( QFileInfoList, QFileInfoList, QFileInfo )
+#ifdef QT_QTNETWORK
 DEF_VALUELIST_MARSHALLER( QHostAddressList, QList<QHostAddress>, QHostAddress )
+#endif
 DEF_VALUELIST_MARSHALLER( QImageTextKeyLangList, QList<QImageTextKeyLang>, QImageTextKeyLang )
 DEF_VALUELIST_MARSHALLER( QKeySequenceList, QList<QKeySequence>, QKeySequence )
 DEF_VALUELIST_MARSHALLER( QLineFVector, QVector<QLineF>, QLineF )
 DEF_VALUELIST_MARSHALLER( QLineVector, QVector<QLine>, QLine )
 DEF_VALUELIST_MARSHALLER( QModelIndexList, QList<QModelIndex>, QModelIndex )
+#ifdef QT_QTNETWORK
 DEF_VALUELIST_MARSHALLER( QNetworkAddressEntryList, QList<QNetworkAddressEntry>, QNetworkAddressEntry )
 DEF_VALUELIST_MARSHALLER( QNetworkInterfaceList, QList<QNetworkInterface>, QNetworkInterface )
+#endif
 DEF_VALUELIST_MARSHALLER( QPixmapList, QList<QPixmap>, QPixmap )
 DEF_VALUELIST_MARSHALLER( QPointFVector, QVector<QPointF>, QPointF )
 DEF_VALUELIST_MARSHALLER( QPointVector, QVector<QPoint>, QPoint )
@@ -1527,16 +1539,22 @@ DEF_VALUELIST_MARSHALLER( QVariantList, QList<QVariant>, QVariant )
 DEF_VALUELIST_MARSHALLER( QVariantVector, QVector<QVariant>, QVariant )
 
 #if QT_VERSION >= 0x40300
+#ifdef QT_QTNETWORK
 DEF_VALUELIST_MARSHALLER( QSslCertificateList, QList<QSslCertificate>, QSslCertificate )
 DEF_VALUELIST_MARSHALLER( QSslCipherList, QList<QSslCipher>, QSslCipher )
 DEF_VALUELIST_MARSHALLER( QSslErrorList, QList<QSslError>, QSslError )
+#endif
+#ifdef QT_QTXML
 DEF_VALUELIST_MARSHALLER( QXmlStreamEntityDeclarations, QVector<QXmlStreamEntityDeclaration>, QXmlStreamEntityDeclaration )
 DEF_VALUELIST_MARSHALLER( QXmlStreamNamespaceDeclarations, QVector<QXmlStreamNamespaceDeclaration>, QXmlStreamNamespaceDeclaration )
 DEF_VALUELIST_MARSHALLER( QXmlStreamNotationDeclarations, QVector<QXmlStreamNotationDeclaration>, QXmlStreamNotationDeclaration )
 #endif
+#endif
 
 #if QT_VERSION >= 0x40400
+#ifdef QT_QTNETWORK
 DEF_VALUELIST_MARSHALLER( QNetworkCookieList, QList<QNetworkCookie>, QNetworkCookie )
+#endif
 DEF_VALUELIST_MARSHALLER( QPrinterInfoList, QList<QPrinterInfo>, QPrinterInfo )
 #endif
 
@@ -1578,8 +1596,10 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   { "QList<QByteArray>", marshal_QByteArrayList, NULL },
   { "QList<QByteArray>*", marshal_QByteArrayList, NULL },
   { "QList<QByteArray>&", marshal_QByteArrayList, NULL },
+#ifdef QT_QTNETWORK
   { "QList<QHostAddress>", marshal_QHostAddressList, NULL },
   { "QList<QHostAddress>&", marshal_QHostAddressList, NULL },
+#endif
   { "QList<QImageTextKeyLang>", marshal_QImageTextKeyLangList, NULL },
   { "QList<QKeySequence>", marshal_QKeySequenceList, NULL },
   { "QList<QKeySequence>&", marshal_QKeySequenceList, NULL },
@@ -1587,8 +1607,10 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   { "QList<QListWidgetItem*>&", marshal_QListWidgetItemList, NULL },
   { "QList<QModelIndex>", marshal_QModelIndexList, NULL },
   { "QList<QModelIndex>&", marshal_QModelIndexList, NULL },
+#ifdef QT_QTNETWORK
   { "QList<QNetworkAddressEntry>", marshal_QNetworkAddressEntryList, NULL },
   { "QList<QNetworkInterface>", marshal_QNetworkInterfaceList, NULL },
+#endif
   { "QList<QPair<QString,QString> >", marshal_QPairQStringQStringList, NULL },
   { "QList<QPair<QString,QString> >&", marshal_QPairQStringQStringList, NULL },
   { "QList<QPixmap>", marshal_QPixmapList, NULL },
@@ -1709,19 +1731,25 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
 #endif
 #if QT_VERSION >= 0x40300
   { "QList<QMdiSubWindow*>", marshal_QMdiSubWindowList, NULL },
+#ifdef QT_QTNETWORK
   { "QList<QSslCertificate>", marshal_QSslCertificateList, NULL },
   { "QList<QSslCertificate>&", marshal_QSslCertificateList, NULL },
   { "QList<QSslCipher>", marshal_QSslCipherList, NULL },
   { "QList<QSslCipher>&", marshal_QSslCipherList, NULL },
   { "QList<QSslError>", marshal_QSslErrorList, NULL },
   { "QList<QSslError>&", marshal_QSslErrorList, NULL },
+#endif
+#ifdef QT_QTXML  
   { "QXmlStreamEntityDeclarations", marshal_QXmlStreamEntityDeclarations, NULL },
   { "QXmlStreamNamespaceDeclarations", marshal_QXmlStreamNamespaceDeclarations, NULL },
   { "QXmlStreamNotationDeclarations", marshal_QXmlStreamNotationDeclarations, NULL },
 #endif
+#endif
 #if QT_VERSION >= 0x040400
+#ifdef QT_QTNETWORK
   { "QList<QNetworkCookie>", marshal_QNetworkCookieList, NULL },
   { "QList<QNetworkCookie>&", marshal_QNetworkCookieList, NULL },
+#endif
   { "QList<QPrinterInfo>", marshal_QPrinterInfoList, NULL },
 #endif
   { 0, 0, NULL }
