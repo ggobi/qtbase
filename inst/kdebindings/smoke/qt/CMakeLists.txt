@@ -76,7 +76,7 @@ IF(CMAKE_CXX_FLAGS MATCHES "-fvisibility")
 ENDIF(CMAKE_CXX_FLAGS MATCHES "-fvisibility")
 
 # kde4_add_library(smokeqt SHARED ${smokeqt_LIB_SRCS})
-add_library(smokeqt SHARED ${smokeqt_LIB_SRCS})
+add_library(smokeqt STATIC ${smokeqt_LIB_SRCS})
 
 SET(QT_USE_QTNETWORK ${QT_QTNETWORK_FOUND})
 SET(QT_USE_QTOPENGL ${QT_QTOPENGL_FOUND})

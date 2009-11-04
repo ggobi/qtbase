@@ -1,5 +1,4 @@
 
-useDynLib(libsmokeqt)
 useDynLib(qtbase, .registration = TRUE)
 
 

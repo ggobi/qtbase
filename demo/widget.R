@@ -22,6 +22,7 @@ layout <- Qt$QHBoxLayout()
 layout$addWidget(label)
 layout$addWidget(lineEdit)
 window$setLayout(layout)
+window$show()
 
 ## a bit more complex
 
