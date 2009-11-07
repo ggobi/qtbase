@@ -1,4 +1,17 @@
 
+## Utility functions moved over from the formerly qtgui package
+
+print.QWidget <- function(x, ...)
+{
+    x$show()
+    invisible(x)
+}
+
+
+
+## functions below represent an attempted interface for faking REPL.
+## It has not been used for a while and should eventually be removed.
+
 .uEnv <- new.env(parent = emptyenv())
 
 .u_assign <- function(value, name = "x")
