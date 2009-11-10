@@ -1,21 +1,23 @@
-library(qtgui)
+## library(qtgui)
 
-foo <- qpushButton()
-qsetDeleteOnClose(foo, TRUE)
+foo <- Qt$QPushButton()
+## qsetDeleteOnClose(foo, TRUE)
 foo
 
+## user.data not yet supported (?)
+
 bar <-
-  qconnect(foo, "clicked", handler = function(x) {
-    if (qtext(x) == "Yeah!")
-      qsetText(x, "Done.")
-    else
-      qsetText(x, "Yeah!")
-  }, foo)
+  qconnect(foo, "clicked", handler = function() {
+      x <- foo
+      if (x$text == "Yeah!")
+          x$text <- "Done."
+      else
+          x$text <- "Yeah!"
+  })
 
 baz <-
   qconnect(foo, "clicked", function(x) {
-             print(class(x))
-             print(qtext(x))
+             print(class(foo))
            }, foo)
 
 
@@ -26,16 +28,10 @@ zab <-
 
 
 
-qdisconnect(foo, bar) # disconnect bar only
+##qdisconnect(foo, bar) # disconnect bar only
 
-qdisconnect(foo)
+##qdisconnect(foo)
 
-qconnect(foo, "clicked", function(x) {
-           print(class(x))
-           print(qtext(x))
-         }, foo)
-
-qdisconnect(foo)
 
 ## connect to cell double-click in tables
 
