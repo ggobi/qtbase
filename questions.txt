@@ -1,0 +1,24 @@
+
+
+ o How to use new classes defined in C++, e.g., RSyntaxHighlighter
+
+ o I define 
+   qselectedText.QTextEdit <- function(x) { x$textCursor()$selection()$toPlainText() }
+   Can I make it so that I can call this as x$selectedText()?
+   Do I need to define a new (R-level) class for that?
+
+ o static methods? e.g., QFileDialog::getSaveFileName 
+   [ans: Qt$QFileDialog$getSaveFileName ]
+
+ o Is user.data supported in qconnect?  qtbase/src/RDynamicQObject.cpp
+   has a TODO which suggests not.
+
+ o QFont conversion: why does this not work:
+
+   > Qt$QFont(qfont())
+   Error in qinvokeStatic(cl, name, ...) :
+     Wrong number or types of arguments passed to 'QFont::QFont'
+
+   Not a big deal, as we can do Qt$QFont("monospace") etc., but still
+   curious, as QFont is handled in qtbase/src/convert.cpp
+
