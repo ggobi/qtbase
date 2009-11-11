@@ -218,6 +218,8 @@ void MocStack::setSmokeItem(Smoke::StackItem *item, void *o,
     }
     break;
   }
+  // We never own a pointer parameter passed through a dynamic slot and thus should never try to delete it.
+  item[0].s_ownptr = false;
 }
 void MocStack::setSmoke(Smoke::Stack stack, QVector<SmokeType> types)
 {

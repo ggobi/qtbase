@@ -1225,8 +1225,10 @@ sub coerce_type($$$$) {
     my $code = "$union.$unionfield = ";
     if ($type =~ /&$/) {
         $code .= "(void*)&$var;\n";
+        $code .= "$union.s_ownptr = false;\n";
     } elsif ($type =~ /\*$/) {
         $code .= "(void*)$var;\n";
+        $code .= "$union.s_ownptr = false;\n";
     } else {
         if (    $unionfield eq 's_class' 
                 or ($unionfield eq 's_voidp' and $type ne 'void*')
@@ -1235,11 +1237,14 @@ sub coerce_type($$$$) {
             $type =~ s/^const\s+//;
             if ($new) {
                 $code .= "(void*)new $type($var);\n";
+                $code .= "$union.s_ownptr = true;\n";
             } else {
                 $code .= "(void*)&$var;\n";
+                $code .= "$union.s_ownptr = false;\n";
             }
         } else {
             $code .= "$var;\n";
+            $code .= "$union.s_ownptr = false;\n";
         }
     }
 

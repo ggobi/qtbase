@@ -65,7 +65,7 @@ private:
 public:
     static SMOKE_EXPORT std::map<std::string, Smoke*> classMap;
 
-    union StackItem; // defined below
+    struct StackItem; // defined below
     /**
      * A stack is an array of arguments, passed to a method when calling it.
      */
@@ -177,22 +177,25 @@ public:
 
     // We could just pass everything around using void* (pass-by-reference)
     // I don't want to, though. -aw
-    union StackItem {
-	void* s_voidp;
-	bool s_bool;
-	signed char s_char;
-	unsigned char s_uchar;
-	short s_short;
-	unsigned short s_ushort;
-	int s_int;
-	unsigned int s_uint;
-	long s_long;
-	unsigned long s_ulong;
-	float s_float;
-	double s_double;
-        long s_enum;
-        void* s_class;
-    };
+    struct StackItem {
+	union {
+		void* s_voidp;
+		bool s_bool;
+		signed char s_char;
+		unsigned char s_uchar;
+		short s_short;
+		unsigned short s_ushort;
+		int s_int;
+		unsigned int s_uint;
+		long s_long;
+		unsigned long s_ulong;
+		float s_float;
+		double s_double;
+		long s_enum;
+		void* s_class;
+    	};
+		bool s_ownptr;
+	};
     enum TypeId {
 	t_voidp,
 	t_bool,

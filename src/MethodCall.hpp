@@ -76,7 +76,8 @@ public:
   void setSexp(SEXP sexp);
   inline Smoke *smoke() const { return type().smoke(); }
   inline bool cleanup() const {
-    return _cur && _mode == RToSmoke;
+    return (_cur && _mode == RToSmoke) ||
+		(_cur && _mode == SmokeToR && item().s_ownptr);
   }
 
   /* Iterate the marshalling */
