@@ -50,7 +50,8 @@ qcolor <- function(red = 0, green = 0, blue = 0, alpha = 255)
         blue <- rgbvals["blue"]
         if (missing(alpha)) alpha <- rgbvals["alpha"]
     }
-    col <- t(as.integer(c(red, green, blue, alpha)))
-    class(col) <- "QColor"
-    col
+    ## col <- t(as.integer(c(red, green, blue, alpha)))
+    ## class(col) <- "QColor"
+    ## col
+    Qt$QColor(red, green, blue, alpha)
 }

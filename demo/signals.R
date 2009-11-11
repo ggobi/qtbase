@@ -20,18 +20,21 @@ baz <-
              print(class(foo))
            }, foo)
 
-
-zab <-
-  qconnect(foo, "clicked", function(x) {
-             print("destroyed")
-           }, NULL)
-
-
-
 ##qdisconnect(foo, bar) # disconnect bar only
 
 ##qdisconnect(foo)
 
+
+l <- Qt$QListWidget()
+l$addItems(month.name)
+
+handleActivation <- function(item)
+{
+    print(row)
+}
+qconnect(l, signal = "itemActivated",
+         handler = handleActivation)    
+l$show()
 
 ## connect to cell double-click in tables
 
