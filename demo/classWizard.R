@@ -1,7 +1,5 @@
 ## From the Qt Class Wizard example
 
-library(qtbase)
-
 imagefile <- function(x) system.file(file.path("images", x), package = "qtbase")
 
 qsetClass("ClassWizard", Qt$QWizard, function(parent = NULL) {

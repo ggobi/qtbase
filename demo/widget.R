@@ -1,5 +1,4 @@
 ### From the Qt Widget tutorial
-library(qtbase)
 
 ## construct a widget
 window <- Qt$QWidget()
