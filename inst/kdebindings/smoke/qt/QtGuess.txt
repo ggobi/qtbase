@@ -95,6 +95,11 @@ QT_NO_XML)
 # macro is defined in qt-copy/src/qbase.pri but couldn't be found by qtguess, so I append it manually
 list(APPEND qtdefines "QT_NO_CAST_TO_ASCII")
 
+# check for MSVC compiler
+if (MSVC)
+  list(APPEND qtdefines "Q_CC_MSVC")
+endif (MSVC)
+
 foreach(test_entry ${define_tests})
   if(${${test_entry}} GREATER ${qt_test_threshold})
     list(APPEND test_targets ${test_entry})

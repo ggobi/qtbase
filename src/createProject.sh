@@ -64,7 +64,6 @@ win32{
 LIBS += -L${R_HOME}/bin -lR
 }
 
-
 " > qtbase.pro
 
 if test `uname` == "Darwin" ; then
