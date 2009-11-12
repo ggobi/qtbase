@@ -52,7 +52,7 @@ SOURCES += SmokeObject.cpp ObjectTable.cpp InstanceObjectTable.cpp smoke.cpp
 INCLUDEPATH += ${R_INCLUDE_DIR} ../local/include
 CFLAGS += -g
 LIBS += -L../local/lib -lsmokeqt
-QT += network opengl sql svg xml dbus
+QT += network opengl xml dbus
 
 macx{
 LIBS += -framework R
