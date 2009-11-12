@@ -5,9 +5,12 @@
 #include <Rinternals.h>
 
 #ifndef WIN32
-#define CSTACK_DEFNS
-#define HAVE_UINTPTR_T
-#include <Rinterface.h>
+/* We need these symbols, but <Rinterface.h> declares them using C99
+   uintptr_t, which no longer works with gcc 4.4. It seems like
+   quintptr is more or less an alias. Could probably check something
+   at build time, but without autconf, it's annoying. Don't tell BR. */
+extern quintptr R_CStackLimit;	/* C stack limit */
+extern quintptr R_CStackStart;	/* Initial stack address */
 #include <R_ext/eventloop.h>
 #include <unistd.h>
 #endif
@@ -37,6 +40,7 @@ R_Qt_eventHandler()
 
 static void
 R_Qt_timerInputHandler(void *data) {
+  Q_UNUSED(data);
   char buf[16];
   read(ifd, buf, 16);
   R_Qt_eventHandler();  
