@@ -448,7 +448,7 @@ static void marshal_QString(MethodCall *m) {
         } else {
           m->setSexp(qstring2sexp(*s));
         }
-        if(m->cleanup()) {
+        if(m->cleanup() || m->type().isStack() ) {
           delete s;
         }
       } else {
@@ -504,7 +504,7 @@ static void marshal_QByteArray(MethodCall *m) {
         } else {
           m->setSexp(rstringFromQByteArray(s));
         }
-        if(m->cleanup()) {
+        if(m->cleanup() || m->type().isStack() ) {
           delete s;
         }
       } else {
