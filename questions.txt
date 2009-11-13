@@ -1,14 +1,35 @@
 
+ o Can we use user-written classes (defined in C++) from R yet? e.g.,
+   RSyntaxHighlighter
 
- o How to use new classes defined in C++, e.g., RSyntaxHighlighter
+ o Related question: Let's say I want to manipulate a QWidget in
+   native code; e.g.
+
+   In R:
+
+      edit <- Qt$QTextEdit()
+
+   The in C++:
+
+      QTextEdit *editor = getPointer(edit);
+      RSyntaxHighlighter *highlighter = 
+          new RSyntaxHighlighter(editor->document());
+
+   unwrapQWidget() doesn't work obviously, as it uses the old model.
+   What would be the equivalent in the new world?  If this is
+   available, then we probably get some flexibility in using both the
+   old and new models together, even if we can't easily make new C++
+   classes available in R.
 
  o I define 
-   qselectedText.QTextEdit <- function(x) { x$textCursor()$selection()$toPlainText() }
-   Can I make it so that I can call this as x$selectedText()?
-   Do I need to define a new (R-level) class for that?
 
- o static methods? e.g., QFileDialog::getSaveFileName 
-   [ans: Qt$QFileDialog$getSaveFileName ]
+   qselectedText.QTextEdit <- function(x) { 
+       x$textCursor()$selection()$toPlainText() 
+   }
+
+   Can I make it so that I can call this as x$selectedText()?  Do I
+   need to define a new (R-level) class for that?  If so, is that
+   implemented yet?
 
  o Is user.data supported in qconnect?  qtbase/src/RDynamicQObject.cpp
    has a TODO which suggests not.
