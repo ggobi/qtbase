@@ -115,6 +115,7 @@ void R_init_qtbase(DllInfo *dll)
     R_useDynamicSymbols(dll, FALSE);
 
     // Register for calling by other packages.
+    REG_CALLABLE(_unwrapSmoke);
     REG_CALLABLE(wrapQWidget);
     REG_CALLABLE(wrapQObject);
     REG_CALLABLE(wrapPointer);

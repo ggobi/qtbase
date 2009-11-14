@@ -5,6 +5,16 @@
 #include <qtbase.h>
 #include <R_ext/Rdynload.h>
 
+void* _unwrapSmoke(SEXP x, const char *type)
+{
+  static void*(*fun)
+      (SEXP, const char *) = NULL;
+  if (fun == NULL)
+      fun = (void*(*)(SEXP, const char*))
+	  R_GetCCallable("qtbase", "_unwrapSmoke");
+  return fun(x, type);
+}
+
 
 SEXP
 wrapQWidget(QWidget *widget)

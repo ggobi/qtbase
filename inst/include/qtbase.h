@@ -18,15 +18,21 @@ QObject *unwrapQObjectReferee(SEXP x);
 QGraphicsItem *unwrapQGraphicsItemReferee(SEXP x);
 QGraphicsLayoutItem *unwrapQGraphicsLayoutItemReferee(SEXP x);
 
+#define checkPointer(x, type) ({                                       \
+      if (TYPEOF(x) != EXTPTRSXP)                                      \
+        error("checkPointer: not an externalptr");                     \
+      if (!inherits(x, #type))                                         \
+        error("checkPointer: expected object of class '" #type "'");   \
+    })
+
 #define unwrapPointerSep(x, rtype, ctype) ({                            \
-      if (TYPEOF(x) != EXTPTRSXP)                                       \
-        error("unwrapPointer: not an externalptr");                     \
-      if (!inherits(x, #rtype))                                         \
-        error("unwrapPointer: expected object of class '" #rtype "'");  \
+      checkPointer(x, rtype);                                           \
       reinterpret_cast<ctype *>(R_ExternalPtrAddr(x));                  \
     })
 
 #define unwrapPointer(x, type) unwrapPointerSep(x, type, type)
+
+#define unwrapSmoke(x, type) reinterpret_cast<type *>(_unwrapSmoke(x, #type))
 
 #define unwrapReference(x, type) ({                                     \
       type *ans =                                                       \
@@ -55,6 +61,8 @@ QGraphicsLayoutItem *unwrapQGraphicsLayoutItemReferee(SEXP x);
 #define unwrapQWidget(x) unwrapQObject(x, QWidget)
 
 QT_BEGIN_DECLS
+
+void *_unwrapSmoke(SEXP x, const char *type);
 
 SEXP wrapQObject(QObject *object);
 SEXP wrapQWidget(QWidget *widget);
