@@ -24,8 +24,10 @@ const Class* Class::fromSmokeId(Smoke *smoke, int classId) {
 const Class* Class::fromSmokeName(Smoke *smoke, const char *name) {
   if (!smoke) {
     smoke = Smoke::classMap[name];
-    if (!smoke)
+    if (!smoke) {
+      qCritical("No smoke found for class: %s", name);
       return NULL;
+    }
   }
   return fromSmokeId(smoke, smoke->idClass(name).index);
 }

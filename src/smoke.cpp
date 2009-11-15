@@ -110,10 +110,13 @@ extern "C"
 SEXP qt_qclasses(SEXP rsmoke) {
   Smoke *smoke = asSmoke(rsmoke);
   SEXP rclasses;
-  PROTECT(rclasses = allocVector(STRSXP, smoke->numClasses));
-  for (int i = 0; i < length(rclasses); i++) {
-    SET_STRING_ELT(rclasses, i, mkChar(smoke->classes[i+1].className));
-  }
+  int numClasses = 0;
+  for (int i = 1; i <= smoke->numClasses; i++)
+    numClasses += !smoke->classes[i].external;
+  PROTECT(rclasses = allocVector(STRSXP, numClasses));
+  for (int i = 1, j = 0; i <= smoke->numClasses; i++)
+    if (!smoke->classes[i].external)
+      SET_STRING_ELT(rclasses, j++, mkChar(smoke->classes[i].className));
   UNPROTECT(1);
   return rclasses;
 }
