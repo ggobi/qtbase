@@ -2,10 +2,14 @@ Package: qtbase
 Version: 0.4-2
 Title: Package providing glue for interface between R and Qt 
 Author: Michael Lawrence, Deepayan Sarkar
-Depends: R (>= 2.10.0), utils
+Depends: R (>= 2.10.0), methods, utils
+URL: http://qtinterfaces.r-forge.r-project.org
 Maintainer: Michael Lawrence <mflawren@fhcrc.org>,
             Deepayan Sarkar <deepayan.sarkar@gmail.com>
-Description: Dynamic bindings to the Qt library, including event-loop and memory management, to support interfaces between R and Qt. Other packages build upon qtbase to provide special-purpose high-level interfaces to specific parts of Qt.
+Description: Dynamic bindings to the Qt library, including event-loop
+    and memory management, to support interfaces between R and
+    Qt. Other packages build upon qtbase to provide special-purpose
+    high-level interfaces to specific parts of Qt.
 License: GPL (>= 2)
 Acknowledgements: QtRuby and Qyoto projects for head-start on the Smoke-based
                   interface
