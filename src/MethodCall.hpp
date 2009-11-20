@@ -78,9 +78,10 @@ public:
   /* Clean-up when:
      (1) Smoke returns something that doesn't fit in StackItem OR
      (2) Passing arguments to Smoke where Smoke does not take
-         ownership. In general, it is easier to allocate C++ data on
-         the heap and free it later, rather than allocating two
-         different ways.
+         ownership. In general, it is easier (though suboptimal) to
+         allocate C++ data on the heap and free it later, rather than
+         allocating two different ways. Note that Smoke cleans up when
+         a virtual override returns something big.
   */
   inline bool cleanup() const {
     SmokeType t = type();

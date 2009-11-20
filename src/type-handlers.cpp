@@ -76,7 +76,8 @@
  */
 
 /* TODO:
-   - Conditional compilation of OpenGL types
+   - Clean up use of cleanup()
+   - Conditional compilation of OpenGL, QtXml, QtNetwork, etc, types
  */
 
 #include <QtCore/qdir.h>
