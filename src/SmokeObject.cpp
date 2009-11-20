@@ -16,8 +16,13 @@ SmokeObject * SmokeObject::fromPtr(void *ptr, const Class *klass,
   SmokeObject *so = instances[ptr];
   if (!so) {
     so = new SmokeObject(ptr, klass, allocated);
-    instances[so->ptr()] = so; // record this ASAP
+    // record this ASAP, resolveClassId() needs it for virtual callbacks
+    instances[so->ptr()] = so; 
     so->cast(Class::fromSmokeId(so->smoke(), so->module()->resolveClassId(so)));
+    if (so->ptr() != ptr) { // must be multiple inheritance, recache
+      instances[so->ptr()] = so;
+      instances.remove(ptr);
+    }
     if (copy) { // copy the data
       void *tmp_ptr = so->ptr();
       so->_ptr = so->clonePtr(); 
@@ -239,6 +244,7 @@ SmokeObject *SmokeObject::clone() const {
 void
 SmokeObject::cast(const Class *klass) {
   _klass = klass;
+  _ptr = castPtr(klass->name());
   if (_sexp)
     castSexp(_sexp);
 }
