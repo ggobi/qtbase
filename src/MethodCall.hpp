@@ -75,10 +75,16 @@ public:
   SEXP sexp() const;
   void setSexp(SEXP sexp);
   inline Smoke *smoke() const { return type().smoke(); }
+  /* Clean-up when Smoke returns something that does not fit into a
+     Smoke::StackItem. 
+  */
   inline bool cleanup() const {
-    return _cur && _mode == RToSmoke;
+    return (type().isStack() && !_cur && _mode == SmokeToR);
   }
-
+  inline bool returning() const {
+    return _cur == 0;
+  }
+  
   /* Iterate the marshalling */
   
   void marshal();
