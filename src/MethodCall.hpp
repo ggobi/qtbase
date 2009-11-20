@@ -75,11 +75,17 @@ public:
   SEXP sexp() const;
   void setSexp(SEXP sexp);
   inline Smoke *smoke() const { return type().smoke(); }
-  /* Clean-up when Smoke returns something that does not fit into a
-     Smoke::StackItem. 
+  /* Clean-up when:
+     (1) Smoke returns something that doesn't fit in StackItem OR
+     (2) Passing arguments to Smoke where Smoke does not take
+         ownership. In general, it is easier to allocate C++ data on
+         the heap and free it later, rather than allocating two
+         different ways.
   */
   inline bool cleanup() const {
-    return (type().isStack() && !_cur && _mode == SmokeToR);
+    SmokeType t = type();
+    return (_mode == RToSmoke && _cur && (t.isConst() || t.isStack())) ||
+      (t.isStack() && !_cur && _mode == SmokeToR);
   }
   inline bool returning() const {
     return _cur == 0;
