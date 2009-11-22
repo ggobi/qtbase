@@ -280,7 +280,7 @@ void marshal_from_sexp<long long>(MethodCall *m)
 	
   m->marshal();
 	
-  if(m->cleanup() && m->type().isConst()) {
+  if(m->cleanup()) {
     delete (long long int *) m->item().s_voidp;
   }	
 }
@@ -294,7 +294,7 @@ void marshal_from_sexp<unsigned long long>(MethodCall *m)
 
   m->marshal();
 	
-  if(m->cleanup() && m->type().isConst()) {
+  if(m->cleanup()) {
     delete (long long int *) m->item().s_voidp;
   }	
 }
@@ -309,7 +309,7 @@ void marshal_from_sexp<int *>(MethodCall *m)
   m->item().s_voidp = i;
   m->marshal();
   
-  if(m->cleanup() && m->type().isConst()) {
+  if(m->cleanup()) {
     delete i;
   } else {
     m->item().s_voidp = new int((int)asInteger(rv));
@@ -341,7 +341,7 @@ void marshal_from_sexp<unsigned int *>(MethodCall *m)
   m->item().s_voidp = i;
   m->marshal();
   
-  if(m->cleanup() && m->type().isConst()) {
+  if(m->cleanup()) {
     delete i;
   } else {
     m->item().s_voidp = new int((int)asReal(rv));
@@ -374,7 +374,7 @@ void marshal_from_sexp<bool *>(MethodCall *m)
   m->item().s_voidp = b;
   m->marshal();
 
-  if(m->cleanup() && m->type().isConst()) {
+  if(m->cleanup()) {
     delete b;
   }
 }
@@ -402,7 +402,7 @@ void marshal_from_sexp<char *>(MethodCall *m)
     m->item().s_voidp = qstrdup(str);
   else m->item().s_voidp = const_cast<char *>(str);
   m->marshal();
-  if(m->cleanup() && !m->type().isConst()) {
+  if(m->cleanup()) {
     char *retstr = (char *)m->item().s_voidp;
     m->setSexp(mkString(retstr));
     delete[] retstr;
@@ -420,7 +420,7 @@ void marshal_from_sexp<unsigned char *>(MethodCall *m)
     m->item().s_voidp = tmp_bytes;
   } else m->item().s_voidp = const_cast<unsigned char *>(bytes);
   m->marshal();
-  if(m->cleanup() && !m->type().isConst()) {
+  if(m->cleanup()) {
     unsigned char *retbytes = (unsigned char *)m->item().s_voidp;
     delete[] retbytes;
   }

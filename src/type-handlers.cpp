@@ -379,7 +379,7 @@ static void marshal_doubleR(MethodCall *m) {
       *d = asReal(rv);
       m->item().s_voidp = d;
       m->marshal();
-      if (m->cleanup() && m->type().isConst()) {
+      if (m->cleanup()) {
         delete d;
       } else {
         m->item().s_voidp = new double((double)asReal(rv));
@@ -449,7 +449,7 @@ static void marshal_QString(MethodCall *m) {
         } else {
           m->setSexp(qstring2sexp(*s));
         }
-        if(m->cleanup() || m->type().isStack() ) {
+        if(m->cleanup()) {
           delete s;
         }
       } else {
@@ -505,7 +505,7 @@ static void marshal_QByteArray(MethodCall *m) {
         } else {
           m->setSexp(rstringFromQByteArray(s));
         }
-        if(m->cleanup() || m->type().isStack() ) {
+        if(m->cleanup()) {
           delete s;
         }
       } else {
