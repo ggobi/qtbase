@@ -130,6 +130,12 @@ void Util::preparse(QSet<Type*> *usedTypes, QSet<const Class*> *superClasses, co
         // map this method to the function, so we can later retrieve the header it was defined in
         globalFunctionMap[&parent->methods().last()] = &fn;
         
+        int methIndex = parent->methods().length() - 1;
+        addOverloads(meth);
+        // handle the methods appended by addOverloads()
+        for (int i = parent->methods().length() - 1; i > methIndex; --i)
+            globalFunctionMap[&parent->methods()[i]] = &fn;
+
         (*usedTypes) << meth.type();
         foreach (const Parameter& param, meth.parameters())
             (*usedTypes) << param.type();
@@ -340,6 +346,22 @@ bool Util::hasClassPublicDestructor(const Class* klass)
     return publicDtorFound;
 }
 
+const Method* Util::findDestructor(const Class* klass)
+{
+    foreach (const Method& meth, klass->methods()) {
+        if (meth.isDestructor()) {
+            return &meth;
+        }
+    }
+    const Method* dtor = 0;
+    foreach (const Class::BaseClassSpecifier& bspec, klass->baseClasses()) {
+        if ((dtor = findDestructor(bspec.baseClass))) {
+            return dtor;
+        }
+    }
+    return 0;
+}
+
 void Util::checkForAbstractClass(Class* klass)
 {
     QList<const Method*> list;
@@ -383,7 +405,7 @@ void Util::addCopyConstructor(Class* klass)
         if (meth.isConstructor() && meth.parameters().count() == 1) {
             const Type* type = meth.parameters()[0].type();
             // found a copy c'tor? then there's nothing to do
-            if (type->isConst() && type->isRef() && type->getClass() == klass)
+            if (type->isRef() && type->getClass() == klass)
                 return;
         } else if (meth.isDestructor() && meth.access() == Access_private) {
             // private destructor, so we can't create instances of that class
@@ -414,9 +436,18 @@ void Util::addDestructor(Class* klass)
         if (meth.isDestructor())
             return;
     }
-    
+
     Method meth = Method(klass, "~" + klass->name(), const_cast<Type*>(Type::Void));
     meth.setIsDestructor(true);
+    
+    const Method* dtor = findDestructor(klass);
+    if (dtor && dtor->hasExceptionSpec()) {
+        meth.setHasExceptionSpec(true);
+        foreach (const Type& t, dtor->exceptionTypes()) {
+            meth.appendExceptionType(t);
+        }
+    }
+    
     klass->appendMethod(meth);
 }
 
@@ -424,7 +455,7 @@ QString Util::mungedName(const Method& meth) {
     QString ret = meth.name();
     foreach (const Parameter& param, meth.parameters()) {
         const Type* type = param.type();
-        if (type->pointerDepth() > 1 ||
+        if (type->pointerDepth() > 1 || (type->getClass() && type->getClass()->isTemplate()) ||
             (Options::voidpTypes.contains(type->name()) && !Options::scalarTypes.contains(type->name())) )
         {
             // QString and QStringList are both mapped to Smoke::t_voidp, but QString is a scalar as well
@@ -456,8 +487,12 @@ QString Util::stackItemField(const Type* type)
         return "s_uint";
     }
 
-    if (type->pointerDepth() > 0 || type->isRef() || type->isFunctionPointer() || (!type->isIntegral() && !type->getEnum()))
+    if (type->pointerDepth() > 0 || type->isRef() || type->isFunctionPointer() || type->isArray()
+        || (!type->isIntegral() && !type->getEnum()))
+    {
         return "s_class";
+    }
+    
     if (type->getEnum())
         return "s_enum";
     
@@ -515,9 +550,8 @@ QList<const Method*> Util::collectVirtualMethods(const Class* klass)
 // don't make this public - it's just a utility function for the next method and probably not what you would expect it to be
 static bool operator==(const Method& rhs, const Method& lhs)
 {
-    // these have to be equal for methods to be the same
-    bool ok = (rhs.name() == lhs.name() && rhs.isConst() == lhs.isConst() &&
-               rhs.parameters().count() == lhs.parameters().count() && rhs.type() == lhs.type());
+    // These have to be equal for methods to be the same. Return types don't have an effect, ignore them.
+    bool ok = (rhs.name() == lhs.name() && rhs.isConst() == lhs.isConst() && rhs.parameters().count() == lhs.parameters().count());
     if (!ok)
         return false;
     
@@ -538,8 +572,8 @@ void Util::addAccessorMethods(const Field& field, QSet<Type*> *usedTypes)
         Type newType = *type;
         newType.setIsRef(true);
         type = Type::registerType(newType);
-        (*usedTypes) << type;
     }
+    (*usedTypes) << type;
     Method getter = Method(klass, field.name(), type, field.access());
     getter.setIsConst(true);
     if (field.flags() & Field::Static)
@@ -566,8 +600,8 @@ void Util::addAccessorMethods(const Field& field, QSet<Type*> *usedTypes)
         newType.setIsRef(true);
         newType.setIsConst(true);
         type = Type::registerType(newType);
-        (*usedTypes) << type;
     }
+    (*usedTypes) << type;
     setter.appendParameter(Parameter(QString(), type));
     if (klass->methods().contains(setter))
         return;
@@ -638,6 +672,52 @@ const Method* Util::isVirtualOverriden(const Method& meth, const Class* klass)
     }
     
     return 0;
+}
+
+static bool qListContainsMethodPointer(const QList<const Method*> list, const Method* ptr) {
+    foreach (const Method* meth, list) {
+        if (*meth == *ptr)
+            return true;
+    }
+    return false;
+}
+
+QList<const Method*> Util::virtualMethodsForClass(const Class* klass)
+{
+    static QHash<const Class*, QList<const Method*> > cache;
+    
+    // virtual method callbacks for classes that can't be instanciated aren't useful
+    if (!Util::canClassBeInstanciated(klass))
+        return QList<const Method*>();
+    
+    if (cache.contains(klass))
+        return cache[klass];
+    
+    QList<const Method*> ret;
+
+    foreach (const Method* meth, Util::collectVirtualMethods(klass)) {
+        // this is a synthesized overload, skip it.
+        if (!meth->remainingDefaultValues().isEmpty())
+            continue;
+        if (meth->getClass() == klass) {
+            // this method can't be overriden, because it's defined in the class for which this method was called
+            ret << meth;
+            continue;
+        }
+        // Check if the method is overriden, so the callback will always point to the latest definition of the virtual method.
+        const Method* override = 0;
+        if ((override = Util::isVirtualOverriden(*meth, klass))) {
+            // If the method was overriden and put under private access, skip it. If we already have the method, skip it as well.
+            if (override->access() == Access_private || qListContainsMethodPointer(ret, override))
+                continue;
+            ret << override;
+        } else if (!qListContainsMethodPointer(ret, meth)) {
+            ret << meth;
+        }
+    }
+
+    cache[klass] = ret;
+    return ret;
 }
 
 bool Options::typeExcluded(const QString& typeName)

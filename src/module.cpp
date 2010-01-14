@@ -349,7 +349,7 @@ memory_is_owned_qt(const SmokeObject *o)
   } else if (o->instanceOf("QGraphicsLayoutItem")) {
     QGraphicsLayoutItem * item =
       (QGraphicsLayoutItem *) o->castPtr("QGraphicsLayoutItem");
-    if (item->parentLayoutItem() != 0) {
+    if (item->parentLayoutItem() != 0 && item->ownedByLayout()) {
       return true;
     }
   } else if (o->instanceOf("QObject")) {

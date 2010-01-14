@@ -194,7 +194,7 @@ void * SmokeObject::clonePtr() const {
   char *ccArg = new char[classNameLen + 8];
   sprintf(ccArg, "const %s&", className);
 
-  Smoke::ModuleIndex classIdx = { smoke, classId() };
+  Smoke::ModuleIndex classIdx = Smoke::ModuleIndex(smoke, classId());
   Smoke::ModuleIndex ccMeth = smoke->findMethod(classIdx, ccId);
 
   if (ccMeth.index == 0) {
@@ -271,7 +271,7 @@ void
 SmokeObject::invokeMethod(const char *name, Smoke::Stack stack) {
   Smoke *smoke = this->smoke();
   Smoke::ModuleIndex nameId = smoke->idMethodName(name);
-  Smoke::ModuleIndex classIdx = { smoke, classId() };
+  Smoke::ModuleIndex classIdx = Smoke::ModuleIndex(smoke, classId());
   Smoke::ModuleIndex meth = nameId.smoke->findMethod(classIdx, nameId);
   if (meth.index > 0) {
     Smoke::Method &m =

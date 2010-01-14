@@ -6,6 +6,6 @@ set(generator_smoke_SRC
     writeSmokeDataFile.cpp
     helpers.cpp)
 
-add_library(generator_smoke SHARED ${generator_smoke_SRC})
+add_library(generator_smoke MODULE ${generator_smoke_SRC})
 target_link_libraries(generator_smoke ${QT_QTCORE_LIBRARY} ${QT_QTXML_LIBRARY} generator)
 set_target_properties(generator_smoke PROPERTIES PREFIX "")

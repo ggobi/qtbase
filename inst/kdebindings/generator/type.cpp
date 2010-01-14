@@ -157,16 +157,16 @@ QString Type::toString(const QString& fnPtrName) const
     if (m_isConst) ret += "const ";
     ret += name();
     if (!m_templateArgs.isEmpty()) {
-        ret += "< ";
+        ret += "<";
         for (int i = 0; i < m_templateArgs.count(); i++) {
             if (i > 0) ret += ',';
             ret += m_templateArgs[i].toString();
         }
-        ret += " >";
+        ret += ">";
     }
     
     // FIXME: This won't work for an array of function pointers!
-    if (isArray()) ret += '(';
+    if (isArray() && (m_pointerDepth > 0 || m_isRef)) ret += '(';
     
     for (int i = 0; i < m_pointerDepth; i++) {
         ret += "*";
@@ -175,7 +175,12 @@ QString Type::toString(const QString& fnPtrName) const
     ret = ret.trimmed();
     if (m_isRef) ret += "&";
     
-    if (isArray()) ret += fnPtrName + ")[" + QString::number(m_dimensions) + ']';
+    if (isArray()) ret += fnPtrName;
+    if (isArray() && (m_pointerDepth > 0 || m_isRef)) ret += ')';
+    
+    foreach(int size, m_arrayLengths) {
+        ret += '[' + QString::number(size) + ']';
+    }
     
     if (m_isFunctionPointer) {
         ret += "(*" + fnPtrName + ")(";
@@ -185,5 +190,6 @@ QString Type::toString(const QString& fnPtrName) const
         }
         ret += ')';
     }
-    return ret;
+    // the compiler would misinterpret ">>" as the operator - replace it with "> >"
+    return ret.replace(">>", "> >");
 }

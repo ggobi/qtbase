@@ -25,7 +25,11 @@ class GeneratorEnvironment : public rpp::Environment
 {
 public:
     GeneratorEnvironment(rpp::pp* preprocessor);
+    ~GeneratorEnvironment();
     virtual void setMacro(rpp::pp_macro* macro);
+
+private:
+    rpp::pp_macro* q_property;
 };
 
 #endif // PARSERENVIRONMENT_H

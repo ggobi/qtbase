@@ -269,7 +269,8 @@ class GENERATOR_EXPORT Method : public Member
 {
 public:
     Method(Class* klass = 0, const QString& name = QString(), Type* type = 0, Access access = Access_public, ParameterList params = ParameterList())
-        : Member(klass, name, type, access), m_params(params), m_isConstructor(false), m_isDestructor(false), m_isConst(false) {}
+        : Member(klass, name, type, access), m_params(params), m_isConstructor(false), m_isDestructor(false), m_isConst(false), m_is_accessor(false),
+          m_hasExceptionSpec(false), m_isSignal(false), m_isSlot(false) {}
     virtual ~Method() {}
 
     Class* getClass() const { return static_cast<Class*>(m_typeDecl); }
@@ -287,10 +288,25 @@ public:
     void setIsConst(bool isConst) { m_isConst = isConst; }
     bool isConst() const { return m_isConst; }
 
+    void setIsQPropertyAccessor(bool isAccessor) { m_is_accessor = isAccessor; }
+    bool isQPropertyAccessor() const { return m_is_accessor; }
+
+    void setIsSignal(bool isSignal) { m_isSignal = isSignal; }
+    bool isSignal() const { return m_isSignal; }
+    
+    void setIsSlot(bool isSlot) { m_isSlot = isSlot; }
+    bool isSlot() const { return m_isSlot; }
+
     // TODO: This actually doesn't belong here. Better add a dynamic property system to Member subclasses.
     //       Then we can also get rid of the various method => foo maps in the 'Util' struct.
     const QStringList& remainingDefaultValues() const { return m_remainingValues; }
     void setRemainingDefaultValues(const QStringList& params) { m_remainingValues = params; }
+
+    void setHasExceptionSpec(bool hasSpec) { m_hasExceptionSpec = hasSpec; }
+    bool hasExceptionSpec() const { return m_hasExceptionSpec; }
+
+    void appendExceptionType(const Type& type) { m_exceptionTypes.append(type); }
+    const QList<Type>& exceptionTypes() const { return m_exceptionTypes; }
 
     virtual QString toString(bool withAccess = false, bool withClass = false, bool withInitializer = true) const;
 
@@ -299,6 +315,11 @@ protected:
     bool m_isConstructor;
     bool m_isDestructor;
     bool m_isConst;
+    bool m_is_accessor;
+    bool m_hasExceptionSpec;
+    bool m_isSignal;
+    bool m_isSlot;
+    QList<Type> m_exceptionTypes;
     QStringList m_remainingValues;
 };
 
@@ -368,16 +389,16 @@ class GENERATOR_EXPORT Type
 public:
     Type(Class* klass = 0, bool isConst = false, bool isVolatile = false, int pointerDepth = 0, bool isRef = false)
         : m_class(klass), m_typedef(0), m_enum(0), m_isConst(isConst), m_isVolatile(isVolatile), 
-          m_pointerDepth(pointerDepth), m_isRef(isRef), m_isIntegral(false), m_isFunctionPointer(false), m_dimensions(0) {}
+          m_pointerDepth(pointerDepth), m_isRef(isRef), m_isIntegral(false), m_isFunctionPointer(false) {}
     Type(Typedef* tdef, bool isConst = false, bool isVolatile = false, int pointerDepth = 0, bool isRef = false)
         : m_class(0), m_typedef(tdef), m_enum(0), m_isConst(isConst), m_isVolatile(isVolatile), 
-          m_pointerDepth(pointerDepth), m_isRef(isRef), m_isIntegral(false), m_isFunctionPointer(false), m_dimensions(0) {}
+          m_pointerDepth(pointerDepth), m_isRef(isRef), m_isIntegral(false), m_isFunctionPointer(false) {}
     Type(Enum* e, bool isConst = false, bool isVolatile = false, int pointerDepth = 0, bool isRef = false)
         : m_class(0), m_typedef(0), m_enum(e), m_isConst(isConst), m_isVolatile(isVolatile), 
-          m_pointerDepth(pointerDepth), m_isRef(isRef), m_isIntegral(false), m_isFunctionPointer(false), m_dimensions(0) {}    
+          m_pointerDepth(pointerDepth), m_isRef(isRef), m_isIntegral(false), m_isFunctionPointer(false) {}
     Type(const QString& name, bool isConst = false, bool isVolatile = false, int pointerDepth = 0, bool isRef = false)
         : m_class(0), m_typedef(0), m_enum(0), m_name(name), m_isConst(isConst), m_isVolatile(isVolatile), 
-          m_pointerDepth(pointerDepth), m_isRef(isRef), m_isIntegral(false), m_isFunctionPointer(false), m_dimensions(0) {}
+          m_pointerDepth(pointerDepth), m_isRef(isRef), m_isIntegral(false), m_isFunctionPointer(false) {}
 
     void setClass(Class* klass) { m_class = klass; m_typedef = 0; m_enum = 0; }
     Class* getClass() const { return m_class; }
@@ -420,8 +441,12 @@ public:
     void setIsIntegral(bool isIntegral) { m_isIntegral = isIntegral; }
     bool isIntegral() const { return m_isIntegral; }
 
-    void setArrayDimensions(int dim) { m_dimensions = dim; }
-    bool isArray() const { return m_dimensions; }
+    void setArrayDimensions(int dim) { m_arrayLengths.resize(dim); }
+    int arrayDimensions() const { return m_arrayLengths.size(); }
+    bool isArray() const { return m_arrayLengths.size(); }
+
+    void setArrayLength(int dim, int length) { m_arrayLengths[dim] = length; }
+    int arrayLength(int dim) const { return m_arrayLengths[dim]; }
 
     const QList<Type>& templateArguments() const { return m_templateArgs; }
     void appendTemplateArgument(const Type& type) { m_templateArgs.append(type); }
@@ -461,7 +486,7 @@ protected:
     QList<Type> m_templateArgs;
     bool m_isFunctionPointer;
     ParameterList m_params;
-    int m_dimensions;
+    QVector<int> m_arrayLengths;
 };
 
 #endif // TYPE_H

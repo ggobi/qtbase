@@ -21,8 +21,19 @@
 #include <rpp/pp-macro.h>
 #include "options.h"
 
-GeneratorEnvironment::GeneratorEnvironment(rpp::pp * preprocessor) : rpp::Environment(preprocessor)
+GeneratorEnvironment::GeneratorEnvironment(rpp::pp * preprocessor) : rpp::Environment(preprocessor), q_property(new rpp::pp_macro("Q_PROPERTY"))
 {
+    q_property->formals.append(IndexedString("text"));
+    q_property->setDefinitionText("void __q_property(const char* foo = #text);");
+    q_property->function_like = true;
+}
+
+GeneratorEnvironment::~GeneratorEnvironment()
+{
+    if (!ParserOptions::qtMode) {
+        // if not in qt-mode, this won't be deleted by rpp::Environment
+        delete q_property;
+    }
 }
 
 void GeneratorEnvironment::setMacro(rpp::pp_macro* macro)
@@ -31,6 +42,10 @@ void GeneratorEnvironment::setMacro(rpp::pp_macro* macro)
     if (   macroName == "signals" || macroName == "slots" || macroName == "Q_SIGNALS" || macroName == "Q_SLOTS"
         || ParserOptions::dropMacros.contains(macroName)) {
         delete macro;
+        return;
+    } else if (ParserOptions::qtMode && macroName == "Q_PROPERTY") {
+        delete macro;
+        rpp::Environment::setMacro(q_property);
         return;
     }
     rpp::Environment::setMacro(macro);

@@ -23,7 +23,7 @@ private:
 QHash<QByteArray,Smoke::ModuleIndex*> SmokeMethodCache::cache;
 
 Smoke::ModuleIndex SmokeMethodCache::find(const MethodCall &call) {
-  static Smoke::ModuleIndex missing = { NULL, -1 };
+  static Smoke::ModuleIndex missing(NULL, -1);
   if (call.args()) { // FIXME: caching does not work yet for foreign calls
     Smoke::ModuleIndex *index = cache[call.cacheKey()];
     if (index)

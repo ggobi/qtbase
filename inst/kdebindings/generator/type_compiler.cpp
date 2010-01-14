@@ -69,18 +69,27 @@ void TypeCompiler::run(const DeclaratorAST* declarator)
         run(declarator->ptr_ops);
     
     if (declarator->array_dimensions) {
-        PrimaryExpressionAST* primary = ast_cast<PrimaryExpressionAST*>(declarator->array_dimensions->at(0)->element);
-        if (primary) {
-            QByteArray token = m_session->token_stream->token(primary->token).symbolByteArray();
-            bool ok = false;
-            int dimensions = token.toInt(&ok);
-            if (ok) {
-                m_realType.setArrayDimensions(dimensions);
+        const ListNode<ExpressionAST*>* it = declarator->array_dimensions->toFront(), *end = it;
+        int dim = 0;
+        m_realType.setArrayDimensions(declarator->array_dimensions->count());
+        do {
+            PrimaryExpressionAST* primary = ast_cast<PrimaryExpressionAST*>(it->element);
+            if (primary) {
+                QByteArray token = m_session->token_stream->token(primary->token).symbolByteArray();
+                bool ok = false;
+                int length = token.toInt(&ok);
+                if (ok) {
+                    m_realType.setArrayLength(dim++, length);
+                } else {
+                    m_realType.setPointerDepth(m_realType.pointerDepth() + 1);
+                }
             } else {
                 m_realType.setPointerDepth(m_realType.pointerDepth() + 1);
             }
-        } else {
-            m_realType.setPointerDepth(m_realType.pointerDepth() + 1);
+            it = it->next;
+        } while (it != end);
+        if (dim != m_realType.arrayDimensions()) {
+            m_realType.setArrayDimensions(dim);
         }
     }
     

@@ -78,7 +78,7 @@ parent_meta_object(SEXP obj)
   SmokeObject* o = SmokeObject::fromSexp(obj);
   Smoke *smoke = o->smoke();
   Smoke::ModuleIndex nameId = smoke->idMethodName("metaObject");
-  Smoke::ModuleIndex classIdx = { smoke, o->classId() };
+  Smoke::ModuleIndex classIdx(smoke, o->classId());
   Smoke::ModuleIndex meth = smoke->findMethod(classIdx, nameId);
   if (meth.index <= 0) {
     // Should never happen..

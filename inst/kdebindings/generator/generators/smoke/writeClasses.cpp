@@ -246,7 +246,7 @@ void SmokeClassFiles::generateEnumMemberCall(QTextStream& out, const QString& cl
         << "    }\n";
 }
 
-void SmokeClassFiles::generateVirtualMethod(QTextStream& out, const QString& className, const Method& meth, QSet<QString>& includes)
+void SmokeClassFiles::generateVirtualMethod(QTextStream& out, const Method& meth, QSet<QString>& includes)
 {
     QString x_params, x_list;
     QString type = meth.type()->toString();
@@ -270,9 +270,18 @@ void SmokeClassFiles::generateVirtualMethod(QTextStream& out, const QString& cla
     out << ") ";
     if (meth.isConst())
         out << "const ";
+    if (meth.hasExceptionSpec()) {
+        out << "throw(";
+        for (int i = 0; i < meth.exceptionTypes().count(); i++) {
+            if (i > 0) out << ", ";
+            out << meth.exceptionTypes()[i].toString();
+        }
+        out << ") ";
+    }
     out << "{\n";
     out << QString("        Smoke::StackItem x[%1];\n").arg(meth.parameters().count() + 1);
     out << x_params;
+    
     if (meth.flags() & Method::PureVirtual) {
         out << QString("        this->_binding->callMethod(%1, (void*)this, x, true /*pure virtual*/);\n").arg(m_smokeData->methodIdx[&meth]);
         if (meth.type() != Type::Void) {
@@ -312,7 +321,7 @@ void SmokeClassFiles::generateVirtualMethod(QTextStream& out, const QString& cla
         out << "        ";
         if (meth.type() != Type::Void)
             out << "return ";
-        out << QString("this->%1::%2(%3);\n").arg(className).arg(meth.name()).arg(x_list);
+        out << QString("this->%1::%2(%3);\n").arg(meth.getClass()->toString()).arg(meth.name()).arg(x_list);
     }
     out << "    }\n";
 }
@@ -343,10 +352,14 @@ void SmokeClassFiles::writeClass(QTextStream& out, const Class* klass, const QSt
     }
     
     int xcall_index = 1;
-    
+    const Method *destructor = 0;
     foreach (const Method& meth, klass->methods()) {
-        if (meth.access() == Access_private || meth.isDestructor())
+        if (meth.access() == Access_private)
             continue;
+        if (meth.isDestructor()) {
+            destructor = &meth;
+            continue;
+        }
         switchOut << "        case " << xcall_index << ": "
                   << (((meth.flags() & Method::Static) || meth.isConstructor()) ? smokeClassName + "::" : "xself->")
                   << "x_" << xcall_index << "(args);\tbreak;\n";
@@ -363,7 +376,7 @@ void SmokeClassFiles::writeClass(QTextStream& out, const Class* klass, const QSt
         }
         xcall_index++;
     }
-    
+
     QString enumCode;
     QTextStream enumOut(&enumCode);
     const Enum* e = 0;
@@ -408,85 +421,8 @@ void SmokeClassFiles::writeClass(QTextStream& out, const Class* klass, const QSt
         enumOut << "            break;\n";
     }
     
-    // virtual method callbacks for classes that can't be instanciated aren't useful
-    if (Util::canClassBeInstanciated(klass)) {
-        QSet<QString> virtMeths;    // virtual methods that already have been taken care of
-        QList<const Method*> pureVirtuals;
-        foreach (const Method& meth, klass->methods()) {
-            // if there are default parameters, it's not the 'original' method.. skip it
-            if (!meth.remainingDefaultValues().isEmpty())
-                continue;
-            // first, generate all virtual methods of this class. inherited ones come after that.
-            if (((meth.flags() & Method::Virtual) || (meth.flags() & Method::PureVirtual)) && !meth.isDestructor()) {
-                if (meth.access() != Access_private) {
-                    generateVirtualMethod(out, className, meth, includes);
-                }
-                virtMeths.insert(meth.toString(false, false, false));
-            }
-        }
-        
-        QList<const Method*> inheritedVirtuals;
-        foreach (const Class::BaseClassSpecifier& bspec, klass->baseClasses()) {
-            // now collect all virtual methods of the base classes
-            inheritedVirtuals += Util::collectVirtualMethods(bspec.baseClass);
-        }
-        
-        foreach (const Method* meth, inheritedVirtuals) {
-            if (!meth->remainingDefaultValues().isEmpty())
-                continue;
-            if (meth->flags() & Method::PureVirtual) {
-                // postpone pure virtuals to see if they have been overridden
-                pureVirtuals << meth;
-                continue;
-            }
-            
-            QString methString = meth->toString(false, false, false);
-            if (virtMeths.contains(methString))
-                continue;
-            const Method *m = 0;
-            if ((m = Util::isVirtualOverriden(*meth, klass)) && m->access() == Access_private) {
-                // if the method was overriden and put under private access, skip it.
-                virtMeths.insert(methString);
-                continue;
-            }
-            /* If the method was overridden, use the overriding method for getting the classname - else use the virtual method itself
-               Don't use className here, as this won't work with hidden methods. Imagine:
-               
-               struct A {
-                   virtual void foo() {}
-               };
-               
-               struct B : public A {
-                   virtual void foo(int) {}
-               };
-               
-               B::foo(int) hides A::foo(). So if we have an instance of B, we can't call this->B::foo(), but have to use this->A::foo()
-             */
-            generateVirtualMethod(out, m ? m->getClass()->toString() : meth->getClass()->toString(), *meth, includes);
-            virtMeths.insert(methString);
-        }
-        foreach (const Method* meth, pureVirtuals) {
-            QString methString = meth->toString(false, false, false);
-            // Check if the pure virtual was overriden somewhere - then we shouldn't generate a callback with the pure virtual flag set
-            // (as it isn't, anymore).
-            // If the overriding method was declared virtual, too, we find it in virtMeths. Then it's already generated and we can continue.
-            // If it hasn't, we have to go looking for it. If we find it, generate a normal virtual method for it.
-            if (virtMeths.contains(methString))
-                continue;
-            const Method* m = 0;
-            if ((m = Util::isVirtualOverriden(*meth, klass))) {
-                if (m->access() != Access_private) {
-                    Method virt = *m;
-                    virt.setFlag(Method::Virtual);
-                    generateVirtualMethod(out, className, virt, includes);
-                }
-                virtMeths.insert(methString);
-            } else {
-                // we didn't find any overriding method - generate a pure virtual one
-                generateVirtualMethod(out, className, *meth, includes);
-                virtMeths.insert(methString);
-            }
-        }
+    foreach (const Method* meth, Util::virtualMethodsForClass(klass)) {
+        generateVirtualMethod(out, *meth, includes);
     }
     
     // this class contains enums, write out an xenum_operation method
@@ -500,8 +436,18 @@ void SmokeClassFiles::writeClass(QTextStream& out, const Class* klass, const QSt
     
     // destructor
     // if the class can't be instanciated, a callback when it's deleted is unnecessary
-    if (Util::canClassBeInstanciated(klass))
-        out << "    ~" << smokeClassName << QString("() { this->_binding->deleted(%1, (void*)this); }\n").arg(m_smokeData->classIndex[className]);    
+    if (Util::canClassBeInstanciated(klass)) {
+        out << "    ~" << smokeClassName << "() ";
+        if (destructor && destructor->hasExceptionSpec()) {
+            out << "throw(";
+            for (int i = 0; i < destructor->exceptionTypes().count(); i++) {
+                if (i > 0) out << ", ";
+                out << destructor->exceptionTypes()[i].toString();
+            }
+            out << ") ";
+        }
+        out << QString("{ this->_binding->deleted(%1, (void*)this); }\n").arg(m_smokeData->classIndex[className]);
+    }
     out << "};\n";
     
     if (enumFound) {

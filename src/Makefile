@@ -2,7 +2,6 @@
 all:
 	cmake ../inst/kdebindings/CMakeLists.txt \
 	      -DCMAKE_INSTALL_PREFIX=../local
-# Set LD_LIBRARY_PATH so that generator finds plugins -- workaround for bug
 	LD_LIBRARY_PATH=../../generator/bin make -C ../inst/kdebindings install
 	bash createProject.sh
 	make -f Makefile.qtbase
