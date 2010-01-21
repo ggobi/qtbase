@@ -181,6 +181,24 @@ rpp::Stream* Preprocessor::sourceNeeded(QString& fileName, rpp::Preprocessor::In
             }
         }
     }
+          
+#if defined(__APPLE__) & defined(__MACH__)
+    if (path.isEmpty() && type == rpp::Preprocessor::IncludeGlobal &&
+        !info.dir().cdUp())
+    {
+        QList<QDir> m_frameworkDirs; // FIXME: should be configurable
+        m_frameworkDirs.append(QDir("/System/Library/Frameworks"));
+        m_frameworkDirs.append(QDir("/Library/Frameworks"));
+        fileName = info.dir().dirName() + ".framework/Headers/" +
+          info.fileName();
+        foreach (QDir dir, m_frameworkDirs) {
+            if (dir.exists(fileName)) {
+               path = dir.absoluteFilePath(fileName);
+               break;
+            }
+        }
+    }
+#endif
     
     if (path.isEmpty())
         return 0;
