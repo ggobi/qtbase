@@ -4,19 +4,19 @@
 // FIXME: we should not have duplicate header files inside and outside
 // the package. Could use symbolic links.
 
-#include <QObject>
-#include <QWidget>
+#include <smoke.h>
+
 #include <QString>
-#include <QGraphicsItem>
-#include <QGraphicsLayoutItem>
+#include <QRectF>
+#include <QSizeF>
+#include <QPointF>
+#include <QMatrix>
+#include <QColor>
+#include <QFontF>
 
 #include <Rinternals.h>
 
 #include <qtdefs.h>
-
-QObject *unwrapQObjectReferee(SEXP x);
-QGraphicsItem *unwrapQGraphicsItemReferee(SEXP x);
-QGraphicsLayoutItem *unwrapQGraphicsLayoutItemReferee(SEXP x);
 
 #define checkPointer(x, type) ({                                       \
       if (TYPEOF(x) != EXTPTRSXP)                                      \
@@ -34,44 +34,12 @@ QGraphicsLayoutItem *unwrapQGraphicsLayoutItemReferee(SEXP x);
 
 #define unwrapSmoke(x, type) reinterpret_cast<type *>(_unwrapSmoke(x, #type))
 
-#define unwrapReference(x, type) ({                                     \
-      type *ans =                                                       \
-        qobject_cast<type *>(unwrapPointer(x, type));                   \
-      if (!ans || !ans->isValid())                                      \
-        error("unwrapReference: Coercion to '" #type "' failed");       \
-      ans;                                                              \
-    })
-
-#define unwrapQObject(x, type) ({                                       \
-      type *ans = qobject_cast<type *>(unwrapQObjectReferee(x));	\
-      if (!ans) error("unwrapQObject: Coercion to " #type " failed");	\
-      ans;								\
-    })
-
-#define unwrapQGraphicsItem(x, type) ({                                 \
-      type *ans = qgraphicsitem_cast<type *>(unwrapQGraphicsItemReferee(x)); \
-      if (!ans) error("unwrapQGraphicsItem: Coercion to " #type " failed"); \
-      ans;                                                              \
-    })
-
-#define unwrapQGraphicsLayoutItem(x, type) \
-  reinterpret_cast<type *>(unwrapQGraphicsLayoutItemReferee(x))
-
-#define unwrapQGraphicsWidget(x) unwrapQGraphicsItem(x, QGraphicsWidget)
-#define unwrapQWidget(x) unwrapQObject(x, QWidget)
-
 QT_BEGIN_DECLS
 
 void *_unwrapSmoke(SEXP x, const char *type);
 
-SEXP wrapQObject(QObject *object);
-SEXP wrapQWidget(QWidget *widget);
 SEXP wrapPointer(void *ptr, QList<QString> classNames = QList<QString>(),
                  R_CFinalizer_t finalizer = NULL);
-SEXP wrapQGraphicsItem(QGraphicsItem *item,
-                       QList<QString> classNames = QList<QString>());
-SEXP wrapQGraphicsWidget(QGraphicsWidget *widget);
-SEXP wrapQGraphicsLayoutItem(QGraphicsLayoutItem *item, QList<QString> classes);
 
 // Conversion routines
 // R -> C/Qt
@@ -99,12 +67,8 @@ SEXP asRSizeF(QSizeF size);
 SEXP asRColor(QColor color);
 SEXP asRFont(QFont font);
 
-// Reference counting
-void addQObjectReference(QObject *referee, QObject *referer);
-void addQWidgetReference(QWidget *referee, QObject *referer);
-void addQGraphicsItemReference(QGraphicsItem *referee, QObject *referer);
-void addQGraphicsLayoutItemReference(QGraphicsLayoutItem *referee,
-                                     QObject *referer);
+// Smoke module registration
+void registerRQtModule(Smoke *smoke);
 
 QT_END_DECLS
 

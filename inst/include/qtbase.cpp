@@ -5,282 +5,86 @@
 #include <qtbase.h>
 #include <R_ext/Rdynload.h>
 
-void* _unwrapSmoke(SEXP x, const char *type)
-{
-  static void*(*fun)
-      (SEXP, const char *) = NULL;
-  if (fun == NULL)
-      fun = (void*(*)(SEXP, const char*))
-	  R_GetCCallable("qtbase", "_unwrapSmoke");
-  return fun(x, type);
-}
+/* Convenience macros from IRanges */
 
+#define DEFINE_CCALLABLE_STUB(retT, stubname, Targs, args)              \
+  typedef retT(*__ ## stubname ## _funtype__)Targs;                     \
+  retT stubname Targs                                                   \
+  {                                                                     \
+   static __ ## stubname ## _funtype__ fun = NULL;                      \
+   if (fun == NULL)                                                     \
+     fun = (__ ## stubname ## _funtype__)                               \
+       R_GetCCallable("qtbase", "_" #stubname);                         \
+   return fun args;                                                     \
+  }
 
-SEXP
-wrapQWidget(QWidget *widget)
-{
-    static SEXP(*fun)
-        (QWidget*) = NULL;
-    if (fun == NULL)
-        fun = (SEXP(*)(QWidget*))
-	    R_GetCCallable("qtbase", "wrapQWidget");
-    return fun(widget);
-}
+/*
+ * Using the above macro when retT (the returned type) is void will make Sun
+ * Studio 12 C compiler unhappy. So we need to use the following macro to
+ * handle that case.
+ */
+#define DEFINE_NOVALUE_CCALLABLE_STUB(stubname, Targs, args)            \
+  typedef void(*__ ## stubname ## _funtype__)Targs;                     \
+  void stubname Targs                                                   \
+  {                                                                     \
+   static __ ## stubname ## _funtype__ fun = NULL;                      \
+   if (fun == NULL)                                                     \
+     fun = (__ ## stubname ## _funtype__)                               \
+       R_GetCCallable("qtbase", "_" #stubname);                         \
+   fun args;                                                            \
+   return;                                                              \
+  }
 
-SEXP
-wrapQObject(QObject *object)
-{
-    static SEXP(*fun)
-        (QObject*) = NULL;
-    if (fun == NULL)
-        fun = (SEXP(*)(QObject*))
-	    R_GetCCallable("qtbase", "wrapQObject");
-    return fun(object);
-}
+/* Wrapping */
 
+DEFINE_CCALLABLE_STUB(void*, _unwrapSmoke,
+                      (SEXP x, const char *type),
+                      (     x,             type))
 
-SEXP
-wrapPointer(void *ptr, QList<QString> classNames, R_CFinalizer_t finalizer)
-{
-    static SEXP(*fun)
-      (void*, QList<QString>, R_CFinalizer_t) = NULL;
-    if (fun == NULL)
-      fun = (SEXP(*)(void*, QList<QString>, R_CFinalizer_t))
-	    R_GetCCallable("qtbase", "wrapPointer");
-    return fun(ptr, classNames, finalizer);
-}
+DEFINE_CCALLABLE_STUB(SEXP, wrapPointer,
+                      (void *ptr, QList<QString> classNames,
+                       R_CFinalizer_t finalizer),
+                      (      ptr,                classNames,
+                                      finalizer))
 
-SEXP wrapQGraphicsItem(QGraphicsItem *item, QList<QString> classNames)
-{
-  static SEXP(*fun)(QGraphicsItem*,QList<QString>) = NULL;
-  if (fun == NULL)
-    fun = (SEXP(*)(QGraphicsItem*,QList<QString>))
-      R_GetCCallable("qtbase", "wrapQGraphicsItem");
-  return fun(item, classNames);
-}
+/* Conversion */
 
-SEXP wrapQGraphicsWidget(QGraphicsWidget *widget)
-{
-  static SEXP(*fun)(QGraphicsWidget*) = NULL;
-  if (fun == NULL)
-    fun = (SEXP(*)(QGraphicsWidget*))
-      R_GetCCallable("qtbase", "wrapQGraphicsWidget");
-  return fun(widget);
-}
+DEFINE_CCALLABLE_STUB(QString, sexp2qstring, (SEXP s), (s))
 
-SEXP wrapQGraphicsLayoutItem(QGraphicsLayoutItem *item,
-                             QList<QString> classNames)
-{
-  static SEXP(*fun)(QGraphicsLayoutItem*,QList<QString>) = NULL;
-  if (fun == NULL)
-    fun = (SEXP(*)(QGraphicsLayoutItem*,QList<QString>))
-      R_GetCCallable("qtbase", "wrapQGraphicsLayoutItem");
-  return fun(item, classNames);
-}
+DEFINE_CCALLABLE_STUB(const char **, asStringArray, (SEXP s_strs), (s_strs))
 
-QObject*
-unwrapQObjectReferee(SEXP x)
-{
-    static QObject*(*fun)
-        (SEXP) = NULL;
-    if (fun == NULL)
-        fun = (QObject*(*)(SEXP))
-	    R_GetCCallable("qtbase", "unwrapQObjectReferee");
-    return fun(x);
-}
+DEFINE_CCALLABLE_STUB(SEXP, asRStringArray, (const char * const * strs), (strs))
 
-QGraphicsItem*
-unwrapQGraphicsItemReferee(SEXP x)
-{
-  static QGraphicsItem*(*fun)
-    (SEXP) = NULL;
-  if (fun == NULL)
-    fun = (QGraphicsItem*(*)(SEXP))
-      R_GetCCallable("qtbase", "unwrapQGraphicsItemReferee");
-  return fun(x);
-}
+DEFINE_CCALLABLE_STUB(QRectF, asQRectF, (SEXP s), (s))
 
-QGraphicsLayoutItem*
-unwrapQGraphicsLayoutItemReferee(SEXP x)
-{
-  static QGraphicsLayoutItem*(*fun)
-    (SEXP) = NULL;
-  if (fun == NULL)
-    fun = (QGraphicsLayoutItem*(*)(SEXP))
-      R_GetCCallable("qtbase", "unwrapQGraphicsLayoutItemReferee");
-  return fun(x);
-}
+DEFINE_CCALLABLE_STUB(QPointF, asQPointF, (SEXP s), (s))
 
-QString sexp2qstring(SEXP s)
-{
-  static QString(*fun)(SEXP) = NULL;
-  if (fun == NULL)
-    fun = (QString(*)(SEXP))R_GetCCallable("qtbase", "sexp2qstring");
-  return fun(s);
-}
+DEFINE_CCALLABLE_STUB(QSizeF, asQSizeF, (SEXP s), (s))
 
-SEXP qstring2sexp(QString s)
-{
-  static SEXP(*fun)(QString) = NULL;
-  if (fun == NULL)
-    fun = (SEXP(*)(QString))R_GetCCallable("qtbase", "qstring2sexp");
-  return fun(s);
-}
+DEFINE_CCALLABLE_STUB(QMatrixF, asQMatrixF, (SEXP s), (s))
 
-const char ** asStringArray(SEXP s_strs) {
-  static const char** (*fun)(SEXP) = NULL;
-  if (fun == NULL)
-    fun = (const char **(*)(SEXP))R_GetCCallable("qtbase", "asStringArray");
-  return fun(s_strs);
-}
+DEFINE_CCALLABLE_STUB(QColorF, asQColorF, (SEXP s), (s))
 
-SEXP asRStringArray(const char * const * strs) {
-  static SEXP (*fun)(const char * const *) = NULL;
-  if (fun == NULL)
-    fun = (SEXP(*)(const char * const *))
-      R_GetCCallable("qtbase", "asRStringArray");
-  return fun(strs);
-}
+DEFINE_CCALLABLE_STUB(QColor *, asQColors, (SEXP s), (s))
 
+DEFINE_CCALLABLE_STUB(QFont, asQFont, (SEXP s), (s))
 
-QRectF asQRectF(SEXP s)
-{
-  static QRectF(*fun)(SEXP) = NULL;
-  if (fun == NULL)
-    fun = (QRectF(*)(SEXP))R_GetCCallable("qtbase", "asQRectF");
-  return fun(s);
-}
+DEFINE_CCALLABLE_STUB(SEXP, asRColor, (QColor s), (s))
 
-QPointF asQPointF(SEXP s)
-{
-  static QPointF(*fun)(SEXP) = NULL;
-  if (fun == NULL)
-    fun = (QPointF(*)(SEXP))R_GetCCallable("qtbase", "asQPointF");
-  return fun(s);
-}
+DEFINE_CCALLABLE_STUB(SEXP, asRPointF, (QPointF s), (s))
 
-QSizeF asQSizeF(SEXP s)
-{
-  static QSizeF(*fun)(SEXP) = NULL;
-  if (fun == NULL)
-    fun = (QSizeF(*)(SEXP))R_GetCCallable("qtbase", "asQSizeF");
-  return fun(s);
-}
+DEFINE_CCALLABLE_STUB(SEXP, asRSizeF, (QSizeF s), (s))
 
-QMatrix asQMatrix(SEXP s)
-{
-  static QMatrix(*fun)(SEXP) = NULL;
-  if (fun == NULL)
-    fun = (QMatrix(*)(SEXP))R_GetCCallable("qtbase", "asQMatrix");
-  return fun(s);
-}
+DEFINE_CCALLABLE_STUB(SEXP, asRRectF, (QRectF s), (s))
 
-QColor asQColor(SEXP s)
-{
-  static QColor(*fun)(SEXP) = NULL;
-  if (fun == NULL)
-    fun = (QColor(*)(SEXP))R_GetCCallable("qtbase", "asQColor");
-  return fun(s);
-}
+DEFINE_CCALLABLE_STUB(SEXP, asRMatrix, (QMatrix s), (s))
 
-QColor *asQColors(SEXP s)
-{
-  static QColor*(*fun)(SEXP) = NULL;
-  if (fun == NULL)
-    fun = (QColor*(*)(SEXP))R_GetCCallable("qtbase", "asQColors");
-  return fun(s);
-}
+DEFINE_CCALLABLE_STUB(SEXP, asRFont, (QFont s), (s))
 
-QFont asQFont(SEXP s)
-{
-  static QFont(*fun)(SEXP) = NULL;
-  if (fun == NULL)
-    fun = (QFont(*)(SEXP))R_GetCCallable("qtbase", "asQFont");
-  return fun(s);
-}
+DEFINE_CCALLABLE_STUB(SEXP, asRFont, (QFont s), (s))
 
-SEXP asRColor(QColor s)
-{
-  static SEXP(*fun)(QColor) = NULL;
-  if (fun == NULL)
-    fun = (SEXP(*)(QColor))R_GetCCallable("qtbase", "asRColor");
-  return fun(s);
-}
+/* Smoke module registration */
 
-SEXP asRPointF(QPointF s)
-{
-  static SEXP(*fun)(QPointF) = NULL;
-  if (fun == NULL)
-    fun = (SEXP(*)(QPointF))R_GetCCallable("qtbase", "asRPointF");
-  return fun(s);
-}
-
-SEXP asRSizeF(QSizeF s)
-{
-  static SEXP(*fun)(QSizeF) = NULL;
-  if (fun == NULL)
-    fun = (SEXP(*)(QSizeF))R_GetCCallable("qtbase", "asRSizeF");
-  return fun(s);
-}
-
-SEXP asRRectF(QRectF s)
-{
-  static SEXP(*fun)(QRectF) = NULL;
-  if (fun == NULL)
-    fun = (SEXP(*)(QRectF))R_GetCCallable("qtbase", "asRRectF");
-  return fun(s);
-}
-
-SEXP asRMatrix(QMatrix s, bool inverted)
-{
-  static SEXP(*fun)(QMatrix, bool) = NULL;
-  if (fun == NULL)
-    fun = (SEXP(*)(QMatrix, bool))R_GetCCallable("qtbase", "asRMatrix");
-  return fun(s, inverted);
-}
-
-SEXP asRFont(QFont s)
-{
-  static SEXP(*fun)(QFont) = NULL;
-  if (fun == NULL)
-    fun = (SEXP(*)(QFont))R_GetCCallable("qtbase", "asRFont");
-  return fun(s);
-}
-
-/* Reference creation */
-
-void addQObjectReference(QObject *referee, QObject *referer) {
-  static void (*fun)(QObject *, QObject *) = NULL;
-  if (fun == NULL)
-    fun = (void(*)(QObject *, QObject *))
-      R_GetCCallable("qtbase", "addQObjectReference");
-  fun(referee, referer);
-}
-
-void addQWidgetReference(QWidget *referee, QObject *referer) {
-  static void (*fun)(QWidget *, QObject *) = NULL;
-  if (fun == NULL)
-    fun = (void(*)(QWidget *, QObject *))
-      R_GetCCallable("qtbase", "addQWidgetReference");
-  fun(referee, referer);
-}
-
-void addQGraphicsItemReference(QGraphicsItem *referee, QObject *referer) {
-  static void (*fun)(QGraphicsItem *, QObject *) = NULL;
-  if (fun == NULL)
-    fun = (void(*)(QGraphicsItem *, QObject *))
-      R_GetCCallable("qtbase", "addQGraphicsItemReference");
-  fun(referee, referer);
-}
-
-void addQGraphicsLayoutItemReference(QGraphicsLayoutItem *referee,
-                                     QObject *referer)
-{
-  static void (*fun)(QGraphicsLayoutItem *, QObject *) = NULL;
-  if (fun == NULL)
-    fun = (void(*)(QGraphicsLayoutItem *, QObject *))
-      R_GetCCallable("qtbase", "addQGraphicsLayoutItemReference");
-  fun(referee, referer);
-}
+DEFINE_NOVALUE_CCALLABLE_STUB(registerRQtModule, (Smoke *s), (s))
 
 #endif

@@ -46,4 +46,6 @@ public:
   static SmokeList smokes();
 };
 
+extern "C" void registerRQtModule(Smoke *smoke);
+
 #endif

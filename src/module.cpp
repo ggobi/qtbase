@@ -12,6 +12,11 @@
 #include "SmokeObject.hpp"
 #include "Class.hpp"
 
+// FIXME: These functions take a 'SmokeObject', which is not (yet)
+// available to packages, so packages cannot override these in their
+// modules. Either need to (1) provide C-level SmokeObject bindings,
+// or (2) the signature should become smoke, classId and void ptr.
+
 /*
  * Given an approximate classname and a qt instance, try to improve
  * the resolution of the name by using the various Qt rtti mechanisms
@@ -23,7 +28,7 @@ resolve_classname_qt(const SmokeObject * o)
   int classId = o->classId();
   Smoke *smoke = o->smoke();
   const char *className = smoke->classes[classId].className;
-  if (smoke->isDerivedFromByName(className, "QEvent")) {
+  if (smoke->isDerivedFrom(className, "QEvent")) {
     QEvent * qevent = (QEvent *)
       smoke->cast(o->ptr(), classId, smoke->idClass("QEvent").index);
     switch (qevent->type()) {
@@ -244,7 +249,7 @@ resolve_classname_qt(const SmokeObject * o)
     default:
       break;
     }
-  } else if (smoke->isDerivedFromByName(className, "QGraphicsItem")) {
+  } else if (smoke->isDerivedFrom(className, "QGraphicsItem")) {
     QGraphicsItem * item = (QGraphicsItem *)
       smoke->cast(o->ptr(), classId,
                      smoke->idClass("QGraphicsItem").index);
@@ -279,7 +284,7 @@ resolve_classname_qt(const SmokeObject * o)
       classId = smoke->idClass("QGraphicsItemGroup").index;
       break;
     }
-  } else if (smoke->isDerivedFromByName(className, "QLayoutItem")) {
+  } else if (smoke->isDerivedFrom(className, "QLayoutItem")) {
     QLayoutItem * item = (QLayoutItem *)
       smoke->cast(o->ptr(), classId,
                      smoke->idClass("QLayoutItem").index);
@@ -363,10 +368,29 @@ memory_is_owned_qt(const SmokeObject *o)
   return false;
 }
 
-void init_smoke(void) {
-  if (qt_Smoke == 0) init_qt_Smoke();
-  RSmokeBinding *binding = new RSmokeBinding(qt_Smoke);
+void registerRQtModule(Smoke *smoke /* resolveClass, memoryIsOwned */)
+{
+  /* If 'smoke' comes from another package, we need to recreate it, so
+     that it is registered in OUR Smoke::classMap. */
+  if (smoke != qt_Smoke) 
+    smoke = new Smoke(smoke->moduleName(),
+                      smoke->classes, smoke->numClasses,
+                      smoke->methods, smoke->numMethods,
+                      smoke->methodMaps, smoke->numMethodMaps,
+                      smoke->methodNames, smoke->numMethodNames,
+                      smoke->types, smoke->numTypes,
+                      smoke->inheritanceList,
+                      smoke->argumentList,
+                      smoke->ambiguousMethodList,
+                      smoke->castFn);
+  RSmokeBinding *binding = new RSmokeBinding(smoke);
   RQtModule *module = new RQtModule(binding, resolve_classname_qt,
                                     memory_is_owned_qt);
   RQtModule::registerModule(module);
 }
+
+void init_smoke(void) {
+  if (qt_Smoke == 0) init_qt_Smoke();
+  registerRQtModule(qt_Smoke);
+}
+

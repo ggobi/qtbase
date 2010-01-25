@@ -33,7 +33,7 @@ HEADERS += SmokeObject.hpp ObjectTable.hpp InstanceObjectTable.hpp
 
 
 SOURCES += init.cpp EventLoop.cpp style.cpp 
-SOURCES += Reference.cpp utils.cpp convert.cpp wrap.cpp 
+SOURCES += Reference.cpp convert.cpp wrap.cpp 
 SOURCES += Test.cpp timer.cpp
 SOURCES += metaobject.cpp connect.cpp invoke.cpp props.cpp
 SOURCES += dynamicqobject.cpp RDynamicQObject.cpp
