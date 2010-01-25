@@ -106,7 +106,6 @@ static R_CallMethodDef CallEntries[] = {
 
 void R_init_qtbase(DllInfo *dll)
 {
-    init_utils(); // initializes some utilities
     init_smoke();
     init_type_handlers();
     

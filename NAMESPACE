@@ -1,21 +1,11 @@
 
 useDynLib(qtbase, .registration = TRUE)
 
-
-export(qsetStyleSheet, qstyleSheet)
-
-export(".u_tryEval", ".u_eval", ".u_lastValue")
-
-export(testLabel)
-
 # timer
 export(qtimer)
 
 # metadata
 export(qnormalizedSignature, qproperties)
-##S3method("$", QObject)
-##S3method("$<-", QObject)
-##S3method(names, QObject)
 
 # signals
 export(qconnect)
@@ -27,7 +17,10 @@ export(qinvoke)
 export(qproperty, "qproperty<-")
 
 # constructors of simple types
-export(qrect, qpoint, qsize, qcolor, qfont)
+export(qrect, qpoint, qsize, qcolor, qfont, qmatrix)
+
+S3method(qmatrix, NULL)
+S3method(qmatrix, matrix)
 
 # smoke library
 S3method(print, RQtLibrary)
@@ -45,4 +38,9 @@ S3method("&", QtEnum)
 # the Qt smoke library
 export(Qt)
 
+## convenience for stylesheet manipulation
+export(qsetStyleSheet, qstyleSheet)
+
+## label for testing
+export(testLabel)
 
