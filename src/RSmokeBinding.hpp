@@ -1,3 +1,6 @@
+#ifndef R_SMOKE_BINDING_H
+#define R_SMOKE_BINDING_H
+
 #include <smoke.h>
 #include <smoke/qt_smoke.h>
 
@@ -26,3 +29,5 @@ private:
   int qt_metacall(SmokeObject *so, QMetaObject::Call _c, int id, void **_o);
 
 };
+
+#endif

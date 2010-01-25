@@ -1,6 +1,3 @@
-#ifndef R_SMOKE_BINDING_H
-#define R_SMOKE_BINDING_H
-
 #include <QMetaObject>
 #include <QMetaMethod>
 
@@ -150,5 +147,3 @@ bool RSmokeBinding::callMethod(Smoke::Index method, void *obj,
 char * RSmokeBinding::className(Smoke::Index classId) {
   return (char*) smoke->classes[classId].className;
 }
-
-#endif
