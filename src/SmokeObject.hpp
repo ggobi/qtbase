@@ -69,6 +69,7 @@ private:
   void maybeDestroy();
   void castSexp(SEXP sexp);
   SEXP createSexp(SEXP parentEnv);
+  static SmokeObject *fromValueSexp(SEXP sexp);
   
   void *_ptr;
   const Class *_klass;

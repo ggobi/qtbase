@@ -31,6 +31,9 @@ const Class* Class::fromSmokeName(Smoke *smoke, const char *name) {
   }
   return fromSmokeId(smoke, smoke->idClass(name).index);
 }
+const Class* Class::fromName(const char *name) {
+  return fromSmokeName(NULL, name);
+}
 
 const Class* Class::fromSexp(SEXP sexp) {
   static SEXP nameSym = install("name");

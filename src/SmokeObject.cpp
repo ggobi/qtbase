@@ -3,8 +3,7 @@
 #include "RQtModule.hpp"
 #include "InstanceObjectTable.hpp"
 
-#include "wrap.hpp"
-
+#include "convert.hpp"
 
 /* One SmokeObject for each object,
    to ensure 1-1 mapping from Qt objects to R objects */
@@ -65,11 +64,16 @@ SmokeObject::sexpFromPtr(void *ptr, Smoke *smoke, const char *name,
   return sexpFromPtr(ptr, Class::fromSmokeName(smoke, name), allocated, copy);
 }
 
+#define SMOKE_OBJECT_FROM_VALUE(klass, sexp) ({                   \
+      klass val = as ## klass(sexp);                              \
+      SmokeObject::fromPtr(&val, NULL, #klass, false, true);      \
+})
+
 SmokeObject * SmokeObject::fromSexp(SEXP sexp)
 {
   if (!isEnvironment(sexp))
-    error("Expected an environment, but got '%s'", type2char(TYPEOF(sexp)));
-  return InstanceObjectTable::instanceFromSexp(HASHTAB(sexp));
+    return fromValueSexp(sexp);
+  else return InstanceObjectTable::instanceFromSexp(HASHTAB(sexp));
 }
 
 SmokeObject::SmokeObject(void *ptr, const Class *klass, bool allocated)
@@ -112,12 +116,13 @@ void SmokeObject::castSexp(SEXP sexp) {
   SEXP rclasses;
   QList<const Class *> classes = _klass->ancestors();
   classes.prepend(_klass);
-  rclasses = allocVector(STRSXP, classes.size() + 2);
+  rclasses = allocVector(STRSXP, classes.size() + 3);
   setAttrib(sexp, R_ClassSymbol, rclasses);
   for (int i = 0; i < classes.size(); i++)
     SET_STRING_ELT(rclasses, i, mkChar(classes[i]->name()));
-  SET_STRING_ELT(rclasses, length(rclasses) - 2, mkChar("UserDefinedDatabase"));
-  SET_STRING_ELT(rclasses, length(rclasses) - 1, mkChar("environment"));
+  SET_STRING_ELT(rclasses, length(rclasses) - 3, mkChar("UserDefinedDatabase"));
+  SET_STRING_ELT(rclasses, length(rclasses) - 2, mkChar("environment"));
+  SET_STRING_ELT(rclasses, length(rclasses) - 1, mkChar("RQtObject"));
 }
   
 SEXP SmokeObject::createSexp(SEXP parentEnv) {
@@ -346,4 +351,98 @@ SmokeObject::~SmokeObject() {
   if (_fieldEnv)
     R_ReleaseObject(_fieldEnv);
   instances.remove(_ptr);
+}
+
+SmokeObject * SmokeObject::fromValueSexp(SEXP sexp) {
+  const char *className = CHAR(asChar(getAttrib(sexp, R_ClassSymbol)));
+  int type = QMetaType::type(className);
+  SmokeObject *ans = NULL;
+  switch(type) {
+  case QMetaType::QCursor:
+    break;
+  case QMetaType::QDate:
+    break;
+  case QMetaType::QSize:
+    //ans = SMOKE_OBJECT_FROM_VALUE(QSize, sexp);
+  case QMetaType::QSizeF:
+    ans = SMOKE_OBJECT_FROM_VALUE(QSizeF, sexp);
+    break;
+  case QMetaType::QTime:
+    break;
+  case QMetaType::QVariantList:
+    break;
+  case QMetaType::QPolygon:
+    break;
+  case QMetaType::QColor:
+    ans = SMOKE_OBJECT_FROM_VALUE(QColor, sexp);
+    break;
+  case QMetaType::QRectF:
+    ans = SMOKE_OBJECT_FROM_VALUE(QRectF, sexp);
+  case QMetaType::QRect:
+    //ans = SMOKE_OBJECT_FROM_VALUE(QRect, sexp);
+    break;
+  case QMetaType::QLine:
+    break;
+  case QMetaType::QTextLength:
+    break;
+  case QMetaType::QStringList:
+    break;
+  case QMetaType::QVariantMap:
+    break;
+  case QMetaType::QVariantHash:
+    break;
+  case QMetaType::QIcon:
+    break;
+  case QMetaType::QPen:
+    break;
+  case QMetaType::QLineF:
+    break;
+  case QMetaType::QTextFormat:
+    break;
+  case QMetaType::QPoint:
+    //ans = SMOKE_OBJECT_FROM_VALUE(QPoint, sexp);
+    break;
+  case QMetaType::QPointF:
+    ans = SMOKE_OBJECT_FROM_VALUE(QPointF, sexp);
+    break;
+  case QMetaType::QUrl:
+    break;
+  case QMetaType::QRegExp:
+    break;
+  case QMetaType::QDateTime:
+    break;
+  case QMetaType::QPalette:
+    break;
+  case QMetaType::QFont:
+    ans = SMOKE_OBJECT_FROM_VALUE(QFont, sexp);
+    break;
+  case QMetaType::QBrush:
+    break;
+  case QMetaType::QRegion:
+    break;
+  case QMetaType::QBitArray:
+    break;
+  case QMetaType::QImage:
+    break;
+  case QMetaType::QKeySequence:
+    break;
+  case QMetaType::QSizePolicy:
+    break;
+  case QMetaType::QPixmap:
+    break;
+  case QMetaType::QLocale:
+    break;
+  case QMetaType::QBitmap:
+    break;
+  case QMetaType::QMatrix:
+    ans = SMOKE_OBJECT_FROM_VALUE(QMatrix, sexp);
+    break;
+  case QMetaType::QTransform:
+    break;
+  case QMetaType::User:
+    break;
+  default:
+    error("Converting to SmokeObject: unhandled high-level type");
+  }
+  return ans;
 }
