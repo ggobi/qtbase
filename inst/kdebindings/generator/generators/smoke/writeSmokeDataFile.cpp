@@ -652,6 +652,7 @@ void SmokeDataFile::write()
 
     if (Options::parentModules.isEmpty()) {
         out << "Smoke::ClassMap Smoke::classMap;\n\n";
+        out << "Smoke::ModuleIndex Smoke::NullModuleIndex;\n\n";
     }
 
     out << "extern \"C\" {\n\n";

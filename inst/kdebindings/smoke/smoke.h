@@ -108,7 +108,7 @@ public:
     /**
      * A ModuleIndex with both fields set to 0.
      */
-    ModuleIndex NullModuleIndex; 
+    static ModuleIndex NullModuleIndex; 
     
     typedef std::map<std::string, ModuleIndex> ClassMap;
     static ClassMap classMap;
@@ -404,7 +404,7 @@ public:
         return NullModuleIndex;
     }
 
-    inline ModuleIndex findClass(const char *c) {
+    static inline ModuleIndex findClass(const char *c) {
         ClassMap::iterator i = classMap.find(c);
         if (i == classMap.end()) {
             return NullModuleIndex;
@@ -511,11 +511,11 @@ public:
 	return idc.smoke->findMethod(idc, idname);
     }
 
-    inline bool isDerivedFrom(const ModuleIndex& classId, const ModuleIndex& baseClassId) {
+    static inline bool isDerivedFrom(const ModuleIndex& classId, const ModuleIndex& baseClassId) {
         return isDerivedFrom(classId.smoke, classId.index, baseClassId.smoke, baseClassId.index);
     }
     
-    inline bool isDerivedFrom(Smoke *smoke, Index classId, Smoke *baseSmoke, Index baseId) {
+    static inline bool isDerivedFrom(Smoke *smoke, Index classId, Smoke *baseSmoke, Index baseId) {
 	if (!classId || !baseId || !smoke || !baseSmoke)
 	    return false;
 	if (smoke == baseSmoke && classId == baseId)
@@ -534,10 +534,10 @@ public:
 	return false;
     }
 
-    inline bool isDerivedFromByName(const char *className, const char *baseClassName) {
-	ModuleIndex classId = findClass(className);
-	ModuleIndex baseId = findClass(baseClassName);
-	return isDerivedFrom(classId.smoke, classId.index, baseId.smoke, baseId.index);
+    static inline bool isDerivedFrom(const char *className, const char *baseClassName) {
+    ModuleIndex classId = findClass(className);
+    ModuleIndex baseId = findClass(baseClassName);
+    return isDerivedFrom(classId.smoke, classId.index, baseId.smoke, baseId.index);
     }
 };
 
