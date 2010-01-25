@@ -404,7 +404,13 @@ void marshal_from_sexp<char *>(MethodCall *m)
   m->marshal();
   if(m->cleanup()) {
     char *retstr = (char *)m->item().s_voidp;
-    m->setSexp(mkString(retstr));
+    int len = 1;
+    if (!m->type().isRef()) // otherwise just a pointer to a single character
+      len = strlen(retstr);
+    PROTECT(rv = allocVector(STRSXP, 1));
+    SET_STRING_ELT(rv, 0, mkCharLen(retstr, len));
+    m->setSexp(rv);
+    UNPROTECT(1);
     delete[] retstr;
   }
 }
@@ -431,10 +437,13 @@ void marshal_to_sexp<char *>(MethodCall *m)
 {
   char *sv = (char*)m->item().s_voidp;
   SEXP obj;
-  if(sv)
-    obj = mkString(sv);
-  else
-    obj = ScalarString(NA_STRING);
+  if(sv) {
+    int len = 1;
+    PROTECT(obj = allocVector(STRSXP, 1));
+    if (!m->type().isRef())
+      len = strlen(sv);
+    obj = mkCharLen(sv, len);
+  } else obj = ScalarString(NA_STRING);
 
   if(m->cleanup())
     delete[] sv;
@@ -538,9 +547,9 @@ void marshal_to_sexp<SmokeClassWrapper>(MethodCall *m)
     return;
   }
   
-  /* ML: It's not clear which types of objects we are handling. We
-     seem to be handling pointers and references to classes.. These
-     can be optionally be 'const'.
+  /* ML: We are handling pointers and references to classes.. These
+     can be optionally be 'const'. We are also handling classes on the
+     stack, and Smoke allocates these, so we need to free them.
 
      Non-const reference types are probably considered bad form and
      thus are rare. Const references are convenient in that they can
@@ -553,15 +562,8 @@ void marshal_to_sexp<SmokeClassWrapper>(MethodCall *m)
      the object falls out of R scope, but this only works for certain
      objects, like QObjects and QGraphicsItems. Const pointers are
      somewhat rare (who wants an object they cannot modify?)
-
-     It may also be that we are handling classes on the stack, and
-     that Smoke allocates these, so we need to free them.
-
-     if(m->type().isStack()) {
-     o->allocated = true;
-     }
-
   */
+  
   SmokeObject *o =
     SmokeObject::fromPtr(p, m->smoke(), m->type().classId(),
                          !m->type().isConst(),
@@ -588,6 +590,116 @@ void marshal_to_sexp<SmokeClassWrapper>(MethodCall *m)
 
 #define DEF_LINKED_VALUELIST_MARSHALLER(ListIdent,ItemList,Item) namespace { char ListIdent##STR[] = #Item; } \
   TypeHandler::MarshalFn marshal_##ListIdent = marshal_LinkedValueListItem<Item,ItemList,ListIdent##STR>;
+
+#define DEF_VALUE_MARSHALLER(Type)                                      \
+  TypeHandler::MarshalFn marshal_Q##Type =                              \
+    marshal_Value<Q##Type, asR##Type, asQ##Type>;
+
+#define DEF_VALUE_SCORER(Type)                                          \
+  TypeHandler::ScoreArgFn scoreArg_Q##Type = scoreArg_byClass;
+//scoreArg_Value<canConvert##Type>; TODO after we have canConvert*
+
+#define DEF_VALUE_MARSHALLER_SCORER(Type) \
+  DEF_VALUE_MARSHALLER(Type)              \
+  DEF_VALUE_SCORER(Type)
+
+#define TYPE_HANDLER_ENTRY_LIST(Type)                            \
+  { "QList<" #Type "*>", marshal_##Type##List, NULL },           \
+  { "const QList<" #Type "*>&", marshal_##Type##List, NULL }  
+
+#define TYPE_HANDLER_ENTRY_VECTOR(Type)                                \
+  { "QVector<" #Type "*>", marshal_##Type##Vector, NULL },             \
+  { "const QVector<" #Type "*>&", marshal_##Type##Vector, NULL }  
+
+#define TYPE_HANDLER_ENTRY_VALUEVECTOR(Type)                           \
+  { "QVector<" #Type ">", marshal_##Type##Vector, NULL },              \
+  { "const QVector<" #Type ">&", marshal_##Type##Vector, NULL }  
+
+#define TYPE_HANDLER_ENTRY_VALUELIST(Type)                              \
+  { "QList<" #Type ">", marshal_##Type##List, NULL },              \
+  { "const QList<" #Type ">&", marshal_##Type##List, NULL }  
+
+#define TYPE_HANDLER_ENTRY_PAIRLIST(A, B)                               \
+  { "QList<QPair<" #A "," #B "> >", marshal_QPair##A##B##List, NULL },  \
+  { "const QList<QPair<" #A "," #B "> >&", marshal_QPair##A##B##List, NULL }  
+
+#define TYPE_HANDLER_ENTRY_PAIRVECTOR(A, B)                                 \
+  { "QVector<QPair<" #A "," #B "> >", marshal_QPair##A##B##Vector, NULL },  \
+  { "const QVector<QPair<" #A "," #B "> >&", marshal_QPair##A##B##Vector, NULL }
+
+#define TYPE_HANDLER_ENTRY_VALUE(Type)                      \
+  { #Type, marshal_##Type, scoreArg_##Type },               \
+  { "const " #Type "&", marshal_##Type, scoreArg_##Type },  \
+  { #Type "*", marshal_##Type, scoreArg_##Type },           \
+  { "const " #Type "*", marshal_##Type, scoreArg_##Type }
+
+#define TYPE_HANDLER_ENTRY_MATRIX(N, M, Type)                       \
+  { "const QGenericMatrix<" #N "," #M "," #Type ">",                \
+      marshal_QGenericMatrix<N, M, Type>, NULL },                   \
+  { "const QGenericMatrix<" #N "," #M "," #Type ">*",               \
+      marshal_QGenericMatrix<N, M, Type>, NULL }
+
+#define TYPE_HANDLER_ENTRY_MAP(A, B)                            \
+  { "QMap<" #A "," #B ">", marshal_QMap##A##B, NULL },          \
+  { "const QMap<" #A "," #B ">&", marshal_QMap##A##B, NULL }  
+
+#define TYPE_HANDLER_ENTRY_PAIR(A, B)                             \
+  { "QPair<" #A "," #B ">", marshal_QPair##A##B, NULL },          \
+  { "const QPair<" #A "," #B ">&", marshal_QPair##A##B, NULL }  
+
+template <class Type, SEXP (*toR)(Type), Type (*fromR)(SEXP)>
+void marshal_Value(MethodCall *m) {
+  switch(m->mode()) {
+  case MethodCall::RToSmoke:
+    { 
+      Type *s = NULL;
+      if(!m->type().isPtr() || m->sexp() != R_NilValue) {
+        s = new Type(fromR(m->sexp()));
+      }
+      
+      m->item().s_voidp = s;
+      m->marshal();
+      
+      if (m->cleanup())
+        delete s;
+      
+      if (!m->type().isStack() && !m->type().isConst() &&
+          m->sexp() != R_NilValue)
+        { 
+          m->setSexp(toR(*s));
+        }
+    }
+    break;
+    
+  case MethodCall::SmokeToR:
+    {
+      Type *s = (Type*)m->item().s_voidp;
+      if(s) {
+        m->setSexp(toR(*s));
+        if(m->cleanup()) {
+          delete s;
+        }
+      } else {
+        m->setSexp(R_NilValue);
+      }
+    }
+    break;
+    
+  default:
+    m->unsupported();
+    break;
+  }
+}
+
+int scoreArg_byClass(SEXP arg, const SmokeType &type);
+  
+template <bool (*CanConvert)(SEXP)>
+int scoreArg_Value(SEXP arg, const SmokeType &type) {
+  int score = scoreArg_byClass(arg, type);
+  if (!score)
+    score = CanConvert(arg);
+  return score;
+}
 
 template <class Item, class ItemList, const char *ItemSTR >
 void marshal_ItemList(MethodCall *m) {

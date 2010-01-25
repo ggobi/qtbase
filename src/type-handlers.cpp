@@ -2,6 +2,12 @@
 
 /* Type conversion thoughts:
 
+   Need to cleanup the conversion process. Can probably define
+   everything in the TypeHandler array with better use of
+   templates. Base this on the 'as' function in Rcpp. For C++ -> SEXP,
+   just overload SEXP as(C++). For SEXP -> C++, use their templated
+   C++ as<C++>(SEXP).
+   
    See types.txt for a list of types we need to handle.
 
    Should probably factor out the actual conversions implemented in
@@ -13,27 +19,60 @@
    the class anyway?
 
    Values: Many value types (e.g. QRectF) can be handled through
-   high-level type conversion. Need a macro for this. Converters that
-   we currently lack:
-     QBrush/QPen: something in qtgui, needs to be expanded
-     QByteArray: below, but needs to be standardized
-     QKeySequence: from string or standard key (integer)
-     QUrl/QHostAddress: from strings
-     QPolygon(F)/QLine(F): from 2 column matrix
-     QTransform: like QMatrix is now
+   high-level type conversion. The question is, which ones? Some
+   types, e.g. QString, have obvious analogs in R. However, if we have
+   to represent an object as a list (or probably better) S4 class,
+   what do we gain? We can break this down by usability,
+   maintainability and performance.
+   
+     Usability: The interface is more complex if we mix the dynamic Qt
+     API and S4. Thus, usability favors sticking with Qt references,
+     but only slightly, because the user never really needs to know
+     that they are S4 or pointers.
 
+     Maintainability: Clearly, it's easier not to convert to S4.
+     
+     Performance: There is overhead to the conversions, which would
+     slow the S4 approach. However, calling Qt methods to access
+     fields is slower than accessing the slots of an S4 object. It
+     comes down to whether one is passing the object to another Qt
+     function or merely accessing the fields of the object.
+     
+   If the question is performance, we can optimize for specific
+   use-cases (but beware of premature optimization). For now, we will
+   avoid any complex conversions and stick to what is natural/obvious.
+
+   In the below, the '*' indicates an obvious/natural mapping.
+     
+   Converters that we have:
+   
+     *QRectF -> 2x2 matrix (par() uses a flat vector in same order),
+     *QPointF -> 2-vector,
+     *QSizeF -> 2-vector,
+     *QMatrix (replace with QTransform),
+     QFont -> list,
+     *QColor -> 4x1 matrix,
+     *QVariant -> R value,
+     *QString -> character, *QByteArray -> character
+     
+   Converters that we currently lack:
+     QBrush/QPen: something in qtgui, needs to be expanded
+     QKeySequence: from string or standard key (integer)
+     *QUrl/QHostAddress: from strings
+     QPolygon(F)/QLine(F): from 2 column matrix
+     *QTransform: 3x3 matrix
+     
      On an as-needed basis:
-     QDBusSignature/QLatin1String: from string
-     GLenum/GLuint/QRgb: from integer
-     QDate/QTime: from R date and time objects
+     *QDBusSignature/QLatin1String: from string
+     *QDate/QTime: from R date and time objects
      QStyleOption (and subclasses): from an R list
      QTextFormat/QPalette/QTextOption: similar to QBrush/QPen
-     QBitArray: from an R raw vector
+     *QBitArray: from an R raw vector
      QNetworkCacheMetaData/QUrlInfo: R list?
      QSslKey/QSslCipher: as character + attributes for other fields?
      QXmlStreamAttribute: as character + attributes
      QTextLength: as integer + plus type attribute
-     QUuid, QXmlStream*Declaration: as string
+     *QUuid, QXmlStream*Declaration: as string
      QHttpHeader: character vector + attributes
      QNetworkAddressEntry: IP as character + attributes
      QNetworkCookie: named character + attributes
@@ -44,8 +83,15 @@
      QFontInfo/QPrinterInfo/QHostInfo: list
      (webkit) QWebHistoryItem/QWebSecurityOrigin/QWebDatabase: list 
      QXmlAttributes: character vector + attributes?
-     QTableWidgetSelectionRange: like QRect?
-     
+     *QTableWidgetSelectionRange: like QRect
+     *QMargins: like QRect
+     *QMatrix4x4: as R matrix
+     *QVector(2D,3D,4D): as R vectors
+     *QGenericMatrix: as R matrix
+
+   Many of the types marked 'list', and others, should probably become
+   S4 objects. Makes validation, documentation easier.
+   
    Many of the const-ref types will just be copied, and then marked
    for destruction when they drop out of R scope.
    
@@ -76,8 +122,8 @@
  */
 
 /* TODO:
-   - Clean up use of cleanup()
    - Conditional compilation of OpenGL, QtXml, QtNetwork, etc, types
+   - More scoring functions, as needed
  */
 
 #include <QtCore/qdir.h>
@@ -145,21 +191,17 @@
 #endif
 #endif
 
+#if QT_VERSION >= 0x040600
+#include <QAbstractAnimation>
+#include <QAbstractState>
+#ifdef QT_QTOPENGL
+#include <QGLShader>
+#endif
+#endif
+
 #include <smoke.h>
 #include "type-handlers.hpp"
 #undef isNull // R causing trouble again
-
-bool
-matches_arg(Smoke *smoke, Smoke::Index meth, Smoke::Index argidx,
-            const char *argtype)
-{
-  Smoke::Index *arg = smoke->argumentList + smoke->methods[meth].args + argidx;
-  SmokeType type = SmokeType(smoke, *arg);
-  if (type.name() && qstrcmp(type.name(), argtype) == 0) {
-    return true;
-  }
-  return false;
-}
 
 template <class T>
 static void marshal_it(MethodCall *m)
@@ -258,8 +300,6 @@ int scoreArg_basetype(SEXP arg, const SmokeType &type) {
   SEXP value = arg;
   int rtype = TYPEOF(value);
   unsigned short elem = type.elem();
-  QByteArray className =
-    QByteArray(CHAR(asChar(getAttrib(value, R_ClassSymbol))));
   // FIXME: we are not considering pointers to primitives;
   // We do not know whether they are "out" params or arrays
   switch(rtype) { // try the simple cases first
@@ -332,10 +372,6 @@ int scoreArg_basetype(SEXP arg, const SmokeType &type) {
       break;
     }
     break;
-  case LGLSXP:
-    if (elem == Smoke::t_bool)
-      score = 3;
-    break;
   case STRSXP:
     if (elem == Smoke::t_char && strlen(CHAR(asChar(value))) == 1)
       score = 2;
@@ -344,8 +380,8 @@ int scoreArg_basetype(SEXP arg, const SmokeType &type) {
     if (elem == Smoke::t_class) {
       SmokeObject *o = SmokeObject::fromSexp(value);
       if (o) {
-        const char *smokeClass = o->smoke()->classes[type.classId()].className;
-        if (className == smokeClass)
+        const char *smokeClass = type.name();
+        if (o->className() == smokeClass)
           score = 3;
         else if (o->instanceOf(smokeClass))
           score = 2;
@@ -361,8 +397,19 @@ int scoreArg_basetype(SEXP arg, const SmokeType &type) {
   }
   return score;
 }
-void scoreArg_unknown(SEXP /*arg*/, const SmokeType &type) {
+
+int scoreArg_byClass(SEXP arg, const SmokeType &type) {
+  const char *className = CHAR(asChar(getAttrib(arg, R_ClassSymbol)));
+  if (!qstrcmp(type.name(), className))
+    return 3;
+  if (inherits(arg, type.name()))
+    return 2;
+  return 0;
+}
+
+int scoreArg_unknown(SEXP /*arg*/, const SmokeType &type) {
   error("unable to score argument of type '%s'", type.name());
+  return 0;
 }
 
 void marshal_void(MethodCall * /*m*/) {}
@@ -405,16 +452,6 @@ static void marshal_doubleR(MethodCall *m) {
     m->unsupported();
     break;
   }
-}
-
-QByteArray*
-qbytearrayFromRString(SEXP rstring) {
-  return new QByteArray(CHAR(asChar(rstring)));
-}
-
-SEXP
-rstringFromQByteArray(QByteArray * s) {
-  return mkString(s->data());
 }
 
 static void marshal_QString(MethodCall *m) {
@@ -470,54 +507,13 @@ static int scoreArg_QString(SEXP arg, const SmokeType &/*type*/) {
   else return 0;
 }
 
-static void marshal_QByteArray(MethodCall *m) {
-  switch(m->mode()) {
-  case MethodCall::RToSmoke:
-    {
-      QByteArray* s = 0;
-      if( m->sexp() != R_NilValue) {
-        s = qbytearrayFromRString(m->sexp());
-      } else {
-        s = new QByteArray();
-      }
-
-      m->item().s_voidp = s;
-      m->marshal();
-
-      if (!m->type().isConst() && m->sexp() != R_NilValue && s != 0 &&
-          !s->isNull())
-      {
-        m->setSexp(rstringFromQByteArray(s));
-      }
-
-      if (s != 0 && m->cleanup()) {
-        delete s;
-      }
-    }
-    break;
-
-  case MethodCall::SmokeToR:
-    {
-      QByteArray *s = (QByteArray*)m->item().s_voidp;
-      if(s) {
-        if (s->isNull()) {
-          m->setSexp(R_NilValue);
-        } else {
-          m->setSexp(rstringFromQByteArray(s));
-        }
-        if(m->cleanup()) {
-          delete s;
-        }
-      } else {
-        m->setSexp(R_NilValue);
-      }
-    }
-    break;
-
-  default:
-    m->unsupported();
-    break;
+static int scoreArg_QStringList(SEXP arg, const SmokeType &/*type*/) {
+  if (TYPEOF(arg) == STRSXP) {
+    if (length(arg) > 1)
+      return 3;
+    return 2;
   }
+  else return 0;
 }
 
 void marshal_QDBusVariant(MethodCall *m) {
@@ -758,7 +754,7 @@ void marshal_QByteArrayList(MethodCall *m) {
   }
 }
 
-void marshal_QListCharStar(MethodCall *m) {
+void marshal_CharStarList(MethodCall *m) {
   switch(m->mode()) {
   case MethodCall::RToSmoke:
     {
@@ -802,7 +798,7 @@ void marshal_QListCharStar(MethodCall *m) {
   }
 }
 
-void marshal_QListInt(MethodCall *m) {
+void marshal_intList(MethodCall *m) {
   switch(m->mode()) {
   case MethodCall::RToSmoke:
     {
@@ -860,7 +856,7 @@ void marshal_QListInt(MethodCall *m) {
 }
 
 
-void marshal_QListUInt(MethodCall *m) {
+void marshal_uintList(MethodCall *m) {
   switch(m->mode()) {
   case MethodCall::RToSmoke:
     {
@@ -917,7 +913,7 @@ void marshal_QListUInt(MethodCall *m) {
   }
 }
 
-void marshal_QListqreal(MethodCall *m) {
+void marshal_doubleList(MethodCall *m) {
   switch(m->mode()) {
   case MethodCall::RToSmoke:
     {
@@ -974,7 +970,7 @@ void marshal_QListqreal(MethodCall *m) {
   }
 }
 
-void marshal_QVectorqreal(MethodCall *m) {
+void marshal_doubleVector(MethodCall *m) {
   switch(m->mode()) {
   case MethodCall::RToSmoke:
     {
@@ -1031,7 +1027,7 @@ void marshal_QVectorqreal(MethodCall *m) {
   }
 }
 
-void marshal_QVectorint(MethodCall *m) {
+void marshal_intVector(MethodCall *m) {
   switch(m->mode()) {
   case MethodCall::RToSmoke:
     {
@@ -1073,6 +1069,64 @@ void marshal_QVectorint(MethodCall *m) {
       SEXP av = allocVector(INTSXP, valuelist->size());
       for (int i = 0; i < length(av); i++)
         INTEGER(av)[i] = valuelist->at(i);
+      m->setSexp(av);
+      
+      m->marshal();
+
+      if (m->cleanup()) {
+        delete valuelist;
+      }
+    }
+    break;
+  default:
+    m->unsupported();
+    break;
+  }
+}
+
+void marshal_uintVector(MethodCall *m) {
+  switch(m->mode()) {
+  case MethodCall::RToSmoke:
+    {
+      SEXP list = m->sexp();
+      if (TYPEOF(list) != REALSXP) {
+        m->item().s_voidp = 0;
+        break;
+      }
+      int count = length(list);
+      QVector<unsigned int> *valuelist = new QVector<unsigned int>;
+      long i;
+      for(i = 0; i < count; i++) {
+        valuelist->append(REAL(list)[i]);
+      }
+
+      m->item().s_voidp = valuelist;
+      m->marshal();
+      
+      if (!m->type().isConst()) {
+        list = allocVector(REALSXP, count);
+        for (int i = 0; i < count; i++)
+          REAL(list)[i] = valuelist->at(i);
+        m->setSexp(list);
+      }
+
+      if (m->cleanup()) {
+        delete valuelist;
+      }
+    }
+    break;
+  case MethodCall::SmokeToR:
+    {
+      QVector<unsigned int> *valuelist =
+        (QVector<unsigned int>*)m->item().s_voidp;
+      if(!valuelist) {
+        m->setSexp(R_NilValue);
+        break;
+      }
+
+      SEXP av = allocVector(REALSXP, valuelist->size());
+      for (int i = 0; i < length(av); i++)
+        REAL(av)[i] = valuelist->at(i);
       m->setSexp(av);
       
       m->marshal();
@@ -1226,7 +1280,7 @@ void marshal_QMapQStringQVariant(MethodCall *m) {
   }
 }
 
-void marshal_QMapIntQVariant(MethodCall *m) {
+void marshal_QMapintQVariant(MethodCall *m) {
   switch(m->mode()) {
   case MethodCall::RToSmoke:
     {
@@ -1309,32 +1363,6 @@ void marshal_voidP_array(MethodCall *m) {
   }
 }
 
-void marshal_QRgb_array(MethodCall *m) {
-  switch(m->mode()) {
-  case MethodCall::RToSmoke:
-    {
-      SEXP list = m->sexp();
-      if (TYPEOF(list) != INTSXP) {
-        m->item().s_voidp = 0;
-        break;
-      }
-      int count = length(list);
-      QRgb *rgb = new QRgb[count + 2];
-      int i, *rrgb = INTEGER(list);
-      for(i = 0; i < count; i++, rrgb += 3)
-        rgb[i] = (rrgb[0] << 16) + (rrgb[1] << 8) + rrgb[2];
-      m->item().s_voidp = rgb;
-      m->marshal();
-    }
-    break;
-  case MethodCall::SmokeToR:
-    // TODO?
-  default:
-    m->unsupported();
-    break;
-  }
-}
-
 void marshal_QPairQStringQStringList(MethodCall *m) {
   switch(m->mode()) {
   case MethodCall::RToSmoke: 
@@ -1400,54 +1428,51 @@ void marshal_QPairQStringQStringList(MethodCall *m) {
   }
 }
 
-void marshal_QPairqrealQColor(MethodCall *m) {
+void marshal_QPairdoubleQColorList(MethodCall *m) {
   switch(m->mode()) {
   case MethodCall::RToSmoke:
     {
       SEXP list = m->sexp();
-      if (TYPEOF(list) != VECSXP || length(list) != 2) {
+      if (TYPEOF(list) != VECSXP) {
         m->item().s_voidp = 0;
         break;
       }
-
-      qreal real;
-      SEXP item1 = VECTOR_ELT(list, 0);
-      if (TYPEOF(item1) != REALSXP) {
-        real = 0;
-      } else {
-        real = asReal(item1);
+      QList<QPair<double,QColor> > * pairlist =
+        new QList<QPair<double,QColor> >();
+      for (int i = 0; i < length(list); i++) {
+        SEXP pair = VECTOR_ELT(list, i);
+        pairlist->append(QPair<double,QColor>(asReal(VECTOR_ELT(pair, 0)),
+                                              asQColor(VECTOR_ELT(pair, 1))));
       }
-		
-      SEXP item2 = VECTOR_ELT(list, 1);
-      		
-      QPair<qreal,QColor> * qpair =
-        new QPair<qreal,QColor>(real, asQColor(item2));
-      m->item().s_voidp = qpair;
+      m->item().s_voidp = pairlist;
       m->marshal();
-
       if (m->cleanup()) {
-        delete qpair;
+        delete pairlist;
       }
     }
     break;
   case MethodCall::SmokeToR:
     {
-      QPair<qreal,QColor> * qpair =
-        static_cast<QPair<qreal,QColor> * >(m->item().s_voidp); 
-      if (qpair == 0) {
+      QList<QPair<double,QColor> > * qpairlist =
+        static_cast<QList<QPair<double,QColor> >* >(m->item().s_voidp); 
+      if (qpairlist == 0) {
         m->setSexp(R_NilValue);
       }
 
       SEXP av;
-      PROTECT(av = allocVector(VECSXP, 2));
-      SET_VECTOR_ELT(av, 0, ScalarReal(qpair->first));
-      SET_VECTOR_ELT(av, 1, asRColor(qpair->second));
-      UNPROTECT(1);
+      PROTECT(av = allocVector(VECSXP, qpairlist->size()));
+      for (int i = 0; i < length(av); i++) {
+        SEXP pair = allocVector(VECSXP, 2);
+        SET_VECTOR_ELT(av, i, pair);
+        SET_VECTOR_ELT(pair, 0, ScalarReal(qpairlist->at(i).first));
+        SET_VECTOR_ELT(pair, 1, asRColor(qpairlist->at(i).second));
+      }
       
       m->setSexp(av);
       if (m->cleanup()) {
         //			delete qpair;
       }
+      UNPROTECT(1);
     }
     break;
   default:
@@ -1495,10 +1520,10 @@ DEF_LIST_MARSHALLER( QTextFrameList, QList<QTextFrame*>, QTextFrame )
 DEF_LIST_MARSHALLER( QTreeWidgetItemList, QList<QTreeWidgetItem*>, QTreeWidgetItem )
 DEF_LIST_MARSHALLER( QTreeWidgetList, QList<QTreeWidget*>, QTreeWidget )
 DEF_LIST_MARSHALLER( QWidgetList, QList<QWidget*>, QWidget )
-DEF_LIST_MARSHALLER( QWidgetPtrList, QList<QWidget*>, QWidget )
 
 #if QT_VERSION >= 0x40200
 DEF_LIST_MARSHALLER( QGraphicsItemList, QList<QGraphicsItem*>, QGraphicsItem )
+DEF_LIST_MARSHALLER( QGraphicsViewList, QList<QGraphicsView*>, QGraphicsView )
 DEF_LIST_MARSHALLER( QStandardItemList, QList<QStandardItem*>, QStandardItem )
 DEF_LIST_MARSHALLER( QUndoStackList, QList<QUndoStack*>, QUndoStack )
 #endif
@@ -1535,6 +1560,7 @@ DEF_VALUELIST_MARSHALLER( QTextEditExtraSelectionsList, QList<QTextEdit::ExtraSe
 DEF_VALUELIST_MARSHALLER( QTextFormatVector, QVector<QTextFormat>, QTextFormat )
 DEF_VALUELIST_MARSHALLER( QTextLayoutFormatRangeList, QList<QTextLayout::FormatRange>, QTextLayout::FormatRange)
 DEF_VALUELIST_MARSHALLER( QTextLengthVector, QVector<QTextLength>, QTextLength )
+DEF_VALUELIST_MARSHALLER( QSizeFList, QList<QSizeF>, QSizeF )
 DEF_VALUELIST_MARSHALLER( QUrlList, QList<QUrl>, QUrl )
 DEF_VALUELIST_MARSHALLER( QVariantList, QList<QVariant>, QVariant )
 DEF_VALUELIST_MARSHALLER( QVariantVector, QVector<QVariant>, QVariant )
@@ -1553,206 +1579,215 @@ DEF_VALUELIST_MARSHALLER( QXmlStreamNotationDeclarations, QVector<QXmlStreamNota
 #endif
 
 #if QT_VERSION >= 0x40400
+DEF_LIST_MARSHALLER( QGraphicsWidgetList, QList<QGraphicsWidget*>,
+                     QGraphicsWidget )
 #ifdef QT_QTNETWORK
 DEF_VALUELIST_MARSHALLER( QNetworkCookieList, QList<QNetworkCookie>, QNetworkCookie )
 #endif
 DEF_VALUELIST_MARSHALLER( QPrinterInfoList, QList<QPrinterInfo>, QPrinterInfo )
 #endif
 
+#if QT_VERSION >= 0x40600
+DEF_LIST_MARSHALLER( QAbstractAnimationList, QList<QAbstractAnimation*>, QAbstractAnimation )
+DEF_LIST_MARSHALLER( QAbstractStateList, QList<QAbstractState*>, QAbstractState )
+DEF_LIST_MARSHALLER( QDockWidgetList, QList<QDockWidget*>, QDockWidget )
+DEF_LIST_MARSHALLER( QGraphicsTransformList, QList<QGraphicsTransform*>,
+                     QGraphicsTransform )
+#ifdef QT_QTOPENGL
+DEF_LIST_MARSHALLER( QGLShaderList, QList<QGLShader*>, QGLShader )
+#endif
+#endif
+
+/* Define marshallers for value types */
+DEF_VALUE_MARSHALLER_SCORER(RectF)
+DEF_VALUE_MARSHALLER_SCORER(ByteArray)
+
 Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
+  { "void", marshal_void, NULL },
   { "bool*", marshal_it<bool *>, NULL },
   { "bool&", marshal_it<bool *>, NULL },
   { "char**", marshal_charP_array, NULL },
   { "char*", marshal_it<char *>, NULL },
-  //{ "char*", marshal_it<char *>, NULL },
-  { "DOM::DOMTimeStamp", marshal_it<long long>, NULL },
+  { "const char*", marshal_it<char *>, NULL },
+  { "const char* const *", marshal_it<char *>, NULL },
+  // TODO: integrate with char** above, this is a reference to single string
+  //{ "char*&", marshal_it<char **>, NULL },
+  { "char&", marshal_it<char *>, NULL },
+  { "signed char&", marshal_it<char *>, NULL },
   { "double*", marshal_doubleR, NULL },
   { "double&", marshal_doubleR, NULL },
+  // TODO { "float&", marshal_it<float *>, NULL },
   { "int*", marshal_it<int *>, NULL },
+  { "const int*", marshal_it<int *>, NULL },
   { "int&", marshal_it<int *>, NULL },
-  { "KIO::filesize_t", marshal_it<long long>, NULL },
-  { "long long int", marshal_it<long long>, NULL },
-  { "long long int&", marshal_it<long long>, NULL },
-  { "QDBusVariant", marshal_QDBusVariant, NULL },
-  { "QDBusVariant&", marshal_QDBusVariant, NULL },
-  { "QList<QFileInfo>", marshal_QFileInfoList, NULL },
-  { "QFileInfoList", marshal_QFileInfoList, NULL },
-  { "QGradiantStops", marshal_QPairqrealQColor, NULL },
-  { "QGradiantStops&", marshal_QPairqrealQColor, NULL },
+  { "signed int&", marshal_it<int *>, NULL },
+  // BUG: it looks like Smoke marks "long long" as a long, WRONG
+  // TODO { "long*", marshal_it<long *>, NULL },
+  // TODO { "signed long&", marshal_it<long *>, NULL },
+  // TODO { "unsigned long&", marshal_it<long *>, NULL },
+  // TODO { "short&", marshal_it<short *>, NULL },
+  // TODO { "signed short&", marshal_it<short *>, NULL },
+  // TODO { "unsigned short&", marshal_it<short *>, NULL },
+  { "long long", marshal_it<long long>, NULL },
+  { "long long&", marshal_it<long long>, NULL },
+  { "unsigned long long&", marshal_it<long long>, NULL },
+  { "long long*", marshal_it<long long>, NULL },
   { "unsigned int&", marshal_it<unsigned int *>, NULL },
-  { "quint32&", marshal_it<unsigned int *>, NULL },
-  { "uint&", marshal_it<unsigned int *>, NULL },
-  { "qint32&", marshal_it<int *>, NULL },
-  { "qint64", marshal_it<long long>, NULL },
-  { "qint64&", marshal_it<long long>, NULL },
-  { "QList<const char*>", marshal_QListCharStar, NULL },
-  { "QList<int>", marshal_QListInt, NULL },
-  { "QList<int>&", marshal_QListInt, NULL },
-  { "QList<uint>", marshal_QListUInt, NULL },
-  { "QList<uint>&", marshal_QListUInt, NULL },
-  { "QList<QAbstractButton*>", marshal_QAbstractButtonList, NULL },
-  { "QList<QActionGroup*>", marshal_QActionGroupList, NULL },
-  { "QList<QAction*>", marshal_QActionList, NULL },
-  { "QList<QAction*>&", marshal_QActionList, NULL },
-  { "QList<QByteArray>", marshal_QByteArrayList, NULL },
-  { "QList<QByteArray>*", marshal_QByteArrayList, NULL },
-  { "QList<QByteArray>&", marshal_QByteArrayList, NULL },
-#ifdef QT_QTNETWORK
-  { "QList<QHostAddress>", marshal_QHostAddressList, NULL },
-  { "QList<QHostAddress>&", marshal_QHostAddressList, NULL },
+  { "const unsigned int*", marshal_it<unsigned int *>, NULL },
+  { "signed int&", marshal_it<int *>, NULL },
+  { "unsigned char*", marshal_it<unsigned char *>, NULL },
+  // TODO { "unsigned char&", marshal_it<unsigned char *>, NULL },
+  { "void**", marshal_voidP_array, NULL },
+  { "FILE*", marshal_voidP, NULL },
+  { "const void*", marshal_voidP, NULL },
+  { "size_t", marshal_it<unsigned int>, NULL },
+  { "GLenum", marshal_it<int *>, NULL },
+  // TODO: { "GLfloat", marshal_it<float *>, NULL },
+  { "GLint", marshal_it<int *>, NULL },
+  { "GLuint", marshal_it<unsigned int *>, NULL },
+  { "GLbitfield", marshal_it<unsigned int *>, NULL },
+  { "QList<const char*>", marshal_CharStarList, NULL },
+  { "const QString", marshal_QString, NULL },
+#ifdef QT_QTDBUS
+  TYPE_HANDLER_ENTRY_VALUE(QDBusVariant),
 #endif
-  { "QList<QImageTextKeyLang>", marshal_QImageTextKeyLangList, NULL },
-  { "QList<QKeySequence>", marshal_QKeySequenceList, NULL },
-  { "QList<QKeySequence>&", marshal_QKeySequenceList, NULL },
-  { "QList<QListWidgetItem*>", marshal_QListWidgetItemList, NULL },
-  { "QList<QListWidgetItem*>&", marshal_QListWidgetItemList, NULL },
-  { "QList<QModelIndex>", marshal_QModelIndexList, NULL },
-  { "QList<QModelIndex>&", marshal_QModelIndexList, NULL },
+  TYPE_HANDLER_ENTRY_PAIRLIST(double, QColor),
+  // TODO:  TYPE_HANDLER_ENTRY_PAIRVECTOR(double, QColor),
+  // TODO:  TYPE_HANDLER_ENTRY_PAIRVECTOR(double, QVariant),
+  TYPE_HANDLER_ENTRY_VALUELIST(int),
+  TYPE_HANDLER_ENTRY_VALUELIST(uint),
+  TYPE_HANDLER_ENTRY_LIST(QAbstractAnimation),
+  TYPE_HANDLER_ENTRY_LIST(QAbstractState),
+  TYPE_HANDLER_ENTRY_LIST(QAbstractButton),
+  TYPE_HANDLER_ENTRY_LIST(QAction),
+  TYPE_HANDLER_ENTRY_VALUELIST(QByteArray),
+  TYPE_HANDLER_ENTRY_LIST(QDockWidget),
+  TYPE_HANDLER_ENTRY_VALUELIST(QFileInfo),
+  TYPE_HANDLER_ENTRY_VALUELIST(QFileInfo),
+#ifdef QT_QTOPENGL
+  TYPE_HANDLER_ENTRY_LIST(QGLShader),
+#endif    
 #ifdef QT_QTNETWORK
-  { "QList<QNetworkAddressEntry>", marshal_QNetworkAddressEntryList, NULL },
-  { "QList<QNetworkInterface>", marshal_QNetworkInterfaceList, NULL },
+  TYPE_HANDLER_ENTRY_VALUELIST(QHostAddress),
 #endif
-  { "QList<QPair<QString,QString> >", marshal_QPairQStringQStringList, NULL },
-  { "QList<QPair<QString,QString> >&", marshal_QPairQStringQStringList, NULL },
-  { "QList<QPixmap>", marshal_QPixmapList, NULL },
-  { "QList<QPolygonF>", marshal_QPolygonFList, NULL },
-  { "QList<QRectF>", marshal_QRectFList, NULL },
-  { "QList<QRectF>&", marshal_QRectFList, NULL },
-  { "QList<qreal>", marshal_QListqreal, NULL },
-  { "QList<double>", marshal_QListqreal, NULL },
-  { "QwtValueList", marshal_QListqreal, NULL },
-  { "QwtValueList&", marshal_QListqreal, NULL },
-  { "QList<double>&", marshal_QListqreal, NULL },
-  { "QList<QObject*>", marshal_QObjectList, NULL },
-  { "QList<QObject*>&", marshal_QObjectList, NULL },
-  { "QList<QTableWidgetItem*>", marshal_QTableWidgetItemList, NULL },
-  { "QList<QTableWidgetItem*>&", marshal_QTableWidgetItemList, NULL },
-  { "QList<QTableWidgetSelectionRange>", marshal_QTableWidgetSelectionRangeList, NULL },
-  { "QList<QTextBlock>", marshal_QTextBlockList, NULL },
+  TYPE_HANDLER_ENTRY_VALUELIST(QImageTextKeyLang),
+  TYPE_HANDLER_ENTRY_VALUELIST(QKeySequence),
+  TYPE_HANDLER_ENTRY_VALUELIST(QModelIndex),
+  TYPE_HANDLER_ENTRY_LIST(QListWidgetItem),
+#ifdef QT_QTNETWORK
+  TYPE_HANDLER_ENTRY_VALUELIST(QNetworkAddressEntry),
+  TYPE_HANDLER_ENTRY_VALUELIST(QNetworkInterface),
+#endif
+  TYPE_HANDLER_ENTRY_PAIRLIST(QString, QString),
+  //TODO:TYPE_HANDLER_ENTRY_PAIRLIST(QByteArray, QByteArray),
+  //TODO:TYPE_HANDLER_ENTRY_PAIRLIST(double, QPointF),
+  //TODO:TYPE_HANDLER_ENTRY_PAIRLIST(double, double),
+  //TODO:TYPE_HANDLER_ENTRY_PAIRLIST(int, int),
+  TYPE_HANDLER_ENTRY_LIST(QPolygonF),
+  TYPE_HANDLER_ENTRY_VALUELIST(QRectF),
+  TYPE_HANDLER_ENTRY_VALUELIST(QSizeF),
+  TYPE_HANDLER_ENTRY_VALUELIST(double),
+  TYPE_HANDLER_ENTRY_LIST(QObject),
+  TYPE_HANDLER_ENTRY_LIST(QTableWidgetItem),
+  TYPE_HANDLER_ENTRY_VALUELIST(QTableWidgetSelectionRange),
+  TYPE_HANDLER_ENTRY_VALUELIST(QTextBlock),
+  /* FIXME: QLists of enums should not become R lists of externalptrs
   { "QList<QTextEdit::ExtraSelection>", marshal_QTextEditExtraSelectionsList, NULL },
   { "QList<QTextEdit::ExtraSelection>&", marshal_QTextEditExtraSelectionsList, NULL },
-  { "QList<QTextFrame*>", marshal_QTextFrameList, NULL },
+  TYPE_HANDLER_ENTRY_LIST(QTextFrame),
   { "QList<QTextLayout::FormatRange>", marshal_QTextLayoutFormatRangeList, NULL },
-  { "QList<QTextLayout::FormatRange>&", marshal_QTextLayoutFormatRangeList, NULL },
-  { "QList<QTreeWidgetItem*>", marshal_QTreeWidgetItemList, NULL },
-  { "QList<QTreeWidgetItem*>&", marshal_QTreeWidgetItemList, NULL },
-  { "QList<QUndoStack*>", marshal_QUndoStackList, NULL },
-  { "QList<QUndoStack*>&", marshal_QUndoStackList, NULL },
-  { "QList<QUrl>", marshal_QUrlList, NULL },
-  { "QList<QUrl>&", marshal_QUrlList, NULL },
-  { "QList<QVariant>", marshal_QVariantList, NULL },
-  { "QList<QVariant>&", marshal_QVariantList, NULL },
-  { "QList<QWidget*>", marshal_QWidgetPtrList, NULL },
-  { "QList<QWidget*>&", marshal_QWidgetPtrList, NULL },
-  { "qlonglong", marshal_it<long long>, NULL },
-  { "qlonglong&", marshal_it<long long>, NULL },
-  { "QMap<int,QVariant>", marshal_QMapIntQVariant, NULL },
-  { "QMap<int,QVariant>&", marshal_QMapIntQVariant, NULL },
-  { "QMap<QString,QString>", marshal_QMapQStringQString, NULL },
-  { "QMap<QString,QString>&", marshal_QMapQStringQString, NULL },
-  { "QMap<QString,QVariant>", marshal_QMapQStringQVariant, NULL },
-  // FIXME: need QHash variant for the above
-  { "QMap<QString,QVariant>&", marshal_QMapQStringQVariant, NULL },
-  /*  { "QVariant", marshal_QVariant, NULL }, strangely a class type
-      { "QVariant&", marshal_QVariant, NULL },
-      { "QVariant*", marshal_QVariant, NULL },
+  { "QList<QTextLayout::FormatRange>&",
+  marshal_QTextLayoutFormatRangeList, NULL },
+  
+  Additional lists of enums:
+  QInputMethodEvent::Attribute,
+  QTextOption::Tab,
+  QWizard::WizardButton,
+  QFontDatabase::WritingSystem, 
+  QLocale::Country,
+  QPrinter::PageSize,
+  QAbstractTextDocumentLayout::Selection,
+  And vectors: QAbstractTextDocumentLayout::Selection, QTextLayout::FormatRange
   */
-  { "QVariantMap", marshal_QMapQStringQVariant, NULL },
-  { "QVariantMap&", marshal_QMapQStringQVariant, NULL },
-  { "QModelIndexList", marshal_QModelIndexList, NULL },
-  { "QModelIndexList&", marshal_QModelIndexList, NULL },
-  { "QObjectList", marshal_QObjectList, NULL },
-  { "QObjectList&", marshal_QObjectList, NULL },
-  { "QPair<int,int>&", marshal_QPairintint, NULL },
-  { "Q_PID", marshal_it<Q_PID>, NULL },
-  { "qreal*", marshal_doubleR, NULL },
-  { "qreal&", marshal_doubleR, NULL },
-  { "QRgb*", marshal_QRgb_array, NULL },
-  { "QStringList", marshal_QStringList, NULL },
-  { "QStringList*", marshal_QStringList, NULL },
-  { "QStringList&", marshal_QStringList, NULL },
-  { "QString", marshal_QString, scoreArg_QString },
-  { "QString*", marshal_QString, scoreArg_QString },
-  { "QString&", marshal_QString, scoreArg_QString },
-  { "QByteArray", marshal_QByteArray, NULL },
-  { "QByteArray*", marshal_QByteArray, NULL },
-  { "QByteArray&", marshal_QByteArray, NULL },
-  { "quint64", marshal_it<unsigned long long>, NULL },
-  { "quint64&", marshal_it<unsigned long long>, NULL },
-  { "qulonglong", marshal_it<unsigned long long>, NULL },
-  { "qulonglong&", marshal_it<unsigned long long>, NULL },
-  { "QVariantList&", marshal_QVariantList, NULL },
-  { "QVector<int>", marshal_QVectorint, NULL },
-  { "QVector<int>&", marshal_QVectorint, NULL },
-  { "QVector<QColor>", marshal_QColorVector, NULL },
-  { "QVector<QColor>&", marshal_QColorVector, NULL },
-  { "QVector<QLineF>", marshal_QLineFVector, NULL },
-  { "QVector<QLineF>&", marshal_QLineFVector, NULL },
-  { "QVector<QLine>", marshal_QLineVector, NULL },
-  { "QVector<QLine>&", marshal_QLineVector, NULL },
-  { "QVector<QPointF>", marshal_QPointFVector, NULL },
-  { "QVector<QPointF>&", marshal_QPointFVector, NULL },
-  { "QVector<QPoint>", marshal_QPointVector, NULL },
-  { "QVector<QPoint>&", marshal_QPointVector, NULL },
-  { "QVector<qreal>", marshal_QVectorqreal, NULL },
-  { "QVector<qreal>&", marshal_QVectorqreal, NULL },
-  { "QVector<QRectF>", marshal_QRectFVector, NULL },
-  { "QVector<QRectF>&", marshal_QRectFVector, NULL },
-  { "QVector<QRect>", marshal_QRectVector, NULL },
-  { "QVector<QRect>&", marshal_QRectVector, NULL },
-  { "QVector<QRgb>", marshal_QRgbVector, NULL },
-  { "QVector<QRgb>&", marshal_QRgbVector, NULL },
-  { "QVector<QTextFormat>", marshal_QTextFormatVector, NULL },
-  { "QVector<QTextFormat>&", marshal_QTextFormatVector, NULL },
-  { "QVector<QTextLength>", marshal_QTextLengthVector, NULL },
-  { "QVector<QTextLength>&", marshal_QTextLengthVector, NULL },
-  { "QVector<QVariant>", marshal_QVariantVector, NULL },
-  { "QVector<QVariant>&", marshal_QVariantVector, NULL },
-  { "QWidgetList", marshal_QWidgetList, NULL },
-  { "QWidgetList&", marshal_QWidgetList, NULL },
-  { "QwtArray<double>", marshal_QVectorqreal, NULL },
-  { "QwtArray<double>&", marshal_QVectorqreal, NULL },
-  { "QwtArray<int>", marshal_QVectorint, NULL },
-  { "QwtArray<int>&", marshal_QVectorint, NULL },
-  { "signed int&", marshal_it<int *>, NULL },
-  { "uchar*", marshal_it<unsigned char *>, NULL },
-  //{ "uchar*", marshal_it<unsigned char *>, NULL },
-  { "unsigned long long int", marshal_it<long long>, NULL },
-  { "unsigned long long int&", marshal_it<long long>, NULL },
-  { "void", marshal_void, NULL },
-  { "void**", marshal_voidP_array, NULL },
-  { "WId", marshal_it<WId>, NULL },
+  TYPE_HANDLER_ENTRY_LIST(QTreeWidgetItem),
+  TYPE_HANDLER_ENTRY_LIST(QUndoStack),
+  TYPE_HANDLER_ENTRY_VALUELIST(QUrl),
+  TYPE_HANDLER_ENTRY_VALUELIST(QVariant),
+  TYPE_HANDLER_ENTRY_LIST(QWidget),
+  TYPE_HANDLER_ENTRY_MAP(int, QVariant),
+  TYPE_HANDLER_ENTRY_MAP(QString, QVariant),
+  // FIXME: need QHash variant for the above, and int->QByteArray
+  TYPE_HANDLER_ENTRY_MAP(QString, QString),
+  // FIXME: need QMap marshaller for QDate->QTextCharFormat
+  TYPE_HANDLER_ENTRY_PAIR(int, int),
+  TYPE_HANDLER_ENTRY_VALUE(QStringList),
+  TYPE_HANDLER_ENTRY_VALUE(QString),
+  TYPE_HANDLER_ENTRY_VALUEVECTOR(QColor),
+  TYPE_HANDLER_ENTRY_VALUEVECTOR(QLine),
+  TYPE_HANDLER_ENTRY_VALUEVECTOR(QLineF),
+  TYPE_HANDLER_ENTRY_VALUEVECTOR(QPointF),
+  TYPE_HANDLER_ENTRY_VALUEVECTOR(QPoint),
+  TYPE_HANDLER_ENTRY_VALUEVECTOR(int),
+  TYPE_HANDLER_ENTRY_VALUEVECTOR(QRectF),
+  TYPE_HANDLER_ENTRY_VALUEVECTOR(QRect),
+  TYPE_HANDLER_ENTRY_VALUEVECTOR(QTextFormat),
+  TYPE_HANDLER_ENTRY_VALUEVECTOR(QTextLength),
+  TYPE_HANDLER_ENTRY_VALUEVECTOR(QVariant),
+  TYPE_HANDLER_ENTRY_VALUEVECTOR(double),
+  // TODO: types with whitespace are an issue, but not after moving to templates
+  //TYPE_HANDLER_ENTRY_VECTOR_FULL(unsigned int, uint),
 #if QT_VERSION >= 0x40200
-  { "QList<QGraphicsItem*>", marshal_QGraphicsItemList, NULL },
-  { "QList<QGraphicsItem*>&", marshal_QGraphicsItemList, NULL },
-  { "QList<QStandardItem*>", marshal_QStandardItemList, NULL },
-  { "QList<QStandardItem*>&", marshal_QStandardItemList, NULL },
-  { "QList<QUndoStack*>", marshal_QUndoStackList, NULL },
-  { "QList<QUndoStack*>&", marshal_QUndoStackList, NULL },
+  TYPE_HANDLER_ENTRY_LIST(QGraphicsItem),
+  TYPE_HANDLER_ENTRY_LIST(QGraphicsView),
+  TYPE_HANDLER_ENTRY_LIST(QGraphicsWidget),
+  TYPE_HANDLER_ENTRY_LIST(QStandardItem),
 #endif
 #if QT_VERSION >= 0x40300
-  { "QList<QMdiSubWindow*>", marshal_QMdiSubWindowList, NULL },
+  TYPE_HANDLER_ENTRY_LIST(QMdiSubWindow),
 #ifdef QT_QTNETWORK
-  { "QList<QSslCertificate>", marshal_QSslCertificateList, NULL },
-  { "QList<QSslCertificate>&", marshal_QSslCertificateList, NULL },
-  { "QList<QSslCipher>", marshal_QSslCipherList, NULL },
-  { "QList<QSslCipher>&", marshal_QSslCipherList, NULL },
-  { "QList<QSslError>", marshal_QSslErrorList, NULL },
-  { "QList<QSslError>&", marshal_QSslErrorList, NULL },
+  TYPE_HANDLER_ENTRY_VALUELIST(QSslCertificate),
+  TYPE_HANDLER_ENTRY_VALUELIST(QSslCipher),
+  TYPE_HANDLER_ENTRY_VALUELIST(QSslError),
 #endif
-#ifdef QT_QTXML  
-  { "QXmlStreamEntityDeclarations", marshal_QXmlStreamEntityDeclarations, NULL },
-  { "QXmlStreamNamespaceDeclarations", marshal_QXmlStreamNamespaceDeclarations, NULL },
-  { "QXmlStreamNotationDeclarations", marshal_QXmlStreamNotationDeclarations, NULL },
+#ifdef QT_QTXML
+  TYPE_HANDLER_ENTRY_VALUEVECTOR(QXmlStreamEntityDeclaration),
+  TYPE_HANDLER_ENTRY_VALUEVECTOR(QXmlStreamNamespaceDeclaration),
+  TYPE_HANDLER_ENTRY_VALUEVECTOR(QXmlStreamNotationDeclaration),
 #endif
 #endif
 #if QT_VERSION >= 0x040400
 #ifdef QT_QTNETWORK
-  { "QList<QNetworkCookie>", marshal_QNetworkCookieList, NULL },
-  { "QList<QNetworkCookie>&", marshal_QNetworkCookieList, NULL },
+  TYPE_HANDLER_ENTRY_VALUELIST(QNetworkCookie),
 #endif
-  { "QList<QPrinterInfo>", marshal_QPrinterInfoList, NULL },
+  TYPE_HANDLER_ENTRY_VALUELIST(QPrinterInfo),
 #endif
+#if QT_VERSION >= 0x40600
+    TYPE_HANDLER_ENTRY_LIST(QGraphicsTransform),
+#endif
+  TYPE_HANDLER_ENTRY_VALUE(QRectF),
+  /* TODO: support more of these
+  TYPE_HANDLER_ENTRY(QSizeF),
+  TYPE_HANDLER_ENTRY(QPointF),
+  TYPE_HANDLER_ENTRY(QSize),
+  TYPE_HANDLER_ENTRY(QPoint),
+  TYPE_HANDLER_ENTRY(QRect),
+  TYPE_HANDLER_ENTRY(QTransform),
+  TYPE_HANDLER_ENTRY(QColor),
+  TYPE_HANDLER_ENTRY(QVariant),
+  TYPE_HANDLER_ENTRY(QUrl),
+  */
+  /* TODO: implement marshal_QGenericMatrix<N,M,T>
+  TYPE_HANDLER_ENTRY_MATRIX(2, 2, double),
+  TYPE_HANDLER_ENTRY_MATRIX(2, 3, double),
+  TYPE_HANDLER_ENTRY_MATRIX(2, 4, double),
+  TYPE_HANDLER_ENTRY_MATRIX(3, 2, double),
+  TYPE_HANDLER_ENTRY_MATRIX(3, 2, double),
+  TYPE_HANDLER_ENTRY_MATRIX(3, 3, double),
+  TYPE_HANDLER_ENTRY_MATRIX(3, 4, double),
+  TYPE_HANDLER_ENTRY_MATRIX(4, 2, double),
+  TYPE_HANDLER_ENTRY_MATRIX(4, 3, double),
+  */
+  // FIXME: need QSet<QAccessible::Method>
   { 0, 0, NULL }
 };
 

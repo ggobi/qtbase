@@ -3,6 +3,8 @@
 #include "SmokeObject.hpp"
 #include "convert.hpp"
 
+#undef isNull
+
 SEXP asRVariant(QVariant variant) {
   SEXP ans = NULL;
   switch(variant.type()) {
@@ -302,7 +304,33 @@ SEXP asRStringArray(const char * const * strs) {
   return ans;
 }
 SEXP qstring2sexp(QString s) {
+  if (s.isNull())
+    return R_NilValue;
   return ScalarString(mkChar(s.toLocal8Bit().data()));
+}
+
+QByteArray
+asQByteArray(SEXP sexp) {
+  if (sexp == R_NilValue)
+    return QByteArray(0);
+  return QByteArray(CHAR(asChar(sexp)));
+}
+
+SEXP
+asRByteArray(QByteArray s) {
+  if (s.isNull())
+    return R_NilValue;
+  return mkString(s.data());
+}
+
+static void qtCast(SEXP sexp, const char *className) {
+  SEXP classes;
+  PROTECT(classes = allocVector(STRSXP, 3));
+  SET_STRING_ELT(classes, 0, mkChar(className));
+  SET_STRING_ELT(classes, 1, mkChar("RQtValue"));
+  SET_STRING_ELT(classes, 2, mkChar("RQtObject"));
+  setAttrib(sexp, R_ClassSymbol, classes);
+  UNPROTECT(1);
 }
 
 /* geometry */
@@ -314,7 +342,7 @@ SEXP asRRectF(QRectF rect) {
   REAL(rrect)[1] = rect.right();
   REAL(rrect)[2] = rect.top();
   REAL(rrect)[3] = rect.bottom();
-  setAttrib(rrect, R_ClassSymbol, mkString("QRectF"));
+  qtCast(rrect, "QRectF");
   return rrect;
 }
 QRectF asQRectF(SEXP r) {
@@ -336,7 +364,7 @@ SEXP asRMatrix(QMatrix matrix, bool inverted) {
     REAL(ans)[4] = matrix.m22();
     REAL(ans)[5] = matrix.dy();
   }
-  setAttrib(ans, R_ClassSymbol, mkString("QMatrix"));
+  qtCast(ans, "QMatrix");
   return ans;
 }
 QMatrix asQMatrix(SEXP m) {
@@ -348,7 +376,7 @@ QMatrix asQMatrix(SEXP m) {
 SEXP asRPointF(QPointF point) {
   SEXP rpoint = allocVector(REALSXP, 2);
   REAL(rpoint)[0] = point.x(); REAL(rpoint)[1] = point.y();
-  setAttrib(rpoint, R_ClassSymbol, mkString("QPointF"));
+  qtCast(rpoint, "QPointF");
   return rpoint;
 }
 QPointF asQPointF(SEXP p) {
@@ -359,7 +387,7 @@ QPointF asQPointF(SEXP p) {
 SEXP asRSizeF(QSizeF size) {
   SEXP rsize = allocVector(REALSXP, 2);
   REAL(rsize)[0] = size.width(); REAL(rsize)[1] = size.height();
-  setAttrib(rsize, R_ClassSymbol, mkString("QSizeF"));
+  qtCast(rsize, "QSizeF");
   return rsize;
 }
 QSizeF asQSizeF(SEXP s) {
@@ -388,6 +416,7 @@ SEXP asRColor(QColor color) {
   rptr[1] = color.green();
   rptr[2] = color.blue();
   rptr[3] = color.alpha();
+  qtCast(rcolor, "QColor");
   return rcolor;
 }
 
@@ -400,6 +429,7 @@ SEXP asRFont(QFont font) {
   SET_VECTOR_ELT(rfont, 2, ScalarInteger(font.weight()));
   SET_VECTOR_ELT(rfont, 3, ScalarLogical(font.italic()));
   setAttrib(rfont, R_NamesSymbol, asRStringArray(fontNames));
+  qtCast(rfont, "QFont");
   return rfont;
 }
 QFont asQFont(SEXP f) {  

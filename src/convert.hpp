@@ -14,6 +14,7 @@ extern "C" {
   // R -> C/Qt
   const char ** asStringArray(SEXP s_strs);
   QString sexp2qstring(SEXP s);
+  QByteArray asQByteArray(SEXP sexp);
   
   QRectF asQRectF(SEXP r);
   QPointF asQPointF(SEXP p);
@@ -27,6 +28,7 @@ extern "C" {
   // C -> R
   SEXP asRStringArray(const char * const * strs);
   SEXP qstring2sexp(QString s);
+  SEXP asRByteArray(QByteArray s);
   
   SEXP asRRectF(QRectF rect);
   SEXP asRMatrix(QMatrix matrix, bool inverted);

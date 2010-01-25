@@ -131,28 +131,39 @@ void MethodCall::registerTypeHandlers(TypeHandler *handlers) {
   }
 }
 
-TypeHandler *MethodCall::typeHandler(const SmokeType &type) {
-  TypeHandler *h = typeHandlers[type.name()];	
-  if (h == 0 && type.isConst() && strlen(type.name()) > strlen("const ")) {
-    h = typeHandlers[type.name() + strlen("const ")];
-  }	
-  return h;
-}
 
 extern void marshal_basetype(MethodCall *m);
 extern void marshal_void(MethodCall *m);
 extern void marshal_unknown(MethodCall *m);
 
-TypeHandler::MarshalFn MethodCall::marshalFn(const SmokeType &type) {
-  if (type.elem())
-    return marshal_basetype;
+extern int scoreArg_basetype(SEXP arg, const SmokeType &type);
+extern int scoreArg_unknown(SEXP arg, const SmokeType &type);
+
+static TypeHandler baseHandler =
+  { "base", marshal_basetype, scoreArg_basetype };
+static TypeHandler unknownHandler =
+  { "unknown", marshal_unknown, scoreArg_unknown };
+static TypeHandler voidHandler =
+  { "void", marshal_void, NULL };
+
+TypeHandler *MethodCall::typeHandler(const SmokeType &type) {
+  unsigned short t = type.elem();
+  TypeHandler *h = NULL;
   if (!type.name())
-    return marshal_void;
-  TypeHandler *h = typeHandler(type);
-  if (h != 0) {
-    return h->marshalFn;
+    h = &voidHandler;
+  else if (t == Smoke::t_voidp || t == Smoke::t_class) {
+    h = typeHandlers[type.name()];
   }
-  return marshal_unknown;
+  if (!h) {
+    if (t)
+      h = &baseHandler;
+    else h = &unknownHandler; // FIXME: could we just wrap in externalptr?
+  }
+  return h;
+}
+
+TypeHandler::MarshalFn MethodCall::marshalFn(const SmokeType &type) {
+  return typeHandler(type)->marshalFn;
 }
 
 int MethodCall::scoreArg(SEXP arg, Smoke *smoke, Smoke::Index type) {
@@ -163,17 +174,8 @@ int MethodCall::scoreArg(SEXP arg, const SmokeType &type) {
   return scoreArgFn(type)(arg, type);
 }
 
-extern int scoreArg_basetype(SEXP arg, const SmokeType &type);
-extern int scoreArg_unknown(SEXP arg, const SmokeType &type);
-
 TypeHandler::ScoreArgFn MethodCall::scoreArgFn(const SmokeType &type) {
-  if (type.elem())
-    return scoreArg_basetype;
-  TypeHandler *h = typeHandler(type);
-  if (h != 0 && h->scoreArgFn) {
-    return h->scoreArgFn;
-  }
-  return scoreArg_unknown;
+  return typeHandler(type)->scoreArgFn;
 }
 
 /* Cache key generation */
