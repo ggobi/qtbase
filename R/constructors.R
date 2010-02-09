@@ -45,7 +45,7 @@ qpoint <- function(x, y) {
   if (length(x) == 2)
     p <- x
   else p <- c(x, y)
-  qcast(as.numeric(r), "QPointF")
+  qcast(as.numeric(p), "QPointF")
 }
 
 qsize <- function(width, height) {
@@ -70,9 +70,12 @@ qfont <-
 
 qcolor <- function(red = 0, green = 0, blue = 0, alpha = 255)
 {
-    if (is.character(red))
+    if (is.character(red) || is.matrix(red))
     {
-        rgbvals <- col2rgb(red, alpha = TRUE)[,1]
+        rgbvals <-
+            if (is.character(red)) col2rgb(red, alpha = TRUE)[,1]
+        else
+            red[,1]
         red <- rgbvals["red"]
         green <- rgbvals["green"]
         blue <- rgbvals["blue"]
