@@ -12,7 +12,7 @@
 #include <QPointF>
 #include <QMatrix>
 #include <QColor>
-#include <QFontF>
+#include <QFont>
 
 #include <Rinternals.h>
 

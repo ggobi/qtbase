@@ -61,9 +61,9 @@ DEFINE_CCALLABLE_STUB(QPointF, asQPointF, (SEXP s), (s))
 
 DEFINE_CCALLABLE_STUB(QSizeF, asQSizeF, (SEXP s), (s))
 
-DEFINE_CCALLABLE_STUB(QMatrixF, asQMatrixF, (SEXP s), (s))
+// DEFINE_CCALLABLE_STUB(QMatrixF, asQMatrixF, (SEXP s), (s))
 
-DEFINE_CCALLABLE_STUB(QColorF, asQColorF, (SEXP s), (s))
+// DEFINE_CCALLABLE_STUB(QColorF, asQColorF, (SEXP s), (s))
 
 DEFINE_CCALLABLE_STUB(QColor *, asQColors, (SEXP s), (s))
 
@@ -81,7 +81,7 @@ DEFINE_CCALLABLE_STUB(SEXP, asRMatrix, (QMatrix s), (s))
 
 DEFINE_CCALLABLE_STUB(SEXP, asRFont, (QFont s), (s))
 
-DEFINE_CCALLABLE_STUB(SEXP, asRFont, (QFont s), (s))
+// DEFINE_CCALLABLE_STUB(SEXP, asRFont, (QFont s), (s))
 
 /* Smoke module registration */
 
