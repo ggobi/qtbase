@@ -147,18 +147,12 @@ static TypeHandler voidHandler =
   { "void", marshal_void, NULL };
 
 TypeHandler *MethodCall::typeHandler(const SmokeType &type) {
-  unsigned short t = type.elem();
-  TypeHandler *h = NULL;
-  if (!type.name())
+  TypeHandler *h = &unknownHandler;
+  if (type.elem())
+    h = &baseHandler;
+  else if (!type.name())
     h = &voidHandler;
-  else if (t == Smoke::t_voidp || t == Smoke::t_class) {
-    h = typeHandlers[type.name()];
-  }
-  if (!h) {
-    if (t)
-      h = &baseHandler;
-    else h = &unknownHandler; // FIXME: could we just wrap in externalptr?
-  }
+  else h = typeHandlers[type.name()];
   return h;
 }
 

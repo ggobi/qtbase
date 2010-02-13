@@ -7,12 +7,6 @@
 #include <smoke.h>
 
 #include <QString>
-#include <QRectF>
-#include <QSizeF>
-#include <QPointF>
-#include <QMatrix>
-#include <QColor>
-#include <QFont>
 
 #include <Rinternals.h>
 
@@ -42,30 +36,9 @@ SEXP wrapPointer(void *ptr, QList<QString> classNames = QList<QString>(),
                  R_CFinalizer_t finalizer = NULL);
 
 // Conversion routines
-// R -> C/Qt
-const char ** asStringArray(SEXP s_strs);
+
 QString sexp2qstring(SEXP s);
-
-QRectF asQRectF(SEXP r);
-QPointF asQPointF(SEXP p);
-QSizeF asQSizeF(SEXP s);
-QMatrix asQMatrix(SEXP m);
-
-QColor *asQColors(SEXP c);
-QColor asQColor(SEXP c);
-QFont asQFont(SEXP f);
-
-// C -> R
-SEXP asRStringArray(const char * const * strs);
 SEXP qstring2sexp(QString s);
-
-SEXP asRRectF(QRectF rect);
-SEXP asRMatrix(QMatrix matrix, bool inverted);
-SEXP asRPointF(QPointF point);
-SEXP asRSizeF(QSizeF size);
-
-SEXP asRColor(QColor color);
-SEXP asRFont(QFont font);
 
 // Smoke module registration
 void registerRQtModule(Smoke *smoke);

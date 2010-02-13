@@ -1,5 +1,5 @@
 Package: qtbase
-Version: 0.4-5
+Version: 0.5-0
 Title: Package providing glue for interface between R and Qt 
 Author: Michael Lawrence, Deepayan Sarkar
 Depends: R (>= 2.10.0), methods, utils

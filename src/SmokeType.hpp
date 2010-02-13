@@ -16,6 +16,9 @@ public:
   SmokeType(Smoke::ModuleIndex ind) : _smoke(ind.smoke), _id(ind.index) {
     findType();
   }
+  SmokeType(Smoke *s, const char *name) : _smoke(s), _id(s->idType(name)) {
+    findType();
+  }
   
   // accessors
   inline Smoke *smoke() const { return _smoke; }
@@ -25,6 +28,9 @@ public:
   inline unsigned short elem() const { return _t->flags & Smoke::tf_elem; }
   inline const char *name() const { return _t->name; }
   inline Smoke::Index classId() const { return _t->classId; }
+  inline const char *className() const {
+    return  _smoke->classes[classId()].className;
+  }
   inline bool isVoid() const { return _id == 0; }
 
   // tests
@@ -42,6 +48,12 @@ public:
     if(elem() == Smoke::t_class)
       return classId() ? true : false;
     return false;
+  }
+  inline bool isPrimitive() const {
+    return elem() && !isClass();
+  }
+  inline bool fitsStack() const {
+    return !isPrimitive() && !isStack();
   }
   
   bool operator ==(const SmokeType &b) const {

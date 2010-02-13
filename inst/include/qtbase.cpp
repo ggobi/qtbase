@@ -50,38 +50,7 @@ DEFINE_CCALLABLE_STUB(SEXP, wrapPointer,
 /* Conversion */
 
 DEFINE_CCALLABLE_STUB(QString, sexp2qstring, (SEXP s), (s))
-
-DEFINE_CCALLABLE_STUB(const char **, asStringArray, (SEXP s_strs), (s_strs))
-
-DEFINE_CCALLABLE_STUB(SEXP, asRStringArray, (const char * const * strs), (strs))
-
-DEFINE_CCALLABLE_STUB(QRectF, asQRectF, (SEXP s), (s))
-
-DEFINE_CCALLABLE_STUB(QPointF, asQPointF, (SEXP s), (s))
-
-DEFINE_CCALLABLE_STUB(QSizeF, asQSizeF, (SEXP s), (s))
-
-// DEFINE_CCALLABLE_STUB(QMatrixF, asQMatrixF, (SEXP s), (s))
-
-// DEFINE_CCALLABLE_STUB(QColorF, asQColorF, (SEXP s), (s))
-
-DEFINE_CCALLABLE_STUB(QColor *, asQColors, (SEXP s), (s))
-
-DEFINE_CCALLABLE_STUB(QFont, asQFont, (SEXP s), (s))
-
-DEFINE_CCALLABLE_STUB(SEXP, asRColor, (QColor s), (s))
-
-DEFINE_CCALLABLE_STUB(SEXP, asRPointF, (QPointF s), (s))
-
-DEFINE_CCALLABLE_STUB(SEXP, asRSizeF, (QSizeF s), (s))
-
-DEFINE_CCALLABLE_STUB(SEXP, asRRectF, (QRectF s), (s))
-
-DEFINE_CCALLABLE_STUB(SEXP, asRMatrix, (QMatrix s), (s))
-
-DEFINE_CCALLABLE_STUB(SEXP, asRFont, (QFont s), (s))
-
-// DEFINE_CCALLABLE_STUB(SEXP, asRFont, (QFont s), (s))
+DEFINE_CCALLABLE_STUB(SEXP, qstring2sexp, (QString s), (s))
 
 /* Smoke module registration */
 

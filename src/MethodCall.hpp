@@ -68,29 +68,34 @@ public:
   inline SmokeType type() const {
     return _types[_cur];
   }
-  // FIXME: Returning a non-const reference is bad form.
+
   inline Smoke::StackItem &item() const {
     return _stack[_cur];
   }
+  
   SEXP sexp() const;
   void setSexp(SEXP sexp);
   inline Smoke *smoke() const { return type().smoke(); }
+  
+  /* THIS FUNCTION IS OBSOLETE */
   /* Clean-up when:
      (1) Smoke returns something that doesn't fit in StackItem OR
-     (2) Passing arguments to Smoke where Smoke does not take
-         ownership. In general, it is easier (though suboptimal) to
-         allocate C++ data on the heap and free it later, rather than
-         allocating two different ways. Note that Smoke cleans up when
-         a virtual override returns something big.
+     (2) Passing arguments to Smoke OR
+     (3) Returning something to Smoke that fits in StackItem.
   */
   inline bool cleanup() const {
     SmokeType t = type();
-    return (_mode == RToSmoke && _cur && (t.isConst() || t.isStack())) ||
-      (t.isStack() && !_cur && _mode == SmokeToR);
+    return (_mode == RToSmoke && (_cur || (!_cur && t.fitsStack()))) ||
+      (!t.fitsStack() && !_cur && _mode == SmokeToR);
   }
   inline bool returning() const {
     return _cur == 0;
   }
+  inline bool itemIsMutable() const {
+    return !returning() && !type().isConst();
+  }
+
+  /* Templates for retrieving values from the Smoke item */
   
   /* Iterate the marshalling */
   
@@ -132,7 +137,7 @@ private:
     TypeHandler::MarshalFn fn = marshalFn(type());
     (*fn)(this);
   }
-
+  
   void invokeMethod();
   
   int _cur;

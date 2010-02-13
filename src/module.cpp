@@ -28,7 +28,10 @@ resolve_classname_qt(const SmokeObject * o)
   int classId = o->classId();
   Smoke *smoke = o->smoke();
   const char *className = smoke->classes[classId].className;
-  if (smoke->isDerivedFrom(className, "QEvent")) {
+  if (smoke->isDerivedFrom(className, "QObject")) {
+    QObject *obj = (QObject *)o->castPtr("QObject");
+    classId = smoke->idClass(obj->metaObject()->className()).index;
+  } else if (smoke->isDerivedFrom(className, "QEvent")) {
     QEvent * qevent = (QEvent *)
       smoke->cast(o->ptr(), classId, smoke->idClass("QEvent").index);
     switch (qevent->type()) {

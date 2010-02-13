@@ -1,12 +1,11 @@
 #include "MocProperty.hpp"
 #include "DynamicBinding.hpp"
-#include "SmokeObject.hpp"
 
 #include "convert.hpp"
 
 SEXP MocProperty::read(SEXP obj) const {
   QObject *qobj = unwrapSmoke(obj, QObject);
-  return asRVariant(qobj->property(name()));
+  return to_sexp(qobj->property(name()));
 }
 
 Smoke::StackItem MocProperty::read(SmokeObject *so) const {
@@ -18,7 +17,7 @@ Smoke::StackItem MocProperty::read(SmokeObject *so) const {
 
 bool MocProperty::write(SEXP obj, SEXP val) {
   QObject *qobj = unwrapSmoke(obj, QObject);
-  return qobj->setProperty(name(), asQVariant(val));
+  return qobj->setProperty(name(), from_sexp<QVariant>(val));
 }
 
 bool MocProperty::write(SmokeObject *so, const Smoke::StackItem &item) {

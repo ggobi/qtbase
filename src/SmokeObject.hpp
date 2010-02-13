@@ -6,6 +6,7 @@
 
 class RQtModule;
 class Class;
+class SmokeType;
 
 // To avoid conflicts between Qt and R headers
 typedef struct SEXPREC* SEXP;
@@ -28,6 +29,8 @@ public:
                               bool allocated = false, bool copy = false);
   static SmokeObject *fromPtr(void *ptr, Smoke *smoke, const char *name,
                               bool allocated = false, bool copy = false);
+  static SmokeObject *fromPtr(void *ptr, const SmokeType &type,
+                              bool allocated = false, bool copy = false);
   static SmokeObject *fromPtr(void *ptr, Smoke *smoke, int classId,
                               bool allocated = false, bool copy = false);
   
@@ -36,6 +39,8 @@ public:
                                  bool allocated = false, bool copy = false);
   static SEXP sexpFromPtr(void *ptr, Smoke *smoke, const char *name,
                                  bool allocated = false, bool copy = false);
+  static SEXP sexpFromPtr(void *ptr, Smoke *smoke, int classId,
+                          bool allocated = false, bool copy = false);
 
   /* Core behaviors */
   inline void *ptr() const { return _ptr; }

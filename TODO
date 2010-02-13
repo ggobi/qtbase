@@ -10,6 +10,12 @@ TODO
 - Get rid of createProject.sh/qmake and replace with cmake. It is a
   much more functional build system. For example, we can detect the Qt
   modules present on the system and only build against those.
+- Add an as.raster() to qtpaint, for convenience download of pixels.
+- Make return-by-ref params work.
+    Calling Smoke: Many of the marshallers set the sexp in
+      such cases. We just have to detect this and form a result list.
+    Virtual callbacks: Need special object for bundling multiple return values.
+      MethodCall detects this and sets SEXPs appropriately.
 - Figure out why the generator is missing QtDBus
 - Documentation, probably by hacking into the 2.10 web server so that
   everything is dynamic.

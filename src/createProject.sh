@@ -17,7 +17,7 @@ echo "
 TEMPLATE = lib
 
 # Input
-HEADERS += Reference.hpp convert.hpp wrap.hpp
+HEADERS += convert.hpp wrap.hpp
 HEADERS += dynamicqobject.h RDynamicQObject.hpp EventLoop.hpp
 
 HEADERS += ClassFactory.hpp
@@ -33,9 +33,8 @@ HEADERS += SmokeObject.hpp ObjectTable.hpp InstanceObjectTable.hpp
 
 
 SOURCES += init.cpp EventLoop.cpp style.cpp 
-SOURCES += Reference.cpp convert.cpp wrap.cpp 
-SOURCES += Test.cpp timer.cpp
-SOURCES += metaobject.cpp connect.cpp invoke.cpp props.cpp
+SOURCES += convert.cpp wrap.cpp 
+SOURCES += metaobject.cpp connect.cpp invoke.cpp
 SOURCES += dynamicqobject.cpp RDynamicQObject.cpp
 
 SOURCES += ClassFactory.cpp
@@ -50,7 +49,7 @@ SOURCES += RQtModule.cpp module.cpp RSmokeBinding.cpp SmokeList.cpp
 SOURCES += SmokeObject.cpp ObjectTable.cpp InstanceObjectTable.cpp smoke.cpp 
 
 INCLUDEPATH += ${R_INCLUDE_DIR} ../local/include
-CFLAGS += -g
+CFLAGS += -g -Wall
 LIBS += -L../local/lib -lsmokeqt
 QT += network opengl xml dbus
 

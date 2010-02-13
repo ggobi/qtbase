@@ -3,7 +3,7 @@
 #include "RQtModule.hpp"
 #include "InstanceObjectTable.hpp"
 
-#include "convert.hpp"
+#include <Rinternals.h>
 
 /* One SmokeObject for each object,
    to ensure 1-1 mapping from Qt objects to R objects */
@@ -18,6 +18,9 @@ SmokeObject * SmokeObject::fromPtr(void *ptr, const Class *klass,
     // record this ASAP, resolveClassId() needs it for virtual callbacks
     instances[so->ptr()] = so; 
     so->cast(Class::fromSmokeId(so->smoke(), so->module()->resolveClassId(so)));
+    /* it seems that all multiple inheritance in Qt goes through
+       QObject or QEvent, so we can catch offset pointers at run-time */
+    // FIXME: what happens with other libraries? take QtRuby approach?
     if (so->ptr() != ptr) { // must be multiple inheritance, recache
       SmokeObject *tmp_so = instances[so->ptr()];
       if (tmp_so) {
@@ -50,6 +53,12 @@ SmokeObject *SmokeObject::fromPtr(void *ptr, Smoke *smoke, int classId,
   return fromPtr(ptr, Class::fromSmokeId(smoke, classId), allocated, copy);
 }
 
+SmokeObject *SmokeObject::fromPtr(void *ptr, const SmokeType &type,
+                                  bool allocated, bool copy)
+{
+  return fromPtr(ptr, type.smoke(), type.classId(), allocated, copy);
+}
+
 SEXP
 SmokeObject::sexpFromPtr(void *ptr, const Class *klass,
                                 bool allocated, bool copy)
@@ -64,6 +73,13 @@ SmokeObject::sexpFromPtr(void *ptr, Smoke *smoke, const char *name,
   return sexpFromPtr(ptr, Class::fromSmokeName(smoke, name), allocated, copy);
 }
 
+SEXP
+SmokeObject::sexpFromPtr(void *ptr, Smoke *smoke, int classId,
+                         bool allocated, bool copy)
+{
+  return sexpFromPtr(ptr, Class::fromSmokeId(smoke, classId), allocated, copy);
+}
+
 #define SMOKE_OBJECT_FROM_VALUE(klass, sexp) ({                   \
       klass val = as ## klass(sexp);                              \
       SmokeObject::fromPtr(&val, NULL, #klass, false, true);      \
@@ -72,8 +88,8 @@ SmokeObject::sexpFromPtr(void *ptr, Smoke *smoke, const char *name,
 SmokeObject * SmokeObject::fromSexp(SEXP sexp)
 {
   if (!isEnvironment(sexp))
-    return fromValueSexp(sexp);
-  else return InstanceObjectTable::instanceFromSexp(HASHTAB(sexp));
+    error("Expected an environment");
+  return InstanceObjectTable::instanceFromSexp(HASHTAB(sexp));
 }
 
 SmokeObject::SmokeObject(void *ptr, const Class *klass, bool allocated)
@@ -259,6 +275,10 @@ SmokeObject::cast(const Class *klass) {
     castSexp(_sexp);
 }
 
+/* Cast the instance pointer to a parent class. This is necessary,
+   because the compiler does not know how to cast a void* to a parent
+   class when multiple inheritance is involved.
+*/
 void *
 SmokeObject::castPtr(const char *className) const {
   Smoke *smoke = this->smoke();
@@ -351,98 +371,4 @@ SmokeObject::~SmokeObject() {
   if (_fieldEnv)
     R_ReleaseObject(_fieldEnv);
   instances.remove(_ptr);
-}
-
-SmokeObject * SmokeObject::fromValueSexp(SEXP sexp) {
-  const char *className = CHAR(asChar(getAttrib(sexp, R_ClassSymbol)));
-  int type = QMetaType::type(className);
-  SmokeObject *ans = NULL;
-  switch(type) {
-  case QMetaType::QCursor:
-    break;
-  case QMetaType::QDate:
-    break;
-  case QMetaType::QSize:
-    //ans = SMOKE_OBJECT_FROM_VALUE(QSize, sexp);
-  case QMetaType::QSizeF:
-    ans = SMOKE_OBJECT_FROM_VALUE(QSizeF, sexp);
-    break;
-  case QMetaType::QTime:
-    break;
-  case QMetaType::QVariantList:
-    break;
-  case QMetaType::QPolygon:
-    break;
-  case QMetaType::QColor:
-    ans = SMOKE_OBJECT_FROM_VALUE(QColor, sexp);
-    break;
-  case QMetaType::QRectF:
-    ans = SMOKE_OBJECT_FROM_VALUE(QRectF, sexp);
-  case QMetaType::QRect:
-    //ans = SMOKE_OBJECT_FROM_VALUE(QRect, sexp);
-    break;
-  case QMetaType::QLine:
-    break;
-  case QMetaType::QTextLength:
-    break;
-  case QMetaType::QStringList:
-    break;
-  case QMetaType::QVariantMap:
-    break;
-  case QMetaType::QVariantHash:
-    break;
-  case QMetaType::QIcon:
-    break;
-  case QMetaType::QPen:
-    break;
-  case QMetaType::QLineF:
-    break;
-  case QMetaType::QTextFormat:
-    break;
-  case QMetaType::QPoint:
-    //ans = SMOKE_OBJECT_FROM_VALUE(QPoint, sexp);
-    break;
-  case QMetaType::QPointF:
-    ans = SMOKE_OBJECT_FROM_VALUE(QPointF, sexp);
-    break;
-  case QMetaType::QUrl:
-    break;
-  case QMetaType::QRegExp:
-    break;
-  case QMetaType::QDateTime:
-    break;
-  case QMetaType::QPalette:
-    break;
-  case QMetaType::QFont:
-    ans = SMOKE_OBJECT_FROM_VALUE(QFont, sexp);
-    break;
-  case QMetaType::QBrush:
-    break;
-  case QMetaType::QRegion:
-    break;
-  case QMetaType::QBitArray:
-    break;
-  case QMetaType::QImage:
-    break;
-  case QMetaType::QKeySequence:
-    break;
-  case QMetaType::QSizePolicy:
-    break;
-  case QMetaType::QPixmap:
-    break;
-  case QMetaType::QLocale:
-    break;
-  case QMetaType::QBitmap:
-    break;
-  case QMetaType::QMatrix:
-    ans = SMOKE_OBJECT_FROM_VALUE(QMatrix, sexp);
-    break;
-  case QMetaType::QTransform:
-    break;
-  case QMetaType::User:
-    break;
-  default:
-    error("Converting to SmokeObject: unhandled high-level type");
-  }
-  return ans;
 }

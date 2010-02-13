@@ -1,35 +1,24 @@
 #include "convert.hpp"
-#include "Reference.hpp"
 
 #include <Rinternals.h>
 #include <R_ext/Rdynload.h>
-#include <R_ext/Print.h>
 
 void init_smoke();
 void init_type_handlers();
 
 extern "C" {
   
-    // Test.cpp
-    SEXP newLabelWidget(SEXP label);
+  // style.cpp
+  SEXP qt_qsetStyleSheet(SEXP x, SEXP s);
+  SEXP qt_qstyleSheet(SEXP x);
 
-    // style.cpp
-
-    SEXP qt_qsetStyleSheet(SEXP x, SEXP s);
-    SEXP qt_qstyleSheet(SEXP x);
-
-    // this file 
-
-    SEXP addQtEventHandler();
-    SEXP cleanupQtApp();
-
-    void R_init_qtbase(DllInfo *dll);
-
-    extern void init_utils();
-
-  // timer
-  SEXP qt_qtimer(void);
+  // EventLoop.cpp 
+  SEXP addQtEventHandler();
+  SEXP cleanupQtApp();
   
+  // this file
+  void R_init_qtbase(DllInfo *dll);
+    
   // signals
   SEXP qt_qconnect(SEXP x, SEXP user_data, SEXP handler, SEXP which);
 
@@ -50,53 +39,62 @@ extern "C" {
   SEXP qt_qinvoke(SEXP method, SEXP self, SEXP args);
   SEXP qt_qinvokeStatic(SEXP method, SEXP smoke, SEXP klass, SEXP args);
   
-  // properties
-  SEXP qt_qsetProperty(SEXP x, SEXP rname, SEXP rvalue);
-  SEXP qt_qproperty(SEXP x, SEXP name);
-
   // user classes
   SEXP qt_qcast(SEXP x, SEXP className);
   SEXP qt_qenclose(SEXP x, SEXP fun);
+
+  // registration of Smoke modules from other packages
+  void registerRQtModule(Smoke *smoke);
 }
-
-extern void initMethodSelectors();
-
-QObject* unwrapQObjectReferee(SEXP x);
-QGraphicsItem *unwrapQGraphicsItemReferee(SEXP x);
 
 #define CALLDEF(name, n)  {#name, (DL_FUNC) &name, n}
 
+#define CALLDEF_COERCE(name) CALLDEF(qt_coerce_##name, 1)
+
 static R_CallMethodDef CallEntries[] = {
 
-    CALLDEF(newLabelWidget, 1),
-
+    // special support for style sheets
     CALLDEF(qt_qsetStyleSheet, 2),
     CALLDEF(qt_qstyleSheet, 1),
 
+    // event loop
     CALLDEF(addQtEventHandler, 0),
     CALLDEF(cleanupQtApp, 0),
 
-    CALLDEF(qt_qtimer, 0),
-    
+    // signals
     CALLDEF(qt_qconnect, 5),
 
+    // Moc metadata
     CALLDEF(qt_qmocMethods, 1),
-    
     CALLDEF(qt_qnormalizedSignature, 1),
+
+    // General metadata
     CALLDEF(qt_qmethods, 1),
     CALLDEF(qt_qenums, 1),
     CALLDEF(qt_qproperties, 1),
     CALLDEF(qt_qclasses, 1),
+
+    // Smoke metadata
     CALLDEF(qt_qsmokes, 0),
-    
+
+    // Dynamic invocation
     CALLDEF(qt_qinvoke, 4),
     CALLDEF(qt_qinvokeStatic, 3),
-
-    CALLDEF(qt_qsetProperty, 3),
-    CALLDEF(qt_qproperty, 2),
-
+    
+    // User classes
     CALLDEF(qt_qcast, 2),
     CALLDEF(qt_qenclose, 2),
+
+    // Explicit coercions
+    CALLDEF_COERCE(QByteArray),
+    CALLDEF_COERCE(QRectF),
+    CALLDEF_COERCE(QRect),
+    CALLDEF_COERCE(QTransform),
+    CALLDEF_COERCE(QPointF),
+    CALLDEF_COERCE(QPoint),
+    CALLDEF_COERCE(QSizeF),
+    CALLDEF_COERCE(QSize),
+    CALLDEF_COERCE(QColor),
  
     {NULL, NULL, 0}
 };
@@ -115,38 +113,10 @@ void R_init_qtbase(DllInfo *dll)
 
     // Register for calling by other packages.
     REG_CALLABLE(_unwrapSmoke);
-    REG_CALLABLE(wrapQWidget);
-    REG_CALLABLE(wrapQObject);
     REG_CALLABLE(wrapPointer);
-    REG_CALLABLE(unwrapQObjectReferee);
-    REG_CALLABLE(unwrapQGraphicsItemReferee);
-    REG_CALLABLE(unwrapQGraphicsLayoutItemReferee);
-    REG_CALLABLE(wrapQGraphicsWidget);
-    REG_CALLABLE(wrapQGraphicsItem);
-    REG_CALLABLE(wrapQGraphicsLayoutItem);
-    
-    REG_CALLABLE(asStringArray);
+
     REG_CALLABLE(sexp2qstring);
-    REG_CALLABLE(asRStringArray);
     REG_CALLABLE(qstring2sexp);
 
-    REG_CALLABLE(asRRectF);
-    REG_CALLABLE(asRMatrix);
-    REG_CALLABLE(asRPointF);
-    REG_CALLABLE(asRSizeF);
-    REG_CALLABLE(asRColor);
-    REG_CALLABLE(asRFont);
-
-    REG_CALLABLE(asQRectF);
-    REG_CALLABLE(asQMatrix);
-    REG_CALLABLE(asQPointF);
-    REG_CALLABLE(asQSizeF);
-    REG_CALLABLE(asQColor);
-    REG_CALLABLE(asQColors);
-    REG_CALLABLE(asQFont);
-    
-    REG_CALLABLE(addQObjectReference);
-    REG_CALLABLE(addQWidgetReference);
-    REG_CALLABLE(addQGraphicsItemReference);
-    REG_CALLABLE(addQGraphicsLayoutItemReference);
+    REG_CALLABLE(registerRQtModule);
 }

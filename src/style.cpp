@@ -1,6 +1,7 @@
 
 #include <QApplication>
 #include <QString>
+#include <QWidget>
 
 #include "convert.hpp"
 
@@ -19,7 +20,7 @@ qt_qsetStyleSheet(SEXP x, SEXP s)
     if (x == R_NilValue)
 	app->setStyleSheet(style);
     else 
-	unwrapQObject(x, QWidget)->setStyleSheet(style);
+	unwrapSmoke(x, QWidget)->setStyleSheet(style);
     return R_NilValue;
 }
 
@@ -29,6 +30,6 @@ qt_qstyleSheet(SEXP x)
     if (x == R_NilValue)
 	return qstring2sexp(app->styleSheet());
     else 
-	return qstring2sexp(unwrapQObject(x, QWidget)->styleSheet());
+	return qstring2sexp(unwrapSmoke(x, QWidget)->styleSheet());
 }
 

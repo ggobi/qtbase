@@ -1,20 +1,17 @@
 
 useDynLib(qtbase, .registration = TRUE)
 
-# timer
-export(qtimer)
-
 # metadata
 export(qnormalizedSignature, qproperties)
+
+# timer
+export(qtimer)
 
 # signals
 export(qconnect)
 
 # invoke
 export(qinvoke)
-
-# properties
-export(qproperty, "qproperty<-")
 
 # constructors of simple types
 export(qrect, qpoint, qsize, qcolor, qfont, qmatrix)
@@ -44,3 +41,20 @@ export(qsetStyleSheet, qstyleSheet)
 ## label for testing
 export(testLabel)
 
+## explicit coercions
+export(as.matrix.QRectF)
+export(as.matrix.QRect)
+
+export(as.vector.QPointF)
+export(as.vector.QPoint)
+
+export(as.vector.QSizeF)
+export(as.vector.QSize)
+
+export(as.matrix.QTransform)
+
+export(as.raw.QByteArray)
+export(as.character.QByteArray)
+
+export(qcol2rgb)
+export(as.matrix.QColor )

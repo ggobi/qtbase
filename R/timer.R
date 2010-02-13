@@ -1,5 +1,5 @@
 qtimer <- function(delay, handler) {
-  timer <- .Call(qt_qtimer)
+  timer <- Qt$QTimer()
   qconnect(timer, "timeout", handler)
   timer$interval <- delay
   timer

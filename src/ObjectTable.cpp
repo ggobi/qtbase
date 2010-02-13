@@ -1,3 +1,5 @@
+#include <QByteArray>
+
 #include "ObjectTable.hpp"
 #include "wrap.hpp"
 

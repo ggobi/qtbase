@@ -19,8 +19,8 @@ extern quintptr R_CStackStart;	/* Initial stack address */
 /* Much of this code inspired by Simon Urbanek's CarbonEL package */
 
 QApplication *app;
-static int qapp_argc = 1;
-static char *qapp_argv[] = { "qtbase" };
+static int qapp_argc = 2;
+static char *qapp_argv[] = { "qtbase", "-nograb" };
 
 static int processingEvent = 0;
 
