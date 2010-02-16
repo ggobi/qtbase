@@ -61,14 +61,14 @@ SmokeObject *SmokeObject::fromPtr(void *ptr, const SmokeType &type,
 
 SEXP
 SmokeObject::sexpFromPtr(void *ptr, const Class *klass,
-                                bool allocated, bool copy)
+                         bool allocated, bool copy)
 {
   return fromPtr(ptr, klass, allocated, copy)->sexp();
 }
 
 SEXP
 SmokeObject::sexpFromPtr(void *ptr, Smoke *smoke, const char *name,
-                                bool allocated, bool copy)
+                         bool allocated, bool copy)
 {
   return sexpFromPtr(ptr, Class::fromSmokeName(smoke, name), allocated, copy);
 }
@@ -78,6 +78,13 @@ SmokeObject::sexpFromPtr(void *ptr, Smoke *smoke, int classId,
                          bool allocated, bool copy)
 {
   return sexpFromPtr(ptr, Class::fromSmokeId(smoke, classId), allocated, copy);
+}
+
+SEXP
+SmokeObject::sexpFromPtr(void *ptr, const SmokeType &type,
+                                      bool allocated, bool copy)
+{
+  return sexpFromPtr(ptr, type.smoke(), type.classId(), allocated, copy);
 }
 
 #define SMOKE_OBJECT_FROM_VALUE(klass, sexp) ({                   \

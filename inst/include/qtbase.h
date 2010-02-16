@@ -35,6 +35,8 @@ void *_unwrapSmoke(SEXP x, const char *type);
 SEXP wrapPointer(void *ptr, QList<QString> classNames = QList<QString>(),
                  R_CFinalizer_t finalizer = NULL);
 
+SEXP wrapSmoke(void *ptr, const char *className, bool allocated = true);
+
 // Conversion routines
 
 QString sexp2qstring(SEXP s);

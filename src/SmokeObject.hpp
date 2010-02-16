@@ -41,6 +41,8 @@ public:
                                  bool allocated = false, bool copy = false);
   static SEXP sexpFromPtr(void *ptr, Smoke *smoke, int classId,
                           bool allocated = false, bool copy = false);
+  static SEXP sexpFromPtr(void *ptr, const SmokeType &type,
+                          bool allocated = false, bool copy = false);
 
   /* Core behaviors */
   inline void *ptr() const { return _ptr; }

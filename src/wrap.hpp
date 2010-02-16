@@ -24,11 +24,10 @@ void *_unwrapSmoke(SEXP x, const char *type);
 
 #define unwrapSmoke(x, type) reinterpret_cast<type *>(_unwrapSmoke(x, #type))
 
-extern "C" {
-  SEXP wrapPointer(void *ptr,
-                   QList<QByteArray> classNames = QList<QByteArray>(),
-                   R_CFinalizer_t finalizer = NULL);
-}
+SEXP wrapPointer(void *ptr,
+                 QList<QByteArray> classNames = QList<QByteArray>(),
+                 R_CFinalizer_t finalizer = NULL);
+SEXP wrapSmoke(void *ptr, const char *className, bool allocated = true);
 
 #endif
 
