@@ -305,15 +305,13 @@ class_from_sexp(SEXP sexp,  const SmokeType &type) {
 inline SEXP ptr_to_sexp(void *value, const SmokeType &type) {
   if (!value)
     return(R_NilValue);
-  SmokeObject *so = SmokeObject::fromPtr(value, type, !type.isConst(),
-                                         type.isConst() && type.isRef());
-  return so->sexp();
+  return SmokeObject::sexpFromPtr(value, type, !type.isConst(),
+                                  type.isConst() && type.isRef());
 }
 
 template<typename T> inline SEXP
 class_to_sexp(T value, const SmokeType &type) {
-  SmokeObject *so = SmokeObject::fromPtr(&value, type, false, true);
-  return so->sexp();
+  return SmokeObject::sexpFromPtr(&value, type, false, true);
 }
 
 /* More special cases, at least partially implicit */

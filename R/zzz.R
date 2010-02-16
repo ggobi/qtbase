@@ -16,11 +16,3 @@
     .Call(addQtEventHandler)
     qlibrary(Qt)
 }
-
-setHook(packageEvent("qtbase", event = "detach"),
-        function() {
-            cat("Running detach hook for qtbase\n")
-            .Call(cleanupQtApp)
-        })
-
-

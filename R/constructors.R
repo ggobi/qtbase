@@ -23,11 +23,6 @@
 ## simple operations, and, more importantly, it provides a concise
 ## specification of the data structure, expressed in R code.
 
-qcast <- function(x, className) {
-  class(x) <- c(className, "RQtValue", "RQtObject")
-  x
-}
-
 qrect <- function(x0, y0, x1, y1) {
   if (length(x0) == 2) {
     x1 <- x0[2]
@@ -37,22 +32,21 @@ qrect <- function(x0, y0, x1, y1) {
     y1 <-  y0[2]
     y0 <-  y0[1]
   }
-  r <- matrix(as.numeric(c(x0, x1, y0, y1)), 2, 2)
-  qcast(r, "QRectF")
+  matrix(as.numeric(c(x0, x1, y0, y1)), 2, 2)
 }
 
 qpoint <- function(x, y) {
   if (length(x) == 2)
     p <- x
   else p <- c(x, y)
-  qcast(as.numeric(p), "QPointF")
+  as.numeric(p)
 }
 
 qsize <- function(width, height) {
   if (length(width) == 2)
     s <- width
   else s <- c(width, height)
-  qcast(as.numeric(s), "QSizeF")
+  as.numeric(s)
 }
 
 qfont <-
@@ -61,11 +55,10 @@ qfont <-
            weight = -1L,
            italic = FALSE, ...)
 {
-  f <- list(family = family,
-            pointsize = pointsize,
-            weight = weight,
-            italic = italic)
-  qcast(f, "QFont")
+  list(family = family,
+       pointsize = pointsize,
+       weight = weight,
+       italic = italic)
 }
 
 qcolor <- function(red = 0, green = 0, blue = 0, alpha = 255)
@@ -81,17 +74,5 @@ qcolor <- function(red = 0, green = 0, blue = 0, alpha = 255)
         blue <- rgbvals["blue"]
         if (missing(alpha)) alpha <- rgbvals["alpha"]
     }
-    col <- t(as.integer(c(red, green, blue, alpha)))
-    qcast(col, "QColor")
-}
-
-qmatrix <- function(x, ...)
-  UseMethod("qmatrix")
-
-qmatrix.NULL <- function(x)
-  qmatrix(matrix(c(1, 0, 0, 0, 1, 0), ncol=2))
-  
-qmatrix.matrix <- function(x) {
-  stopifnot(nrow(x) == 3 && ncol(x) == 2 && is.numeric(x))
-  qcast(x, "QMatrix")
+    t(as.integer(c(red, green, blue, alpha)))
 }
