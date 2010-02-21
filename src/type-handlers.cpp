@@ -230,8 +230,17 @@ void marshal_basetype(MethodCall *m)
 }
 
 void marshal_void(MethodCall * /*m*/) {}
+
+/* Unknown types are those treated as void pointers by Smoke while
+   lacking an explicit handler. In general, we cannot handle stack
+   types (need to allocate/free them sometimes), or reference types
+   (need to copy the const ones, for example). However, we do try to
+   handle the pointer types by just wrapping them in an externalptr.
+*/
 void marshal_unknown(MethodCall *m) {
-  m->unsupported();
+  if (m->type().isPtr())
+    marshal<SmokePtrWrapper>(m);
+  else m->unsupported();
 }
 
 /* C++ compilers select overloaded methods by ranking each argument in
@@ -660,6 +669,8 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   TYPE_HANDLER_ENTRY_FULL(GLint, int),
   TYPE_HANDLER_ENTRY_FULL(GLuint, unsigned int),
   TYPE_HANDLER_ENTRY_FULL(GLbitfield, unsigned int),
+  /* SEXP pass-through */
+  TYPE_HANDLER_ENTRY(SEXP),
   { 0, 0, NULL }
 };
 

@@ -4,13 +4,14 @@
 // FIXME: we should not have duplicate header files inside and outside
 // the package. Could use symbolic links.
 
-#include <smoke.h>
-
+#include <QList>
 #include <QString>
 
 #include <Rinternals.h>
 
 #include <qtdefs.h>
+
+class Smoke;
 
 #define checkPointer(x, type) ({                                       \
       if (TYPEOF(x) != EXTPTRSXP)                                      \
@@ -35,7 +36,9 @@ void *_unwrapSmoke(SEXP x, const char *type);
 SEXP wrapPointer(void *ptr, QList<QString> classNames = QList<QString>(),
                  R_CFinalizer_t finalizer = NULL);
 
-SEXP wrapSmoke(void *ptr, const char *className, bool allocated = true);
+SEXP _wrapSmoke(void *ptr, const char *className, bool allocated = true);
+#define wrapSmoke(x, type, allocated) _wrapSmoke(ptr, #type, allocated)
+#define wrapSmokeCopy(x, type) _wrapSmoke(new type(ptr), #type, true)
 
 // Conversion routines
 

@@ -206,6 +206,9 @@ public:
   MethodCall *m;
 };
 
+class SmokePtrWrapper { // for pointers with unhandled type
+};
+
 /* enum marshaling */
 
 template <>
@@ -246,6 +249,33 @@ void marshal_to_sexp<SmokeClassWrapper>(MethodCall *m)
 {
   void *p = itemValue<void *>(m);
   m->setSexp(ptr_to_sexp(p, m->type()));
+}
+
+/* handling arbitrary pointers */
+
+QByteArray ptr_basename(const char *name) {
+  QByteArray basename(name);
+  basename.chop(1);
+  if (basename.startsWith("const"))
+    basename = basename.mid(6);
+  return basename;
+}
+
+template <>
+void marshal_from_sexp<SmokePtrWrapper>(MethodCall *m)
+{
+  SEXP v = m->sexp();
+  checkPointer(v, ptr_basename(m->type().name()).constData());
+  setItemValue(m, from_sexp<void*>(v));
+}
+
+template <>
+void marshal_to_sexp<SmokePtrWrapper>(MethodCall *m)
+{
+  void *val = itemValue<void*>(m);
+  QList<QByteArray> classes;
+  classes.append(ptr_basename(m->type().name()));
+  m->setSexp(wrapPointer(val, classes));
 }
 
 /* Macros for initializing TypeHandler structures in an array. */  

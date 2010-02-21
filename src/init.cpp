@@ -114,7 +114,7 @@ void R_init_qtbase(DllInfo *dll)
     // Register for calling by other packages.
     REG_CALLABLE(_unwrapSmoke);
     REG_CALLABLE(wrapPointer);
-    REG_CALLABLE(wrapSmoke);
+    REG_CALLABLE(_wrapSmoke);
 
     REG_CALLABLE(sexp2qstring);
     REG_CALLABLE(qstring2sexp);

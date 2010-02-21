@@ -8,7 +8,7 @@
 #include "wrap.hpp"
 
 SmokeObject *InstanceObjectTable::instanceFromSexp(SEXP sexp) {
-  checkPointer(sexp, InstanceObjectTable);
+  checkPointer(sexp, "InstanceObjectTable");
   ObjectTable *table = ObjectTable::fromSexp(sexp);
   return static_cast<InstanceObjectTable *>(table)->instance();
 }

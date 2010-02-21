@@ -14,5 +14,5 @@
   ## dyn.load(paste(file.path(dir, "libsmokeqt"), .Platform$dynlib.ext, sep=""))
   ## library.dynam("qtbase", pkgname, libname )
     .Call(addQtEventHandler)
-    qlibrary(Qt)
+    qlibrary(Qt, NULL)
 }

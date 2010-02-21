@@ -47,7 +47,7 @@ DEFINE_CCALLABLE_STUB(SEXP, wrapPointer,
                       (      ptr,                classNames,
                                       finalizer))
 
-DEFINE_CCALLABLE_STUB(SEXP, wrapSmoke,
+DEFINE_CCALLABLE_STUB(SEXP, _wrapSmoke,
                       (void *ptr, const char *className, bool allocated),
                       (      ptr,             className,      allocated))
 

@@ -229,6 +229,11 @@ inline SEXP to_sexp(QString s) {
 inline QString sexp2qstring(SEXP s) { return from_sexp<QString>(s); }
 inline SEXP qstring2sexp(QString s) { return to_sexp(s); }
 
+// SEXP pass-through
+
+inline SEXP to_sexp(SEXP s) { return s; }
+template<> inline SEXP from_sexp<SEXP>(SEXP s) { return s; }
+
 /* Type conversion helpers that utilize Smoke type information */
 
 /* so we do not need to add a type parameter to every converter */

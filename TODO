@@ -3,13 +3,10 @@ TODO
 ===================================================
 
 - Fix the bug Deepayan reported with QPen(QColor).
-- Better support for converting value types.
-- Consider using Rcpp for wrapping SEXPs (especially useful for
-  converting value types). The inline compilation is cool, too --
-  maybe provide a wrapper?
 - Get rid of createProject.sh/qmake and replace with cmake. It is a
   much more functional build system. For example, we can detect the Qt
   modules present on the system and only build against those.
+- Support SEXPs inside of QVariant
 - Add an as.raster() to qtpaint, for convenience download of pixels.
 - Make return-by-ref params work.
     Calling Smoke: Many of the marshallers set the sexp in

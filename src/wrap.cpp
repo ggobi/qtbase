@@ -18,7 +18,7 @@ void *_unwrapSmoke(SEXP x, const char *type) {
    allowed us to guess 'allocated', but we just default that to 'true'
    (works in most cases). We fix 'copy' to 'false', since manual
    bindings should not need to use reflection for copying. */
-SEXP wrapSmoke(void *ptr, const char *className, bool allocated)
+SEXP _wrapSmoke(void *ptr, const char *className, bool allocated)
 {
   return SmokeObject::sexpFromPtr(ptr, Class::fromName(className), allocated);
 }
