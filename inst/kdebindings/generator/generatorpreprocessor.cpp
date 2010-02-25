@@ -156,6 +156,9 @@ rpp::Stream* Preprocessor::sourceNeeded(QString& fileName, rpp::Preprocessor::In
     // #include_next <limits.h> in the file and no proper header guard.
     if (fileName == "limits.h" && type == rpp::Preprocessor::IncludeGlobal)
         return 0;
+    // same for stdarg.h -- but shouldn't we pay attention to skipCurrentPath?
+    if (fileName == "stdarg.h" && type == rpp::Preprocessor::IncludeGlobal)
+        return 0;
     
     // are the contents already cached?
     if (type == rpp::Preprocessor::IncludeGlobal && m_cache.contains(fileName)) { 
@@ -189,17 +192,17 @@ rpp::Stream* Preprocessor::sourceNeeded(QString& fileName, rpp::Preprocessor::In
         QList<QDir> m_frameworkDirs; // FIXME: should be configurable
         m_frameworkDirs.append(QDir("/System/Library/Frameworks"));
         m_frameworkDirs.append(QDir("/Library/Frameworks"));
-        fileName = info.dir().dirName() + ".framework/Headers/" +
+        QString fw_fileName = info.dir().dirName() + ".framework/Headers/" +
           info.fileName();
         foreach (QDir dir, m_frameworkDirs) {
-            if (dir.exists(fileName)) {
-               path = dir.absoluteFilePath(fileName);
+            if (dir.exists(fw_fileName)) {
+               path = dir.absoluteFilePath(fw_fileName);
                break;
             }
         }
     }
 #endif
-    
+       
     if (path.isEmpty())
         return 0;
     
