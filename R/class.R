@@ -43,6 +43,9 @@ qsmokeClass <- function(x, name) {
   enums <- qenums(cl)
   for (enum in names(enums))
     assign(enum, structure(enums[enum], class = "QtEnum"), env)
+  internals <- grep(paste("^", name, "::", sep = ""), qclasses(x), value = TRUE)
+  for (internal in internals)
+    assign(internal, qsmokeClass(x, internal), env)
   lockEnvironment(env, TRUE)
   cl
 }
