@@ -571,6 +571,26 @@ SEXP to_sexp(QPoint point) {
   return rpoint;
 }
 
+SEXP to_sexp(QPolygonF polygon) {
+  SEXP rpolygon = allocMatrix(REALSXP, polygon.size(), 2);
+  int nr = nrows(rpolygon);
+  for (int i = 0; i < nr; i++) {
+    REAL(rpolygon)[i] = polygon[i].x();
+    REAL(rpolygon)[i + nr] = polygon[i].y();
+  }
+  return rpolygon;
+}
+
+SEXP to_sexp(QPolygon polygon) {
+  SEXP rpolygon = allocMatrix(INTSXP, polygon.size(), 2);
+  int nr = nrows(rpolygon);
+  for (int i = 0; i < nr; i++) {
+    INTEGER(rpolygon)[i] = polygon[i].x();
+    INTEGER(rpolygon)[i + nr] = polygon[i].y();
+  }
+  return rpolygon;
+}
+
 SEXP to_sexp(QSizeF size) {
   SEXP rsize = allocVector(REALSXP, 2);
   REAL(rsize)[0] = size.width(); REAL(rsize)[1] = size.height();
@@ -616,6 +636,9 @@ DEF_COERCE_ENTRY_POINT(QRect)
 DEF_COERCE_ENTRY_POINT(QTransform)
 DEF_COERCE_ENTRY_POINT(QPointF)
 DEF_COERCE_ENTRY_POINT(QPoint)
+DEF_COERCE_ENTRY_POINT(QPolygon)
+DEF_COERCE_ENTRY_POINT(QPolygonF)
 DEF_COERCE_ENTRY_POINT(QSizeF)
 DEF_COERCE_ENTRY_POINT(QSize)
 DEF_COERCE_ENTRY_POINT(QColor)
+

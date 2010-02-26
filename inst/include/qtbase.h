@@ -37,8 +37,8 @@ SEXP wrapPointer(void *ptr, QList<QString> classNames = QList<QString>(),
                  R_CFinalizer_t finalizer = NULL);
 
 SEXP _wrapSmoke(void *ptr, const char *className, bool allocated = true);
-#define wrapSmoke(x, type, allocated) _wrapSmoke(ptr, #type, allocated)
-#define wrapSmokeCopy(x, type) _wrapSmoke(new type(ptr), #type, true)
+#define wrapSmoke(ptr, type, allocated) _wrapSmoke(ptr, #type, allocated)
+#define wrapSmokeCopy(ptr, type) _wrapSmoke(new type(ptr), #type, true)
 
 // Conversion routines
 

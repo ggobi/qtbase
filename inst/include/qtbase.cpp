@@ -14,7 +14,7 @@
    static __ ## stubname ## _funtype__ fun = NULL;                      \
    if (fun == NULL)                                                     \
      fun = (__ ## stubname ## _funtype__)                               \
-       R_GetCCallable("qtbase", "_" #stubname);                         \
+       R_GetCCallable("qtbase", #stubname);                             \
    return fun args;                                                     \
   }
 
@@ -30,7 +30,7 @@
    static __ ## stubname ## _funtype__ fun = NULL;                      \
    if (fun == NULL)                                                     \
      fun = (__ ## stubname ## _funtype__)                               \
-       R_GetCCallable("qtbase", "_" #stubname);                         \
+       R_GetCCallable("qtbase", #stubname);                             \
    fun args;                                                            \
    return;                                                              \
   }

@@ -92,6 +92,8 @@ static R_CallMethodDef CallEntries[] = {
     CALLDEF_COERCE(QTransform),
     CALLDEF_COERCE(QPointF),
     CALLDEF_COERCE(QPoint),
+    CALLDEF_COERCE(QPolygonF),
+    CALLDEF_COERCE(QPolygon),
     CALLDEF_COERCE(QSizeF),
     CALLDEF_COERCE(QSize),
     CALLDEF_COERCE(QColor),

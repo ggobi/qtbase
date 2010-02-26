@@ -13,12 +13,6 @@ export(qconnect)
 # invoke
 export(qinvoke)
 
-# constructors of simple types
-export(qrect, qpoint, qsize, qcolor, qfont, qmatrix)
-
-S3method(qmatrix, NULL)
-S3method(qmatrix, matrix)
-
 # smoke library
 S3method(print, RQtLibrary)
 
@@ -35,6 +29,9 @@ S3method("&", QtEnum)
 # the Qt smoke library
 export(Qt)
 
+## allow other packages to provide Smoke modules
+export(qlibrary)
+
 ## convenience for stylesheet manipulation
 export(qsetStyleSheet, qstyleSheet)
 
@@ -42,19 +39,23 @@ export(qsetStyleSheet, qstyleSheet)
 export(testLabel)
 
 ## explicit coercions
-export(as.matrix.QRectF)
-export(as.matrix.QRect)
 
-export(as.vector.QPointF)
-export(as.vector.QPoint)
+S3method(as.matrix, QRectF)
+S3method(as.matrix, QRect)
+S3method(as.matrix, QTransform)
+S3method(as.matrix, QColor)
+S3method(as.matrix, QPolygonF)
+S3method(as.matrix, QPolygon)
 
-export(as.vector.QSizeF)
-export(as.vector.QSize)
+S3method(as.vector, QPointF)
+S3method(as.vector, QPoint)
+S3method(as.vector, QSizeF)
+S3method(as.vector, QSize)
 
-export(as.matrix.QTransform)
-
-export(as.raw.QByteArray)
-export(as.character.QByteArray)
+S3method(as.raw, QByteArray)
+S3method(as.character, QByteArray)
 
 export(qcol2rgb)
-export(as.matrix.QColor )
+
+## constructors of simple types
+export(qrect, qpoint, qsize, qcolor, qfont, qpen, qbrush, qtransform, qpolygon)
