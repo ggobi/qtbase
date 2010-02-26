@@ -43,6 +43,8 @@
         <!-- mac os x special functions -->
         <signature>.*qt_mac_set_cursor.*</signature>
         <signature>.*QPixmapData.*</signature>
+        <!-- low-level FILE* support unnecessary in high-level languages -->
+        <signature>.*FILE.*</signature>
     </exclude>
     <functions>
         <!-- include functions starting with 'q' -->
