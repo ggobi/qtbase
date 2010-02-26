@@ -31,18 +31,21 @@ void MocMethod::invoke(QObject *obj, void **o) {
   }
 }
 
-Smoke::Index
-MocMethod::smokeTypeForName(Smoke *smoke, QByteArray name) const {
-  Smoke::Index typeId = smoke->idType(name.constData());
-  if (typeId == 0) {
-    name.replace("const ", "");
-    typeId = smoke->idType(name);
-  }
-  if (typeId == 0 && !name.contains('*')) {
-    if (!name.contains("&")) {
-      name += "&";
+/* Qt normalizes value type names by removing 'const' and '&'; we work
+   around that here. */
+Smoke::Index MocMethod::smokeTypeForName(Smoke *smoke, QByteArray name) const {
+  Smoke::Index typeId = smoke->idType(name);
+  if (typeId == 0 && !name.endsWith("*")) {
+    QByteArray constName = "const " + name;
+    typeId = smoke->idType(constName);
+    if (typeId == 0) {
+      constName += "&";
+      typeId = smoke->idType(constName);
+      if (typeId == 0) { // could be an enum or internal class
+        QByteArray enumName = _meta->className() + ("::" + name);
+        typeId = smoke->idType(enumName);
+      }
     }
-    typeId = smoke->idType(name.constData());
   }
   return typeId;
 }
