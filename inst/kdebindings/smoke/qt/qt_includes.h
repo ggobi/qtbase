@@ -14,8 +14,10 @@
 #ifdef QT_QTSQL
 #include <QtSql/QtSql>
 #endif
-#include <QtOpenGL/QtOpenGL>
 #ifdef QT_QTOPENGL
+#include <QtOpenGL/QtOpenGL>
+#endif
+#ifdef QT_QTNETWORK
 #include <QtNetwork/QtNetwork>
 #endif
 #ifdef QT_QTSVG
