@@ -24,7 +24,8 @@ qclasses <- function(x) {
 ## Many libraries define all of their classes within a namespace of
 ## the same name We want to avoid syntax like Qanviz$Qanviz$Layer, so
 ## the top namespace is implied. Qt itself is of course an exception.
-qlibrary <- function(lib, namespace = tolower(deparse(substitute(lib)))) {
+qlibrary <- function(lib, namespace = deparse(substitute(lib))) {
+  force(namespace)
   name <- tolower(deparse(substitute(lib)))
   if (is.null(attr(lib, "name")))
     attr(lib, "name") <- name
@@ -35,9 +36,9 @@ qlibrary <- function(lib, namespace = tolower(deparse(substitute(lib)))) {
     classes <- grep(prefix, classes, value=TRUE)
     names(classes) <- sub(prefix, "", classes)
   } else names(classes) <- classes
-  hasNs <- grepl("::", names(classes))
-  ## take care of non-namespaced classes first
-  lapply(names(classes[!hasNs]), function(classAlias) {
+  hasPrefix <- grepl("::", names(classes))
+  ## take care of non-namespaced/non-internal classes first
+  lapply(names(classes[!hasPrefix]), function(classAlias) {
     getClass <- function() {
       class <- qsmokeClass(lib, classes[[classAlias]])
       rm(list = classAlias, envir = lib)
@@ -48,7 +49,7 @@ qlibrary <- function(lib, namespace = tolower(deparse(substitute(lib)))) {
     makeActiveBinding(classAlias, getClass, lib)
   })
   ## now we need a separate environment for each namespace
-  ns <- unique(sub("(.*)::.*", "\\1", classes[hasNs]))
+  ns <- setdiff(sub("(.*)::.*", "\\1", classes[hasPrefix]), classes)
   for (nsi in ns) {
     env <- new.env()
     attributes(env) <- attributes(lib)
@@ -58,8 +59,8 @@ qlibrary <- function(lib, namespace = tolower(deparse(substitute(lib)))) {
 }
 
 print.RQtLibrary <- function(x) {
-  cat("Module '", attr(x, "name"), "' with ", length(ls(x)), " classes\n",
-      sep = "")
+  cat("Module '", attr(x, "name"), "' with ", length(ls(x)),
+      " top-level classes\n", sep = "")
 }
 
 ### Module object for Qt library.
