@@ -1,4 +1,5 @@
 #include <QByteArray>
+#include <QDBusVariant>
 
 #include "MocStack.hpp"
 #include "SmokeStack.hpp"
