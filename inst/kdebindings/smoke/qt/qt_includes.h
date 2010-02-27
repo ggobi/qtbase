@@ -1,5 +1,5 @@
 #include <QtCore/QtCore>
-#ifdef QT_GUI
+#ifndef QT_NO_GUI
 #include <QtGui/QtGui>
 #endif
 
@@ -8,26 +8,26 @@
 #include <QtGui/qx11embed_x11.h>
 #endif
 
-#ifdef QT_XML
+#ifndef QT_NO_XML
 #include <QtXml/QtXml>
 #endif
-#ifdef QT_SQL
+#ifndef QT_NO_SQL
 #include <QtSql/QtSql>
 #endif
-#ifdef QT_OPENGL
+#ifndef QT_NO_OPENGL
 #include <QtOpenGL/QtOpenGL>
 #endif
-#ifdef QT_NETWORK
+#ifndef QT_NO_NETWORK
 #include <QtNetwork/QtNetwork>
 #endif
-#ifdef QT_SVG
+#ifndef QT_NO_SVG
 #include <QtSvg/QtSvg>
 #endif
 
 // some MS headers do
 // #define interface struct
 // un-define it here so QtDBus will build correctly
-#ifdef QT_DBUS
+#ifndef QT_NO_DBUS
 #undef interface
 #include <QtDBus/QtDBus>
 #endif

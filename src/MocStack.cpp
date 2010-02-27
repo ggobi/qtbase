@@ -76,7 +76,7 @@ MocStack::returnFromSmoke(const SmokeStack &stack, const SmokeType &type) {
       t.replace("&", "");
       // probably the only real reason to define a slot in R
       if (t == "QDBusVariant") {
-#ifdef QT_QTDBUS
+#ifndef QT_NO_DBUS
         *reinterpret_cast<QDBusVariant*>(val) =
           *(QDBusVariant*) item.s_class;
 #endif

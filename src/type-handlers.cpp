@@ -105,7 +105,7 @@
 #include <QtGui/qtreewidget.h>
 #include <QtGui/qwidget.h>
 
-#ifdef QT_QTNETWORK
+#ifndef QT_NO_NETWORK
 #include <QtNetwork/qhostaddress.h>
 #include <QtNetwork/qnetworkinterface.h>
 #include <QtNetwork/qurlinfo.h>
@@ -123,19 +123,19 @@
 #if QT_VERSION >= 0x40300
 #include <QtGui/qmdisubwindow.h>
 #include <QtGui/qwizard.h>
-#ifdef QT_QTNETWORK
+#ifndef QT_NO_NETWORK
 #include <QtNetwork/qsslcertificate.h>
 #include <QtNetwork/qsslcipher.h>
 #include <QtNetwork/qsslerror.h>
 #endif
-#ifdef QT_QTXML
+#ifndef QT_NO_XML
 #include <QtXml/qxmlstream.h>
 #endif
 #endif
 
 #if QT_VERSION >= 0x040400
 #include <QtGui/qprinterinfo.h>
-#ifdef QT_QTNETWORK
+#ifndef QT_NO_NETWORK
 #include <QtNetwork/qnetworkcookie.h>
 #endif
 #endif
@@ -144,7 +144,7 @@
 #include <QAbstractAnimation>
 #include <QAbstractState>
 #include <QGenericMatrix>
-#ifdef QT_QTOPENGL
+#ifndef QT_NO_OPENGL
 #include <QGLShader>
 #endif
 #endif
@@ -476,7 +476,7 @@ DEF_MAP_CONVERTERS(QMap, int, QVariant)
 DEF_MAP_CONVERTERS(QMap, QDate, QTextCharFormat)
 DEF_MAP_CONVERTERS(QHash, int, QByteArray)
 
-#ifdef QT_QTNETWORK
+#ifndef QT_NO_NETWORK
 DEF_COLLECTION_CONVERTERS(QList, QHostAddress, class)
 DEF_COLLECTION_CONVERTERS(QList, QNetworkAddressEntry, class)
 DEF_COLLECTION_CONVERTERS(QList, QNetworkInterface, class)
@@ -491,12 +491,12 @@ DEF_COLLECTION_CONVERTERS(QList, QUndoStack*, ptr)
 
 #if QT_VERSION >= 0x40300
 DEF_COLLECTION_CONVERTERS(QList, QMdiSubWindow*, ptr)
-#ifdef QT_QTNETWORK
+#ifndef QT_NO_NETWORK
 DEF_COLLECTION_CONVERTERS(QList, QSslCertificate, class)
 DEF_COLLECTION_CONVERTERS(QList, QSslCipher, class)
 DEF_COLLECTION_CONVERTERS(QList, QSslError, class)
 #endif
-#ifdef QT_QTXML
+#ifndef QT_NO_XML
 DEF_COLLECTION_CONVERTERS(QVector, QXmlStreamEntityDeclaration, class)
 DEF_COLLECTION_CONVERTERS(QVector, QXmlStreamNamespaceDeclaration, class)
 DEF_COLLECTION_CONVERTERS(QVector, QXmlStreamNotationDeclaration, class)
@@ -505,7 +505,7 @@ DEF_COLLECTION_CONVERTERS(QVector, QXmlStreamNotationDeclaration, class)
 
 #if QT_VERSION >= 0x40400
 DEF_COLLECTION_CONVERTERS(QList, QGraphicsWidget*, ptr)
-#ifdef QT_QTNETWORK
+#ifndef QT_NO_NETWORK
 DEF_COLLECTION_CONVERTERS(QList, QNetworkCookie, class)
 #endif
 DEF_COLLECTION_CONVERTERS(QList, QPrinterInfo, class)
@@ -524,7 +524,7 @@ DEF_MATRIX_CONVERTERS(3, 3)
 DEF_MATRIX_CONVERTERS(3, 4)
 DEF_MATRIX_CONVERTERS(4, 2)
 DEF_MATRIX_CONVERTERS(4, 3)
-#ifdef QT_QTOPENGL
+#ifndef QT_NO_OPENGL
 DEF_COLLECTION_CONVERTERS(QList, QGLShader*, ptr)
 #endif
 #endif
@@ -603,15 +603,15 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   TYPE_HANDLER_ENTRY_CLASS2(QHash<int,QByteArray>),
   TYPE_HANDLER_ENTRY_CLASS2(QMap<QDate,QTextCharFormat>),
   TYPE_HANDLER_ENTRY_CLASS2(QPair<int,int>),
-#ifdef QT_QTOPENGL
+#ifndef QT_NO_OPENGL
   TYPE_HANDLER_ENTRY_CLASS(QList<QGLShader*>),
 #endif    
-#ifdef QT_QTNETWORK
+#ifndef QT_NO_NETWORK
   TYPE_HANDLER_ENTRY_CLASS(QList<QHostAddress>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QNetworkAddressEntry>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QNetworkInterface>),
 #endif
-#ifdef QT_QTXML
+#ifndef QT_NO_XML
   TYPE_HANDLER_ENTRY_CLASS(QVector<QXmlStreamEntityDeclaration>),
   TYPE_HANDLER_ENTRY_CLASS(QVector<QXmlStreamNamespaceDeclaration>),
   TYPE_HANDLER_ENTRY_CLASS(QVector<QXmlStreamNotationDeclaration>),
@@ -624,7 +624,7 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
 #endif
 #if QT_VERSION >= 0x40300
   TYPE_HANDLER_ENTRY_CLASS(QList<QMdiSubWindow*>),
-#ifdef QT_QTNETWORK
+#ifndef QT_NO_NETWORK
   TYPE_HANDLER_ENTRY_CLASS(QList<QSslCertificate>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QSslCipher>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QSslError>),
@@ -632,7 +632,7 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
 #endif
 #if QT_VERSION >= 0x040400
   TYPE_HANDLER_ENTRY_CLASS(QList<QPrinterInfo>),
-#ifdef QT_QTNETWORK
+#ifndef QT_NO_NETWORK
   TYPE_HANDLER_ENTRY_CLASS(QList<QNetworkCookie>),
 #endif
 #endif
