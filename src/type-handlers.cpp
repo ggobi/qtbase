@@ -404,6 +404,7 @@ DEF_PAIR_CONVERTERS(int, int, value, value)
 DEF_COLLECTION_CONVERTERS(QList, QAbstractButton*, ptr)
 DEF_COLLECTION_CONVERTERS(QList, QActionGroup*, ptr)
 DEF_COLLECTION_CONVERTERS(QList, QAction*, ptr)
+DEF_COLLECTION_CONVERTERS(QList, QDockWidget*, ptr)
 DEF_COLLECTION_CONVERTERS(QList, QListWidgetItem*, ptr)
 DEF_COLLECTION_CONVERTERS(QList, QObject*, ptr)
 DEF_COLLECTION_CONVERTERS(QList, QTableWidget*, ptr)
@@ -514,7 +515,6 @@ DEF_COLLECTION_CONVERTERS(QList, QPrinterInfo, class)
 DEF_COLLECTION_CONVERTERS(QList, QAbstractAnimation*, ptr)
 DEF_COLLECTION_CONVERTERS(QList, QAbstractState*, ptr)
 DEF_COLLECTION_CONVERTERS(QSet, QAbstractState*, ptr)
-DEF_COLLECTION_CONVERTERS(QList, QDockWidget*, ptr)
 DEF_COLLECTION_CONVERTERS(QList, QGraphicsTransform*, ptr)
 DEF_MATRIX_CONVERTERS(2, 2)
 DEF_MATRIX_CONVERTERS(2, 3)
@@ -550,8 +550,6 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   TYPE_HANDLER_ENTRY_CLASS(QList<QFontDatabase::WritingSystem>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QLocale::Country>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QPrinter::PageSize>),
-  TYPE_HANDLER_ENTRY_CLASS(QList<QAbstractAnimation*>),
-  TYPE_HANDLER_ENTRY_CLASS(QList<QAbstractState*>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QAbstractButton*>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QAction*>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QDockWidget*>),
@@ -562,7 +560,6 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   TYPE_HANDLER_ENTRY_CLASS(QList<QWidget*>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QTreeWidgetItem*>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QUndoStack*>),
-  TYPE_HANDLER_ENTRY_CLASS(QSet<QAbstractState*>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QByteArray>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QFileInfo>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QFileInfo>),
@@ -641,6 +638,9 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
 #endif
 #if QT_VERSION >= 0x40600
   TYPE_HANDLER_ENTRY_CLASS(QList<QGraphicsTransform*>),
+  TYPE_HANDLER_ENTRY_CLASS(QList<QAbstractAnimation*>),
+  TYPE_HANDLER_ENTRY_CLASS(QList<QAbstractState*>),
+  TYPE_HANDLER_ENTRY_CLASS(QSet<QAbstractState*>),
   /* matrices */
   TYPE_HANDLER_ENTRY_CLASS3(QGenericMatrix<2,2,double>),
   TYPE_HANDLER_ENTRY_CLASS3(QGenericMatrix<2,3,double>),
