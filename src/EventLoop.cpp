@@ -1,6 +1,6 @@
 #include <QApplication>
 #include <QTimer>
-#include "EventLoop.hpp"
+#include "EventLoop.moc" // .moc REQUIRED for QT4_AUTOMOC in CMakeLists.txt.
 
 #include <Rinternals.h>
 

@@ -1,0 +1,12 @@
+all:
+	cmake ../inst/kdebindings/CMakeLists.txt \
+	      -DCMAKE_INSTALL_PREFIX=../local
+	LD_LIBRARY_PATH=../../generator/bin make -C ../inst/kdebindings install
+	cmake CMakeLists.txt \
+	      -DR_LIBRARIES="${LIBS} ${LIBR}" -DR_INCLUDES=${R_INCLUDE_DIR}
+	make
+
+clean:
+	make -f Makefile.cmake clean
+	make -C ../inst/kdebindings clean
+	rm -rf ../local

@@ -1,0 +1,2 @@
+## we keep our make rules in Makefile.in, since cmake will overwrite Makefile
+cp src/Makefile.in src/Makefile
