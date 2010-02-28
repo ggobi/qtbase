@@ -23,7 +23,6 @@ QT4_AUTOMOC ( ${qtbase_LIB_SRCS} )
 
 add_library(qtbase SHARED ${qtbase_LIB_SRCS})
 
-target_link_libraries(qtbase ${QT_LIBRARIES} smokeqt ${R_LIBRARIES})
+target_link_libraries(qtbase smokeqt ${QT_LIBRARIES} ${R_LIBRARIES})
 
 set_target_properties(qtbase PROPERTIES PREFIX "")
-set_target_properties(qtbase PROPERTIES VERSION 1.0.0 SOVERSION 1)

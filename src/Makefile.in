@@ -3,7 +3,8 @@ all:
 	      -DCMAKE_INSTALL_PREFIX=../local
 	LD_LIBRARY_PATH=../../generator/bin make -C ../inst/kdebindings install
 	cmake CMakeLists.txt \
-	      -DR_LIBRARIES="${LIBS} ${LIBR}" -DR_INCLUDES=${R_INCLUDE_DIR}
+	      -DR_LIBRARIES="${DYLIB_LDFLAGS} ${LIBR}" \
+	      -DR_INCLUDES=${R_INCLUDE_DIR}
 	make
 
 clean:
