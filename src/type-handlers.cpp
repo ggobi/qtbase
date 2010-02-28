@@ -604,7 +604,9 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   TYPE_HANDLER_ENTRY_CLASS2(QMap<QDate,QTextCharFormat>),
   TYPE_HANDLER_ENTRY_CLASS2(QPair<int,int>),
 #ifndef QT_NO_OPENGL
+#if QT_VERSION >= 0x40600
   TYPE_HANDLER_ENTRY_CLASS(QList<QGLShader*>),
+#endif    
 #endif    
 #ifndef QT_NO_NETWORK
   TYPE_HANDLER_ENTRY_CLASS(QList<QHostAddress>),
