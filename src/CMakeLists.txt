@@ -26,3 +26,4 @@ add_library(qtbase SHARED ${qtbase_LIB_SRCS})
 target_link_libraries(qtbase smokeqt ${QT_LIBRARIES} ${R_LIBRARIES})
 
 set_target_properties(qtbase PROPERTIES PREFIX "")
+set_target_properties(qtbase PROPERTIES SUFFIX ".so")
