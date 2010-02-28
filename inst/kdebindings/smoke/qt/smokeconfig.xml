@@ -42,6 +42,8 @@
         <signature>.*qFrom.*Endian_helper.*</signature>
         <!-- mac os x special functions -->
         <signature>.*qt_mac_set_cursor.*</signature>
+        <signature>.*QMenu::macMenu.*</signature>
+        <signature>.*QDRgn.*</signature>
         <signature>.*QPixmapData.*</signature>
         <!-- low-level FILE* support unnecessary in high-level languages -->
         <signature>.*FILE.*</signature>
