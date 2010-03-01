@@ -6,9 +6,10 @@ all:
 	      -DR_LIBRARIES="${LIBR}" \
 	      -DR_INCLUDES=${R_INCLUDE_DIR}
 	make
+	cp Makefile Makefile.clean
 	cp Makefile.in Makefile
 
 clean:
-	make -f Makefile.cmake clean
+	if test -e Makefile.clean; then make -f Makefile.clean clean; fi
 	make -C ../inst/kdebindings clean
 	rm -rf ../local
