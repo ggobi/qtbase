@@ -70,6 +70,15 @@
    by other objects. An exception would be QTextCodec.
  */
 
+/* TODO: support QDBusReply:
+   QDBusReply<QDBusConnectionInterface::RegisterServiceReply>
+   QDBusReply<QString>
+   QDBusReply<QStringList>
+   QDBusReply<bool>
+   QDBusReply<unsigned int>
+   QDBusReply<void>
+*/
+
 #include <QtCore/qdir.h>
 #include <QtCore/qhash.h>
 #include <QtCore/qlinkedlist.h>
@@ -111,6 +120,12 @@
 #include <QtNetwork/qurlinfo.h>
 #endif
 
+#if QT_VERSION >= 0x40100
+#ifndef QT_NO_NETWORK
+#include <QtNetwork/qnetworkproxy.h>
+#endif
+#endif
+
 #if QT_VERSION >= 0x40200
 #include <QtGui/qgraphicsitem.h>
 #include <QtGui/qgraphicslayout.h>
@@ -137,6 +152,7 @@
 #include <QtGui/qprinterinfo.h>
 #ifndef QT_NO_NETWORK
 #include <QtNetwork/qnetworkcookie.h>
+#include <QtNetwork/qnetworkrequest.h>
 #endif
 #endif
 
@@ -210,14 +226,8 @@ void marshal_basetype(MethodCall *m)
      
   case Smoke::t_class:
     {
-      const char *name = m->type().name();
-      if (!qstrncmp(name, "const", 5))
-        name += 6; /* special-case QVariant[*&], convert to/from R value */
-      if (!qstrncmp(name, "QVariant", 8) && strlen(name) <= 9)
-        marshal<QVariant>(m); /* special-case QByteArray, from raw */
-      else if (m->mode() == MethodCall::RToSmoke &&
-               !qstrncmp(name, "QByteArray", 10) && strlen(name) <= 11)
-        marshal<QByteArray>(m);
+      if (!qstrcmp(m->type().className(), "QVariant"))
+        marshal<QVariant>(m); /* special-case QVariant */
       else marshal<SmokeClassWrapper>(m);
     }
     break;
@@ -259,8 +269,6 @@ int scoreArg_basetype(SEXP arg, const SmokeType &type) {
   SEXP value = arg;
   int rtype = TYPEOF(value);
   unsigned short elem = type.elem();
-  // FIXME: we are not considering pointers to primitives;
-  // We do not know whether they are "out" params or arrays
   switch(rtype) { // try the simple cases first
   case RAWSXP:
     switch(elem) {
@@ -339,7 +347,7 @@ int scoreArg_basetype(SEXP arg, const SmokeType &type) {
     if (elem == Smoke::t_class) {
       SmokeObject *o = SmokeObject::fromSexp(value);
       if (o) {
-        const char *smokeClass = type.name();
+        const char *smokeClass = type.className();
         if (o->className() == smokeClass)
           score = 3;
         else if (o->instanceOf(smokeClass))
@@ -362,9 +370,9 @@ int scoreArg_unknown(SEXP /*arg*/, const SmokeType &type) {
   return 0;
 }
 
-template<> int scoreArg<QString>(SEXP arg, const SmokeType &/*type*/) {
+template<> int scoreArg<QString>(SEXP arg, const SmokeType &type) {
   if (TYPEOF(arg) == STRSXP)
-    return 3;
+    return type.isPtr() ? 1 : 3;
   else return 0;
 }
 
@@ -379,9 +387,9 @@ template <> int scoreArg<QStringList>(SEXP arg, const SmokeType &/*type*/) {
 
 template<> int scoreArg<QByteArray>(SEXP arg, const SmokeType &type) {
   if (TYPEOF(arg) == STRSXP)
-    return 2;
+    return type.isPtr() ? 1 : 2;
   else if (TYPEOF(arg) == RAWSXP)
-    return 3;
+    return type.isPtr() ? 2 : 3;
   else return scoreArg_basetype(arg, type);
 }
 
@@ -480,6 +488,13 @@ DEF_MAP_CONVERTERS(QHash, int, QByteArray)
 DEF_COLLECTION_CONVERTERS(QList, QHostAddress, class)
 DEF_COLLECTION_CONVERTERS(QList, QNetworkAddressEntry, class)
 DEF_COLLECTION_CONVERTERS(QList, QNetworkInterface, class)
+DEF_PAIR_CONVERTERS(QHostAddress, int, class, value)
+#endif
+
+#if QT_VERSION >= 0x40100
+#ifndef QT_NO_NETWORK
+DEF_COLLECTION_CONVERTERS(QList, QNetworkProxy, class)
+#endif
 #endif
 
 #if QT_VERSION >= 0x40200
@@ -507,6 +522,8 @@ DEF_COLLECTION_CONVERTERS(QVector, QXmlStreamNotationDeclaration, class)
 DEF_COLLECTION_CONVERTERS(QList, QGraphicsWidget*, ptr)
 #ifndef QT_NO_NETWORK
 DEF_COLLECTION_CONVERTERS(QList, QNetworkCookie, class)
+DEF_COLLECTION_CONVERTERS(QList, QNetworkRequest::Attribute, enum)
+DEF_MAP_CONVERTERS(QHash, QNetworkRequest::Attribute, QVariant)
 #endif
 DEF_COLLECTION_CONVERTERS(QList, QPrinterInfo, class)
 #endif
@@ -539,6 +556,9 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   TYPE_HANDLER_ENTRY_PRIM(double),
   TYPE_HANDLER_ENTRY_PRIM(float),
   TYPE_HANDLER_ENTRY_CLASS(QString),
+  TYPE_HANDLER_ENTRY_FULL(QString*, QString),
+  TYPE_HANDLER_ENTRY_CLASS(QByteArray),
+  TYPE_HANDLER_ENTRY_FULL(QByteArray*, QByteArray),
   /* Handle various collection classes */
   TYPE_HANDLER_ENTRY_CLASS(QList<int>),
   TYPE_HANDLER_ENTRY_CLASS(QList<unsigned int>),
@@ -612,6 +632,10 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   TYPE_HANDLER_ENTRY_CLASS(QList<QHostAddress>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QNetworkAddressEntry>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QNetworkInterface>),
+  TYPE_HANDLER_ENTRY_CLASS(QList<QNetworkCookie>),
+  TYPE_HANDLER_ENTRY_CLASS(QList<QNetworkProxy>),
+  TYPE_HANDLER_ENTRY_CLASS2(QPair<QHostAddress,int>),
+  TYPE_HANDLER_ENTRY_CLASS2(QHash<QNetworkRequest::Attribute,QVariant>),
 #endif
 #ifndef QT_NO_XML
   TYPE_HANDLER_ENTRY_CLASS(QVector<QXmlStreamEntityDeclaration>),

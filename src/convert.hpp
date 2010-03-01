@@ -327,15 +327,11 @@ QVariant asQVariantOfType(SEXP rvalue, QMetaType::Type type);
 template<> QList<QVariant> from_sexp<QList<QVariant> >(SEXP s,
                                                        const SmokeType &type);
 
-/* R->Smoke as raw vector or reference, Smoke->R as reference */
+/* QByteArray <-> raw or character vector */
 template<> QByteArray from_sexp<QByteArray>(SEXP sexp, const SmokeType &type);
-/* In non-scalars, we mark QByteArray as class, but override for raw */
-template<> inline QByteArray
-class_from_sexp<QByteArray>(SEXP sexp, const SmokeType &type) {
-  return from_sexp<QByteArray>(sexp, type);
-}
 SEXP to_sexp(QByteArray s);
 
+/* QString <-> character vector */
 SEXP to_sexp(QList<QString> list);
 template<> QList<QString> from_sexp<QList<QString> >(SEXP list);
 

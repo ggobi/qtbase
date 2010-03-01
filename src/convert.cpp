@@ -475,10 +475,18 @@ template<> QByteArray
 from_sexp<QByteArray>(SEXP sexp, const SmokeType &type) {
   if (sexp == R_NilValue)
     return QByteArray(0);
-  if (TYPEOF(sexp) == ENVSXP)
-    return class_from_sexp<QByteArray>(sexp, type);
-  sexp = coerceVector(sexp, RAWSXP);
-  return QByteArray((const char *)RAW(sexp), length(sexp));
+  int len = 0;
+  const char *data = NULL;
+  if (TYPEOF(sexp) == STRSXP) { // do the equivalent of charToRaw()
+    if (length(sexp) != 1)
+      error("character vector must have length 1 for conversion to QByteArray");
+    sexp = STRING_ELT(sexp, 0);
+    data = CHAR(sexp);
+  } else {
+    sexp = coerceVector(sexp, RAWSXP);
+    data = (const char *)RAW(sexp);
+  }
+  return QByteArray(data, length(sexp));
 }
 
 /* marked 'static' because we want a different implementation for the

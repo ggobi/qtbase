@@ -265,17 +265,25 @@ template <>
 void marshal_from_sexp<SmokePtrWrapper>(MethodCall *m)
 {
   SEXP v = m->sexp();
-  checkPointer(v, ptr_basename(m->type().name()).constData());
-  setItemValue(m, from_sexp<void*>(v));
+  void *ptr = NULL;
+  if (v != R_NilValue) {
+    checkPointer(v, ptr_basename(m->type().name()).constData());
+    ptr = from_sexp<void*>(v);
+  }
+  setItemValue(m, ptr);
 }
 
 template <>
 void marshal_to_sexp<SmokePtrWrapper>(MethodCall *m)
 {
   void *val = itemValue<void*>(m);
-  QList<QByteArray> classes;
-  classes.append(ptr_basename(m->type().name()));
-  m->setSexp(wrapPointer(val, classes));
+  SEXP v = R_NilValue;
+  if (val) {
+    QList<QByteArray> classes;
+    classes.append(ptr_basename(m->type().name()));
+    v = wrapPointer(val, classes);
+  }
+  m->setSexp(v);
 }
 
 /* Macros for initializing TypeHandler structures in an array. */  
