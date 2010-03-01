@@ -29,13 +29,11 @@ DynamicSlot *RDynamicQObject::createSlot(const char *slot) {
 void RDynamicSlot::call(QObject *sender, void **arguments) {
   Q_UNUSED(sender);
   SEXP user_data = object->userData(), function = object->function();
-  bool have_user_data = user_data != NULL;
   MocMethod method = object->method();
-  // TODO: support the user_data
   QVector<SmokeType> stackTypes = method.types();
   MocStack mocStack = MocStack(arguments, stackTypes.size());
   SmokeStack smokeStack = mocStack.toSmoke(stackTypes);
-  RMethod rmethod(NULL, NULL, function, stackTypes);
+  RMethod rmethod(NULL, NULL, function, stackTypes, user_data);
   rmethod.invoke(NULL, smokeStack.items());
   mocStack.returnFromSmoke(smokeStack, stackTypes[0]);
 }

@@ -147,12 +147,14 @@ static TypeHandler voidHandler =
   { "void", marshal_void, NULL };
 
 TypeHandler *MethodCall::typeHandler(const SmokeType &type) {
-  TypeHandler *h = &unknownHandler;
+  TypeHandler *h = NULL;
   if (type.elem())
     h = &baseHandler;
   else if (!type.name())
     h = &voidHandler;
   else h = typeHandlers[type.name()];
+  if (!h)
+    h = &unknownHandler;
   return h;
 }
 

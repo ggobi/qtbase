@@ -8,7 +8,7 @@ SEXP RMethod::invoke(SEXP self, SEXP args) {
   SEXP lang, lang_tmp, fun;
   int problem = 0;
   
-  PROTECT(lang = allocVector(LANGSXP, length(args) + 1));
+  PROTECT(lang = allocVector(LANGSXP, length(args) + 1 + (_userData != NULL)));
   
   if (self) {
     SmokeObject *so = SmokeObject::fromSexp(self);
@@ -21,6 +21,8 @@ SEXP RMethod::invoke(SEXP self, SEXP args) {
     SETCAR(lang_tmp, VECTOR_ELT(args, i));
     lang_tmp = CDR(lang_tmp);
   }
+  if (_userData)
+    SETCAR(lang_tmp, _userData);
   SEXP ans = R_tryEval(lang, R_GlobalEnv, &problem);
   UNPROTECT(1);
   if (problem)

@@ -13,8 +13,10 @@ class MethodCall;
 class RMethod : public Method {
 public:
   RMethod(const Class *klass, const char *name, SEXP closure,
-          QVector<SmokeType> types = QVector<SmokeType>())
-    : _closure(closure),  _klass(klass), _name(name), _types(types)
+          QVector<SmokeType> types = QVector<SmokeType>(),
+          SEXP userData = NULL)
+    : _closure(closure),  _klass(klass), _name(name), _types(types),
+      _userData(userData)
   { }
 
   virtual const Class * klass() const { return _klass; }
@@ -28,6 +30,7 @@ public:
   virtual void invoke(SmokeObject *obj, Smoke::Stack stack);
   
   SEXP closure() const { return _closure; }
+  SEXP userData() const { return _userData; }
   
 private:
   SEXP _closure;
@@ -35,6 +38,7 @@ private:
   const char* _name;
   QVector<SmokeType> _types;
   Qualifiers _flags;
+  SEXP _userData;
 };
 
 #endif
