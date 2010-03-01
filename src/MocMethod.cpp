@@ -44,6 +44,10 @@ Smoke::Index MocMethod::smokeTypeForName(Smoke *smoke, QByteArray name) const {
       if (typeId == 0) { // could be an enum or internal class
         QByteArray enumName = _meta->className() + ("::" + name);
         typeId = smoke->idType(enumName);
+        if (typeId == 0) { // more special cases
+          if (name == "qint64")
+            typeId = smoke->idType("long long");
+        }
       }
     }
   }
