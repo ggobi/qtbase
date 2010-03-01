@@ -47,7 +47,7 @@ QByteArray SmokeClass::mungedMethodName(const MethodCall &call) const {
     return munged;
   for (int i = 0; i < length(args); i++) {
     SEXP arg = VECTOR_ELT(args, i);
-    if (isVectorAtomic(arg) && length(arg) == 1)
+    if (TYPEOF(arg) == RAWSXP || (isVectorAtomic(arg) && length(arg) == 1))
       munged += "$";
     else if (isNull(arg) || isEnvironment(arg))
       munged += "#";
