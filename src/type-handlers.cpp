@@ -511,7 +511,7 @@ DEF_COLLECTION_CONVERTERS(QList, QSslCertificate, class)
 DEF_COLLECTION_CONVERTERS(QList, QSslCipher, class)
 DEF_COLLECTION_CONVERTERS(QList, QSslError, class)
 #endif
-#ifndef QT_NO_XML
+#if !defined(QT_NO_XML) || QT_VERSION >= 0x40400
 DEF_COLLECTION_CONVERTERS(QVector, QXmlStreamEntityDeclaration, class)
 DEF_COLLECTION_CONVERTERS(QVector, QXmlStreamNamespaceDeclaration, class)
 DEF_COLLECTION_CONVERTERS(QVector, QXmlStreamNotationDeclaration, class)
@@ -637,7 +637,7 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   TYPE_HANDLER_ENTRY_CLASS2(QPair<QHostAddress,int>),
   TYPE_HANDLER_ENTRY_CLASS2(QHash<QNetworkRequest::Attribute,QVariant>),
 #endif
-#ifndef QT_NO_XML
+#if !defined(QT_NO_XML) || QT_VERSION >= 0x40400
   TYPE_HANDLER_ENTRY_CLASS(QVector<QXmlStreamEntityDeclaration>),
   TYPE_HANDLER_ENTRY_CLASS(QVector<QXmlStreamNamespaceDeclaration>),
   TYPE_HANDLER_ENTRY_CLASS(QVector<QXmlStreamNotationDeclaration>),
