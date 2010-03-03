@@ -213,7 +213,10 @@ QHash<const char *, int> SmokeClass::createEnumValuesMap() const {
   QHash<const char *, int> values;
   Smoke::StackItem stack[1];
   for (int i = methmin; i <= methmax; i++) {
-    Smoke::Method m = _smoke->methods[_smoke->methodMaps[i].method];
+    Smoke::Index mi = _smoke->methodMaps[i].method;
+    if (mi < 0) // ambiguous method, cannot be an enum
+      continue;
+    Smoke::Method m = _smoke->methods[mi];
     if ((m.flags & Smoke::mf_ctor))
       continue; // constructors are capitalized, so can be mixed-in
     if ((m.flags & Smoke::mf_enum) == 0)
