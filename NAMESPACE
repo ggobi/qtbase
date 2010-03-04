@@ -52,9 +52,6 @@ S3method(as.vector, QPoint)
 S3method(as.vector, QSizeF)
 S3method(as.vector, QSize)
 
-S3method(as.raw, QByteArray)
-S3method(as.character, QByteArray)
-
 export(qcol2rgb)
 
 ## constructors of simple types

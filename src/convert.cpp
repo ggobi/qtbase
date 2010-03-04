@@ -638,7 +638,6 @@ SEXP to_sexp(QColor color) {
     return to_sexp(*unwrapSmoke(sexp, type));            \
   }
 
-DEF_COERCE_ENTRY_POINT(QByteArray)
 DEF_COERCE_ENTRY_POINT(QRectF)
 DEF_COERCE_ENTRY_POINT(QRect)
 DEF_COERCE_ENTRY_POINT(QTransform)

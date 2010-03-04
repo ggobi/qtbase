@@ -365,7 +365,6 @@ SEXP to_sexp(QColor color);
 #define DECL_COERCE_ENTRY_POINT(type)            \
   SEXP qt_coerce_##type(SEXP sexp)
 
-DECL_COERCE_ENTRY_POINT(QByteArray);
 DECL_COERCE_ENTRY_POINT(QRectF);
 DECL_COERCE_ENTRY_POINT(QRect);
 DECL_COERCE_ENTRY_POINT(QTransform);

@@ -86,7 +86,6 @@ static R_CallMethodDef CallEntries[] = {
     CALLDEF(qt_qenclose, 2),
 
     // Explicit coercions
-    CALLDEF_COERCE(QByteArray),
     CALLDEF_COERCE(QRectF),
     CALLDEF_COERCE(QRect),
     CALLDEF_COERCE(QTransform),
