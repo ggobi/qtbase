@@ -482,35 +482,36 @@ public:
     }
 
     inline ModuleIndex findMethod(ModuleIndex c, ModuleIndex name) {
-	// Index is invalid
-	if(!c.index || !name.index) return NullModuleIndex;
-	// Is the method a direct member of the specified class?
-	ModuleIndex mid = idMethod(c.index, name.index);
-	if(mid.index) return mid;
-	// No, it isn't... Search in the parent classes for it
-	if(!classes[c.index].parents) return NullModuleIndex;
-	for(int p = classes[c.index].parents; inheritanceList[p] ; p++) {
-	    Index ci = inheritanceList[p];
-	    const char* cName = className(ci);
-        ClassMap::iterator i = classMap.find(cName);
-        if (i == classMap.end()) {
-            return NullModuleIndex;
-        }
-	    ModuleIndex cmi = i->second;
-	    ModuleIndex nmi = i->second.smoke->findMethodName(cName, name.smoke->methodNames[name.index]);
-	    ModuleIndex mi = i->second.smoke->findMethod(cmi, nmi);
-	    if (mi.index) return mi;
-	}
-	return NullModuleIndex;
+      if (!c.index || !name.index) {
+ 	return NullModuleIndex;
+      } else if (name.smoke == this && c.smoke == this) {
+ 	ModuleIndex mi = idMethod(c.index, name.index);
+ 	if (mi.index) return mi;
+      } else if (c.smoke != this) {
+ 	return c.smoke->findMethod(c, name);
+      }
+      
+      for (Index *i = inheritanceList + classes[c.index].parents; *i; ++i) {
+ 	const char *cName = className(*i);
+ 	ModuleIndex ci = findClass(cName);
+ 	if (!ci.smoke)
+          return NullModuleIndex;
+ 	ModuleIndex ni =
+          ci.smoke->findMethodName(cName, name.smoke->methodNames[name.index]);
+ 	ModuleIndex mi = ci.smoke->findMethod(ci, ni);
+ 	if (mi.index) return mi;
+      }
+      return NullModuleIndex;
     }
 
     inline ModuleIndex findMethod(const char *c, const char *name) {
-	ModuleIndex idc = findClass(c);
-	if (!idc.smoke || !idc.index) return NullModuleIndex;
-	ModuleIndex idname = idc.smoke->findMethodName(c, name);
-	return idc.smoke->findMethod(idc, idname);
+      ModuleIndex idc = idClass(c);
+      if (!idc.smoke) idc = findClass(c);
+      if (!idc.smoke || !idc.index) return NullModuleIndex;
+      ModuleIndex idname = idc.smoke->findMethodName(c, name);
+      return idc.smoke->findMethod(idc, idname);
     }
-
+    
     static inline bool isDerivedFrom(const ModuleIndex& classId, const ModuleIndex& baseClassId) {
         return isDerivedFrom(classId.smoke, classId.index, baseClassId.smoke, baseClassId.index);
     }
