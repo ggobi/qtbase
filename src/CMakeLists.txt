@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
 find_package(Qt4 4.0.0 COMPONENTS QtCore QtGui QtXml QtXmlPatterns
-  QtAssistant QtNetwork QtOpenGL QtSql QtSvg QtDBus QtScript QtWebkit
+  QtNetwork QtOpenGL QtSql QtSvg QtDBus QtScript QtWebkit
   QtTest QtUiTools phonon REQUIRED )
 
 include_directories( ../local/include ${R_INCLUDES} )

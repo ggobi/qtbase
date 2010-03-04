@@ -11,11 +11,13 @@
         <dir>@QT_QTDBUS_INCLUDE_DIR@</dir>
         <dir>@QT_QTSQL_INCLUDE_DIR@</dir>
         <dir>@QT_QTXML_INCLUDE_DIR@</dir>
+        <dir>@QT_QTXMLPATTERNS_INCLUDE_DIR@</dir>
         <dir>@QT_QTOPENGL_INCLUDE_DIR@</dir>
         <dir>@QT_QTSVG_INCLUDE_DIR@</dir>
         <dir>@QT_QTSCRIPT_INCLUDE_DIR@</dir>
         <dir>@QT_QTUITOOLS_INCLUDE_DIR@</dir>
         <dir>@QT_QTTEST_INCLUDE_DIR@</dir>
         <dir>@QT_QTWEBKIT_INCLUDE_DIR@</dir>
+        <dir>@QT_PHONON_INCLUDE_DIR@</dir>
     </includeDirs>
 </config>

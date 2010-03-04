@@ -141,8 +141,8 @@ foreach(test_target ${test_targets})
   try_compile(test_result "${CMAKE_CURRENT_BINARY_DIR}/test-${test_target}"
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/test.cpp
     COMPILE_DEFINITIONS -DTEST_${test_target}
-    CMAKE_FLAGS "-DINCLUDE_DIRECTORIES:STRING=${CMAKE_SYSTEM_INCLUDE_PATH};${QT_INCLUDE_DIR}"
-    "-DLINK_LIBRARIES:STRING=${QT_QTCORE_LIBRARY};${QT_QTDBUS_LIBRARY};${QT_QTGUI_LIBRARY};${QT_QTNETWORK_LIBRARY};${QT_QTOPENGL_LIBRARY};${QT_QTXML_LIBRARY};${QT_QTSVG_LIBRARY}")
+    CMAKE_FLAGS "-DINCLUDE_DIRECTORIES:STRING=${QT_INCLUDES}"
+    "-DLINK_LIBRARIES:STRING=${QT_LIBRARIES}")
   if(test_result)
     message(STATUS "${test_target} *Undefined*")
   else(test_result)
@@ -150,6 +150,14 @@ foreach(test_target ${test_targets})
     list(APPEND qtdefines ${test_target})
   endif(test_result)
 endforeach(test_target ${test_targets})
+
+get_directory_property(qtdefines_compiler "COMPILE_DEFINITIONS")
+
+foreach(definition ${qtdefines_compiler})
+  message(STATUS "${definition} [Defined]")
+  string(REGEX REPLACE "-D" "" definition ${definition})
+  list(APPEND qtdefines ${definition})
+endforeach(definition ${qtdefines})
 
 # string(REGEX REPLACE ";" "\n" qtdefines ${qtdefines})
 # file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/../qtdefines-ng ${qtdefines})

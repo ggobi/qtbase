@@ -49,6 +49,41 @@
         <signature>.*QPixmapData.*</signature>
         <!-- low-level FILE* support unnecessary in high-level languages -->
         <signature>.*FILE.*</signature>
+
+        <!-- QXmlPattners excludes -->
+        <signature>.*QAbstractXmlForwardIterator.*</signature>
+        <signature>.*QPatternist::ItemType.*</signature>
+        <!-- The following methods aren't in the lib -->
+        <signature>.*QXmlNodeModelIndex::namespaceBindings.*</signature>
+        <signature>.*QXmlNodeModelIndex::sendNamespaces.*</signature>
+        <signature>.*QXmlNodeModelIndex::compareOrder.*</signature>
+        <signature>.*QXmlNodeModelIndex::isDeepEqual.*</signature>
+        <signature>.*QXmlNodeModelIndex::kind.*</signature>
+        <signature>.*QXmlNodeModelIndex::baseUri.*</signature>
+        <signature>.*QXmlNodeModelIndex::documentUri.*</signature>
+        <signature>.*QXmlNodeModelIndex::root.*</signature>
+        <signature>.*QXmlNodeModelIndex::name.*</signature>
+        <signature>.*QXmlNodeModelIndex::is.*</signature>
+        <signature>.*QXmlNodeModelIndex::stringValue.*</signature>
+        <signature>.*QXmlNodeModelIndex::namespaceForPrefix.*</signature>
+        <signature>.*QXmlName::QXmlName.*short.*</signature>
+        <signature>.*QXmlName::code().*</signature>
+        <signature>.*QXmlName::setLocalName.*short.*</signature>
+        <signature>.*QXmlName::setNamespaceURI.*</signature>
+        <signature>.*QXmlName::setPrefix.*short.*</signature>
+        <signature>.*QXmlName::isLexicallyEqual.*</signature>
+        <signature>.*short.*QXmlName::namespaceURI().*</signature>
+        <signature>.*QXmlName::hasNamespace().*</signature>
+        <signature>.*QXmlName::hasPrefix().*</signature>
+        <signature>.*short.*QXmlName::prefix().*</signature>
+        <signature>.*short.*QXmlName::localName().*</signature>
+
+        <!-- QtTest excludes -->
+        <signature>QTest::QTouchEventSequence QTest::touchEvent.*</signature>
+
+        <!-- Phonon excludes -->
+        <signature>.*Phonon::.*::k_ptr</signature>
+        
     </exclude>
     <functions>
         <!-- include functions starting with 'q' -->
@@ -56,6 +91,7 @@
         <name>.*::q.*</name>
         <!-- and operators -->
         <name>.*operator.*</name>
+        <name>^QTest::.*</name>
     </functions>
     <classList>
         <class>QAbstractAnimation</class>
@@ -711,11 +747,106 @@
         <class>QXmlStreamReader</class>
         <class>QXmlStreamStringRef</class>
         <class>QXmlStreamWriter</class>
+
+        <!-- QtXmlPatterns -->
+        <class>QAbstractMessageHandler</class>
+        <class>QAbstractUriResolver</class>
+        <class>QAbstractXmlNodeModel</class>
+        <class>QAbstractXmlReceiver</class>
+        <class>QSimpleXmlNodeModel</class>
+        <class>QSourceLocation</class>
+        <class>QXmlFormatter</class>
+        <class>QXmlItem</class>
+        <class>QXmlName</class>
+        <class>QXmlNamePool</class>
+        <class>QXmlNodeModelIndex</class>
+        <class>QXmlQuery</class>
+        <class>QXmlResultItems</class>
+        <class>QXmlSchema</class>
+        <class>QXmlSchemaValidator</class>
+        <class>QXmlSerializer</class>
+
+        <!-- QtScript -->
+        <class>QScriptable</class>
+        <class>QScriptClass</class>
+        <class>QScriptClassPropertyIterator</class>
+        <class>QScriptContext</class>
+        <class>QScriptContextInfo</class>
+        <class>QScriptEngineAgent</class>
+        <class>QScriptEngine</class>
+        <class>QScriptEngineDebugger</class>
+        <class>QScriptExtensionInterface</class>
+        <class>QScriptExtensionPlugin</class>
+        <class>QScriptString</class>
+        <class>QScriptValue</class>
+        <class>QScriptValueIterator</class>
+        <class>QScriptSyntaxCheckResult</class>
+
+        <!-- QtUiTools -->
+        <class>QUiLoader</class>
+
+        <!-- QtTest -->
+        <class>QSignalSpy</class>
+        <class>QTest</class>
+        <class>QTestAccessibility</class>
+        <class>QTestAccessibilityEvent</class>
+        <class>QTestData</class>
+        <class>QTestDelayEvent</class>
+        <class>QTestEvent</class>
+        <class>QTestEventList</class>
+        <class>QTestEventLoop</class>
+        <class>QTestKeyClicksEvent</class>
+        <class>QTestKeyEvent</class>
+        <class>QTestMouseEvent</class>
+
+        <!-- QtWebkit -->
+        <class>QWebDatabase</class>
+        <class>QWebElement</class>
+        <class>QWebElementCollection</class>
+        <class>QWebFrame</class>
+        <class>QWebHistory</class>
+        <class>QWebHistoryInterface</class>
+        <class>QWebHistoryItem</class>
+        <class>QWebHitTestResult</class>
+        <class>QWebInspector</class>
+        <class>QWebPage</class>
+        <class>QWebPluginFactory</class>
+        <class>QWebSecurityOrigin</class>
+        <class>QWebSettings</class>
+        <class>QWebView</class>
+
+        <!-- Phonon -->
+        <class>Phonon::AbstractAudioOutput</class>
+        <class>Phonon::AbstractMediaStream</class>
+        <class>Phonon::AbstractVideoOutput</class>
+        <class>Phonon::AudioDataOutput</class>
+        <class>Phonon::AudioOutput</class>
+        <class>Phonon::Effect</class>
+        <class>Phonon::EffectParameter</class>
+        <class>Phonon::EffectWidget</class>
+        <class>Phonon::GlobalConfig</class>
+        <class>Phonon::MediaController</class>
+        <class>Phonon::MediaNode</class>
+        <class>Phonon::MediaObject</class>
+        <class>Phonon::MediaSource</class>
+        <class>Phonon::ObjectDescriptionData</class>
+        <class>Phonon::ObjectDescriptionModelData</class>
+        <class>Phonon::Path</class>
+        <class>Phonon::PulseSupport</class>
+        <class>Phonon::SeekSlider</class>
+        <class>Phonon::StreamInterface2</class>
+        <class>Phonon::StreamInterface</class>
+        <class>Phonon::VideoPlayer</class>
+        <class>Phonon::VideoWidget</class>
+        <class>Phonon::VolumeFaderEffect</class>
+        <class>Phonon::VolumeSlider</class>
+        
         <!-- namespaces -->
         <class>Qt</class>
         <class>QDBus</class>
         <class>QGL</class>
         <class>QSsl</class>
         <class>QSql</class>
+        <class>Phonon</class>
     </classList>
 </config>

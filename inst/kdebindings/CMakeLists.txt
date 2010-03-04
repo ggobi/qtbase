@@ -4,7 +4,9 @@ project(kdebindings)
 
 add_subdirectory(generator)
 
-FIND_PACKAGE(Qt4 REQUIRED)
+FIND_PACKAGE(Qt4 REQUIRED 4.0.0 COMPONENTS QtCore QtGui QtXml QtXmlPatterns
+  QtNetwork QtOpenGL QtSql QtSvg QtDBus QtScript QtWebkit
+  QtTest QtUiTools phonon REQUIRED)
 
 add_subdirectory(smoke)
 

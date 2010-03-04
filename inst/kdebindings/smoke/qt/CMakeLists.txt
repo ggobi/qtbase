@@ -1,5 +1,6 @@
 
 include_directories( ${QT_INCLUDES} ${CMAKE_SOURCE_DIR}/smoke )
+include(${QT_USE_FILE})
 
 configure_file(config.xml.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.xml @ONLY)
 
@@ -40,10 +41,10 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/smokedata.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/x_19.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/x_20.cpp
 
-    COMMAND generator
+    COMMAND smokegen
     ARGS -config "${CMAKE_CURRENT_BINARY_DIR}/config.xml" -smokeconfig "${CMAKE_CURRENT_SOURCE_DIR}/smokeconfig.xml"
          -- ${CMAKE_CURRENT_SOURCE_DIR}/qt_includes.h
-    DEPENDS generator generator_smoke config.xml smokeconfig.xml qt_includes.h
+    DEPENDS smokegen generator_smoke config.xml smokeconfig.xml qt_includes.h
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 macro_add_file_dependencies( ${CMAKE_CURRENT_BINARY_DIR}/smokedata.cpp ${CMAKE_CURRENT_BINARY_DIR}/x_1.cpp )
@@ -82,14 +83,7 @@ add_definitions(-DBASE_SMOKE_BUILDING)
 # kde4_add_library(smokeqt SHARED ${smokeqt_LIB_SRCS})
 add_library(smokeqt STATIC ${smokeqt_LIB_SRCS})
 
-target_link_libraries(smokeqt ${QT_QTCORE_LIBRARY}
-                              ${QT_QTGUI_LIBRARY}
-                              ${QT_QTNETWORK_LIBRARY}
-                              ${QT_QTOPENGL_LIBRARY}
-                              ${QT_QTDBUS_LIBRARY}
-                              ${QT_QTSQL_LIBRARY}
-                              ${QT_QTSVG_LIBRARY}
-                              ${QT_QTXML_LIBRARY} )
+target_link_libraries(smokeqt ${QT_LIBRARIES})
 
 set_target_properties(smokeqt PROPERTIES VERSION 3.0.0 SOVERSION 3 )
 

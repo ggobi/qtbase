@@ -1,33 +1,49 @@
 #include <QtCore/QtCore>
-#ifndef QT_NO_GUI
 #include <QtGui/QtGui>
-#endif
 
 #ifdef Q_WS_X11
 #include <QtGui/qx11info_x11.h>
 #include <QtGui/qx11embed_x11.h>
 #endif
 
-#ifndef QT_NO_XML
+#ifdef QT_XML_LIB
 #include <QtXml/QtXml>
 #endif
-#ifndef QT_NO_SQL
+#ifdef QT_XMLPATTERNS_LIB
+#include <QtXmlPatterns/QtXmlPatterns>
+#endif
+#ifdef QT_SQL_LIB
 #include <QtSql/QtSql>
 #endif
-#ifndef QT_NO_OPENGL
+#ifdef QT_OPENGL_LIB
 #include <QtOpenGL/QtOpenGL>
 #endif
-#ifndef QT_NO_NETWORK
+#ifdef QT_NETWORK_LIB
 #include <QtNetwork/QtNetwork>
 #endif
-#ifndef QT_NO_SVG
+#ifdef QT_SVG_LIB
 #include <QtSvg/QtSvg>
+#endif
+#ifdef QT_SCRIPT_LIB
+#include <QtScript/QtScript>
+#endif
+#ifdef QT_UITOOLS_LIB
+#include <QtUiTools/QtUiTools>
+#endif
+#ifdef QT_TEST_LIB
+#include <QtTest/QtTest>
+#endif
+#ifdef QT_WEBKIT_LIB
+#include <QtWebkit/QtWebkit>
+#endif
+#ifdef QT_PHONON_LIB
+#include <Phonon>
 #endif
 
 // some MS headers do
 // #define interface struct
 // un-define it here so QtDBus will build correctly
-#ifndef QT_NO_DBUS
+#ifdef QT_DBUS_LIB
 #undef interface
 #include <QtDBus/QtDBus>
 #endif
