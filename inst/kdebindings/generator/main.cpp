@@ -43,7 +43,7 @@ typedef int (*GenerateFn)();
 static void showUsage()
 {
     std::cout << 
-    "Usage: generator [options] -- <header files>" << std::endl <<
+    "Usage: smokegen [options] -- <header files>" << std::endl <<
     "Possible command line options are:" << std::endl <<
     "    -I <include dir>" << std::endl <<
     "    -d <path to file containing #defines>" << std::endl <<
@@ -162,6 +162,12 @@ int main(int argc, char **argv)
     // first try to load plugins from the executable's directory
     QLibrary lib(app.applicationDirPath() + "/generator_" + generator);
     lib.load();
+    if (!lib.isLoaded()) {
+        lib.unload();
+        lib.setFileName(app.applicationDirPath() +
+                        "/../lib/smokegen/generator_" + generator);
+      	lib.load();
+    }
     if (!lib.isLoaded()) {
         lib.unload();
         lib.setFileName("generator_" + generator);
