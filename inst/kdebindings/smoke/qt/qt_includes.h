@@ -34,7 +34,7 @@
 #include <QtTest/QtTest>
 #endif
 #ifdef QT_WEBKIT_LIB
-#include <QtWebkit/QtWebkit>
+#include <QtWebKit/QtWebKit>
 #endif
 #ifdef QT_PHONON_LIB
 #include <Phonon>
