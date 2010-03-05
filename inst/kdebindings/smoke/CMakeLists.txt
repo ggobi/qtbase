@@ -11,4 +11,4 @@ endif(ENABLE_SMOKE)
 message(STATUS "Build Smoke... " ${SMOKE_ENABLED})
 
 install( FILES smoke.h DESTINATION include )
-install(FILES qt_smoke.h DESTINATION include/smoke)
+install( FILES qt_smoke.h DESTINATION include/smoke )
