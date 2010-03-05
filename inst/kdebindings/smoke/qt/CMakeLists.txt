@@ -1,7 +1,3 @@
-
-include_directories( ${QT_INCLUDES} ${CMAKE_SOURCE_DIR}/smoke )
-include(${QT_USE_FILE})
-
 configure_file(config.xml.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.xml @ONLY)
 
 IF(NOT PERL_FOUND)
@@ -44,12 +40,13 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/smokedata.cpp
     COMMAND smokegen
     ARGS -config "${CMAKE_CURRENT_BINARY_DIR}/config.xml" -smokeconfig "${CMAKE_CURRENT_SOURCE_DIR}/smokeconfig.xml"
          -- ${CMAKE_CURRENT_SOURCE_DIR}/qt_includes.h
-    DEPENDS smokegen generator_smoke config.xml smokeconfig.xml qt_includes.h
+    DEPENDS smokegen generator_smoke ${CMAKE_CURRENT_BINARY_DIR}/config.xml
+            smokeconfig.xml qt_includes.h
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 macro_add_file_dependencies( ${CMAKE_CURRENT_BINARY_DIR}/smokedata.cpp ${CMAKE_CURRENT_BINARY_DIR}/x_1.cpp )
 
-include_directories (${CMAKE_SOURCE_DIR}/smoke ${CMAKE_SOURCE_DIR}/smoke/qt  )
+include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 
 set(smokeqt_LIB_SRCS ${CMAKE_CURRENT_BINARY_DIR}/smokedata.cpp  
                 ${CMAKE_CURRENT_BINARY_DIR}/x_1.cpp 
@@ -89,5 +86,4 @@ set_target_properties(smokeqt PROPERTIES VERSION 3.0.0 SOVERSION 3 )
 
 # Don't use the KDE ${LIB_INSTALL_DIR} macro here as this file is
 # for Qt only installs
-install(TARGETS smokeqt DESTINATION ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX} )
-install(FILES ${CMAKE_SOURCE_DIR}/smoke/qt_smoke.h DESTINATION include/smoke)
+install(TARGETS smokeqt DESTINATION lib${LIB_SUFFIX} )

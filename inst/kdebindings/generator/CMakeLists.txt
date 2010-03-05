@@ -1,7 +1,5 @@
 project(smokegenerator)
 
-find_package(Qt4 REQUIRED)
-
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
@@ -9,7 +7,7 @@ if (NOT LIB_INSTALL_DIR)
     set (LIB_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib)
 endif (NOT LIB_INSTALL_DIR)
 
-include_directories(${QT_INCLUDES} parser)
+include_directories(parser)
 
 add_subdirectory(parser)
 

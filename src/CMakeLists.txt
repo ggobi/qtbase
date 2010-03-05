@@ -1,13 +1,16 @@
 cmake_minimum_required(VERSION 2.8)
 
+project(qtbase)
+
 find_package(Qt4 4.0.0 COMPONENTS QtCore QtGui QtXml QtXmlPatterns
   QtNetwork QtOpenGL QtSql QtSvg QtDBus QtScript QtWebkit
   QtTest QtUiTools phonon REQUIRED )
 
-include_directories( ../local/include ${R_INCLUDES} )
 include(${QT_USE_FILE})
 
-link_directories( ../local/lib )
+include_directories( ../inst/local/include ${R_INCLUDES} )
+
+link_directories( ../inst/local/lib )
 
 set(qtbase_LIB_SRCS init.cpp EventLoop.cpp style.cpp convert.cpp
    wrap.cpp metaobject.cpp connect.cpp invoke.cpp dynamicqobject.cpp
@@ -19,11 +22,13 @@ set(qtbase_LIB_SRCS init.cpp EventLoop.cpp style.cpp convert.cpp
    SmokeList.cpp SmokeObject.cpp ObjectTable.cpp
    InstanceObjectTable.cpp smoke.cpp )
 
-QT4_AUTOMOC ( ${qtbase_LIB_SRCS} )
+QT4_WRAP_CPP ( qtbase_MOC_FILES EventLoop.hpp )
 
-add_library(qtbase SHARED ${qtbase_LIB_SRCS})
+add_library(qtbase SHARED ${qtbase_LIB_SRCS} ${qtbase_MOC_FILES})
 
 target_link_libraries(qtbase smokeqt ${QT_LIBRARIES} ${R_LIBRARIES})
 
 set_target_properties(qtbase PROPERTIES PREFIX "")
 set_target_properties(qtbase PROPERTIES SUFFIX ".so")
+
+install(TARGETS qtbase DESTINATION . )
