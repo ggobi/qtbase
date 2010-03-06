@@ -1,7 +1,7 @@
 all:
 	mkdir -p ../kdebindings-build;
 	cd ../kdebindings-build; \
-	cmake ../inst/kdebindings -DCMAKE_INSTALL_PREFIX=../inst/local; \
+	cmake ../kdebindings -DCMAKE_INSTALL_PREFIX=../inst/local; \
 	LD_LIBRARY_PATH=../../generator/bin make install
 	mkdir -p ../src-build;
 	cd ../src-build; \
