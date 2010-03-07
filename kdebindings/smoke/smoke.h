@@ -117,6 +117,7 @@ public:
         cf_constructor = 0x01,  // has a constructor
         cf_deepcopy = 0x02,     // has copy constructor
         cf_virtual = 0x04,      // has virtual destructor
+        cf_namespace = 0x08,    // is a namespace
         cf_undefined = 0x10     // defined elsewhere
     };
     /**

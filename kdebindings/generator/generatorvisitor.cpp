@@ -767,7 +767,18 @@ void GeneratorVisitor::visitSimpleDeclaration(SimpleDeclarationAST* node)
         do {
             if (it->element && it->element->initializer) {
                 hasInitializer = true;
-                break;
+            }
+            if (it->element && it->element->declarator && it->element->declarator->parameter_declaration_clause) {
+                if (popKlass) {
+                    // This method return type has 'class' or 'struct' prepended to avoid a forward declaration.
+                    // example: 'class KMultiTabBarTab *tab(...)'
+                    QString oldClass = klass.top()->toString();
+                    klass.top()->setParent(0);
+                    classes.insert(klass.top()->toString(), *klass.top());
+                    classes.remove(oldClass);
+                    klass.pop();
+                    popKlass = false;
+                }
             }
             it = it->next;
         } while (end != it);

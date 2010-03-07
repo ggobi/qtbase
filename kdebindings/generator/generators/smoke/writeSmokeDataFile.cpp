@@ -132,7 +132,7 @@ void SmokeDataFile::write()
         foreach (const Class* base, Util::superClassList(&klass)) {
             QString className = base->toString();
             
-            if (includedClasses.contains(className)) {
+            if (includedClasses.contains(className) || externalClasses.contains((Class *) base)) {
                 int index = classIndex[className];
                 if (indices.contains(index))
                     continue;
@@ -266,6 +266,8 @@ void SmokeDataFile::write()
                 if (Util::canClassBeCopied(klass)) flags += "|Smoke::cf_deepcopy";
                 if (Util::hasClassVirtualDestructor(klass)) flags += "|Smoke::cf_virtual";
                 flags.replace("0|", ""); // beautify
+            } else {
+                flags = "Smoke::cf_namespace";
             }
             out << flags << ", ";
             if (!klass->isNameSpace())
@@ -439,9 +441,10 @@ void SmokeDataFile::write()
     out << "// (classId, name (index in methodNames), argumentList index, number of args, method flags, "
         << "return type (index in types), xcall() index)\n";
     out << "static Smoke::Method methods[] = {\n";
+    out << "    { 0, 0, 0, 0, 0, 0, 0 },\t// (no method)\n";
     
-    i = 0;
-    int methodCount = 0;
+    i = 1;
+    int methodCount = 1;
     for (QMap<QString, int>::const_iterator iter = classIndex.constBegin(); iter != classIndex.constEnd(); iter++) {
         Class* klass = &classes[iter.key()];
         const Method* destructor = 0;
