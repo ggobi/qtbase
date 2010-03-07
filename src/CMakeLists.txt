@@ -26,6 +26,8 @@ QT4_WRAP_CPP ( qtbase_MOC_FILES EventLoop.hpp )
 
 add_library(qtbase SHARED ${qtbase_LIB_SRCS} ${qtbase_MOC_FILES})
 
+set_target_properties(qtbase PROPERTIES COMPILE_FLAGS "-ggdb")
+
 target_link_libraries(qtbase smokeqt ${QT_LIBRARIES} ${R_LIBRARIES})
 
 set_target_properties(qtbase PROPERTIES PREFIX "")

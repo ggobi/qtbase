@@ -78,8 +78,8 @@ Smoke::ModuleIndex SmokeClass::findIndex(const MethodCall& call) const
   QList<Smoke::Index> methIds;
   foreach (QByteArray munged, mungedNames) {
     Smoke::ModuleIndex methId = _smoke->findMethod(name(), munged);
-    found.smoke = methId.smoke; // should all have same smoke
     if (methId.index) {
+      found.smoke = methId.smoke; // should all have same smoke
       Smoke::Index i = _smoke->methodMaps[methId.index].method;
       if (i > 0)
         methIds << i;
