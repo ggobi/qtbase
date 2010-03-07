@@ -63,7 +63,7 @@ public:
 private:
 
   Smoke::ModuleIndex findIndex(const MethodCall& call) const;
-  QByteArray mungedMethodName(const MethodCall &call) const;
+  QList<QByteArray> mungedMethodNames(const MethodCall &call) const;
   QHash<const char *, int> createEnumValuesMap() const;
   void findMethodRange();
   void init() { // common initialization code

@@ -40,72 +40,89 @@ void SmokeMethodCache::insert(const MethodCall &call,
   }
 }
 
-QByteArray SmokeClass::mungedMethodName(const MethodCall &call) const {
+QList<QByteArray> SmokeClass::mungedMethodNames(const MethodCall &call) const {
   SEXP args = call.args();
-  QByteArray munged = QByteArray(call.method()->name());
+  QList<QByteArray> mungedNames;
+  mungedNames << call.method()->name();
   if (!args) // does not yet work for foreign calls
-    return munged;
+    return mungedNames;
   for (int i = 0; i < length(args); i++) {
     SEXP arg = VECTOR_ELT(args, i);
-    /* It might seem strange that a QByte_Array_ is treated as a
-       scalar. The idea is that the user will often pass a string
-       as a QByteArray, and a single string is (sort of) a scalar. */
-    if (TYPEOF(arg) == RAWSXP || (isVectorAtomic(arg) && length(arg) == 1))
-      munged += "$";
-    else if (isNull(arg) || isEnvironment(arg))
-      munged += "#";
-    else munged += "?";
+    int nmunged = mungedNames.size();
+    for (int j = 0; j < nmunged; j++) {
+      QByteArray munged = mungedNames[j];
+      /* could be a "scalar" or length-one vector */
+      if (isVectorAtomic(arg) && length(arg) == 1) {
+        mungedNames << munged + "?";
+        munged += "$";
+      }
+      else if (isNull(arg) || isEnvironment(arg))
+        munged += "#";
+      else munged += "?";
+      mungedNames[j] = munged;
+    }
   }
-  return munged;   
+  return mungedNames;
 }
 
 Smoke::ModuleIndex SmokeClass::findIndex(const MethodCall& call) const
 {
-  Smoke::ModuleIndex meth = SmokeMethodCache::find(call);
-  if (meth.index != -1) // cache hit, return immediately
-    return meth;
+  Smoke::ModuleIndex found = SmokeMethodCache::find(call);
+  if (found.index != -1) // cache hit, return immediately
+    return found;
   Method *m = call.method();
-  QByteArray munged = mungedMethodName(call);
-  meth = _smoke->findMethod(name(), munged);
-  if (meth.index) {
-    Smoke::Index i = _smoke->methodMaps[meth.index].method;
-    if (i > 0)
-      meth.index = i;
-    else if (i < 0) { // uh oh, multiple matches
-      int bestMatch = -1;
-      Smoke::Index ambig, bestMethod;
-      SEXP rargs = call.args();
-      bool ambiguous = true;
-      i = -i;
-      // We do not (yet?) support ambiguous Smoke calls
-      if (!rargs) { 
-        meth.index = -1;
-        return meth;
-      }
-      while ((ambig = _smoke->ambiguousMethodList[i])) {
-        int curMatch = 0;
-        Smoke::Index *args = _smoke->argumentList + _smoke->methods[ambig].args;
-        // score each argument
-        for (int j = 0; args[j]; j++) {
-          curMatch +=
-            MethodCall::scoreArg(VECTOR_ELT(rargs, j), _smoke, args[j]);
-          //qDebug("curMatch: %d", curMatch);
-        }
-        ambiguous = curMatch == bestMatch; 
-        if (curMatch > bestMatch) {
-          //qDebug("new best match: %d, old: %d", curMatch, bestMatch);
-          bestMatch = curMatch;
-          bestMethod = ambig;
-        }
-        i++;
-      }
-      if (ambiguous)
-        error("Unable to disambiguate method %s::%s", name(), m->name());
-      meth.index = bestMethod;
-    } else error("Corrupt method %s::%s", name(), m->name());
-    SmokeMethodCache::insert(call, meth); // cache
+  /* Multiple mungedNames are possible, each of which may refer to
+     multiple overloaded methods. We resolve these to a flat
+     list of indices into the 'methods' array. */
+  QList<QByteArray> mungedNames = mungedMethodNames(call);
+  QList<Smoke::Index> methIds;
+  foreach (QByteArray munged, mungedNames) {
+    Smoke::ModuleIndex methId = _smoke->findMethod(name(), munged);
+    found.smoke = methId.smoke; // should all have same smoke
+    if (methId.index) {
+      Smoke::Index i = _smoke->methodMaps[methId.index].method;
+      if (i > 0)
+        methIds << i;
+      else if (i < 0) {
+        Smoke::Index ambig;
+        i = -i;
+        while((ambig = _smoke->ambiguousMethodList[i++]))
+          methIds << ambig;
+      } else error("Corrupt method %s::%s", name(), m->name());
+    }
   }
-  return meth;
+  if (methIds.size() == 1) // fast path
+    found.index = methIds[0];
+  else {
+    /* If we have more than one choice, we score the arguments */
+    SEXP rargs = call.args();
+    int bestMatch = -1;
+    Smoke::Index bestMethod;
+    bool ambiguous = false;
+    Smoke *smoke = found.smoke;
+    foreach (Smoke::Index methId, methIds) {
+      int curMatch = 0;
+      Smoke::Index *args = smoke->argumentList + smoke->methods[methId].args;
+      // score each argument
+      for (int j = 0; args[j]; j++) {
+        curMatch += MethodCall::scoreArg(VECTOR_ELT(rargs, j), smoke, args[j]);
+        //qDebug("curMatch: %d", curMatch);
+      }
+      ambiguous = (curMatch == bestMatch) || ambiguous; 
+      if (curMatch > bestMatch) {
+        //qDebug("new best match: %d, old: %d", curMatch, bestMatch);
+        bestMatch = curMatch;
+        bestMethod = methId;
+        ambiguous = false;
+      }
+    }
+    if (ambiguous)
+      error("Unable to disambiguate method %s::%s", name(), m->name());
+    found.index = bestMethod;
+  }
+  if (found.index != -1)
+    SmokeMethodCache::insert(call, found); // cache
+  return found;
 }
 
 Method *SmokeClass::findMethod(const MethodCall &call) const {
