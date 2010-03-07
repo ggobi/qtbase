@@ -2,7 +2,12 @@
     <scalarTypes>
         <!-- classes, but represented as a scalar ($) in munged names -->
         <typeName>QString</typeName>
-        <typeName>QByteArray</typeName>
+        <!-- GL scalar typedefs -->
+        <typeName>GLenum</typeName>
+        <typeName>GLfloat</typeName>
+        <typeName>GLint</typeName>
+        <typeName>GLuint</typeName>
+        <typeName>GLbitfield</typeName>
     </scalarTypes>
     <voidpTypes>
         <!-- all are classes, but they are represented as Smoke::t_voidp -->
