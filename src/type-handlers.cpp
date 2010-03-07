@@ -687,7 +687,6 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   /* opaque pointers */
   TYPE_HANDLER_ENTRY(void*),
   TYPE_HANDLER_ENTRY_FULL(const void*, void*),
-  TYPE_HANDLER_ENTRY_FULL(FILE*, void*),
   /* primitive typedefs */
   TYPE_HANDLER_ENTRY_FULL(size_t, unsigned int),
   TYPE_HANDLER_ENTRY_FULL(GLenum, int),
@@ -696,7 +695,6 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   TYPE_HANDLER_ENTRY_FULL(GLuint, unsigned int),
   TYPE_HANDLER_ENTRY_FULL(GLbitfield, unsigned int),
   /* SEXP pass-through */
-  TYPE_HANDLER_ENTRY(SEXP),
   { 0, 0, NULL }
 };
 
