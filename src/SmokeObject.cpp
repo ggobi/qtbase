@@ -15,6 +15,9 @@ SmokeObject * SmokeObject::fromPtr(void *ptr, const Class *klass,
   SmokeObject *so = instances[ptr];
   if (!so) {
     so = new SmokeObject(ptr, klass, allocated);
+#ifdef MEM_DEBUG
+    qDebug("%p: created for %p", so, ptr);
+#endif
     // record this ASAP, resolveClassId() needs it for virtual callbacks
     instances[so->ptr()] = so; 
     so->cast(Class::fromSmokeId(so->smoke(), so->module()->resolveClassId(so)));
@@ -23,7 +26,13 @@ SmokeObject * SmokeObject::fromPtr(void *ptr, const Class *klass,
     // FIXME: what happens with other libraries? take QtRuby approach?
     if (so->ptr() != ptr) { // must be multiple inheritance, recache
       SmokeObject *tmp_so = instances[so->ptr()];
+#ifdef MEM_DEBUG
+      qDebug("%p: multiple inheritance detected, switch to %p", so, so->ptr());
+#endif
       if (tmp_so) {
+#ifdef MEM_DEBUG
+      qDebug("%p: replaced with existing %p", so, tmp_so);
+#endif
         delete so;
         so = tmp_so;
         copy = false; // don't think we every want to copy here

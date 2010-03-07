@@ -47,6 +47,9 @@ QByteArray SmokeClass::mungedMethodName(const MethodCall &call) const {
     return munged;
   for (int i = 0; i < length(args); i++) {
     SEXP arg = VECTOR_ELT(args, i);
+    /* It might seem strange that a QByte_Array_ is treated as a
+       scalar. The idea is that the user will often pass a string
+       as a QByteArray, and a single string is (sort of) a scalar. */
     if (TYPEOF(arg) == RAWSXP || (isVectorAtomic(arg) && length(arg) == 1))
       munged += "$";
     else if (isNull(arg) || isEnvironment(arg))
