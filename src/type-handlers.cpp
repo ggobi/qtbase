@@ -343,7 +343,8 @@ int scoreArg_basetype(SEXP arg, const SmokeType &type) {
     if (elem == Smoke::t_char && strlen(CHAR(asChar(value))) == 1)
       score = 2;
     break;
-  case ENVSXP:
+  case ENVSXP: // TODO: use QVariant canConvert() to check for
+               // possible implicit conversions
     if (elem == Smoke::t_class) {
       SmokeObject *o = SmokeObject::fromSexp(value);
       if (o) {
@@ -694,7 +695,6 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   TYPE_HANDLER_ENTRY_FULL(GLint, int),
   TYPE_HANDLER_ENTRY_FULL(GLuint, unsigned int),
   TYPE_HANDLER_ENTRY_FULL(GLbitfield, unsigned int),
-  /* SEXP pass-through */
   { 0, 0, NULL }
 };
 

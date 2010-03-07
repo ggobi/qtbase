@@ -274,6 +274,9 @@ from_sexp<SmokeObject*>(SEXP sexp, const SmokeType &type) {
   return so;
 }
 
+// FIXME: need to check whether 'type' is valid for 'sexp'. Also, try
+// to leverage QVariant to perform implicit conversions.
+
 template<typename T> inline T /* special template for class pointers */
 ptr_from_sexp(SEXP sexp, const SmokeType &type) {
   SmokeObject *so = from_sexp<SmokeObject *>(sexp, type);
@@ -318,7 +321,8 @@ class_to_sexp(T value, const SmokeType &type) {
 
 SEXP to_sexp(QVariant variant); /* <-> "any" R object */
 template<> QVariant from_sexp<QVariant>(SEXP rvalue);
-QVariant asQVariantOfType(SEXP rvalue, QMetaType::Type type);
+QVariant asQVariantOfType(SEXP rvalue, QMetaType::Type type,
+                          bool tryDirect = true);
 template<> QList<QVariant> from_sexp<QList<QVariant> >(SEXP s,
                                                        const SmokeType &type);
 

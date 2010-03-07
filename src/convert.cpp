@@ -285,8 +285,14 @@ template<> QVariant from_sexp<QVariant>(SEXP rvalue) {
     else if (so->instanceOf("QObject"))
       variant =
         qVariantFromValue(reinterpret_cast<QObject *>(so->castPtr("QObject")));
-    else variant = qVariantFromValue(so->ptr());
+    else {
+      QMetaType::Type type = (QMetaType::Type) QMetaType::type(so->className());
+      if (type)
+        variant = asQVariantOfType(rvalue, type, false);
+      else variant = qVariantFromValue(so->ptr());
+    }
   }
+    break;
   default:
     error("Converting to QVariant: unhandled R type");
   }
@@ -296,12 +302,15 @@ template<> QVariant from_sexp<QVariant>(SEXP rvalue) {
 /* create a QVariant of specific type by first creating a QVariant
    directly, and then attempting to coerce it to the required type.
 */
-QVariant asQVariantOfType(SEXP rvalue, QMetaType::Type type) {
-  QVariant direct = from_sexp<QVariant>(rvalue);
+QVariant asQVariantOfType(SEXP rvalue, QMetaType::Type type, bool tryDirect)
+{
   QVariant ans;
-  if (direct.canConvert((QVariant::Type)type)) { // handles a few cases
-    direct.convert((QVariant::Type)type);
-    return direct;
+  if (tryDirect) {
+    QVariant direct = from_sexp<QVariant>(rvalue);
+    if (direct.canConvert((QVariant::Type)type)) { // handles a few cases
+      direct.convert((QVariant::Type)type);
+      return direct;
+    }
   }
   switch(type) {
   case QMetaType::QObjectStar:
