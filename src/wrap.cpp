@@ -6,9 +6,11 @@
 
 void *_unwrapSmoke(SEXP x, const char *type) {
   void *ans = NULL;
-  SmokeObject *so = SmokeObject::fromSexp(x);
-  if (so)
-    ans = so->castPtr(type);
+  if (!isNull(x)) {
+    SmokeObject *so = SmokeObject::fromSexp(x);
+    if (so)
+      ans = so->castPtr(type);
+  }
   return ans;
 }
 
