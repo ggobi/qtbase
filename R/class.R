@@ -31,7 +31,8 @@ print.RQtClass <- function(x) {
 ## obtain a class object from a smoke module and a name
 qsmokeClass <- function(x, name) {
   env <- new.env(parent = emptyenv())
-  cl <- structure(function(...) qinvokeStatic(cl, name, ...), name = name,
+  basename <- gsub(".*::", "", name)
+  cl <- structure(function(...) qinvokeStatic(cl, basename, ...), name = name,
                   env = env, module = attr(x, "name"),
                   class = c("RQtSmokeClass", "RQtClass", "function"))
   methods <- qmethods(cl)
