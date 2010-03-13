@@ -33,7 +33,7 @@ QT_BEGIN_DECLS
 
 void *_unwrapSmoke(SEXP x, const char *type);
 
-SEXP wrapPointer(void *ptr, QList<QString> classNames = QList<QString>(),
+SEXP wrapPointer(void *ptr, QList<QByteArray> classNames = QList<QByteArray>(),
                  R_CFinalizer_t finalizer = NULL);
 
 SEXP _wrapSmoke(void *ptr, const char *className, bool allocated = true);

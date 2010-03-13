@@ -42,7 +42,7 @@ DEFINE_CCALLABLE_STUB(void*, _unwrapSmoke,
                       (     x,             type))
 
 DEFINE_CCALLABLE_STUB(SEXP, wrapPointer,
-                      (void *ptr, QList<QString> classNames,
+                      (void *ptr, QList<QByteArray> classNames,
                        R_CFinalizer_t finalizer),
                       (      ptr,                classNames,
                                       finalizer))
