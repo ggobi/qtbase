@@ -12,6 +12,14 @@ QHash<void *, SmokeObject *> SmokeObject::instances;
 SmokeObject * SmokeObject::fromPtr(void *ptr, const Class *klass,
                                    bool allocated, bool copy)
 {
+  if (!klass) {
+    qCritical("Attempt to create SmokeObject with NULL class");
+    return(NULL);
+  }
+  if (!ptr) {
+    qCritical("Attempt to create SmokeObject with NULL pointer");
+    return(NULL);
+  }
   SmokeObject *so = instances[ptr];
   if (!so) {
     so = new SmokeObject(ptr, klass, allocated);
@@ -72,7 +80,10 @@ SEXP
 SmokeObject::sexpFromPtr(void *ptr, const Class *klass,
                          bool allocated, bool copy)
 {
-  return fromPtr(ptr, klass, allocated, copy)->sexp();
+  SmokeObject *so = fromPtr(ptr, klass, allocated, copy);
+  if (!so)
+    return R_NilValue;
+  else return so->sexp();
 }
 
 SEXP
