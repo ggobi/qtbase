@@ -13,6 +13,14 @@
   ## dir <- system.file(file.path("local", "lib"), package=pkgname)
   ## dyn.load(paste(file.path(dir, "libsmokeqt"), .Platform$dynlib.ext, sep=""))
   ## library.dynam("qtbase", pkgname, libname )
-  .Call(addQtEventHandler)
+
   qlibrary(Qt, NULL)
+
+  ## Prefer OpenGL1.x engine, rather than the OpenGL2 ES engine
+  ## R is usually running on non-mobile platforms
+  ## This must be called before QApplication is constructed!
+  if (!is.null(Qt$QGL))
+    Qt$QGL$setPreferredPaintEngine(Qt$QPaintEngine$OpenGL)
+
+  .Call(addQtEventHandler)
 }
