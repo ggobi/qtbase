@@ -52,6 +52,14 @@ S3method(as.vector, QPoint)
 S3method(as.vector, QSizeF)
 S3method(as.vector, QSize)
 
+S3method(as.double, QPointF)
+S3method(as.double, QPoint)
+S3method(as.double, QSizeF)
+S3method(as.double, QSize)
+
+S3method(as.integer, QPoint)
+S3method(as.integer, QSize)
+
 export(qcol2rgb)
 
 ## constructors of simple types

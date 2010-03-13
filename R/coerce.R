@@ -6,11 +6,18 @@
 as.matrix.QRectF <- function(x) .Call(qt_coerce_QRectF, x)
 as.matrix.QRect <- function(x) .Call(qt_coerce_QRect, x)
 
-as.vector.QPointF <- function(x) .Call(qt_coerce_QPointF, x)
-as.vector.QPoint <- function(x) .Call(qt_coerce_QPoint, x)
+as.vector.QPointF <- function(x, mode) as.vector(as.double(x), mode)
+as.double.QPointF <- function(x) .Call(qt_coerce_QPointF, x)
+as.vector.QPoint <- function(x, mode) as.vector(as.integer(x), mode)
+as.integer.QPoint <- function(x) .Call(qt_coerce_QPoint, x)
+## so that as.numeric() works in either case
+as.double.QPoint <- function(x) as.numeric(as.integer(x))
 
-as.vector.QSizeF <- function(x) .Call(qt_coerce_QSizeF, x)
-as.vector.QSize <- function(x) .Call(qt_coerce_QSize, x)
+as.vector.QSizeF <- function(x, mode) as.vector(as.double(x), mode)
+as.double.QSizeF <- function(x) .Call(qt_coerce_QSizeF, x)
+as.vector.QSize <- function(x, mode) as.vector(as.integer(x), mode)
+as.integer.QSize <- function(x) .Call(qt_coerce_QSize, x)
+as.double.QSize <- function(x) as.numeric(as.integer(x))
 
 as.matrix.QPolygon <- function(x) .Call(qt_coerce_QPolygon, x)
 as.matrix.QPolygonF <- function(x) .Call(qt_coerce_QPolygonF, x)
