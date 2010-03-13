@@ -80,7 +80,7 @@ Smoke::ModuleIndex SmokeClass::findIndex(const MethodCall& call) const
     Smoke::ModuleIndex methId = _smoke->findMethod(name(), munged);
     if (methId.index) {
       found.smoke = methId.smoke; // should all have same smoke
-      Smoke::Index i = _smoke->methodMaps[methId.index].method;
+      Smoke::Index i = methId.smoke->methodMaps[methId.index].method;
       if (i > 0)
         methIds << i;
       else if (i < 0) {
@@ -93,11 +93,11 @@ Smoke::ModuleIndex SmokeClass::findIndex(const MethodCall& call) const
   }
   if (methIds.size() == 1) // fast path
     found.index = methIds[0];
-  else {
+  else if (methIds.size() > 1) {
     /* If we have more than one choice, we score the arguments */
     SEXP rargs = call.args();
     int bestMatch = -1;
-    Smoke::Index bestMethod;
+    Smoke::Index bestMethod = -1;
     bool ambiguous = false;
     Smoke *smoke = found.smoke;
     foreach (Smoke::Index methId, methIds) {
