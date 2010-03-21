@@ -27,9 +27,6 @@
 #ifdef QT_SCRIPT_LIB
 #include <QtScript/QtScript>
 #endif
-#ifdef QT_UITOOLS_LIB
-#include <QtUiTools/QtUiTools>
-#endif
 #ifdef QT_TEST_LIB
 #include <QtTest/QtTest>
 #endif
