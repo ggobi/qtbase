@@ -18,5 +18,6 @@
         <dir>@QT_QTTEST_INCLUDE_DIR@</dir>
         <dir>@QT_QTWEBKIT_INCLUDE_DIR@</dir>
         <dir>@QT_PHONON_INCLUDE_DIR@</dir>
+        <dir>@QT_QTHELP_INCLUDE_DIR@</dir>
     </includeDirs>
 </config>

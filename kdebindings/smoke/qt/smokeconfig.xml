@@ -845,6 +845,19 @@
         <class>Phonon::VideoWidget</class>
         <class>Phonon::VolumeFaderEffect</class>
         <class>Phonon::VolumeSlider</class>
+
+        <!-- QtHelp -->
+        <class>QHelpContentItem</class>
+        <class>QHelpContentModel</class>
+        <class>QHelpContentWidget</class>
+        <class>QHelpEngine</class>
+        <class>QHelpEngineCore</class>
+        <class>QHelpIndexModel</class>
+        <class>QHelpIndexWidget</class>
+        <class>QHelpSearchEngine</class>
+        <class>QHelpSearchQuery</class>
+        <class>QHelpSearchQueryWidget</class>
+        <class>QHelpSearchResultWidget</class>
         
         <!-- namespaces -->
         <class>Qt</class>
