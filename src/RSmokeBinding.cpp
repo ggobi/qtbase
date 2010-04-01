@@ -34,7 +34,7 @@ typedef struct SEXPREC* SEXP;
 void RSmokeBinding::deleted(Smoke::Index classId, void *obj) {
   SmokeObject *o = SmokeObject::fromPtr(obj, smoke, classId);
 #ifdef DEBUG
-  qDebug("%p->~%s()", ptr, smoke->className(classId));
+  qDebug("%p->~%s()", o, smoke->className(classId));
 #endif
   if (!o) {
     return;

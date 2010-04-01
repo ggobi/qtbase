@@ -5,6 +5,8 @@
 
 #include <Rinternals.h>
 
+//#define MEM_DEBUG
+
 /* One SmokeObject for each object,
    to ensure 1-1 mapping from Qt objects to R objects */
 QHash<void *, SmokeObject *> SmokeObject::instances;
@@ -12,14 +14,10 @@ QHash<void *, SmokeObject *> SmokeObject::instances;
 SmokeObject * SmokeObject::fromPtr(void *ptr, const Class *klass,
                                    bool allocated, bool copy)
 {
-  if (!klass) {
-    qCritical("Attempt to create SmokeObject with NULL class");
-    return(NULL);
-  }
-  if (!ptr) {
-    qCritical("Attempt to create SmokeObject with NULL pointer");
-    return(NULL);
-  }
+  if (!klass)
+    error("Attempt to create SmokeObject with NULL class");
+  if (!ptr)
+    error("Attempt to create SmokeObject with NULL pointer");
   SmokeObject *so = instances[ptr];
   if (!so) {
     so = new SmokeObject(ptr, klass, allocated);
