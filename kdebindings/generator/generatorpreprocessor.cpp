@@ -92,6 +92,13 @@ Preprocessor::Preprocessor(const QList<QDir>& includeDirs, const QStringList& de
     exportMacro->variadics = false;
     m_topBlock->setMacro(exportMacro);
 
+    exportMacro = new rpp::pp_macro;
+    exportMacro->name = IndexedString("__SMOKEGEN_RUN__");
+    exportMacro->definition.append(IndexedString('1'));
+    exportMacro->function_like = false;
+    exportMacro->variadics = false;
+    m_topBlock->setMacro(exportMacro);
+    
     foreach (QString define, defines) {
         exportMacro = new rpp::pp_macro;
         exportMacro->name = IndexedString(define);

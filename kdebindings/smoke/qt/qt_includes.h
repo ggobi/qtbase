@@ -37,6 +37,9 @@
 #include <QtHelp/QtHelp>
 #endif
 #ifdef QT_PHONON_LIB
+#ifdef __SMOKEGEN_RUN__
+# define PHONON_EXPORT
+#endif
 #include <Phonon/phonon>
 #endif
 
