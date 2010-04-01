@@ -63,14 +63,18 @@ qfont <-
   Qt$QFont(family, pointsize, weight, italic)
 }
 
-qpen <- function(brush = qbrush(), width = 0L, style = Qt$SolidLine,
-                 cap = Qt$SquareCap, join = Qt$BevelJoin)
+qpen <- function(brush = qbrush(), width = 0L, style = Qt$Qt$SolidLine,
+                 cap = Qt$Qt$SquareCap, join = Qt$Qt$BevelJoin)
 {
+  if (!is(brush, "QBrush"))
+    brush <- qbrush(brush)  
   Qt$QPen(brush, width, style, cap, join)
 }
 
-qbrush <- function(color = qcolor(), style = Qt$SolidPattern)
+qbrush <- function(color = qcolor(), style = Qt$Qt$SolidPattern)
 {
+  if (!is(color, "QColor"))
+    color <- qcolor(color)
   Qt$QBrush(color, style)
 }
 
