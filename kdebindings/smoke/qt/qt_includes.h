@@ -37,7 +37,7 @@
 #include <QtHelp/QtHelp>
 #endif
 #ifdef QT_PHONON_LIB
-#include <phonon/Phonon>
+#include <Phonon/phonon>
 #endif
 
 // some MS headers do
