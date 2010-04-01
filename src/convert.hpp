@@ -285,6 +285,8 @@ ptr_from_sexp(SEXP sexp, const SmokeType &type) {
 
 template<typename T> inline T /* for class pointers that need dereferencing */
 class_from_sexp(SEXP sexp,  const SmokeType &type) {
+  if (sexp == R_NilValue)
+    error("'NULL' not allowed for non-pointer class types");
   return *(ptr_from_sexp<T*>(sexp, type));
 }
 
