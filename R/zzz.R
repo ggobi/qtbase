@@ -19,7 +19,7 @@
   ## Prefer OpenGL1.x engine, rather than the OpenGL2 ES engine
   ## R is usually running on non-mobile platforms
   ## This must be called before QApplication is constructed!
-  if (!is.null(Qt$QGL))
+  if (!is.null(Qt$QGL$setPreferredPaintEngine))
     Qt$QGL$setPreferredPaintEngine(Qt$QPaintEngine$OpenGL)
 
   .Call(addQtEventHandler)
