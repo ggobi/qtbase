@@ -2,6 +2,8 @@
 ## 
 
 qrect <- function(x0, y0, x1, y1) {
+  if (missing(x0)) # a 'null' rectangle
+    return(Qt$QRectF())  
   if (length(x0) == 4L) {
     x0 <- x0[,1]
     y0 <- x0[,2]
@@ -21,6 +23,8 @@ qrect <- function(x0, y0, x1, y1) {
 }
 
 qpoint <- function(x, y) {
+  if (missing(x)) # 'null' point
+    return(Qt$QPointF())
   if (length(x) == 2) {
     y <- x[2]
     x <- x[1]
@@ -32,6 +36,8 @@ qpoint <- function(x, y) {
 }
 
 qsize <- function(width, height) {
+  if (missing(width)) # 'null' size
+    return(Qt$QSizeF())
   if (length(width) == 2) {
     height <- width[2]
     width <- width[1]
@@ -42,7 +48,7 @@ qsize <- function(width, height) {
   cons(width, height)
 }
 
-qpolygon <- function(x, y = NULL) {
+qpolygon <- function(x = NULL, y = NULL) {
   xy <- xy.coords(x, y)
   if (is.integer(c(x, y))) {
     pointCon <- Qt$Point
