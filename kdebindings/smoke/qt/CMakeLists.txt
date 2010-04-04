@@ -38,8 +38,10 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/smokedata.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/x_20.cpp
 
     COMMAND smokegen
-    ARGS -config "${CMAKE_CURRENT_BINARY_DIR}/config.xml" -smokeconfig "${CMAKE_CURRENT_SOURCE_DIR}/smokeconfig.xml"
-         -- ${CMAKE_CURRENT_SOURCE_DIR}/qt_includes.h
+    ARGS -config "${CMAKE_CURRENT_BINARY_DIR}/config.xml"
+         -smokeconfig "${CMAKE_CURRENT_SOURCE_DIR}/smokeconfig.xml"
+         -d "${CMAKE_CURRENT_BINARY_DIR}/../qtdefines"
+         -- "${CMAKE_CURRENT_SOURCE_DIR}/qt_includes.h"
     DEPENDS smokegen generator_smoke ${CMAKE_CURRENT_BINARY_DIR}/config.xml
             smokeconfig.xml qt_includes.h
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
