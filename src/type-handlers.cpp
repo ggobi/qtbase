@@ -357,7 +357,7 @@ int scoreArg_basetype(SEXP arg, const SmokeType &type) {
     }
     break;
   case NILSXP:
-    if (elem == Smoke::t_class)
+    if (type.isPtr())
       score = 1;
     break;
   default:
