@@ -132,8 +132,10 @@ void SmokeObject::maybeDestroy() {
     char *destructor = new char[strlen(cname) + 2];
     destructor[0] = '~';
     strcpy(destructor + 1, cname);
-    invokeMethod(destructor); // causes 'this' to be destructed
+    invokeMethod(destructor); // might cause 'this' to be destructed
     delete[] destructor;
+    if (instances.contains(_ptr)) // we are still around
+      delete this;
   }
 }
 

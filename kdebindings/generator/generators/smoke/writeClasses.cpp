@@ -462,8 +462,7 @@ void SmokeClassFiles::writeClass(QTextStream& out, const Class* klass, const QSt
     out << "    switch(xi) {\n";
     out << switchCode;
     if (Util::hasClassPublicDestructor(klass))
-      //out << "        case " << xcall_index << ": delete (" << className << "*)xself;\tbreak;\n";
-      out << "        case " << xcall_index << ": delete xself;\tbreak;\n";
+        out << "        case " << xcall_index << ": delete (" << className << "*)xself;\tbreak;\n";
     out << "    }\n";
     out << "}\n";
 }

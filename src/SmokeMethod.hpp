@@ -63,6 +63,7 @@ public:
   inline bool isConstructor() const { return _m->flags & Smoke::mf_ctor; }
   inline bool isDestructor() const { return _m->flags & Smoke::mf_dtor; }
   inline bool isProtected() const { return _m->flags & Smoke::mf_protected; }
+  inline bool isVirtual() const { return _m->flags & Smoke::mf_virtual; }
   
   virtual void invoke(SmokeObject *obj, Smoke::Stack stack);
 };
