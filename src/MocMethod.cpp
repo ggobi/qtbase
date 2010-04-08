@@ -47,6 +47,8 @@ Smoke::Index MocMethod::smokeTypeForName(Smoke *smoke, QByteArray name) const {
         if (typeId == 0) { // more special cases
           if (name == "qint64")
             typeId = smoke->idType("long long");
+          else if (name == "qreal")
+            typeId = smoke->idType("float");
         }
       }
     }
