@@ -129,6 +129,9 @@ void SmokeObject::maybeDestroy() {
     qDebug("%p: invoking destructor", this);
 #endif
     const char *cname = _klass->smokeBase()->name();
+    const char *colon = strrchr(cname, ':');
+    if (colon)
+      cname = colon + 1;
     char *destructor = new char[strlen(cname) + 2];
     destructor[0] = '~';
     strcpy(destructor + 1, cname);
