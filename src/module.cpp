@@ -3,6 +3,7 @@
 #include <QGraphicsLayoutItem>
 #include <QLayout>
 
+#include <QStandardItem>
 #include <QListWidgetItem>
 #include <QTableWidgetItem>
 #include <QTreeWidgetItem>
@@ -311,7 +312,11 @@ memory_is_owned_qt(const SmokeObject *o)
         || qstrcmp(className, "QModelIndex") == 0 )
   {
     return true;
-  } else if (o->instanceOf("QLayoutItem")) {
+  } else if (o->instanceOf("QStandardItem")) {
+    QStandardItem * item = (QStandardItem *) o->castPtr("QStandardItem");
+    return item->model() != NULL;
+  }
+  else if (o->instanceOf("QLayoutItem")) {
     QLayoutItem * item = (QLayoutItem *) o->castPtr("QLayoutItem");
     QLayout * layout = item->layout();
     if (layout) { // we really have a QLayout
