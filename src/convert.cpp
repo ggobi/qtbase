@@ -246,36 +246,45 @@ SEXP to_sexp(QVariant variant) {
   return ans;
 }
 
-/* create a QVariant directly from an R object */
-template<> QVariant from_sexp<QVariant>(SEXP rvalue) {
+
+QVariant qvariant_from_sexp(SEXP rvalue, int index) {
   QVariant variant;
-  if (length(rvalue) > 1) {
-    SEXP rlist = coerceVector(rvalue, VECSXP);
-    if (getAttrib(rvalue, R_NamesSymbol) != R_NilValue)
-      variant = asQVariantOfType(rlist, QMetaType::QVariantMap);
-    else variant = asQVariantOfType(rlist, QMetaType::QVariantList);
-    return variant;
+  if (index == -1) {
+    /* If a particular element is not selected, then non-lists of
+       length one are considered scalars. Otherwise, collections.
+    */
+    if (TYPEOF(rvalue) == VECSXP || length(rvalue) > 1) {
+      SEXP rlist = coerceVector(rvalue, VECSXP);
+      if (getAttrib(rvalue, R_NamesSymbol) != R_NilValue)
+        variant = asQVariantOfType(rlist, QMetaType::QVariantMap);
+      else variant = asQVariantOfType(rlist, QMetaType::QVariantList);
+      return variant;
+    }
+    index = 0;
   }
   switch(TYPEOF(rvalue)) {
   case LGLSXP:
     // Rprintf("Logical\n");
-    variant = QVariant(asLogical(rvalue));
+    variant = QVariant(LOGICAL(rvalue)[index]);
     break;
   case REALSXP:
     // Rprintf("Real\n");
-    variant = QVariant(asReal(rvalue));
+    variant = QVariant(REAL(rvalue)[index]);
     break;
   case INTSXP:
     // Rprintf("Integer\n");
-    variant = QVariant(asInteger(rvalue));
+    variant = QVariant(INTEGER(rvalue)[index]);
     break;
   case STRSXP:
     // Rprintf("String\n");
-    variant = QVariant(sexp2qstring(rvalue));
+    variant = QVariant(sexp2qstring(STRING_ELT(rvalue, index)));
     break;
   case EXTPTRSXP:
     // Rprintf("External pointer\n");
     variant = qVariantFromValue(unwrapPointer(rvalue, void));
+    break;
+  case VECSXP:
+    variant = from_sexp<QVariant>(VECTOR_ELT(rvalue, index));
     break;
   case ENVSXP: {
     SmokeObject *so = SmokeObject::fromSexp(rvalue);

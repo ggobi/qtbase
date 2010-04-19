@@ -322,7 +322,10 @@ class_to_sexp(T value, const SmokeType &type) {
 /* More special cases, at least partially implicit */
 
 SEXP to_sexp(QVariant variant); /* <-> "any" R object */
-template<> QVariant from_sexp<QVariant>(SEXP rvalue);
+QVariant qvariant_from_sexp(SEXP rvalue, int index = -1);
+template<> inline QVariant from_sexp<QVariant>(SEXP rvalue) {
+  return qvariant_from_sexp(rvalue);
+}
 QVariant asQVariantOfType(SEXP rvalue, QMetaType::Type type,
                           bool tryDirect = true);
 template<> QList<QVariant> from_sexp<QList<QVariant> >(SEXP s,
