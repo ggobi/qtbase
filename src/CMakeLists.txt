@@ -20,7 +20,7 @@ set(qtbase_LIB_SRCS init.cpp EventLoop.cpp style.cpp convert.cpp
    MocDynamicBinding.cpp MethodCall.cpp type-handlers.cpp MocStack.cpp
    MocProperty.cpp RQtModule.cpp module.cpp RSmokeBinding.cpp
    SmokeList.cpp SmokeObject.cpp ObjectTable.cpp
-   InstanceObjectTable.cpp smoke.cpp )
+   InstanceObjectTable.cpp smoke.cpp DataFrameModel.cpp )
 
 QT4_WRAP_CPP ( qtbase_MOC_FILES EventLoop.hpp )
 

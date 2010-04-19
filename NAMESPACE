@@ -64,3 +64,6 @@ export(qcol2rgb)
 
 ## constructors of simple types
 export(qrect, qpoint, qsize, qcolor, qfont, qpen, qbrush, qtransform, qpolygon)
+
+## DataFrameModel
+export(qdataFrameModel, qdataFrame, qsetDataFrame)

@@ -45,6 +45,12 @@ extern "C" {
 
   // registration of Smoke modules from other packages
   void registerRQtModule(Smoke *smoke);
+
+  // DataFrameModel
+  SEXP qt_qdataFrameModel();
+  SEXP qt_qsetDataFrame(SEXP rmodel, SEXP df, SEXP roles, SEXP rowHeader,
+                        SEXP colHeader);
+  SEXP qt_qdataFrame(SEXP rmodel);
 }
 
 #define CALLDEF(name, n)  {#name, (DL_FUNC) &name, n}
@@ -96,7 +102,12 @@ static R_CallMethodDef CallEntries[] = {
     CALLDEF_COERCE(QSizeF),
     CALLDEF_COERCE(QSize),
     CALLDEF_COERCE(QColor),
- 
+
+    // DataFrame
+    CALLDEF(qt_qdataFrameModel, 0),
+    CALLDEF(qt_qdataFrame, 1),
+    CALLDEF(qt_qsetDataFrame, 5),
+    
     {NULL, NULL, 0}
 };
 
