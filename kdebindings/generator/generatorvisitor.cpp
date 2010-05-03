@@ -104,6 +104,19 @@ BasicTypeDeclaration* GeneratorVisitor::resolveType(const QString & name)
 // TODO: this might have to be improved for cases like 'Typedef::Nested foo'
 BasicTypeDeclaration* GeneratorVisitor::resolveType(QString & name)
 {
+    if (ParserOptions::qtMode && name.endsWith("::enum_type")) {
+        // strip off "::enum_type"
+        QString flags = name.left(name.length() - 11);
+        QHash<QString, Typedef>::iterator it = typedefs.find(flags);
+        if (it != typedefs.end()) {
+            QString enumType = it.value().resolve().toString().replace(QRegExp("QFlags<(.*)>"), "\\1");
+            QHash<QString, Enum>::iterator it = enums.find(enumType);
+            if (it != enums.end()) {
+                return &it.value();
+            }
+        }
+    }
+
     // check for 'using type;'
     // if we use 'type', we can also access type::nested, take care of that
     int index = name.indexOf("::");
@@ -280,6 +293,8 @@ QString GeneratorVisitor::resolveEnumMember(const QString& parent, const QString
 
 void GeneratorVisitor::visitAccessSpecifier(AccessSpecifierAST* node)
 {
+    static bool oldResolveTypedefs = ParserOptions::resolveTypedefs;
+
     if (!inClass) {
         DefaultVisitor::visitAccessSpecifier(node);
         return;
@@ -287,6 +302,7 @@ void GeneratorVisitor::visitAccessSpecifier(AccessSpecifierAST* node)
 
     inSignals.top() = false;
     inSlots.top() = false;
+    ParserOptions::resolveTypedefs = oldResolveTypedefs;
 
     const ListNode<std::size_t> *it = node->specs->toFront(), *end = it;
     do {
@@ -299,12 +315,14 @@ void GeneratorVisitor::visitAccessSpecifier(AccessSpecifierAST* node)
             else if (t.kind == Token_private)
                 access.top() = Access_private;
 
-            // signal/slot handling
+            // signal/slot handling; don't resolve typedefs in signals and slots
             if (t.kind == Token_signals) {
                 access.top() = Access_protected;
                 inSignals.top() = true;
+                ParserOptions::resolveTypedefs = false;
             } else if (t.kind == Token_slots) {
                 inSlots.top() = true;
+                ParserOptions::resolveTypedefs = false;
             }
         }
         it = it->next;
@@ -405,13 +423,6 @@ void GeneratorVisitor::visitDeclarator(DeclaratorAST* node)
             QHash<QString, Typedef>::iterator it = typedefs.insert(name, tdef);
             if (parent)
                 parent->appendChild(&it.value());
-            
-            if (ParserOptions::qtMode && currentTypeRef->name() == "QFlags" &&
-                !currentTypeRef->templateArguments().isEmpty())
-            {
-                // in Qt-mode, store that this is a QFlags-typedef
-                flagTypes.insert(&it.value());
-            }
         }
         createTypedef = false;
         return;
@@ -836,6 +847,13 @@ void GeneratorVisitor::visitTypedef(TypedefAST* node)
 {
     createTypedef = true;
     DefaultVisitor::visitTypedef(node);
+
+    // TODO: probably has to be extended to cover structs and classes, too
+    // makes something like 'typedef enum { Bar } Foo;' look like a proper enum.
+    if (ast_cast<EnumSpecifierAST*>(node->type_specifier)) {
+        nc->run(node->init_declarators->at(0)->element->declarator->id);
+        currentEnumRef->setName(nc->name());
+    }
 }
 
 // don't make this public - it's just a utility function for the next method and probably not what you would expect it to be

@@ -102,6 +102,71 @@ bool SmokeDataFile::isClassUsed(const Class* klass)
     return false;
 }
 
+QString SmokeDataFile::getTypeFlags(const Type *t, int *classIdx)
+{
+    if (t->getTypedef()) {
+        Type resolved = t->getTypedef()->resolve();
+        return getTypeFlags(&resolved, classIdx);
+    }
+
+    QString flags = "0";
+    if (Options::voidpTypes.contains(t->name())) {
+        // support some of the weird quirks the kalyptus code has
+        flags += "|Smoke::t_voidp";
+    } else if (t->getClass()) {
+        if (t->getClass()->isTemplate()) {
+            if (Options::qtMode && t->getClass()->name() == "QFlags") {
+                flags += "|Smoke::t_uint";
+            } else {
+                flags += "|Smoke::t_voidp";
+            }
+        } else {
+            flags += "|Smoke::t_class";
+            *classIdx = classIndex.value(t->getClass()->toString(), 0);
+        }
+    } else if (t->isIntegral() && t->name() != "void" && t->pointerDepth() == 0 && !t->isRef()) {
+        flags += "|Smoke::t_";
+        QString typeName = t->name();
+
+        // replace the unsigned stuff, look the type up in Util::typeMap and if
+        // necessary, add a 'u' for unsigned types at the beginning again
+        bool _unsigned = false;
+        if (typeName.startsWith("unsigned ")) {
+            typeName.replace("unsigned ", "");
+            _unsigned = true;
+        }
+        typeName.replace("signed ", "");
+        typeName = Util::typeMap.value(typeName, typeName);
+        if (_unsigned)
+            typeName.prepend('u');
+
+        flags += typeName;
+    } else if (t->getEnum()) {
+        flags += "|Smoke::t_enum";
+        if (t->getEnum()->parent()) {
+            *classIdx = classIndex.value(t->getEnum()->parent()->toString(), 0);
+        } else if (!t->getEnum()->nameSpace().isEmpty()) {
+            *classIdx = classIndex.value(t->getEnum()->nameSpace(), 0);
+        } else {
+            *classIdx = classIndex.value("QGlobalSpace", 0);
+        }
+    } else {
+        flags += "|Smoke::t_voidp";
+    }
+
+    if (t->isRef())
+        flags += "|Smoke::tf_ref";
+    if (t->pointerDepth() > 0)
+        flags += "|Smoke::tf_ptr";
+    if (!t->isRef() && t->pointerDepth() == 0)
+        flags += "|Smoke::tf_stack";
+    if (t->isConst())
+        flags += "|Smoke::tf_const";
+    flags.replace("0|", "");
+
+    return flags;
+}
+
 void SmokeDataFile::write()
 {
     qDebug("writing out smokedata.cpp [%s]", qPrintable(Options::module));
@@ -184,10 +249,14 @@ void SmokeDataFile::write()
         QVector<int> indices;
         QStringList comment;
         foreach (const Class::BaseClassSpecifier& base, klass.baseClasses()) {
+            if (base.access == Access_private)
+                continue;
             QString className = base.baseClass->toString();
             indices << classIndex[className];
             comment << className;
         }
+        if (indices.count() == 0)
+            continue;
         int idx = 0;
         
         if (!inheritanceList.contains(indices)) {
@@ -216,14 +285,21 @@ void SmokeDataFile::write()
     for (QHash<QString, Enum>::const_iterator it = enums.constBegin(); it != enums.constEnd(); it++) {
         if (!it.value().isValid())
             continue;
-        if (it.value().parent() && !externalClasses.contains(it.value().parent()) && it.value().access() != Access_private) {
-            QString smokeClassName = it.value().parent()->toString();
+        
+        QString smokeClassName;
+        if (it.value().parent()) {
+            smokeClassName = it.value().parent()->toString();
+        } else {
+            smokeClassName = it.value().nameSpace();
+        }
+        
+        if (!smokeClassName.isEmpty() && includedClasses.contains(smokeClassName) && it.value().access() != Access_private) {
             if (enumClassesHandled.contains(smokeClassName) || Options::voidpTypes.contains(smokeClassName))
                 continue;
             enumClassesHandled << smokeClassName;
             smokeClassName.replace("::", "__");
             out << "void xenum_" << smokeClassName << "(Smoke::EnumOperation, Smoke::Index, void*&, long&);\n";
-        } else if (!it.value().parent() && it.value().access() != Access_private) {
+        } else if (smokeClassName.isEmpty() && it.value().access() != Access_private) {
             if (enumClassesHandled.contains("QGlobalSpace"))
                 continue;
             out << "void xenum_QGlobalSpace(Smoke::EnumOperation, Smoke::Index, void*&, long&);\n";
@@ -299,55 +375,7 @@ void SmokeDataFile::write()
         if (t == Type::Void)
             continue;
         int classIdx = 0;
-        QString flags = "0";
-        if (Options::voidpTypes.contains(t->name())) {
-            // support some of the weird quirks the kalyptus code has
-            flags += "|Smoke::t_voidp";
-        } else if (t->getClass()) {
-            if (t->getClass()->isTemplate()) {
-                flags += "|Smoke::t_voidp";
-            } else {
-                flags += "|Smoke::t_class";
-                classIdx = classIndex.value(t->getClass()->toString(), 0);
-            }
-        } else if (t->isIntegral() && t->name() != "void" && t->pointerDepth() == 0 && !t->isRef()) {
-            flags += "|Smoke::t_";
-            QString typeName = t->name();
-            
-            // replace the unsigned stuff, look the type up in Util::typeMap and if
-            // necessary, add a 'u' for unsigned types at the beginning again
-            bool _unsigned = false;
-            if (typeName.startsWith("unsigned ")) {
-                typeName.replace("unsigned ", "");
-                _unsigned = true;
-            }
-            typeName.replace("signed ", "");
-            typeName = Util::typeMap.value(typeName, typeName);
-            if (_unsigned)
-                typeName.prepend('u');
-            
-            flags += typeName;
-        } else if (t->getEnum()) {
-            flags += "|Smoke::t_enum";
-            if (t->getEnum()->parent())
-                classIdx = classIndex.value(t->getEnum()->parent()->toString(), 0);
-        } else if (Options::qtMode && !t->isRef() && t->pointerDepth() == 0 && t->getTypedef() &&
-                   flagTypes.contains(t->getTypedef()))
-        {
-            flags += "|Smoke::t_uint";
-        } else {
-            flags += "|Smoke::t_voidp";
-        }
-        
-        if (t->isRef())
-            flags += "|Smoke::tf_ref";
-        if (t->pointerDepth() > 0)
-            flags += "|Smoke::tf_ptr";
-        if (!t->isRef() && t->pointerDepth() == 0)
-            flags += "|Smoke::tf_stack";
-        if (t->isConst())
-            flags += "|Smoke::tf_const";
-        flags.replace("0|", "");
+        QString flags = getTypeFlags(t, &classIdx);
         typeIndex[t] = i;
         out << "    { \"" << it.key() << "\", " << classIdx << ", " << flags << " },\t//" << i++ << "\n";
     }
@@ -394,7 +422,7 @@ void SmokeDataFile::write()
             for (int i = 0; i < indices.size(); i++) {
                 Type* t = meth.parameters()[i].type();
                 if (!typeIndex.contains(t)) {
-                    qFatal("missing type: %s in method %s", qPrintable(t->toString()), qPrintable(meth.toString(false, true)));
+                    qFatal("missing type: %s in method %s (while building munged names map)", qPrintable(t->toString()), qPrintable(meth.toString(false, true)));
                 }
                 indices[i] = typeIndex[t];
                 comment << t->toString();
@@ -508,7 +536,7 @@ void SmokeDataFile::write()
             if (meth.type() == Type::Void) {
                 out << ", 0";
             } else if (!typeIndex.contains(meth.type())) {
-                qFatal("missing type: %s in method %s", qPrintable(meth.type()->toString()), qPrintable(meth.toString(false, true)));
+                qFatal("missing type: %s in method %s (while writing out methods table)", qPrintable(meth.type()->toString()), qPrintable(meth.toString(false, true)));
             } else {
                 out << ", " << typeIndex[meth.type()];
             }
@@ -538,15 +566,25 @@ void SmokeDataFile::write()
             if ((e = dynamic_cast<Enum*>(decl))) {
                 if (e->access() == Access_private)
                     continue;
+
+                Type *enumType;
+                if (e->name().isEmpty()) {
+                    // unnamed enum
+                    enumType = &types["long"];
+                } else {
+                    enumType = &types[e->toString()];
+                }
+
+                int index = 0;
+                QHash<Type*, int>::const_iterator typeIt;
+                if ((typeIt = typeIndex.find(enumType)) == typeIndex.end()) {
+                    // this enum doesn't have an index, so we don't want it here
+                    continue;
+                } else {
+                    index = *typeIt;
+                }
+
                 foreach (const EnumMember& member, e->members()) {
-                    int index = 0;
-                    if (e->name().isEmpty()) {
-                        // unnamed enum
-                        index = typeIndex[&types["long"]];
-                    } else {
-                        index = typeIndex[&types[e->toString()]];
-                    }
-                    
                     out << "    {" << iter.value() << ", " << methodNames[member.name()]
                         << ", 0, 0, Smoke::mf_static|Smoke::mf_enum, " << index
                         << ", " << xcall_index << "},";

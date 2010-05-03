@@ -42,6 +42,4 @@ struct GENERATOR_EXPORT ParserOptions
     static QStringList dropMacros;
 };
 
-extern GENERATOR_EXPORT QSet<const Typedef*> flagTypes;
-
 #endif

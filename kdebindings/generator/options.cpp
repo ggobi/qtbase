@@ -30,5 +30,3 @@ QList<QDir> ParserOptions::includeDirs;
 bool ParserOptions::resolveTypedefs = false;
 bool ParserOptions::qtMode = false;
 QStringList ParserOptions::dropMacros;
-
-QSet<const Typedef*> flagTypes;

@@ -68,6 +68,7 @@ struct SmokeDataFile
 
     void write();
     bool isClassUsed(const Class* klass);
+    QString getTypeFlags(const Type *type, int *classIdx);
 
     QMap<QString, int> classIndex;
     QHash<const Member*, int> methodIdx;
@@ -123,6 +124,7 @@ struct Util
     static void addOverloads(const Method& meth);
     static void addAccessorMethods(const Field& field, QSet<Type*> *usedTypes);
 
+    static QChar munge(const Type *type);
     static QString mungedName(const Method&);
     
     static QString stackItemField(const Type* type);

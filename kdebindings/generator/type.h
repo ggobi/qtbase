@@ -183,9 +183,10 @@ public:
     enum Flag {
         Virtual = 0x1,
         PureVirtual = 0x2,
-        Static = 0x4
+        Static = 0x4,
+        DynamicDispatch = 0x8,
     };
-    typedef QFlags<Flag> Flags;
+    Q_DECLARE_FLAGS(Flags, Flag)
 
     Member(BasicTypeDeclaration* typeDecl = 0, const QString& name = QString(), Type* type = 0, Access access = Access_public)
         : m_typeDecl(typeDecl), m_name(name), m_type(type), m_access(access) {}
@@ -206,6 +207,7 @@ public:
     Access access() const { return m_access; }
 
     void setFlag(Flag flag) { m_flags |= flag; }
+    void removeFlag(Flag flag) { m_flags &= ~flag; }
     Flags flags() const { return m_flags; }
 
     virtual QString toString(bool withAccess = false, bool withClass = false) const;
@@ -217,6 +219,8 @@ protected:
     Access m_access;
     Flags m_flags;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(Member::Flags)
 
 class GENERATOR_EXPORT EnumMember : public Member
 {

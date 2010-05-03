@@ -123,7 +123,7 @@ void TypeCompiler::setRealType()
     if ((klass = dynamic_cast<Class*>(type))) {
         m_realType = Type(klass, isConstant(), isVolatile());
     } else if ((tdef = dynamic_cast<Typedef*>(type))) {
-        if (!ParserOptions::resolveTypedefs || (ParserOptions::qtMode && flagTypes.contains(tdef)) ) {
+        if (!ParserOptions::resolveTypedefs) {
             m_realType = Type(tdef);
         } else {
             m_realType = tdef->resolve();
