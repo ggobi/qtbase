@@ -4,7 +4,7 @@ project(qtbase)
 
 find_package(Qt4 4.0.0 COMPONENTS QtCore QtGui QtXml QtXmlPatterns
   QtNetwork QtOpenGL QtSql QtSvg QtDBus QtScript QtWebkit
-  QtTest QtHelp phonon REQUIRED )
+  QtTest QtHelp QtMultimedia REQUIRED )
 
 include(${QT_USE_FILE})
 

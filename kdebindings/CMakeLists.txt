@@ -4,7 +4,7 @@ project(kdebindings)
 
 FIND_PACKAGE(Qt4 REQUIRED 4.0.0 COMPONENTS QtCore QtGui QtXml QtXmlPatterns
   QtNetwork QtOpenGL QtSql QtSvg QtDBus QtScript QtWebkit
-  QtHelp QtTest phonon REQUIRED)
+  QtHelp QtTest QtMultimedia REQUIRED)
 
 include(${QT_USE_FILE})
 
