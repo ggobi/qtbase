@@ -503,7 +503,7 @@ QString Util::stackItemField(const Type* type)
         return "s_uint";
     }
 
-    if (type->pointerDepth() > 0 || type->isRef() || type->isFunctionPointer() || type->isArray()
+    if (type->pointerDepth() > 0 || type->isRef() || type->isFunctionPointer() || type->isArray() || Options::voidpTypes.contains(type->name())
         || (!type->isIntegral() && !type->getEnum()))
     {
         return "s_class";
@@ -538,7 +538,7 @@ QString Util::assignmentString(const Type* type, const QString& var)
         return "(void*)" + var;
     } else if (type->isRef()) {
         return "(void*)&" + var;
-    } else if (type->isIntegral()) {
+    } else if (type->isIntegral() && !Options::voidpTypes.contains(type->name())) {
         return var;
     } else if (type->getEnum()) {
         return var;

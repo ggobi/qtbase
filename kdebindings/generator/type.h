@@ -185,6 +185,7 @@ public:
         PureVirtual = 0x2,
         Static = 0x4,
         DynamicDispatch = 0x8,
+        Explicit = 0x10,
     };
     Q_DECLARE_FLAGS(Flags, Flag)
 

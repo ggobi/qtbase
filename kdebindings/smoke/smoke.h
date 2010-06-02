@@ -147,7 +147,8 @@ public:
         mf_virtual = 0x400,
         mf_purevirtual = 0x800,
         mf_signal = 0x1000, // method is a signal
-        mf_slot = 0x2000   // method is a slot
+        mf_slot = 0x2000,   // method is a slot
+        mf_explicit = 0x4000    // method is an 'explicit' constructor
     };
     /**
      * Describe one method of one class.

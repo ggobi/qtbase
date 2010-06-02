@@ -88,6 +88,7 @@ private:
     bool inTemplate;
     bool isStatic;
     bool isVirtual;
+    bool isExplicit;
     bool hasInitializer;
     
     Type currentType;

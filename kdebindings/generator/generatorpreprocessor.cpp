@@ -85,6 +85,14 @@ Preprocessor::Preprocessor(const QList<QDir>& includeDirs, const QStringList& de
     m_topBlock->setMacro(exportMacro);
 #endif
 
+#if (defined(QT_ARCH_ARM) || defined (QT_ARCH_ARMV6)) && !defined(QT_NO_ARM_EABI)
+    exportMacro = new rpp::pp_macro;
+    exportMacro->name = IndexedString("__ARM_EABI__");
+    exportMacro->function_like = false;
+    exportMacro->variadics = false;
+    m_topBlock->setMacro(exportMacro);
+#endif
+
     // ansidecl.h will define macros for keywords if we don't define __STDC__
     exportMacro = new rpp::pp_macro;
     exportMacro->name = IndexedString("__STDC__");
@@ -98,7 +106,7 @@ Preprocessor::Preprocessor(const QList<QDir>& includeDirs, const QStringList& de
     exportMacro->function_like = false;
     exportMacro->variadics = false;
     m_topBlock->setMacro(exportMacro);
-    
+
     foreach (QString define, defines) {
         exportMacro = new rpp::pp_macro;
         exportMacro->name = IndexedString(define);
@@ -167,13 +175,12 @@ PreprocessedContents Preprocessor::preprocess()
 
 rpp::Stream* Preprocessor::sourceNeeded(QString& fileName, rpp::Preprocessor::IncludeType type, int sourceLine, bool skipCurrentPath)
 {
-    // skip limits.h - rpp::pp gets stuck in a endless loop, probably because of
-    // #include_next <limits.h> in the file and no proper header guard.
-    if (fileName == "limits.h" && type == rpp::Preprocessor::IncludeGlobal)
+    if (m_fileStack.top().fileName() == fileName && type == rpp::Preprocessor::IncludeGlobal) {
+#ifdef DEBUG
+        qDebug("prevented possible endless loop because of #include<%s>", qPrintable(fileName));
+#endif
         return 0;
-    // same for stdarg.h -- but shouldn't we pay attention to skipCurrentPath?
-    if (fileName == "stdarg.h" && type == rpp::Preprocessor::IncludeGlobal)
-        return 0;
+    }
     
     // are the contents already cached?
     if (type == rpp::Preprocessor::IncludeGlobal && m_cache.contains(fileName)) { 
@@ -188,36 +195,38 @@ rpp::Stream* Preprocessor::sourceNeeded(QString& fileName, rpp::Preprocessor::In
     if (info.isAbsolute()) {
         path = fileName;
     } else if (type == rpp::Preprocessor::IncludeLocal) {
-        if (m_fileStack.last().absoluteDir().exists(fileName))
-            path = m_fileStack.last().absoluteDir().filePath(fileName);
+        info.setFile(m_fileStack.last().dir(), fileName);
+        if (info.isFile())
+            path = info.absoluteFilePath();
     }
     if (path.isEmpty()) {
         foreach (QDir dir, m_includeDirs) {
-            if (dir.exists(fileName)) {
-                path = dir.absoluteFilePath(fileName);
+            info.setFile(dir, fileName);
+            if (info.isFile()) {
+                path = info.absoluteFilePath();
                 break;
             }
         }
     }
-          
+
 #if defined(__APPLE__) & defined(__MACH__)
     if (path.isEmpty() && type == rpp::Preprocessor::IncludeGlobal &&
         !info.dir().cdUp())
-    {
+      {
         QList<QDir> m_frameworkDirs; // FIXME: should be configurable
         m_frameworkDirs.append(QDir("/System/Library/Frameworks"));
         m_frameworkDirs.append(QDir("/Library/Frameworks"));
         QString fw_fileName = info.dir().dirName() + ".framework/Headers/" +
           info.fileName();
         foreach (QDir dir, m_frameworkDirs) {
-            if (dir.exists(fw_fileName)) {
-               path = dir.absoluteFilePath(fw_fileName);
-               break;
-            }
+          if (dir.exists(fw_fileName)) {
+            path = dir.absoluteFilePath(fw_fileName);
+            break;
+          }
         }
-    }
+      }
 #endif
-       
+
     if (path.isEmpty())
         return 0;
     

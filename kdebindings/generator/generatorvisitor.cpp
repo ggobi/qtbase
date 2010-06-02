@@ -28,7 +28,7 @@
 
 GeneratorVisitor::GeneratorVisitor(ParseSession *session, const QString& header) 
     : m_session(session), m_header(header), createType(false), createTypedef(false),
-      inClass(0), inTemplate(false), isStatic(false), isVirtual(false), hasInitializer(false), currentTypeRef(0), inMethod(false)
+      inClass(0), inTemplate(false), isStatic(false), isVirtual(false), isExplicit(false), hasInitializer(false), currentTypeRef(0), inMethod(false)
 {
     nc = new NameCompiler(m_session, this);
     tc = new TypeCompiler(m_session, this);
@@ -488,6 +488,7 @@ void GeneratorVisitor::visitDeclarator(DeclaratorAST* node)
         if (isVirtual) currentMethod.setFlag(Method::Virtual);
         if (hasInitializer) currentMethod.setFlag(Method::PureVirtual);
         if (isStatic) currentMethod.setFlag(Method::Static);
+        if (isExplicit) currentMethod.setFlag(Method::Explicit);
 
         // the class already contains the method (probably imported by a 'using' statement)
         if (klass.top()->methods().contains(currentMethod)) {
@@ -596,7 +597,8 @@ void GeneratorVisitor::visitFunctionDefinition(FunctionDefinitionAST* node)
             if (it->element && m_session->token_stream->kind(it->element) == Token_virtual) {
                 // found virtual token
                 isVirtual = true;
-                break;
+            } else if (it->element && m_session->token_stream->kind(it->element) == Token_explicit) {
+                isExplicit = true;
             }
             it = it->next;
         } while (end != it);
@@ -614,7 +616,7 @@ void GeneratorVisitor::visitFunctionDefinition(FunctionDefinitionAST* node)
         } while (end != it);
     }
     visit(node->init_declarator);
-    isStatic = isVirtual = hasInitializer = false;
+    isStatic = isVirtual = isExplicit = hasInitializer = false;
 }
 
 void GeneratorVisitor::visitInitializerClause(InitializerClauseAST *)

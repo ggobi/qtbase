@@ -508,6 +508,8 @@ void SmokeDataFile::write()
                 flags += "|Smoke::mf_static";
             if (meth.isConstructor())
                 flags += "|Smoke::mf_ctor";
+            if (meth.flags() & Method::Explicit)
+                flags += "|Smoke::mf_explicit";
             if (meth.access() == Access_protected)
                 flags += "|Smoke::mf_protected";
             if (meth.isConstructor() &&
@@ -690,11 +692,6 @@ void SmokeDataFile::write()
     out << "};\n\n";
 
     out << "}\n\n";
-
-    if (Options::parentModules.isEmpty()) {
-        out << "Smoke::ClassMap Smoke::classMap;\n\n";
-        out << "Smoke::ModuleIndex Smoke::NullModuleIndex;\n\n";
-    }
 
     out << "extern \"C\" {\n\n";
 
