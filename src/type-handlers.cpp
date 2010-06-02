@@ -681,7 +681,6 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
 #endif
   /*************** Special cases ***************/
   /* long long */
-  // BUG: it looks like Smoke marks "long long" as a long, WRONG
   TYPE_HANDLER_ENTRY(long long),
   TYPE_HANDLER_ENTRY_FULL(long long*, long long),
   TYPE_HANDLER_ENTRY(unsigned long long),
