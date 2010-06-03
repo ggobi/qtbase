@@ -693,6 +693,15 @@ void SmokeDataFile::write()
 
     out << "}\n\n";
 
+    /* ML: This was removed in Smoke. We want to keep it, because
+       each R package needs to define these, as qtbase does not
+       share them. If we omit this, we would need a smokebase.cpp in
+       every qtbase-derived package. */
+    if (Options::parentModules.isEmpty()) {
+        out << "Smoke::ClassMap Smoke::classMap;\n\n";
+        out << "Smoke::ModuleIndex Smoke::NullModuleIndex;\n\n";
+    }
+    
     out << "extern \"C\" {\n\n";
 
     for (int j = 0; j < Options::parentModules.count(); j++) {
