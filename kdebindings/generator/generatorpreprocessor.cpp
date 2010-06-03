@@ -175,15 +175,17 @@ PreprocessedContents Preprocessor::preprocess()
 
 rpp::Stream* Preprocessor::sourceNeeded(QString& fileName, rpp::Preprocessor::IncludeType type, int sourceLine, bool skipCurrentPath)
 {
-    if (m_fileStack.top().fileName() == fileName && type == rpp::Preprocessor::IncludeGlobal) {
-#ifdef DEBUG
-        qDebug("prevented possible endless loop because of #include<%s>", qPrintable(fileName));
-#endif
-        return 0;
-    }
+
+  // skip limits.h - rpp::pp gets stuck in a endless loop, probably because of
+  // #include_next <limits.h> in the file and no proper header guard.
+  if (fileName == "limits.h" && type == rpp::Preprocessor::IncludeGlobal)
+    return 0;
+  // same for stdarg.h -- but shouldn't we pay attention to skipCurrentPath?
+  if (fileName == "stdarg.h" && type == rpp::Preprocessor::IncludeGlobal)
+    return 0;
     
-    // are the contents already cached?
-    if (type == rpp::Preprocessor::IncludeGlobal && m_cache.contains(fileName)) { 
+  // are the contents already cached?
+  if (type == rpp::Preprocessor::IncludeGlobal && m_cache.contains(fileName)) { 
         QPair<QFileInfo, PreprocessedContents>& cached = m_cache[fileName];
         m_fileStack.push(cached.first);
         return new HeaderStream(&cached.second, &m_fileStack);
