@@ -3,7 +3,6 @@
 
 .onUnload <- function(libpath)
 {
-    cat("Unloading qtbase\n")
     .Call(cleanupQtApp)
     library.dynam.unload("qtbase", libpath)
 }

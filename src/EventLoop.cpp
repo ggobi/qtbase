@@ -25,6 +25,7 @@ static char *qapp_argv[] = { "qtbase", "-nograb" };
 static int processingEvent = 0;
 
 #ifndef WIN32
+InputHandler *eventLoopInputHandler = NULL;
 static int ifd, ofd;
 static int fired = 0, active = 1;
 
@@ -78,11 +79,16 @@ R_Qt_init()
 static void 
 R_Qt_cleanup()
 {
-  delete app;
-  #ifndef WIN32
+#ifndef WIN32
   active = FALSE;
+  eventLoop->wait();
   delete eventLoop;
-  #endif
+  removeInputHandler(&R_InputHandlers, eventLoopInputHandler);
+  close(ifd);
+  close(ofd); 
+#endif
+  app->quit();
+  delete app;
 }
 
 void EventLoop::begin() {
@@ -96,7 +102,8 @@ void EventLoop::begin() {
     if (!pipe(fds)) {
       ifd = fds[0];
       ofd = fds[1];
-      addInputHandler(R_InputHandlers, ifd, R_Qt_timerInputHandler, 32);
+      eventLoopInputHandler = addInputHandler(R_InputHandlers, ifd,
+                                              R_Qt_timerInputHandler, 32);
       R_CStackLimit = -1;
 
       eventLoop = new EventLoop();
