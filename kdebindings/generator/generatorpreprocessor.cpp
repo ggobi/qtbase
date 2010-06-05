@@ -175,17 +175,15 @@ PreprocessedContents Preprocessor::preprocess()
 
 rpp::Stream* Preprocessor::sourceNeeded(QString& fileName, rpp::Preprocessor::IncludeType type, int sourceLine, bool skipCurrentPath)
 {
-
-  // skip limits.h - rpp::pp gets stuck in a endless loop, probably because of
-  // #include_next <limits.h> in the file and no proper header guard.
-  if (fileName == "limits.h" && type == rpp::Preprocessor::IncludeGlobal)
-    return 0;
-  // same for stdarg.h -- but shouldn't we pay attention to skipCurrentPath?
-  if (fileName == "stdarg.h" && type == rpp::Preprocessor::IncludeGlobal)
-    return 0;
+    if (m_fileStack.top().fileName() == fileName && type == rpp::Preprocessor::IncludeGlobal) {
+#ifdef DEBUG
+        qDebug("prevented possible endless loop because of #include<%s>", qPrintable(fileName));
+#endif
+        return 0;
+    }
     
-  // are the contents already cached?
-  if (type == rpp::Preprocessor::IncludeGlobal && m_cache.contains(fileName)) { 
+    // are the contents already cached?
+    if (type == rpp::Preprocessor::IncludeGlobal && m_cache.contains(fileName)) { 
         QPair<QFileInfo, PreprocessedContents>& cached = m_cache[fileName];
         m_fileStack.push(cached.first);
         return new HeaderStream(&cached.second, &m_fileStack);
@@ -193,7 +191,9 @@ rpp::Stream* Preprocessor::sourceNeeded(QString& fileName, rpp::Preprocessor::In
     
     QString path;
     QFileInfo info(fileName);
-    
+
+    /* ML: Smoke made some tweaks here, but they seem to break things
+       on OS X. The header files are no longer found. */
     if (info.isAbsolute()) {
         path = fileName;
     } else if (type == rpp::Preprocessor::IncludeLocal) {
