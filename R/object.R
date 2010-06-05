@@ -1,6 +1,6 @@
-## methods on SmokeObject, which wraps every object created by Smoke
+## methods on RQtObject, which wraps every object created by Smoke
 
-### FIXME: really should check here that the method name exists
-"$.SmokeObject" <- function(x, name) {
-  function(...) qinvoke(x, name, ...)
+
+print.RQtObject <- function(x, ...) {
+  cat(head(class(x), 1), "instance\n")
 }

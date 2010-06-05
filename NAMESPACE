@@ -22,6 +22,9 @@ S3method(print, RQtClass)
 S3method(print, QWidget) ## calls $show()
 export(qmethods, qsetClass, qsetMethod)
 
+# objects
+S3method(print, RQtObject)
+
 # enums
 S3method("|", QtEnum)
 S3method("&", QtEnum)
