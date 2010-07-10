@@ -558,6 +558,7 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   TYPE_HANDLER_ENTRY_PRIM(float),
   TYPE_HANDLER_ENTRY_CLASS(QString),
   TYPE_HANDLER_ENTRY_FULL(QString*, QString),
+  TYPE_HANDLER_ENTRY_FULL(QString&, QString),
   TYPE_HANDLER_ENTRY_CLASS(QByteArray),
   TYPE_HANDLER_ENTRY_FULL(QByteArray*, QByteArray),
   /* Handle various collection classes */
