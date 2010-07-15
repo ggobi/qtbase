@@ -264,13 +264,15 @@ enum_to_sexp(T value, const SmokeType &type) {
 
 /* class special cases, no way to template pointer/non-pointer */
 
+// FIXME: find a way to more gracefully recover from a bad type
 template<> inline SmokeObject*
 from_sexp<SmokeObject*>(SEXP sexp, const SmokeType &type) {
-  // FIXME: check type validity here
-  Q_UNUSED(type);
   if (sexp == R_NilValue)
     return(NULL);
-  SmokeObject * so = SmokeObject::fromSexp(sexp);
+  SmokeObject * so = SmokeObject::fromSexp(sexp);  
+  if (!so->instanceOf(type.className()))
+    error("Expected an instance of type '%s', not '%s'", type.className(),
+          so->className());
   return so;
 }
 

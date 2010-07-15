@@ -22,7 +22,7 @@ SmokeObject * SmokeObject::fromPtr(void *ptr, const Class *klass,
   if (!so) {
     so = new SmokeObject(ptr, klass, allocated);
 #ifdef MEM_DEBUG
-    qDebug("%p: created for %p", so, ptr);
+    qDebug("%p: created for %p (%s)", so, ptr, klass->name());
 #endif
     // record this ASAP, resolveClassId() needs it for virtual callbacks
     instances[so->ptr()] = so; 
@@ -318,8 +318,15 @@ SmokeObject::castPtr(const char *className) const {
 bool // result undefined if class names are not all unique
 SmokeObject::instanceOf(const char *className) const {
   Smoke *smoke = this->smoke();
-  Smoke::ModuleIndex other = smoke->idClass(className, true);
+  // the base class must be 'found', i.e., it cannot be external
+  Smoke::ModuleIndex other = smoke->findClass(className);
   return smoke->isDerivedFrom(smoke, classId(), other.smoke, other.index);
+}
+
+bool
+SmokeObject::instanceOf(const SmokeType &type) const {
+  Smoke *smoke = this->smoke();
+  return smoke->isDerivedFrom(smoke, classId(), type.smoke(), type.classId());
 }
 
 void
