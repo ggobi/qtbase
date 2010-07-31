@@ -3,5 +3,6 @@
 print.QWidget <- function(x, ...)
 {
   x$show()
+  NextMethod()
   invisible(x)
 }
