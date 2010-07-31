@@ -3,6 +3,7 @@
 
 #include "MethodCall.hpp"
 #include "SmokeObject.hpp"
+#include "Method.hpp"
 
 #include "convert.hpp"
 
@@ -107,7 +108,6 @@ template <typename T> T itemValue(MethodCall *m) {
 template <typename T> void setItemValue(MethodCall *m, T value) {
   *(itemPtr<T>(m)) = value;
 }
-
 
 template <typename T>
 void marshal_from_sexp(MethodCall *m) 
@@ -248,7 +248,17 @@ template <>
 void marshal_to_sexp<SmokeClassWrapper>(MethodCall *m)
 {
   void *p = itemValue<void *>(m);
-  m->setSexp(ptr_to_sexp(p, m->type()));
+  SEXP sexp = ptr_to_sexp(p, m->type());
+  /* NOTE: This can lead to memory leaks for objects created via
+     factory methods. But the alternative is the possibility for
+     seg-faults, because if an object is not a Smoke instance, we will
+     not know when it is deleted. Granted, the R user can still call a
+     dead object and crash R, but at least the memory management code
+     will be well behaved.
+  */
+  if (sexp != R_NilValue && !(m->returning() && m->method()->isConstructor()))
+    SmokeObject::fromSexp(sexp)->setAllocated(false);
+  m->setSexp(sexp);
 }
 
 /* handling arbitrary pointers */
@@ -285,6 +295,22 @@ void marshal_to_sexp<SmokePtrWrapper>(MethodCall *m)
   }
   m->setSexp(v);
 }
+
+/* Handling strings as const char* */
+
+template <>
+void marshal_from_sexp<const char*>(MethodCall *m) 
+{
+  setItemValue(m, from_sexp<const char*>(m->sexp()));  
+  m->marshal();
+}
+
+template <>
+void marshal_to_sexp<const char*>(MethodCall *m)
+{
+  m->setSexp(to_sexp(itemValue<const char*>(m)));
+}
+
 
 /* Macros for initializing TypeHandler structures in an array. */  
 

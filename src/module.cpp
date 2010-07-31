@@ -322,8 +322,13 @@ memory_is_owned_qt(const SmokeObject *o)
     if (layout) { // we really have a QLayout
       if (layout->parent() || layout->parentWidget())
         return true;
+      /* A QLayoutItem is owned by the QLayout, if there is one. The
+         problem is that we cannot detect whether a QLayoutItem belongs
+         to a QLayout. Thus, the the QLayoutItem is kept around as long
+         as it has a reference to a QWidget or spacer.
+      */
     } else if (item->widget() != 0 || item->spacerItem() != 0)
-      return true; // NOTE: this will leak spacer items not in a layout
+      return true; // NOTE: this leaks spacer items not in a layout
   } else if (qstrcmp(className, "QListWidgetItem") == 0) {
     QListWidgetItem * item = (QListWidgetItem *) o->ptr();
     if (item->listWidget() != 0) {
