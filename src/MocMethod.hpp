@@ -41,7 +41,10 @@ public:
     else flags |= Public;
     return flags;
   }
-
+  virtual bool isConstructor() const {
+    return _method.methodType() == QMetaMethod::Constructor;
+  }
+  
   virtual void invoke(SmokeObject *o, Smoke::Stack stack);
   virtual void invoke(QObject *obj, void **o);
   

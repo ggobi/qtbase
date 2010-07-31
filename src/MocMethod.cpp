@@ -20,6 +20,7 @@ void MocMethod::invoke(SmokeObject *o, Smoke::Stack stack) {
   MocStack mocStack = MocStack(smokeStack, _types);
   invoke(reinterpret_cast<QObject *>(o->castPtr("QObject")), mocStack.items());
   mocStack.returnToSmoke(smokeStack, _types[0]);
+  // TODO: if this is a constructor, need to set SmokeBinding
 }
 
 void MocMethod::invoke(QObject *obj, void **o) {

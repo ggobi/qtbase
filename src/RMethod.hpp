@@ -25,6 +25,7 @@ public:
      statically typed method (e.g. virtual callback or slot). */
   virtual QVector<SmokeType> types() const { return _types; }
   virtual Qualifiers qualifiers() const;
+  virtual bool isConstructor() const { return false; }
   
   virtual SEXP invoke(SEXP self, SEXP args);
   virtual void invoke(SmokeObject *obj, Smoke::Stack stack);

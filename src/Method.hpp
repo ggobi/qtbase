@@ -42,6 +42,7 @@ public:
   virtual QVector<SmokeType> types() const = 0;
   virtual const Class* klass() const = 0;
   virtual Qualifiers qualifiers() const = 0;
+  virtual bool isConstructor() const = 0;
   
   virtual void invoke(SmokeObject *obj, Smoke::Stack stack) = 0;  
   virtual SEXP invoke(SEXP obj, SEXP args) = 0;
