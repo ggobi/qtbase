@@ -62,7 +62,7 @@ SEXP qt_qmethods(SEXP klass)
     Method * m = methods.takeFirst();
     QVector<SmokeType> types = m->types();
     SET_STRING_ELT(resultName, i, mkChar(m->name()));
-    SEXP ret = types[0].isVoid() ? mkChar(rTypeName(types[0])) : R_BlankString;
+    SEXP ret = types[0].isVoid() ? R_BlankString : mkChar(rTypeName(types[0]));
     SET_STRING_ELT(resultReturn, i, ret);
     QByteArray sig = m->name();
     sig += "(";
