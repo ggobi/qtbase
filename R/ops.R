@@ -4,8 +4,8 @@ Ops.RQtObject <- function(e1, e2) {
   fun <- paste("operator", .Generic, sep = "")
   ans <- try({
     if (missing(e2))
-      qinvoke(fun, e1)
-    else qinvoke(fun, e1, e2)
+      qinvokeStatic(Qt$QGlobalSpace, fun, e1)
+    else qinvokeStatic(Qt$QGlobalSpace, fun, e1, e2)
   }, silent = TRUE)
   if (inherits(ans, "try-error"))
     ans <- NextMethod()
