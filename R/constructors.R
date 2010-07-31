@@ -5,8 +5,8 @@ qrect <- function(x0, y0, x1, y1) {
   if (missing(x0)) # a 'null' rectangle
     return(Qt$QRectF())  
   if (length(x0) == 4L) {
-    x0 <- x0[,1]
     y0 <- x0[,2]
+    x0 <- x0[,1]
   }
   if (length(x0) == 2L) {
     x1 <- x0[2]
@@ -64,7 +64,7 @@ qfont <-
   function(family = "Arial",
            pointsize = -1L,
            weight = -1L,
-           italic = FALSE, ...)
+           italic = FALSE)
 {
   Qt$QFont(family, pointsize, weight, italic)
 }
