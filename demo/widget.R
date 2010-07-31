@@ -12,6 +12,8 @@ button <- Qt$QPushButton("Press me", window)
 button$move(100, 100)
 button$show()
 
+qconnect(button, "pressed", function(x) print("hello world"))
+
 ## layout
 window <- Qt$QWidget()
 label <- Qt$QLabel("Name:")
