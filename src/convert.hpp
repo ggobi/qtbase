@@ -222,6 +222,19 @@ inline SEXP to_sexp(QString s) {
   return ScalarString(mkChar(s.toLocal8Bit().data()));
 }
 
+// const char*
+
+template<> inline const char* from_sexp<const char*>(SEXP s) {
+  if (!length(s))
+    return NULL;
+  return CHAR(asChar(s));
+}
+inline SEXP to_sexp(const char *s) {
+  if (!s)
+    return R_NilValue;
+  return ScalarString(mkChar(s));
+}
+
 /* NOTE: overloaded functions and template functions cannot be shared
    with other packages. Thus, we define these wrappers for the common
    case of QString conversion. */

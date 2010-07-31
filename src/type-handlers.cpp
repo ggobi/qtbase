@@ -550,10 +550,18 @@ DEF_COLLECTION_CONVERTERS(QList, QGLShader*, ptr)
 Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   /* Handle primitive pointers/references */
   TYPE_HANDLER_ENTRY_PRIM(bool),
-  TYPE_HANDLER_ENTRY_INT(char),
+  /* 'char' is a little special, as 'const (unsigned) char*' is a string */
+  TYPE_HANDLER_ENTRY_FULL(char&, char),
+  TYPE_HANDLER_ENTRY_FULL(signed char&, char),
+  TYPE_HANDLER_ENTRY_FULL(unsigned char&, char),
+  TYPE_HANDLER_ENTRY_FULL(char*&, char),
+  TYPE_HANDLER_ENTRY_FULL(char*, char),
+  TYPE_HANDLER_ENTRY_FULL(unsigned char*, char),
+  TYPE_HANDLER_ENTRY_FULL(const char*, const char*),
+  TYPE_HANDLER_ENTRY_FULL(const unsigned char*, const char*),
   TYPE_HANDLER_ENTRY_INT(int),
   TYPE_HANDLER_ENTRY_INT(long),
-  TYPE_HANDLER_ENTRY_INT(short),                      
+  TYPE_HANDLER_ENTRY_INT(short),
   TYPE_HANDLER_ENTRY_PRIM(double),
   TYPE_HANDLER_ENTRY_PRIM(float),
   TYPE_HANDLER_ENTRY_CLASS(QString),
