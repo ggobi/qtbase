@@ -312,8 +312,8 @@ SmokeObject::cast(const Class *klass) {
 void *
 SmokeObject::castPtr(const char *className) const {
   Smoke *smoke = this->smoke();
-  return smoke->cast(_ptr, Smoke::ModuleIndex(smoke, classId()),
-                     smoke->findClass(className));
+  // Be very careful changing this -- it is written as intended
+  return smoke->cast(_ptr, classId(), smoke->idClass(className, true).index);
 }
 
 bool // result undefined if class names are not all unique
