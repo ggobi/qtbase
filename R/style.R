@@ -21,11 +21,20 @@ qsetStyleSheet <- function(..., what = "*", widget = NULL, append = TRUE)
 {
     style <- construct.stylesheet(..., what = "*")
     if (append) style <- c(qstyleSheet(widget), style)
-    .Call(qt_qsetStyleSheet, widget, paste(style, collapse = "\n"))
+    style <- paste(style, collapse = "\n")
+    if (is.null(widget)) {
+      Qt$QApplication$instance()$setStyleSheet(style)
+    } else {
+      widget$setStyleSheet(style)
+    }
 }
 
 qstyleSheet <- function(widget = NULL)
 {
-    .Call(qt_qstyleSheet, widget)
+  if (is.null(widget)) {
+    Qt$QApplication$instance()$styleSheet()
+  } else {
+    widget$styleSheet()
+  }
 }
 

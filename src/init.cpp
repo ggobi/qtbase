@@ -8,10 +8,6 @@ void init_type_handlers();
 
 extern "C" {
   
-  // style.cpp
-  SEXP qt_qsetStyleSheet(SEXP x, SEXP s);
-  SEXP qt_qstyleSheet(SEXP x);
-
   // EventLoop.cpp 
   SEXP addQtEventHandler();
   SEXP cleanupQtApp();
@@ -58,10 +54,6 @@ extern "C" {
 #define CALLDEF_COERCE(name) CALLDEF(qt_coerce_##name, 1)
 
 static R_CallMethodDef CallEntries[] = {
-
-    // special support for style sheets
-    CALLDEF(qt_qsetStyleSheet, 2),
-    CALLDEF(qt_qstyleSheet, 1),
 
     // event loop
     CALLDEF(addQtEventHandler, 0),
