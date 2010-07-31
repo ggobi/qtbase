@@ -12,7 +12,7 @@ include_directories( ../inst/local/include ${R_INCLUDES} )
 
 link_directories( ../inst/local/lib )
 
-set(qtbase_LIB_SRCS init.cpp EventLoop.cpp style.cpp convert.cpp
+set(qtbase_LIB_SRCS init.cpp EventLoop.cpp convert.cpp
    wrap.cpp metaobject.cpp connect.cpp invoke.cpp dynamicqobject.cpp
    RDynamicQObject.cpp ClassFactory.cpp Class.cpp SmokeClass.cpp
    MocClass.cpp RClass.cpp classes.cpp ForeignMethod.cpp
