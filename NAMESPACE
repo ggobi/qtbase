@@ -2,7 +2,7 @@
 useDynLib(qtbase, .registration = TRUE)
 
 # metadata
-export(qnormalizedSignature, qproperties)
+export(qproperties)
 
 # timer
 export(qtimer)
@@ -11,7 +11,7 @@ export(qtimer)
 export(qconnect)
 
 # invoke
-export(qinvoke)
+export(qinvoke, qinvokeStatic)
 
 # smoke library
 S3method(print, RQtLibrary)
@@ -19,11 +19,15 @@ S3method(print, RQtLibrary)
 # classes
 S3method("$", RQtClass)
 S3method(print, RQtClass)
-S3method(print, QWidget) ## calls $show()
+S3method(names, RQtClass)
 export(qmethods, qsetClass, qsetMethod)
 
 # objects
 S3method(print, RQtObject)
+S3method(print, QWidget) ## calls $show()
+S3method(Ops, RQtObject)
+S3method("[", RQtObject)
+export("%<<%", "%>>%")
 
 # enums
 S3method("|", QtEnum)
@@ -37,9 +41,6 @@ export(qlibrary)
 
 ## convenience for stylesheet manipulation
 export(qsetStyleSheet, qstyleSheet)
-
-## label for testing
-export(testLabel)
 
 ## explicit coercions
 
