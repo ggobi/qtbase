@@ -58,7 +58,7 @@ qlibrary <- function(lib, namespace = deparse(substitute(lib))) {
   lib
 }
 
-print.RQtLibrary <- function(x) {
+print.RQtLibrary <- function(x, ...) {
   cat("Module '", attr(x, "name"), "' with ", length(ls(x)),
       " top-level classes\n", sep = "")
 }

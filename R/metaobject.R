@@ -56,7 +56,7 @@ qproperties <- function(x) {
 ## 'metadata' is list of classinfos, signals and slots
 
 ### NOTE: This does not work yet.
-### It would let us support:
+### It would let an R class define:
 ### - Slots: useful for providing dbus services, and easy
 ### - Signals: very useful
 ### - Properties: Encapsulated fields are nice, but do we want to be bound
@@ -121,5 +121,5 @@ compileMetaData <- function(x) {
   ## the slots
   data <- c(data, methodData(slots, MethodSlot))
 
-  .Call(qt_qnewMetaObject, x, stringdata, data)
+##  .Call(qt_qnewMetaObject, x, stringdata, data)
 }
