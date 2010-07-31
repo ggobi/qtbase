@@ -787,6 +787,7 @@ void GeneratorVisitor::visitSimpleDeclaration(SimpleDeclarationAST* node)
                     // example: 'class KMultiTabBarTab *tab(...)'
                     QString oldClass = klass.top()->toString();
                     klass.top()->setParent(0);
+                    klass.top()->setNameSpace(QString());
                     classes.insert(klass.top()->toString(), *klass.top());
                     classes.remove(oldClass);
                     klass.pop();

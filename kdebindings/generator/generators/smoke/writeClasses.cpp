@@ -80,6 +80,8 @@ void SmokeClassFiles::write(const QList<QString>& keys)
 
         fileOut << "\n#include <smoke.h>\n#include <" << Options::module << "_smoke.h>\n";
 
+        fileOut << "\nclass __internal_SmokeClass {};\n";
+
         fileOut << "\nnamespace __smoke" << Options::module << " {\n\n";
 
         // now the class code
@@ -91,31 +93,29 @@ void SmokeClassFiles::write(const QList<QString>& keys)
     }
 }
 
-void SmokeClassFiles::generateMethod(QTextStream& out, const QString& className, const QString& smokeClassName,
-                                     const Method& meth, int index, QSet<QString>& includes)
+QString SmokeClassFiles::generateMethodBody(const QString& indent, const QString& className, const QString& smokeClassName, const Method& meth,
+                                            int index, bool dynamicDispatch, QSet<QString>& includes)
 {
-    out << "    ";
-    if ((meth.flags() & Method::Static) || meth.isConstructor())
-        out << "static ";
-    out << QString("void x_%1(Smoke::Stack x) {\n").arg(index);
-    out << "        // " << meth.toString() << "\n";
-    out << "        ";
-    
+    QString methodBody;
+    QTextStream out(&methodBody);
+
+    out << indent;
+
     if (meth.isConstructor()) {
         out << smokeClassName << "* xret = new " << smokeClassName << "(";
     } else {
         const Function* func = Util::globalFunctionMap[&meth];
         if (func)
             includes.insert(func->fileName());
-        
+
         if (meth.type()->getClass())
             includes.insert(meth.type()->getClass()->fileName());
-        
+
         if (meth.type()->isFunctionPointer() || meth.type()->isArray())
             out << meth.type()->toString("xret") << " = ";
         else if (meth.type() != Type::Void)
             out << meth.type()->toString() << " xret = ";
-        
+
         if (!(meth.flags() & Method::Static)) {
             if (meth.isConst()) {
                 out << "((const " << smokeClassName << "*)this)->";
@@ -123,8 +123,8 @@ void SmokeClassFiles::generateMethod(QTextStream& out, const QString& className,
                 out << "this->";
             }
         }
-        if (!(meth.flags() & Method::PureVirtual) && !(meth.flags() & Method::DynamicDispatch) && !func) {
-            // dynamic dispatch for virtuals
+        if (!dynamicDispatch && !func) {
+            // dynamic dispatch not wanted, call with 'this->Foo::method()'
             out << className << "::";
         } else if (func) {
             if (!func->nameSpace().isEmpty())
@@ -132,15 +132,15 @@ void SmokeClassFiles::generateMethod(QTextStream& out, const QString& className,
         }
         out << meth.name() << "(";
     }
-    
+
     for (int j = 0; j < meth.parameters().count(); j++) {
         const Parameter& param = meth.parameters()[j];
-        
+
         if (param.type()->getClass())
             includes.insert(param.type()->getClass()->fileName());
-        
+
         if (j > 0) out << ",";
-        
+
         QString field = Util::stackItemField(param.type());
         QString typeName = param.type()->toString();
         if (param.type()->isArray()) {
@@ -158,23 +158,53 @@ void SmokeClassFiles::generateMethod(QTextStream& out, const QString& className,
         if (param.type()->isRef() && !param.type()->isFunctionPointer()) typeName.replace('&', "");
         out << "(" << typeName << ")" << "x[" << j + 1 << "]." << field;
     }
-    
-    // if the method has any other default parameters, append them here as values, so 
-    
+
+    // if the method has any other default parameters, append them here as values
     if (!meth.remainingDefaultValues().isEmpty()) {
         const QStringList& defaultParams = meth.remainingDefaultValues();
         if (meth.parameters().count() > 0)
             out << "," ;
         out << defaultParams.join(",");
     }
-    
+
     out << ");\n";
     if (meth.type() != Type::Void) {
-        out << "        x[0]." << Util::stackItemField(meth.type()) << " = " << Util::assignmentString(meth.type(), "xret") << ";\n";
+        out << indent << "x[0]." << Util::stackItemField(meth.type()) << " = " << Util::assignmentString(meth.type(), "xret") << ";\n";
     } else {
-        out << "        (void)x; // noop (for compiler warning)\n";
+        out << indent << "(void)x; // noop (for compiler warning)\n";
     }
-    
+
+    return methodBody;
+}
+
+void SmokeClassFiles::generateMethod(QTextStream& out, const QString& className, const QString& smokeClassName,
+                                     const Method& meth, int index, QSet<QString>& includes)
+{
+    out << "    ";
+    if ((meth.flags() & Method::Static) || meth.isConstructor())
+        out << "static ";
+    out << QString("void x_%1(Smoke::Stack x) {\n").arg(index);
+    out << "        // " << meth.toString() << "\n";
+
+    bool dynamicDispatch = ((meth.flags() & Method::PureVirtual) || (meth.flags() & Method::DynamicDispatch));
+
+    if (dynamicDispatch || !Util::virtualMethodsForClass(meth.getClass()).contains(&meth)) {
+        // This is either already flagged as dynamic dispatch or just a normal method. We can generate a normal method call for it.
+
+        out << generateMethodBody("        ",   // indent
+                                  className, smokeClassName, meth, index, dynamicDispatch, includes);
+    } else {
+        // This is a virtual method. To know whether we should call with dynamic dispatch, we need a bit of RTTI magic.
+        includes.insert("typeinfo");
+        out << "        if (dynamic_cast<__internal_SmokeClass*>(static_cast<" << className << "*>(this))) {\n";   //
+        out << generateMethodBody("            ",   // indent
+                                  className, smokeClassName, meth, index, false, includes);
+        out << "        } else {\n";
+        out << generateMethodBody("            ",   // indent
+                                  className, smokeClassName, meth, index, true, includes);
+        out << "        }\n";
+    }
+
     out << "    }\n";
     
     // If the constructor was generated from another one with default parameteres, we don't need to explicitly create
@@ -335,8 +365,12 @@ void SmokeClassFiles::writeClass(QTextStream& out, const Class* klass, const QSt
     QTextStream switchOut(&switchCode);
 
     out << QString("class %1").arg(smokeClassName);
-    if (!klass->isNameSpace())
+    if (!klass->isNameSpace()) {
         out << QString(" : public %1").arg(className);
+        if (Util::hasClassVirtualDestructor(klass) && Util::hasClassPublicDestructor(klass)) {
+            out << ", public __internal_SmokeClass";
+        }
+    }
     out << " {\n";
     if (Util::canClassBeInstanciated(klass)) {
         out << "    SmokeBinding* _binding;\n";
