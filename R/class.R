@@ -5,6 +5,10 @@
   attr(x, "env")[[name]]
 }
 
+names.RQtClass <- function(x) {
+  c(as.character(subset(qmethods(x), static)$name), names(qenums(x)))
+}
+
 qmethods <- function(x) {
   stopifnot(is(x, "RQtClass"))
   methods <- .Call(qt_qmethods, x)
@@ -18,7 +22,7 @@ qenums <- function(x) {
   .Call(qt_qenums, x)
 }
 
-print.RQtClass <- function(x) {
+print.RQtClass <- function(x, ...) {
   methods <- subset(qmethods(x), !protected)
   cat("Class '", attr(x, "name"), "' with ", nrow(methods), " public methods\n",
       sep = "")
@@ -94,14 +98,14 @@ normConstructor <- function(x, parent) {
   fun
 }
 
-qsetClass <- function(x, parent, constructor = function(...) parent(...),
+qsetClass <- function(name, parent, constructor = function(...) parent(...),
                       where = topenv(parent.frame()))
 {
   ## get our real constructor
   constructor <- normConstructor(constructor, parent)
   ## mangle the class name to prevent conflicts
   module <- getPackageName(where)
-  name <- paste("R", module, x, sep = "::")
+  prefixedName <- paste("R", module, name, sep = "::")
   ### FIXME: May want to support reregistration of classes. This requires:
   ### 1) chaining up at the C++ Class level, rather than at instanceEnv
   ### 2) reducing the 'parent' attribute to a light-weight reference
@@ -112,10 +116,11 @@ qsetClass <- function(x, parent, constructor = function(...) parent(...),
     parentEnv <- emptyenv() # a smoke class, no instance symbols
   instanceEnv <- new.env(parent = parentEnv)
   env <- attr(parent, "env") # do not support user static methods yet
-  cl <- structure(constructor, module = module, name = name, parent = parent,
-                  env = env, instanceEnv = instanceEnv,
+  cl <- structure(constructor, module = module, name = prefixedName,
+                  parent = parent, env = env, instanceEnv = instanceEnv,
                   class = c("RQtUserClass", "RQtClass", "function"))
-  assign(x, cl, where)
+  assign(name, cl, where)
+  cl
 }
 
 qcast <- function(x, class) {
@@ -138,6 +143,7 @@ qsetMethod <- function(name, class, FUN,
     for (s in slot)
       qsetSlot(name, class, s)
   }
+  name
 }
 
 qsetSlot <- function(name, class, params)
