@@ -1,4 +1,5 @@
-addressBook Qt's tutorial for a fully-functioning address book application
-classWizard Qt's class wizard dialog example
-widget Qt's tutorial on basic widget usage
-textEdit Simple example of extending a QValidator to validate text input
+addressBook Fully-functioning address book application
+classWizard Wizard for defining an R extension of a Qt class
+widget Basic widget usage
+textEdit Extending a QValidator to validate text input
+analogClock Custom painting of widgets
