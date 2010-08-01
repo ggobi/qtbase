@@ -51,10 +51,10 @@ qsize <- function(width, height) {
 qpolygon <- function(x = NULL, y = NULL) {
   xy <- xy.coords(x, y)
   if (is.integer(c(x, y))) {
-    pointCon <- Qt$Point
+    pointCon <- Qt$QPoint
     con <- Qt$QPolygon
   } else {
-    pointCon <- Qt$PointF
+    pointCon <- Qt$QPointF
     con <- Qt$QPolygonF
   }
   con(mapply(pointCon, xy$x, xy$y))
