@@ -5,6 +5,7 @@
 #include "SmokeObject.hpp"
 #include "InstanceObjectTable.hpp"
 #include "smoke.hpp"
+#include "SmokeType.hpp"
 
 #include <Rinternals.h>
 
@@ -25,6 +26,9 @@ const Class* Class::fromSmokeId(Smoke *smoke, int classId) {
     _classMap[name] = klass;
   }
   return klass;
+}
+const Class* Class::fromSmokeType(const SmokeType &type) {
+  return fromSmokeId(type.smoke(), type.classId());
 }
 const Class* Class::fromSmokeName(Smoke *smoke, const char *name) {
   if (!smoke) {
@@ -71,4 +75,17 @@ QList<const Class *> Class::ancestors() const {
 
 InstanceObjectTable *Class::createObjectTable(SmokeObject *obj) const {
   return new InstanceObjectTable(obj);
+}
+
+Method *Class::findImplicitConverter(const SmokeObject *source) const {
+  // not very optimized, but should be fast enough
+  QList<Method *> meths = methods(Method::Constructor | Method::Implicit);
+  Method *coercer = NULL;
+  foreach(Method *meth, meths) {
+    QVector<SmokeType> types = meth->types();
+    if (types.size() == 2 && source->instanceOf(types[1]))
+      coercer = meth;
+    else delete meth;
+  }
+  return coercer;
 }

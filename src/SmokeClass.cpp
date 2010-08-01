@@ -91,7 +91,7 @@ Smoke::ModuleIndex SmokeClass::findIndex(const MethodCall& call) const
       } else error("Corrupt method %s::%s", name(), m->name());
     }
   }
-  if (methIds.size() == 1) // fast path
+  if (methIds.size() == 1) // fast path 
     found.index = methIds[0];
   else if (methIds.size() > 1) {
     /* If we have more than one choice, we score the arguments */

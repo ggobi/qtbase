@@ -3,7 +3,6 @@
 
 #include "MethodCall.hpp"
 #include "SmokeObject.hpp"
-#include "Method.hpp"
 
 #include "convert.hpp"
 
@@ -223,42 +222,6 @@ void marshal_to_sexp<SmokeEnumWrapper>(MethodCall *m)
 {
   long val = itemValue<long>(m);
   m->setSexp(enum_to_sexp(val, m->type()));
-}
-
-/* instance marshaling */
-
-template <>
-void marshal_from_sexp<SmokeClassWrapper>(MethodCall *m)
-{
-  SEXP v = m->sexp();
-  
-  SmokeObject *o = from_sexp<SmokeObject *>(v, m->type());
-  
-  if (o && m->returning() && !m->type().fitsStack()) {
-    o = o->clone(); // Smoke takes ownership of virtual returns on the stack
-  }
-
-  void *ptr = o ? o->castPtr(m->type().className()) : NULL;
-  setItemValue(m, ptr);
-  
-  return;
-}
-
-template <>
-void marshal_to_sexp<SmokeClassWrapper>(MethodCall *m)
-{
-  void *p = itemValue<void *>(m);
-  SEXP sexp = ptr_to_sexp(p, m->type());
-  /* NOTE: This can lead to memory leaks for objects created via
-     factory methods. But the alternative is the possibility for
-     seg-faults, because if an object is not a Smoke instance, we will
-     not know when it is deleted. Granted, the R user can still call a
-     dead object and crash R, but at least the memory management code
-     will be well behaved.
-  */
-  if (sexp != R_NilValue && !(m->returning() && m->method()->isConstructor()))
-    SmokeObject::fromSexp(sexp)->setAllocated(false);
-  m->setSexp(sexp);
 }
 
 /* handling arbitrary pointers */

@@ -167,10 +167,66 @@
 
 #include <smoke.h>
 #include "type-handlers.hpp"
+#include "DynamicBinding.hpp"
+#include "Class.hpp"
 
 #include <Rdefines.h> // syntax more convenient for macros
 
 #undef isNull // R causing trouble again
+
+/* instance marshaling */
+
+template <>
+void marshal_from_sexp<SmokeClassWrapper>(MethodCall *m)
+{
+  SEXP v = m->sexp();
+  SmokeType type = m->type();
+  SmokeObject *o = NULL, *coerced = NULL;
+  
+  if (v != R_NilValue) {
+    o = SmokeObject::fromSexp(v);
+    if (!o->instanceOf(type.className())) {
+      // attempt implicit conversion
+      coerced = o->convertImplicitly(type);
+      if (coerced)
+        o = coerced;
+      else error("Failed to coerce an instance of type '%s' to '%s'",
+                 o->className(), type.className());
+    }
+  }
+  
+  if (o && m->returning() && !type.fitsStack()) {
+    o = o->clone(); // Smoke takes ownership of virtual returns on the stack
+  }
+
+  void *ptr = o ? o->castPtr(type.className()) : NULL;
+  setItemValue(m, ptr);
+
+  m->marshal();
+
+  if (coerced)
+    delete coerced;
+  
+  return;
+}
+
+template <>
+void marshal_to_sexp<SmokeClassWrapper>(MethodCall *m)
+{
+  void *p = itemValue<void *>(m);
+  SEXP sexp = ptr_to_sexp(p, m->type());
+  /* NOTE: This can lead to memory leaks for objects created via
+     factory methods. But the alternative is the possibility for
+     seg-faults, because if an object is not a Smoke instance, we will
+     not know when it is deleted. Granted, the R user can still call a
+     dead object and crash R, but at least the memory management code
+     will be well behaved.
+  */
+  if (sexp != R_NilValue &&
+      !(m->returning() && m->method()->qualifiers() & Method::Constructor))
+    SmokeObject::fromSexp(sexp)->setAllocated(false);
+  m->setSexp(sexp);
+}
 
 void marshal_basetype(MethodCall *m)
 {
@@ -343,8 +399,7 @@ int scoreArg_basetype(SEXP arg, const SmokeType &type) {
     if (elem == Smoke::t_char && strlen(CHAR(asChar(value))) == 1)
       score = 2;
     break;
-  case ENVSXP: // TODO: use QVariant canConvert() to check for
-               // possible implicit conversions
+  case ENVSXP:
     if (elem == Smoke::t_class) {
       SmokeObject *o = SmokeObject::fromSexp(value);
       if (o) {
@@ -353,6 +408,13 @@ int scoreArg_basetype(SEXP arg, const SmokeType &type) {
           score = 3;
         else if (o->instanceOf(smokeClass))
           score = 2;
+        else {
+          Method *m = Class::fromSmokeType(type)->findImplicitConverter(o);
+          if (m) {
+            score = 1;
+            delete m;
+          }
+        }
       }
     }
     break;
@@ -374,6 +436,12 @@ int scoreArg_unknown(SEXP /*arg*/, const SmokeType &type) {
 template<> int scoreArg<QString>(SEXP arg, const SmokeType &type) {
   if (TYPEOF(arg) == STRSXP)
     return type.isPtr() ? 1 : 3;
+  else return 0;
+}
+
+template<> int scoreArg<const char*>(SEXP arg, const SmokeType &type) {
+  if (TYPEOF(arg) == STRSXP)
+    return 2;
   else return 0;
 }
 

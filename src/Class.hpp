@@ -53,6 +53,9 @@ public:
 
   // Often want to know this to optimize e.g. callback handlers
   bool userImplementsMethod(const char *methodName) const;
+
+  // Find the method (constructor) to implicitly coerce to this class
+  Method *findImplicitConverter(const SmokeObject *source) const;
   
   /* Whether the Class objects represent the same class. */
   bool operator ==(const Class &b) const {
@@ -78,6 +81,7 @@ public:
   */
   
   static const Class* fromSmokeId(Smoke *smoke, int classId);
+  static const Class* fromSmokeType(const SmokeType &type);
   static const Class* fromSmokeName(Smoke *smoke, const char *name);
   static const Class* fromName(const char *name);
   static const Class* fromSexp(SEXP sexp);

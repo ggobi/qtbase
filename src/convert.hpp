@@ -283,9 +283,10 @@ from_sexp<SmokeObject*>(SEXP sexp, const SmokeType &type) {
   if (sexp == R_NilValue)
     return(NULL);
   SmokeObject * so = SmokeObject::fromSexp(sexp);  
-  if (!so->instanceOf(type.className()))
+  if (!so->instanceOf(type.className())) {
     error("Expected an instance of type '%s', not '%s'", type.className(),
           so->className());
+  }
   return so;
 }
 

@@ -70,6 +70,7 @@ public:
   bool instanceOf(const char *className) const;
   bool instanceOf(const SmokeType &type) const;
   SEXP enclose(SEXP fun);
+  SmokeObject *convertImplicitly(const SmokeType &type) const;
   
 private:
 

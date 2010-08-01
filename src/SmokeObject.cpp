@@ -390,6 +390,21 @@ void SmokeObject::orphanTable(SEXP sexp) const {
   table->setInstance(NULL);
 }
 
+SmokeObject *SmokeObject::convertImplicitly(const SmokeType &type) const {
+  const Class *cl = Class::fromSmokeId(type.smoke(), type.classId());
+  Method *meth = cl->findImplicitConverter(this);
+  SmokeObject *converted = NULL;
+  if (meth) {
+    Smoke::StackItem stack[2];
+    stack[1].s_voidp = _ptr;
+    meth->invoke(NULL, stack);
+    if (meth->lastError() == Method::NoError)
+      converted = SmokeObject::fromPtr(stack[0].s_voidp, type, true);
+    delete meth;
+  }
+  return converted;
+}
+
 SmokeObject::~SmokeObject() {
 #ifdef MEM_DEBUG
   qDebug("%p: destructing", this);
