@@ -39,10 +39,9 @@ public:
     if (_method.access() == QMetaMethod::Protected)
       flags |= Protected;
     else flags |= Public;
+    if (_method.methodType() == QMetaMethod::Constructor)
+      flags |= Constructor | Implicit; // assuming implicit
     return flags;
-  }
-  virtual bool isConstructor() const {
-    return _method.methodType() == QMetaMethod::Constructor;
   }
   
   virtual void invoke(SmokeObject *o, Smoke::Stack stack);

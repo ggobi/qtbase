@@ -39,9 +39,13 @@ public:
     if (_m->flags & Smoke::mf_static)
       flags |= Static;
     else flags |= NotStatic;
+    if (_m->flags & Smoke::mf_ctor) {
+      flags |= Constructor;
+      if (!(_m->flags & Smoke::mf_explicit))
+        flags |= Implicit;
+    }
     return flags;
   }
-  virtual bool isConstructor() const { return _m->flags & Smoke::mf_ctor; }
 
   virtual inline const char *name() const {
     return _smoke->methodNames[_m->name];
@@ -57,6 +61,7 @@ public:
   
   inline bool isStatic() const { return _m->flags & Smoke::mf_static; }
   inline bool isConst() const { return _m->flags & Smoke::mf_const; }
+  inline bool isConstructor() const { return _m->flags & Smoke::mf_ctor; }
   inline bool isCopyConstructor() const {
     return _m->flags & Smoke::mf_copyctor;
   }
@@ -64,6 +69,7 @@ public:
   inline bool isDestructor() const { return _m->flags & Smoke::mf_dtor; }
   inline bool isProtected() const { return _m->flags & Smoke::mf_protected; }
   inline bool isVirtual() const { return _m->flags & Smoke::mf_virtual; }
+  inline bool isExplicit() const { return _m->flags & Smoke::mf_explicit; }
   
   virtual void invoke(SmokeObject *obj, Smoke::Stack stack);
 };

@@ -33,6 +33,7 @@ public:
                    ImplementationMissing, BadArguments };
   enum Qualifier { None, Static = 1 << 0, NotStatic = 1 << 1, Public = 1 << 2,
                    Protected = 1 << 3, Private = 1 << 4, NotPrivate = 1 << 5,
+                   Constructor = 1 << 6, Implicit = 1 << 7
                    /*Virtual = 1 << 2*/ };
   Q_DECLARE_FLAGS(Qualifiers, Qualifier)
 
@@ -42,7 +43,6 @@ public:
   virtual QVector<SmokeType> types() const = 0;
   virtual const Class* klass() const = 0;
   virtual Qualifiers qualifiers() const = 0;
-  virtual bool isConstructor() const = 0;
   
   virtual void invoke(SmokeObject *obj, Smoke::Stack stack) = 0;  
   virtual SEXP invoke(SEXP obj, SEXP args) = 0;
