@@ -2,116 +2,149 @@
 #include <QMetaObject>
 #include <QMetaMethod>
 
-#include "wrap.hpp"
-
+#include "MocMethod.hpp"
+#include "MocClass.hpp"
+#include "DynamicBinding.hpp"
+#include "MocStack.hpp"
+#include "SmokeStack.hpp"
+#include "SmokeType.hpp"
 #include "SmokeObject.hpp"
+#include "convert.hpp"
+
 #include <smoke/qt_smoke.h>
 
-extern "C" {
-  SEXP qt_qmocMethods(SEXP x) {
-    QObject *self = unwrapSmoke(x, QObject);
-    const QMetaObject *meta = self->metaObject();
-    int n = meta->methodCount();
-    
-    SEXP ans, ans_type, ans_signature, ans_return, ans_nargs;
-    PROTECT(ans = allocVector(VECSXP, 4));
-    ans_type = allocVector(INTSXP, n);
-    SET_VECTOR_ELT(ans, 0, ans_type);
-    ans_signature = allocVector(STRSXP, n);
-    SET_VECTOR_ELT(ans, 1, ans_signature);
-    ans_return = allocVector(STRSXP, n);
-    SET_VECTOR_ELT(ans, 2, ans_return);
-    ans_nargs = allocVector(INTSXP, n);
-    SET_VECTOR_ELT(ans, 3, ans_nargs);    
-    
-    for (int i = 0; i < n; i++) {
-      QMetaMethod metaMethod = meta->method(i);
-      INTEGER(ans_type)[i] = metaMethod.methodType();
-      SET_STRING_ELT(ans_signature, i, mkChar(metaMethod.signature()));
-      SET_STRING_ELT(ans_return, i, mkChar(metaMethod.typeName()));
-      INTEGER(ans_nargs)[i] = metaMethod.parameterNames().size();
-    }
-
-    UNPROTECT(1);
-    return ans;
+extern "C" SEXP qt_qmocMethods(SEXP x) {
+  QObject *self = unwrapSmoke(x, QObject);
+  const QMetaObject *meta = self->metaObject();
+  int n = meta->methodCount();
+  
+  SEXP ans, ans_type, ans_signature, ans_return, ans_nargs;
+  PROTECT(ans = allocVector(VECSXP, 4));
+  ans_type = allocVector(INTSXP, n);
+  SET_VECTOR_ELT(ans, 0, ans_type);
+  ans_signature = allocVector(STRSXP, n);
+  SET_VECTOR_ELT(ans, 1, ans_signature);
+  ans_return = allocVector(STRSXP, n);
+  SET_VECTOR_ELT(ans, 2, ans_return);
+  ans_nargs = allocVector(INTSXP, n);
+  SET_VECTOR_ELT(ans, 3, ans_nargs);    
+  
+  for (int i = 0; i < n; i++) {
+    QMetaMethod metaMethod = meta->method(i);
+    INTEGER(ans_type)[i] = metaMethod.methodType();
+    SET_STRING_ELT(ans_signature, i, mkChar(metaMethod.signature()));
+    SET_STRING_ELT(ans_return, i, mkChar(metaMethod.typeName()));
+    INTEGER(ans_nargs)[i] = metaMethod.parameterNames().size();
   }
   
-  SEXP qt_qnormalizedSignature(SEXP x) {
-    QByteArray sig = QMetaObject::normalizedSignature(CHAR(asChar(x)));
-    return sig.isEmpty() ? R_NilValue : mkString(sig.data());
-  }
-
-  SEXP qt_qproperties(SEXP x) {
-    QObject *self = unwrapSmoke(x, QObject);
-    const QMetaObject *meta = self->metaObject();
-    int n = meta->propertyCount();
-    
-    SEXP ans, ans_type, ans_name, ans_readable, ans_writable;
-    PROTECT(ans = allocVector(VECSXP, 4));
-    ans_name = allocVector(STRSXP, n);
-    SET_VECTOR_ELT(ans, 0, ans_name);
-    ans_type = allocVector(STRSXP, n);
-    SET_VECTOR_ELT(ans, 1, ans_type);
-    ans_readable = allocVector(LGLSXP, n);
-    SET_VECTOR_ELT(ans, 2, ans_readable);
-    ans_writable = allocVector(LGLSXP, n);
-    SET_VECTOR_ELT(ans, 3, ans_writable);
-
-    for (int i = 0; i < n; i++) {
-      QMetaProperty metaProperty = meta->property(i);
-      SET_STRING_ELT(ans_type, i, mkChar(metaProperty.typeName()));
-      SET_STRING_ELT(ans_name, i, mkChar(metaProperty.name()));
-      LOGICAL(ans_readable)[i] = metaProperty.isReadable();
-      LOGICAL(ans_writable)[i] = metaProperty.isWritable();
-    }
-    
-    UNPROTECT(1);
-    return ans;
-  }
+  UNPROTECT(1);
+  return ans;
+}
+  
+extern "C" SEXP qt_qnormalizedSignature(SEXP x) {
+  QByteArray sig = QMetaObject::normalizedSignature(CHAR(asChar(x)));
+  return sig.isEmpty() ? R_NilValue : mkString(sig.data());
 }
 
+extern "C" SEXP qt_qproperties(SEXP x) {
+  QObject *self = unwrapSmoke(x, QObject);
+  const QMetaObject *meta = self->metaObject();
+  int n = meta->propertyCount();
+  
+  SEXP ans, ans_type, ans_name, ans_readable, ans_writable;
+  PROTECT(ans = allocVector(VECSXP, 4));
+  ans_name = allocVector(STRSXP, n);
+  SET_VECTOR_ELT(ans, 0, ans_name);
+  ans_type = allocVector(STRSXP, n);
+  SET_VECTOR_ELT(ans, 1, ans_type);
+  ans_readable = allocVector(LGLSXP, n);
+  SET_VECTOR_ELT(ans, 2, ans_readable);
+  ans_writable = allocVector(LGLSXP, n);
+  SET_VECTOR_ELT(ans, 3, ans_writable);
+  
+  for (int i = 0; i < n; i++) {
+    QMetaProperty metaProperty = meta->property(i);
+    SET_STRING_ELT(ans_type, i, mkChar(metaProperty.typeName()));
+    SET_STRING_ELT(ans_name, i, mkChar(metaProperty.name()));
+    LOGICAL(ans_readable)[i] = metaProperty.isReadable();
+    LOGICAL(ans_writable)[i] = metaProperty.isWritable();
+  }
+  
+  UNPROTECT(1);
+  return ans;
+}
 
+extern "C" SEXP qt_qmetaInvoke(SEXP x, SEXP s_id, SEXP s_args) {
+  SmokeObject *so = SmokeObject::fromSexp(x);
+  int id = from_sexp<int>(s_id);
+  QObject * qobj = reinterpret_cast<QObject *>(so->castPtr("QObject"));
+  MocMethod method(so->smoke(), qobj->metaObject(), id);
+  SEXP ret = method.invoke(x, s_args);
+  if (method.lastError() > Method::NoError)
+    error("Meta method invocation failed for: '%s::%s'", so->klass()->name(),
+          method.name());
+  return ret;
+}
 
-static QMetaObject* 
-parent_meta_object(SEXP obj) 
+/* We catch all qt_metacall invocations */
+extern "C" SEXP qt_qmetacall(SEXP x, SEXP s_call, SEXP s_id, SEXP s_args)
 {
-  SmokeObject* o = SmokeObject::fromSexp(obj);
-  Smoke *smoke = o->smoke();
-  Smoke::ModuleIndex nameId = smoke->idMethodName("metaObject");
-  Smoke::ModuleIndex classIdx(smoke, o->classId());
-  Smoke::ModuleIndex meth = smoke->findMethod(classIdx, nameId);
-  if (meth.index <= 0) {
-    // Should never happen..
+  SmokeObject *so = SmokeObject::fromSexp(x);
+  QMetaObject::Call call =
+    enum_from_sexp<QMetaObject::Call>(s_call, SmokeType());
+  int id = from_sexp<int>(s_id);
+  void **args = reinterpret_cast<void **>(from_sexp<void *>(s_args));
+  
+  // Assume the target slot is a C++ one
+  Smoke::StackItem i[4];
+  i[1].s_enum = call;
+  i[2].s_int = id;
+  i[3].s_voidp = args;
+  so->invokeMethod("qt_metacall$$?", i);
+  int ret = i[0].s_int;
+  if (ret < 0) {
+    return ScalarInteger(ret);
   }
 
-  Smoke::Method &methodId =
-    meth.smoke->methods[meth.smoke->methodMaps[meth.index].method];
-  Smoke::ClassFn fn = smoke->classes[methodId.classId].classFn;
-  Smoke::StackItem i[1];
-  (*fn)(methodId.method, o->ptr(), i);
-  return (QMetaObject*) i[0].s_voidp;
+  if (call != QMetaObject::InvokeMetaMethod)
+    return ScalarInteger(id);
+
+  QObject * qobj = reinterpret_cast<QObject *>(so->castPtr("QObject"));
+  // get obj metaobject with a virtual call
+  const QMetaObject *metaobject = qobj->metaObject();
+  
+  // get method count
+  int count = metaobject->methodCount();
+  
+  QMetaMethod method = metaobject->method(id);
+  if (method.methodType() == QMetaMethod::Signal) {
+    // FIXME: this override of 'activate' is obsolete
+    metaobject->activate(qobj, id, (void**) args);
+    return ScalarInteger(id - count);
+  }
+  DynamicBinding binding(MocMethod(so->smoke(), metaobject, id));
+  QVector<SmokeType> stackTypes = binding.types();
+  MocStack mocStack = MocStack(args, stackTypes.size());
+  SmokeStack smokeStack = mocStack.toSmoke(stackTypes);
+  binding.invoke(so, smokeStack.items());
+  mocStack.returnFromSmoke(smokeStack, stackTypes[0]);
+  if (binding.lastError() == Method::NoError)
+    warning("Slot invocation failed for %s::%s", so->klass()->name(),
+            binding.name());
+  
+  return ScalarInteger(id - count);
 }
 
 /* Presumably R will pass the metadata blob at class definition time,
-   and store QMetaObject reference in the class environment. When the
-   qt_metacall() virtual method is invoked, we retrieve the reference.
+   and store QMetaObject reference. When the
+   metaObject() virtual method is invoked, we retrieve the reference.
 */
-SEXP
-qt_qnewMetaObject(SEXP obj, SEXP parentMeta, SEXP rstringdata, SEXP rdata)
+extern "C" SEXP
+qt_qnewMetaObject(SEXP x, SEXP rstringdata, SEXP rdata)
 {
-  QMetaObject* superdata = 0;
-
-  if (parentMeta == R_NilValue) {
-    // The parent class is a Smoke class, so call metaObject() on the
-    // instance to get it via a smoke library call
-    superdata = parent_meta_object(obj);
-  } else {
-    // The parent class is a custom R class whose metaObject
-    // was constructed at runtime
-    SmokeObject* p = SmokeObject::fromSexp(parentMeta);
-    superdata = reinterpret_cast<QMetaObject *>(p->ptr());
-  }
-
+  const Class *cl = Class::fromSexp(x);
+  const QMetaObject *superdata = MocClass(cl->parents()[0]).metaObject();
+  
   char *stringdata = new char[length(rstringdata)];
   memcpy((void *) stringdata, RAW(rstringdata), length(rstringdata));
   
@@ -186,7 +219,7 @@ qt_qnewMetaObject(SEXP obj, SEXP parentMeta, SEXP rstringdata, SEXP rdata)
   printf("\nqt_meta_stringdata:\n    \"");
 
   int strlength = 0;
-  for (int j = 0; j < RSTRING_LEN(stringdata_value); j++) {
+  for (int j = 0; j < length(rstringdata); j++) {
     strlength++;
     if (meta->d.stringdata[j] == 0) {
       printf("\\0");

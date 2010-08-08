@@ -164,6 +164,8 @@ void MocStack::setSmokeItem(Smoke::StackItem *item, void *o,
                             const SmokeType &type)
 {
   void *p = o;
+  if (type.isVoid())
+    return;
   switch(type.elem()) {
   case Smoke::t_bool:
     item[0].s_bool = *(bool*)o;

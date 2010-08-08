@@ -20,7 +20,7 @@ S3method(print, RQtLibrary)
 S3method("$", RQtClass)
 S3method(print, RQtClass)
 S3method(names, RQtClass)
-export(qmethods, qsetClass, qsetMethod)
+export(qmethods, qsetClass, qsetMethod, qsetSlot, qsetSignal)
 
 # objects
 S3method(print, RQtObject)

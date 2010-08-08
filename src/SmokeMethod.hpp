@@ -72,6 +72,10 @@ public:
   inline bool isExplicit() const { return _m->flags & Smoke::mf_explicit; }
   
   virtual void invoke(SmokeObject *obj, Smoke::Stack stack);
+  virtual SEXP invoke(SEXP obj, SEXP args) {
+    return ForeignMethod::invoke(obj, args);
+  }
+
 };
 
 #endif

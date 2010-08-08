@@ -6,7 +6,7 @@
 }
 
 names.RQtClass <- function(x) {
-  c(as.character(subset(qmethods(x), static)$name), names(qenums(x)))
+  ls(attr(x, "env"))
 }
 
 qmethods <- function(x) {
@@ -33,7 +33,7 @@ print.RQtClass <- function(x, ...) {
 ## multiple.
 
 ## obtain a class object from a smoke module and a name
-qsmokeClass <- function(x, name) {
+qsmokeClass <- function(x, name, internals = character()) {
   env <- new.env(parent = emptyenv())
   basename <- gsub(".*::", "", name)
   cl <- structure(function(...) qinvokeStatic(cl, basename, ...), name = name,
@@ -50,7 +50,7 @@ qsmokeClass <- function(x, name) {
     assign(enum, structure(enums[enum], class = "QtEnum"), env)
   internals <- grep(paste("^", name, "::", sep = ""), qclasses(x), value = TRUE)
   for (internal in internals)
-    assign(internal, qsmokeClass(x, internal), env)
+    assign(gsub(".*::", "", internal), qsmokeClass(x, internal), env)
   lockEnvironment(env, TRUE)
   cl
 }
@@ -132,26 +132,58 @@ qenclose <- function(x, fun) {
 }
 
 qsetMethod <- function(name, class, FUN,
-                       access = c("public", "protected", "private"),
-                       slot = FALSE) # 'slot' not supported yet
+                       access = c("public", "protected", "private"))
 {
   attr(FUN, "access") <- match.arg(access)
   assign(name, FUN, attr(class, "instanceEnv"))
-  if (isTRUE(slot))
-    slot <- ""
-  if (is.character(slot)) {
-    for (s in slot)
-      qsetSlot(name, class, s)
-  }
   name
 }
 
-qsetSlot <- function(name, class, params)
+## Integration with the Qt Meta Object Compiler (MOC)
+
+## The basic idea: define methods in R that are described by
+## QMetaObject. This allows R to define signals and slots (and
+## properties, enums, etc). The utility of signals is obvious. Slots
+## could be exposed as e.g. DBus services. The main downside is that
+## providing an external interface requires us to specify the types
+## using C++ nomenclature.
+
+## The methods will belong to the R class, as usual. We will compile a
+## QMetaObject and provide it via the QObject::metaObject() virtual
+## method. Then we will catch invocations via the QObject::qt_metacall
+## virtual. All methods could be forwarded to R, but we might
+## short-circuit signal emissions (and call QMetaObject::activate).
+
+qsetSlot <- function(name, class, FUN, type = "", sig = "",
+                     access = c("public", "protected", "private"))
 {
-  sig <- paste(name, "(", params, ")", sep = "")
-  fun <- get(name, attr(class, "instanceEnv"))
-  qmetadata(x)$slots[[sig]] <-
-    list(signature = sig, args = names(formals(fun)),
-         access = attr(fun, "access"))
+  access <- match.arg(access)
+  qsetMethod(name, class, FUN, access)
+  sig <- paste(name, "(", paste(sig, collapse=","), ")", sep = "")
+  qmetadata(class)$slots[[sig]] <-
+    list(signature = sig, args = names(formals(FUN)), type = type,
+         access = access)
+  name
 }
 
+## Signals are essentially implemented by QMetaObject::activate(). We
+## could have the signal method call this directly, but for
+## convenience we instead call the corresponding QMetaMethod. This is
+## caught by the qt_metacall override which then calls
+## QMetaObject::activate().
+
+qsetSignal <- function(name, class, sig = "",
+                       access = c("public", "protected", "private"))
+{
+  access <- match.arg(access)
+  argNames <- names(sig)
+  sig <- paste(name, "(", paste(sig, collapse=","), ")", sep = "")
+  qmetadata(class)$signals[[sig]] <-
+    list(signature = sig, args = argNames, type = "", access = access)
+  meta <- qmetaObject(class)
+  index <- meta$methodCount() - 1L
+  qsetMethod(name, class,
+             function(...) .Call(qt_qmetaInvoke, this, index, list(...)),
+             access)
+  name
+}

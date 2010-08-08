@@ -30,6 +30,9 @@ extern "C" {
   // Moc-specific metadata
   SEXP qt_qnormalizedSignature(SEXP x);
   SEXP qt_qmocMethods(SEXP x);
+  SEXP qt_qmetacall(SEXP x, SEXP s_call, SEXP s_id, SEXP s_args);
+  SEXP qt_qnewMetaObject(SEXP x, SEXP rstringdata, SEXP rdata);
+  SEXP qt_qmetaInvoke(SEXP x, SEXP s_id, SEXP s_args);
   
   // dynamic invocation
   SEXP qt_qinvoke(SEXP method, SEXP self, SEXP args);
@@ -39,8 +42,11 @@ extern "C" {
   SEXP qt_qcast(SEXP x, SEXP className);
   SEXP qt_qenclose(SEXP x, SEXP fun);
 
+  // Invoke a Smoke method with R types
+  SEXP invokeSmokeMethod(Smoke::ModuleIndex m, SEXP x, SEXP args);
+
   // registration of Smoke modules from other packages
-  void registerRQtModule(Smoke *smoke);
+  Smoke *registerRQtModule(Smoke *smoke);
 
   // DataFrameModel
   SEXP qt_qdataFrameModel();
@@ -65,6 +71,9 @@ static R_CallMethodDef CallEntries[] = {
     // Moc metadata
     CALLDEF(qt_qmocMethods, 1),
     CALLDEF(qt_qnormalizedSignature, 1),
+    CALLDEF(qt_qmetacall, 4),
+    CALLDEF(qt_qnewMetaObject, 3),
+    CALLDEF(qt_qmetaInvoke, 3),
 
     // General metadata
     CALLDEF(qt_qmethods, 1),
@@ -120,6 +129,8 @@ void R_init_qtbase(DllInfo *dll)
     REG_CALLABLE(wrapPointer);
     REG_CALLABLE(_wrapSmoke);
 
+    REG_CALLABLE(invokeSmokeMethod);
+    
     REG_CALLABLE(sexp2qstring);
     REG_CALLABLE(qstring2sexp);
 

@@ -24,10 +24,6 @@ public:
   char *className(Smoke::Index classId);
 
   Smoke *getSmoke() { return smoke; }
-
-private:
-  int qt_metacall(SmokeObject *so, QMetaObject::Call _c, int id, void **_o);
-
 };
 
 #endif

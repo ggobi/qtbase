@@ -15,7 +15,7 @@
 
 class MocClass : public Class {
 public:
-  MocClass(Class *delegate) : _delegate(delegate), _meta(findMetaObject())
+  MocClass(const Class *delegate) : _delegate(delegate), _meta(findMetaObject())
   {
   }
   
@@ -43,7 +43,7 @@ private:
                    SEXP args) const;
   const QMetaObject *findMetaObject() const;
 
-  Class *_delegate;
+  const Class *_delegate;
   const QMetaObject *_meta;
   mutable QHash<QByteArray, int> _methods; // map from name (not signature)
 };

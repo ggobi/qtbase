@@ -46,6 +46,9 @@ public:
   
   virtual void invoke(SmokeObject *o, Smoke::Stack stack);
   virtual void invoke(QObject *obj, void **o);
+  virtual SEXP invoke(SEXP obj, SEXP args) {
+    return ForeignMethod::invoke(obj, args);
+  }
   
 private:
   Smoke::Index smokeTypeForName(Smoke *smoke, QByteArray name) const;

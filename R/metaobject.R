@@ -50,10 +50,33 @@ qproperties <- function(x) {
   as.data.frame(props, row.names=name)
 }
 
+qmetadata <- function(x) {
+  attr(x, "metadata")
+}
+
+## Every time metadata is set, we recompile it and reset the methods
+## so that they refer to the new metadata
+"qmetadata<-" <- function(x, value) {
+  attr(x, "metadata") <- value
+  compiled <- compileMetaObject(x)
+  attr(x, "metaObject") <- compiled
+  qsetMethod("metaObject", x, function() compiled)
+  ## Lets MocClass see our methods
+  qsetMethod("staticMetaObject", x, function() compiled)
+  ## Ensure this method is defined
+  qsetMethod("qt_metacall", x,
+             function(call, id, args) .Call(qt_qmetacall, this, call, id, args))
+  x
+}
+
+qmetaObject <- function(x) {
+  attr(x, "metaObject")
+}
+
 ### Some stuff derived from QtRuby for creating a MetaData blob
 
 ## 'x' is a class
-## 'metadata' is list of classinfos, signals and slots
+## 'metadata' is an environment of classinfos, signals and slots
 
 ### NOTE: This does not work yet.
 ### It would let an R class define:
@@ -64,20 +87,20 @@ qproperties <- function(x) {
 ### - Class info: useful for describing dbus services
 ### X Enums: probably not necessary
 
-compileMetaData <- function(x) {
-  metadata <- attr(x, "metadata")
+compileMetaObject <- function(x) {
+  metadata <- qmetadata(x)
   
   infos <- metadata[["classinfos"]]
   signals <- metadata[["signals"]]
   slots <- metadata[["slots"]]
-  
+
   ## generate 'stringdata' table
-  allNames <- unique(unlist(metadata))
+  allNames <- unique(c(unlist(metadata), attr(x, "name"), ""))
   offsets <- cumsum(c(0, head(nchar(allNames), -1) + 1))
   names(offsets) <- allNames
   
   stringdata <- charToRaw(paste(allNames, collapse=";"))
-  stringdata[stringdata == charToRaw(";")] <- 0
+  stringdata[stringdata == charToRaw(";")] <- as.raw(0)
 
   ## generate 'data' table
 
@@ -100,7 +123,7 @@ compileMetaData <- function(x) {
   data <-
     c(1, # revision
       offsets[attr(x, "name")], 	# classname
-      length(infos), if (length(infos)) 10 else 0, # class info
+      length(infos), ifelse(length(infos) > 0, 10, 0), # class info
       length(signals) + length(slots), 10 + (2*length(infos)), # methods
       0, 0, # properties
       0, 0) # enums
@@ -110,8 +133,10 @@ compileMetaData <- function(x) {
 
   methodData <- function(methods, flag) {
     do.call("c", lapply(methods, function(method) {
-      c(offsets[c(method$signature, methods$args, "", "")],
-        access[method$access] + flag + MethodScriptable)
+      ## cannot use character extraction due to empty strings
+      offm <- match(c(method$signature, method$args, method$type, ""),
+                    names(offsets))
+      c(offsets[offm], access[method$access] + flag + MethodScriptable)
     }))
   }
   
@@ -121,5 +146,5 @@ compileMetaData <- function(x) {
   ## the slots
   data <- c(data, methodData(slots, MethodSlot))
 
-##  .Call(qt_qnewMetaObject, x, stringdata, data)
+  .Call(qt_qnewMetaObject, x, stringdata, data)
 }

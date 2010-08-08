@@ -18,7 +18,8 @@ extern "C" {
     if (!asLogical(has_user_data))
       user_data = NULL;
     obj = new RDynamicQObject(method, handler, user_data, sender);
-    obj->connectDynamicSlot(sender, signal, signal);
+    if (!obj->connectDynamicSlot(sender, signal, signal))
+      error("Failed to connect to signal '%s'", signal);
     // just return as an ordinary QObject, supporting disconnect()
     // the memory is owned by the QObject 'x'
     return SmokeObject::sexpFromPtr(obj, qt_Smoke, "QObject");

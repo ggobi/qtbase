@@ -58,17 +58,11 @@ MocClass::findMethod(const MethodCall& call) const {
 
 const QMetaObject *MocClass::findMetaObject() const {
   const QMetaObject *meta;
-  /* According to qtruby, Smoke does not have staticMetaObject()
-     for the QObject class. */
-  if (!qstrcmp(name(), "QObject")) {
-    meta = &QObject::staticMetaObject;
-  } else {
-    DynamicBinding binding = DynamicBinding(_delegate, "staticMetaObject");
-    Smoke::StackItem items[1];
-    items[0].s_voidp = NULL;
-    binding.invoke(NULL, items);
-    meta = reinterpret_cast<const QMetaObject*>(items[0].s_voidp);
-  }
+  DynamicBinding binding = DynamicBinding(_delegate, "staticMetaObject");
+  Smoke::StackItem items[1];
+  items[0].s_voidp = NULL;
+  binding.invoke(NULL, items);
+  meta = reinterpret_cast<const QMetaObject*>(items[0].s_voidp);
   return meta;
 }
 

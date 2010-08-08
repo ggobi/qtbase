@@ -1,6 +1,3 @@
-#include <QMetaObject>
-#include <QMetaMethod>
-
 #include "RSmokeBinding.hpp"
 #include "SmokeObject.hpp"
 #include "Class.hpp"
@@ -8,6 +5,8 @@
 #include "SmokeMethod.hpp"
 
 #include <Rinternals.h>
+
+//#define DEBUG
 
 typedef struct SEXPREC* SEXP;
 
@@ -42,52 +41,6 @@ void RSmokeBinding::deleted(Smoke::Index classId, void *obj) {
   delete o;
 }
 
-/* We catch all qt_metacall invocations */
-int
-RSmokeBinding::qt_metacall(SmokeObject *so, QMetaObject::Call _c, int id,
-                           void **_o)
-{
-  // Assume the target slot is a C++ one
-  Smoke::StackItem i[4];
-  i[1].s_enum = _c;
-  i[2].s_int = id;
-  i[3].s_voidp = _o;
-  so->invokeMethod("qt_metacall$$?", i);
-  int ret = i[0].s_int;
-  if (ret < 0) {
-    return ret;
-  }
-  
-  if (_c != QMetaObject::InvokeMetaMethod)
-    return id;
-  
-  QObject * qobj = reinterpret_cast<QObject *>(so->castPtr("QObject"));
-  // get obj metaobject with a virtual call
-  const QMetaObject *metaobject = qobj->metaObject();
-
-  // get method/property count
-  int count = 0;
-  if (_c == QMetaObject::InvokeMetaMethod) {
-    count = metaobject->methodCount();
-  } else {
-    count = metaobject->propertyCount();
-  }
-
-  if (_c == QMetaObject::InvokeMetaMethod) {
-    QMetaMethod method = metaobject->method(id);
-    if (method.methodType() == QMetaMethod::Signal) {
-      metaobject->activate(qobj, id, (void**) _o);
-      return id - count;
-    }
-    /* TODO
-    FromMocMethodCall slot(o->smoke(), qobj->metaObject(), id, self, _o);
-    slot.marshal();
-    */
-  }
-  
-  return id - count;
-}
-
 bool RSmokeBinding::callMethod(Smoke::Index method, void *obj,
                                Smoke::Stack args, bool isAbstract)
 {
@@ -113,13 +66,6 @@ bool RSmokeBinding::callMethod(Smoke::Index method, void *obj,
 
   const char *methodName = smoke->methodNames[smoke->methods[method].name];
   
-  /* TODO: instead, have MocClass provide a hard-coded 'qt_metacall'
-     method to which we implicitly delegate.
-  if (!qstrcmp(methodName, "qt_metacall") && o->instanceOf("QObject"))
-    qt_metacall(o, (QMetaObject::Call)args[1].s_enum, args[2].s_int,
-                (void **)args[3].s_voidp);
-  */
-  
   const Class *c = o->klass();
   bool success = false;
   bool impl = false;
@@ -138,9 +84,13 @@ bool RSmokeBinding::callMethod(Smoke::Index method, void *obj,
       warning("Virtual method invocation failed for %s::%s", c->name(),
               methodName);
   }
-  if (!success && isAbstract)
+  if (!success && isAbstract) {
     warning("Class '%s' does not implement pure virtual '%s'", c->name(),
             methodName);
+    /* This will likely cause R to crash, as Qt often expects a
+       non-zero return value. Smoke should probably return the
+       default constructed value here, but it does not. */
+  }
   return success;
 }
  
