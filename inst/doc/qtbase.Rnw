@@ -227,12 +227,14 @@ qsetClass("MyMainWindow", Qt$QMainWindow, function(parent = NULL) {
 MyMainWindow()$show()
 @ 
 %
-In the constructor, one might notice the invocation of
-\Rfunction{super}, which does not exist outside the scope of a
-constructor (or method). Within a constructor, \Rfunction{super}
-invokes the constructor of the parent (super) class, with the given
+By convention, every widget in \Qt\/ accepts its parent as an argument
+to its constructor. Via \Rfunction{super}, the parent is passed to the
+base class constructor and on up the hierarchy. The \Rfunction{super}
+function does not exist outside the scope of a constructor (or
+method). Within a constructor, \Rfunction{super} invokes the
+constructor of the parent (super) class, with the given
 arguments. Within a method implementation, \Rcode{super} will call a
-method (named in the first parameter) in the parent class. 
+method (named in the first parameter) in the parent class.
 
 For more examples of extending C++ classes, please see
 \Rcode{demo(package="qtbase")}.
