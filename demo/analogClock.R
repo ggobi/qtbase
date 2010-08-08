@@ -29,7 +29,7 @@ qsetMethod("paintEvent", AnalogClock, function(event) {
 
   ## draw the hour hand first
   painter$setPen(Qt$Qt$NoPen)
-  painter$setBrush(hourColor)
+  painter$setBrush(qbrush(hourColor))
   painter$save()
   painter$rotate(30.0 * ((time$hour + time$min / 60.0)));
   painter$drawConvexPolygon(hourHand)
@@ -45,7 +45,7 @@ qsetMethod("paintEvent", AnalogClock, function(event) {
 
   ## draw minute hand
   painter$setPen(Qt$Qt$NoPen)
-  painter$setBrush(minuteColor)
+  painter$setBrush(qbrush(minuteColor))
   painter$save()
   painter$rotate(6.0 * (time$min + time$sec / 60.0))
   painter$drawConvexPolygon(minuteHand)
