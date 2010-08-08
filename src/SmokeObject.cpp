@@ -5,7 +5,7 @@
 
 #include <Rinternals.h>
 
-#define MEM_DEBUG
+//#define MEM_DEBUG
 
 /* One SmokeObject for each object,
    to ensure 1-1 mapping from Qt objects to R objects */
