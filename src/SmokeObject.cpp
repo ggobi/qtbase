@@ -5,7 +5,7 @@
 
 #include <Rinternals.h>
 
-//#define MEM_DEBUG
+#define MEM_DEBUG
 
 /* One SmokeObject for each object,
    to ensure 1-1 mapping from Qt objects to R objects */
@@ -30,6 +30,13 @@ SmokeObject * SmokeObject::fromPtr(void *ptr, const Class *klass,
     /* it seems that all multiple inheritance in Qt goes through
        QObject or QEvent, so we can catch offset pointers at run-time */
     // FIXME: what happens with other libraries? take QtRuby approach?
+#ifdef MEM_DEBUG
+    if (so->klass() != klass)
+      qDebug("%p: class switch %s::%s -> %s::%s", so,
+             klass->smokeBase()->smoke()->moduleName(),
+             klass->name(), so->klass()->smokeBase()->smoke()->moduleName(),
+             so->klass()->name());
+#endif    
     if (so->ptr() != ptr) { // must be multiple inheritance, recache
       SmokeObject *tmp_so = instances[so->ptr()];
 #ifdef MEM_DEBUG
@@ -294,7 +301,7 @@ void * SmokeObject::clonePtr() const {
 }
 
 SmokeObject *SmokeObject::clone() const {
-  return SmokeObject::fromPtr(clonePtr(), _klass, _allocated);
+  return SmokeObject::fromPtr(clonePtr(), _klass, true);
 }
 
 void

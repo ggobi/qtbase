@@ -11,7 +11,7 @@
 
 #include <qtdefs.h>
 
-class Smoke;
+#include <smoke.h>
 
 #define checkPointer(x, type) ({                                       \
       if (TYPEOF(x) != EXTPTRSXP)                                      \
@@ -40,13 +40,16 @@ SEXP _wrapSmoke(void *ptr, const char *className, bool allocated = true);
 #define wrapSmoke(ptr, type, allocated) _wrapSmoke(ptr, #type, allocated)
 #define wrapSmokeCopy(ptr, type) _wrapSmoke(new type(ptr), #type, true)
 
+// Invoke a Smoke method with R types
+SEXP invokeSmokeMethod(Smoke::ModuleIndex m, SEXP x, SEXP args);
+
 // Conversion routines
 
 QString sexp2qstring(SEXP s);
 SEXP qstring2sexp(QString s);
 
 // Smoke module registration
-void registerRQtModule(Smoke *smoke);
+Smoke *registerRQtModule(Smoke *smoke);
 
 QT_END_DECLS
 

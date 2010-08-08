@@ -381,7 +381,7 @@ memory_is_owned_qt(const SmokeObject *o)
   return false;
 }
 
-void registerRQtModule(Smoke *smoke /* resolveClass, memoryIsOwned */)
+Smoke *registerRQtModule(Smoke *smoke /* resolveClass, memoryIsOwned */)
 {
   /* If 'smoke' comes from another package, we need to recreate it, so
      that it is registered in OUR Smoke::classMap. */
@@ -400,6 +400,7 @@ void registerRQtModule(Smoke *smoke /* resolveClass, memoryIsOwned */)
   RQtModule *module = new RQtModule(binding, resolve_classname_qt,
                                     memory_is_owned_qt);
   RQtModule::registerModule(module);
+  return smoke;
 }
 
 void init_smoke(void) {

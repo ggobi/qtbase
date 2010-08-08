@@ -51,6 +51,12 @@ DEFINE_CCALLABLE_STUB(SEXP, _wrapSmoke,
                       (void *ptr, const char *className, bool allocated),
                       (      ptr,             className,      allocated))
 
+/* Invocation */
+
+DEFINE_CCALLABLE_STUB(SEXP, invokeSmokeMethod,
+                      (Smoke::ModuleIndex m, SEXP x, SEXP args),
+                      (                   m,      x,      args))
+
 /* Conversion */
 
 DEFINE_CCALLABLE_STUB(QString, sexp2qstring, (SEXP s), (s))
@@ -58,6 +64,6 @@ DEFINE_CCALLABLE_STUB(SEXP, qstring2sexp, (QString s), (s))
 
 /* Smoke module registration */
 
-DEFINE_NOVALUE_CCALLABLE_STUB(registerRQtModule, (Smoke *s), (s))
+DEFINE_CCALLABLE_STUB(Smoke *, registerRQtModule, (Smoke *s), (s))
 
 #endif

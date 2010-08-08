@@ -2,10 +2,11 @@
 
 #include "DynamicBinding.hpp"
 #include "Class.hpp"
+#include "SmokeMethod.hpp"
 
 #include <Rinternals.h>
 
-static void reportBindingError(const DynamicBinding &binding,
+static void reportMethodError(const Method &binding,
                                const char *className);
 
 extern "C"
@@ -15,7 +16,7 @@ SEXP qt_qinvoke(SEXP self, SEXP method, SEXP super, SEXP args) {
   DynamicBinding binding(methodName, sup);
   SEXP ans = binding.invoke(self, args);
   if (binding.lastError() > Method::NoError)
-    reportBindingError(binding, CHAR(asChar(getAttrib(self, R_ClassSymbol))));
+    reportMethodError(binding, CHAR(asChar(getAttrib(self, R_ClassSymbol))));
   return ans;
 }
 
@@ -26,15 +27,22 @@ SEXP qt_qinvokeStatic(SEXP rklass, SEXP method, SEXP args) {
   DynamicBinding binding(klass, methodName);
   SEXP ans = binding.invoke(NULL, args);
   if (binding.lastError() > Method::NoError)
-    reportBindingError(binding, klass->name());  
+    reportMethodError(binding, klass->name());  
   return ans;
 }
 
-static void reportBindingError(const DynamicBinding &binding,
-                               const char *className)
+extern "C" SEXP invokeSmokeMethod(Smoke::ModuleIndex m, SEXP x, SEXP args) {
+  SmokeMethod method(m);
+  SEXP ans = method.invoke(x, args);
+  if (method.lastError() > Method::NoError)
+    reportMethodError(method, method.klass()->name());  
+  return ans;
+}
+
+static void reportMethodError(const Method &method, const char *className)
 {
-  Method::ErrorType err = binding.lastError();
-  const char *methodName = binding.name();
+  Method::ErrorType err = method.lastError();
+  const char *methodName = method.name();
   if (err == Method::ImplementationMissing)
     error("Could not find method named '%s::%s'", className, methodName);
   else if (err == Method::BadArguments)
