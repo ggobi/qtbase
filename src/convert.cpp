@@ -648,6 +648,21 @@ SEXP to_sexp(QColor color) {
   return rcolor;
 }
 
+/* Helper function */
+/* Sometimes, an element only exists in a collection (as a value). But
+   Smoke will include a type for it in pointer (*) form. */
+SmokeType findElementType(Smoke *smoke, const char *name) {
+  SmokeType elementType(smoke, name);
+  if (elementType.isVoid()) {
+    QByteArray typeName(name);
+    typeName.append("*");
+    elementType = SmokeType(smoke, typeName.constData());
+    if (elementType.isVoid())
+      error("Cannot type for element: %s", name);
+  }
+  return elementType;
+}
+
 /********************* .Call entry point definitions *******************/
 
 

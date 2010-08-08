@@ -357,6 +357,18 @@ template<> QList<QString> from_sexp<QList<QString> >(SEXP list);
 
 template<> QStringList from_sexp<QStringList>(SEXP vector);
 
+/* SEXP pass-through */
+
+/* A better way would be to have C++ class(es) representing a SEXP,
+   like those defined by Rcpp, then the user could create one of those
+   through a manual binding and pass it to a method that accepts the
+   C++ class as an argument. This is good practice at the C++ level
+   and also allows us to disambiguate between native C/C++ types
+   (which are implicitly converted from SEXP) and an actual SEXP.
+*/
+inline SEXP to_sexp(SEXP sexp) { return sexp; }
+template<> inline SEXP from_sexp<SEXP>(SEXP sexp) { return sexp; }
+
 /* Explicit coercion */
 
 template<> QRectF from_sexp<QRectF>(SEXP r); /* <-> 2x2 matrix */
@@ -401,11 +413,13 @@ DECL_COERCE_ENTRY_POINT(QColor);
 #define value_to_sexp to_sexp
 #define value_from_sexp from_sexp
 
+SmokeType findElementType(Smoke *smoke, const char *name);
+
 #define DEF_COLLECTION_CONVERTERS(Q, T, M)                              \
   SEXP to_sexp(Q<T> coll, const SmokeType &type) {                      \
     SEXP list;                                                          \
     PROTECT(list = allocVector(VECSXP, coll.size()));                   \
-    SmokeType elementType(type.smoke(), #T);                            \
+    SmokeType elementType = findElementType(type.smoke(), #T);          \
     int j = 0;                                                          \
     for(Q<T>::const_iterator i = coll.begin(); i != coll.end(); ++i, ++j ) \
       SET_VECTOR_ELT(list, j, M##_to_sexp(*i, elementType));            \
@@ -416,7 +430,7 @@ DECL_COERCE_ENTRY_POINT(QColor);
     int count = length(sexp);                                           \
     Q<T> coll;                                                          \
     int i;                                                              \
-    SmokeType elementType(type.smoke(), #T);                            \
+    SmokeType elementType = findElementType(type.smoke(), #T);          \
     for(i = 0; i < count; i++)                                          \
       coll << M##_from_sexp<T>(VECTOR_ELT(sexp, i), elementType);       \
     return coll;                                                        \
