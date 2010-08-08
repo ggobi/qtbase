@@ -2,7 +2,7 @@
 
 library(qtbase)
 
-qsetClass("positiveValidator", Qt$QValidator)
+qsetClass("PositiveValidator", Qt$QValidator)
 
 qsetMethod("validate", positiveValidator, function(input, pos) {
   val <- suppressWarnings(as.integer(input))
