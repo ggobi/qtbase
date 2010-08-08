@@ -251,6 +251,7 @@
         <class>QDragResponseEvent</class>
         <class>QDropEvent</class>
         <class>QDynamicPropertyChangeEvent</class>
+        <class>QEasingCurve</class>
         <class>QErrorMessage</class>
         <class>QEvent</class>
         <class>QEventLoop</class>
@@ -285,6 +286,7 @@
         <class>QFtp</class>
         <class>QFutureInterfaceBase</class>
         <class>QFutureWatcherBase</class>
+        <class>QGesture</class>
         <class>QGLColormap</class>
         <class>QGLContext</class>
         <class>QGLFormat</class>
@@ -417,7 +419,9 @@
         <class>QLocalSocket</class>
         <class>QLocale</class>
         <class>QMainWindow</class>
+        <class>QMargins</class>
         <class>QMatrix</class>
+        <class>QMatrix4x4</class>
         <class>QMdi::ControlContainer</class>
         <class>QMdiArea</class>
         <class>QMdiSubWindow</class>
@@ -493,6 +497,7 @@
         <class>QPropertyAnimation</class>
         <class>QProxyModel</class>
         <class>QPushButton</class>
+        <class>QQuaternion</class>
         <class>QRadialGradient</class>
         <class>QRadioButton</class>
         <class>QReadLocker</class>
@@ -808,6 +813,8 @@
         <class>QWebDatabase</class>
         <class>QWebElement</class>
         <class>QWebElementCollection</class>
+        <class>QWebElementCollection::iterator</class>
+        <class>QWebElementCollection::const_iterator</class>
         <class>QWebFrame</class>
         <class>QWebHistory</class>
         <class>QWebHistoryInterface</class>
@@ -815,7 +822,13 @@
         <class>QWebHitTestResult</class>
         <class>QWebInspector</class>
         <class>QWebPage</class>
+        <class>QWebPage::ExtensionOption</class>
+        <class>QWebPage::ExtensionReturn</class>
         <class>QWebPluginFactory</class>
+        <class>QWebPluginFactory::Plugin</class>
+        <class>QWebPluginFactory::ExtensionOption</class>
+        <class>QWebPluginFactory::ExtensionReturn</class>
+        <class>QWebPluginFactory::MimeType</class>
         <class>QWebSecurityOrigin</class>
         <class>QWebSettings</class>
         <class>QWebView</class>

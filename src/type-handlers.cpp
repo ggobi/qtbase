@@ -154,6 +154,18 @@
 #include <QtNetwork/qnetworkcookie.h>
 #include <QtNetwork/qnetworkrequest.h>
 #endif
+#ifdef QT_WEBKIT_LIB
+#include <QWebFrame>
+#include <QWebPluginFactory>
+#include <QWebHistoryItem>
+#endif
+#endif
+
+#if QT_VERSION >= 0x040500
+#ifdef QT_WEBKIT_LIB
+#include <QWebDatabase>
+#include <QWebSecurityOrigin>
+#endif
 #endif
 
 #if QT_VERSION >= 0x040600
@@ -163,12 +175,14 @@
 #ifdef QT_OPENGL_LIB
 #include <QGLShader>
 #endif
+#ifdef QT_WEBKIT_LIB
+#include <QWebElement>
+#endif
 #endif
 
 #include <smoke.h>
 #include "type-handlers.hpp"
-#include "DynamicBinding.hpp"
-#include "Class.hpp"
+#include "Method.hpp"
 
 #include <Rdefines.h> // syntax more convenient for macros
 
@@ -181,8 +195,9 @@ void marshal_from_sexp<SmokeClassWrapper>(MethodCall *m)
 {
   SEXP v = m->sexp();
   SmokeType type = m->type();
-  SmokeObject *o = NULL, *coerced = NULL;
-  
+  SmokeObject *o = NULL /*, *coerced = NULL */;
+
+  /* Not clear if we want to (partially) support this complicated C++ feature
   if (v != R_NilValue) {
     o = SmokeObject::fromSexp(v);
     if (!o->instanceOf(type.className())) {
@@ -194,6 +209,9 @@ void marshal_from_sexp<SmokeClassWrapper>(MethodCall *m)
                  o->className(), type.className());
     }
   }
+  */
+  
+  o = from_sexp<SmokeObject *>(v, type);
   
   if (o && m->returning() && !type.fitsStack()) {
     o = o->clone(); // Smoke takes ownership of virtual returns on the stack
@@ -202,10 +220,12 @@ void marshal_from_sexp<SmokeClassWrapper>(MethodCall *m)
   void *ptr = o ? o->castPtr(type.className()) : NULL;
   setItemValue(m, ptr);
 
+  /*
   m->marshal();
 
   if (coerced)
     delete coerced;
+  */
   
   return;
 }
@@ -408,6 +428,7 @@ int scoreArg_basetype(SEXP arg, const SmokeType &type) {
           score = 3;
         else if (o->instanceOf(smokeClass))
           score = 2;
+        /* Not clear if we want to support this C++ feature
         else {
           Method *m = Class::fromSmokeType(type)->findImplicitConverter(o);
           if (m) {
@@ -415,6 +436,7 @@ int scoreArg_basetype(SEXP arg, const SmokeType &type) {
             delete m;
           }
         }
+        */
       }
     }
     break;
@@ -595,6 +617,19 @@ DEF_COLLECTION_CONVERTERS(QList, QNetworkRequest::Attribute, enum)
 DEF_MAP_CONVERTERS(QHash, QNetworkRequest::Attribute, QVariant)
 #endif
 DEF_COLLECTION_CONVERTERS(QList, QPrinterInfo, class)
+#ifdef QT_WEBKIT_LIB
+DEF_COLLECTION_CONVERTERS(QList, QWebPluginFactory::Plugin, class)
+DEF_COLLECTION_CONVERTERS(QList, QWebPluginFactory::MimeType, class)
+DEF_COLLECTION_CONVERTERS(QList, QWebFrame*, ptr)
+DEF_COLLECTION_CONVERTERS(QList, QWebHistoryItem, class)
+#endif
+#endif
+
+#if QT_VERSION >= 0x40500
+#ifdef QT_WEBKIT_LIB
+DEF_COLLECTION_CONVERTERS(QList, QWebDatabase, class)
+DEF_COLLECTION_CONVERTERS(QList, QWebSecurityOrigin, class)
+#endif
 #endif
 
 #if QT_VERSION >= 0x40600
@@ -612,6 +647,9 @@ DEF_MATRIX_CONVERTERS(4, 2)
 DEF_MATRIX_CONVERTERS(4, 3)
 #ifdef QT_OPENGL_LIB
 DEF_COLLECTION_CONVERTERS(QList, QGLShader*, ptr)
+#endif
+#ifdef QT_WEBKIT_LIB
+DEF_COLLECTION_CONVERTERS(QList, QWebElement, class)
 #endif
 #endif
 
@@ -739,6 +777,18 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
 #ifdef QT_NETWORK_LIB
   TYPE_HANDLER_ENTRY_CLASS(QList<QNetworkCookie>),
 #endif
+#ifdef QT_WEBKIT_LIB
+  TYPE_HANDLER_ENTRY_CLASS(QList<QWebPluginFactory::Plugin>),
+  TYPE_HANDLER_ENTRY_CLASS(QList<QWebPluginFactory::MimeType>),
+  TYPE_HANDLER_ENTRY_CLASS(QList<QWebFrame*>),
+  TYPE_HANDLER_ENTRY_CLASS(QList<QWebHistoryItem>),
+#endif
+#endif
+#if QT_VERSION >= 0x040500
+#ifdef QT_WEBKIT_LIB
+  TYPE_HANDLER_ENTRY_CLASS(QList<QWebDatabase>),
+  TYPE_HANDLER_ENTRY_CLASS(QList<QWebSecurityOrigin>),
+#endif
 #endif
 #if QT_VERSION >= 0x40600
   TYPE_HANDLER_ENTRY_CLASS(QList<QGraphicsTransform*>),
@@ -755,6 +805,9 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   TYPE_HANDLER_ENTRY_CLASS3(QGenericMatrix<3,4,double>),
   TYPE_HANDLER_ENTRY_CLASS3(QGenericMatrix<4,2,double>),
   TYPE_HANDLER_ENTRY_CLASS3(QGenericMatrix<4,3,double>),
+#if QT_WEBKIT_LIB
+  TYPE_HANDLER_ENTRY_CLASS(QList<QWebElement>),
+#endif
 #endif
   /*************** Special cases ***************/
   /* long long */
@@ -771,6 +824,7 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   TYPE_HANDLER_ENTRY_FULL(GLint, int),
   TYPE_HANDLER_ENTRY_FULL(GLuint, unsigned int),
   TYPE_HANDLER_ENTRY_FULL(GLbitfield, unsigned int),
+  TYPE_HANDLER_ENTRY(SEXP),
   { 0, 0, NULL }
 };
 
