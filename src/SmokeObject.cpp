@@ -317,10 +317,11 @@ SmokeObject::cast(const Class *klass) {
    class when multiple inheritance is involved.
 */
 void *
-SmokeObject::castPtr(const char *className) const {
+SmokeObject::castPtr(const char *className, bool clone) const {
   Smoke *smoke = this->smoke();
   // Be very careful changing this -- it is written as intended
-  return smoke->cast(_ptr, classId(), smoke->idClass(className, true).index);
+  return smoke->cast(clone ? clonePtr() : _ptr, classId(),
+                     smoke->idClass(className, true).index);
 }
 
 bool // result undefined if class names are not all unique

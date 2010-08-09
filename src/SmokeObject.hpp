@@ -65,7 +65,7 @@ public:
   void invokeMethod(const char *name, Smoke::Stack stack = NULL);
   void * clonePtr() const;
   SmokeObject *clone() const;
-  void * castPtr(const char *className) const;
+  void * castPtr(const char *className, bool clone = false) const;
   void cast(const Class *klass);
   bool instanceOf(const char *className) const;
   bool instanceOf(const SmokeType &type) const;

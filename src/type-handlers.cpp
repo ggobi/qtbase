@@ -212,12 +212,8 @@ void marshal_from_sexp<SmokeClassWrapper>(MethodCall *m)
   */
   
   o = from_sexp<SmokeObject *>(v, type);
-  
-  if (o && m->returning() && !type.fitsStack()) {
-    o = o->clone(); // Smoke takes ownership of virtual returns on the stack
-  }
-
-  void *ptr = o ? o->castPtr(type.className()) : NULL;
+  void *ptr = o ? o->castPtr(type.className(),
+                             m->returning() && !type.fitsStack()) : NULL;
   setItemValue(m, ptr);
 
   /*
