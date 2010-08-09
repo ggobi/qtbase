@@ -56,8 +56,11 @@ QList<QByteArray> SmokeClass::mungedMethodNames(const MethodCall &call) const {
         mungedNames << munged + "?";
         munged += "$";
       }
-      else if (isNull(arg) || isEnvironment(arg))
+      else if (isNull(arg) || isEnvironment(arg)) {
+        if (isNull(arg))
+          mungedNames << munged + "$"; // for NULL QStrings
         munged += "#";
+      }
       else munged += "?";
       mungedNames[j] = munged;
     }
