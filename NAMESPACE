@@ -66,6 +66,8 @@ S3method(as.integer, QSize)
 
 export(qcol2rgb)
 
+S3method(as.character, QChar)
+
 ## constructors of simple types
 export(qrect, qpoint, qsize, qcolor, qfont, qpen, qbrush, qtransform, qpolygon)
 

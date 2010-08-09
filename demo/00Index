@@ -3,3 +3,4 @@ classWizard Wizard for defining an R extension of a Qt class
 widget Basic widget usage
 textEdit Extending a QValidator to validate text input
 analogClock Custom painting of widgets
+characterWidget Character palette, interaction with custom drawing
