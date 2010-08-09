@@ -60,11 +60,10 @@ qpolygon <- function(x = NULL, y = NULL) {
   con(mapply(pointCon, xy$x, xy$y))
 }
 
-qfont <-
-  function(family = "Arial",
-           pointsize = -1L,
-           weight = -1L,
-           italic = FALSE)
+qfont <- function(family = baseFont$family(), pointsize = baseFont$pointSize(),
+                  weight = baseFont$weight(),
+                  italic = baseFont$style() == Qt$QFont$StyleItalic,
+                  baseFont = Qt$QApplication$font())
 {
   Qt$QFont(family, pointsize, weight, italic)
 }

@@ -25,3 +25,5 @@ as.matrix.QPolygonF <- function(x, ...) .Call(qt_coerce_QPolygonF, x)
 as.matrix.QTransform <- function(x, ...) .Call(qt_coerce_QTransform, x)
 
 qcol2rgb <- as.matrix.QColor <- function(x, ...) .Call(qt_coerce_QColor, x)
+
+as.character.QChar <- function(x, ...) .Call(qt_coerce_QChar, x)
