@@ -103,6 +103,7 @@ static R_CallMethodDef CallEntries[] = {
     CALLDEF_COERCE(QSizeF),
     CALLDEF_COERCE(QSize),
     CALLDEF_COERCE(QColor),
+    CALLDEF_COERCE(QChar),
 
     // DataFrame
     CALLDEF(qt_qdataFrameModel, 0),
@@ -117,6 +118,7 @@ static R_CallMethodDef CallEntries[] = {
 
 void R_init_qtbase(DllInfo *dll)
 {
+    // Various initializations
     init_smoke();
     init_type_handlers();
     

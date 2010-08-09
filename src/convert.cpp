@@ -529,6 +529,7 @@ SEXP to_sexp(QList<QString> list) {
 }
 template<> QList<QString> from_sexp<QList<QString> >(SEXP vector) {
   QList<QString> list;
+  vector = coerceVector(vector, STRSXP);
   for(int i = 0; i < length(vector); i++)
     list.append(from_sexp<QString>(STRING_ELT(vector, i)));
   return list;
@@ -648,6 +649,10 @@ SEXP to_sexp(QColor color) {
   return rcolor;
 }
 
+SEXP to_sexp(QChar qchar) {
+  return to_sexp(QString(qchar));
+}
+
 /* Helper function */
 /* Sometimes, an element only exists in a collection (as a value). But
    Smoke will include a type for it in pointer (*) form. */
@@ -681,4 +686,4 @@ DEF_COERCE_ENTRY_POINT(QPolygonF)
 DEF_COERCE_ENTRY_POINT(QSizeF)
 DEF_COERCE_ENTRY_POINT(QSize)
 DEF_COERCE_ENTRY_POINT(QColor)
-
+DEF_COERCE_ENTRY_POINT(QChar)
