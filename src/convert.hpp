@@ -354,8 +354,10 @@ SEXP to_sexp(QByteArray s);
 /* QString <-> character vector */
 SEXP to_sexp(QList<QString> list);
 template<> QList<QString> from_sexp<QList<QString> >(SEXP list);
-
 template<> QStringList from_sexp<QStringList>(SEXP vector);
+
+/* Array of strings <- character vector */
+template<> const char* const * from_sexp<const char* const *>(SEXP vector);
 
 /* SEXP pass-through */
 

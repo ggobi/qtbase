@@ -471,6 +471,11 @@ template <> int scoreArg<QStringList>(SEXP arg, const SmokeType &/*type*/) {
   }
   else return 0;
 }
+template<> int
+scoreArg<const char* const *>(SEXP arg, const SmokeType &type)
+{
+  return scoreArg<QStringList>(arg, type);
+}
 
 template<> int scoreArg<QByteArray>(SEXP arg, const SmokeType &type) {
   if (TYPEOF(arg) == STRSXP)
@@ -659,8 +664,9 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   TYPE_HANDLER_ENTRY_FULL(char*&, char),
   TYPE_HANDLER_ENTRY_FULL(char*, char),
   TYPE_HANDLER_ENTRY_FULL(unsigned char*, char),
-  TYPE_HANDLER_ENTRY_FULL(const char*, const char*),
+  TYPE_HANDLER_ENTRY(const char*),
   TYPE_HANDLER_ENTRY_FULL(const unsigned char*, const char*),
+  TYPE_HANDLER_ENTRY(const char* const *),
   TYPE_HANDLER_ENTRY_INT(int),
   TYPE_HANDLER_ENTRY_INT(long),
   TYPE_HANDLER_ENTRY_INT(short),

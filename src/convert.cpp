@@ -539,6 +539,14 @@ template<> QStringList from_sexp<QStringList>(SEXP vector) {
   return QStringList(from_sexp<QList<QString> >(vector));
 }
 
+template<> const char* const * from_sexp<const char* const *>(SEXP vector) {
+  const char** array =
+    (const char **)R_alloc(sizeof(const char *), length(vector));
+  for (int i = 0; i < length(vector); i++)
+    array[i] = CHAR(STRING_ELT(vector, i));
+  return array;
+}
+
 SEXP to_sexp(QRectF rect) {
   SEXP rrect = allocMatrix(REALSXP, 2, 2);
   REAL(rrect)[0] = rect.left();
