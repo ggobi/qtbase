@@ -98,7 +98,7 @@ qsetMethod("paintEvent", CharacterWidget, function(event) {
   })
 
   painter$end()
-})
+}, "protected")
 
 ## Respond to mouse press
 
@@ -110,7 +110,7 @@ qsetMethod("mousePressEvent", CharacterWidget, function(event) {
     update()
   }
   else super("mousePressEvent", event)
-})
+}, "protected")
 
 ## Show tooltip on mouse over
 
@@ -123,7 +123,7 @@ qsetMethod("mouseMoveEvent", CharacterWidget, function(event) {
           displayFont$family(), "\">", Qt$QChar(key), "</span><p>Value: 0x",
           sprintf("%x", key), sep = "")
   Qt$QToolTip$showText(event$globalPos(), text, this)
-})
+}, "protected")
 
 ## Main window
 

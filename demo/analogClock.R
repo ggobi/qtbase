@@ -61,7 +61,7 @@ qsetMethod("paintEvent", AnalogClock, function(event) {
 
   ## always have to 'end' the painter
   painter$end() 
-})
+}, "protected")
 
 clock <- AnalogClock()
 
