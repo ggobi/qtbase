@@ -49,7 +49,7 @@ QString sexp2qstring(SEXP s);
 SEXP qstring2sexp(QString s);
 
 // Smoke module registration
-Smoke *registerRQtModule(Smoke *smoke);
+Smoke *registerSmokeModule(Smoke *smoke);
 
 QT_END_DECLS
 

@@ -64,6 +64,6 @@ DEFINE_CCALLABLE_STUB(SEXP, qstring2sexp, (QString s), (s))
 
 /* Smoke module registration */
 
-DEFINE_CCALLABLE_STUB(Smoke *, registerRQtModule, (Smoke *s), (s))
+DEFINE_CCALLABLE_STUB(Smoke *, registerSmokeModule, (Smoke *s), (s))
 
 #endif

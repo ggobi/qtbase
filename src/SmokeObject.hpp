@@ -4,7 +4,7 @@
 #include <QHash>
 #include <smoke.h>
 
-class RQtModule;
+class SmokeModule;
 class Class;
 class SmokeType;
 
@@ -61,7 +61,7 @@ public:
   Smoke *smoke() const;
   int classId() const;
   const char *className() const;
-  RQtModule *module() const;
+  SmokeModule *module() const;
   void invokeMethod(const char *name, Smoke::Stack stack = NULL);
   void * clonePtr() const;
   SmokeObject *clone() const;

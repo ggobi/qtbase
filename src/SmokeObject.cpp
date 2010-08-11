@@ -1,6 +1,6 @@
 #include "SmokeObject.hpp"
 #include "SmokeClass.hpp"
-#include "RQtModule.hpp"
+#include "SmokeModule.hpp"
 #include "InstanceObjectTable.hpp"
 
 #include <Rinternals.h>
@@ -212,8 +212,8 @@ Smoke *SmokeObject::smoke() const { return _klass->smokeBase()->smoke(); }
 int SmokeObject::classId() const { return _klass->smokeBase()->classId(); }
 const char *SmokeObject::className() const { return _klass->name(); }
 
-RQtModule *SmokeObject::module() const {
-  return RQtModule::module(smoke());
+SmokeModule *SmokeObject::module() const {
+  return SmokeModule::module(smoke());
 }
 
 bool SmokeObject::memoryIsOwned() const {

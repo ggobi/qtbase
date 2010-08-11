@@ -5,7 +5,7 @@
 #include "Class.hpp"
 #include "SmokeList.hpp"
 #include "SmokeType.hpp"
-#include "RQtModule.hpp"
+#include "SmokeModule.hpp"
 
 #include "wrap.hpp"
 
@@ -124,7 +124,7 @@ SEXP qt_qclasses(SEXP rsmoke) {
 
 extern "C"
 SEXP qt_qsmokes(void) {
-  SmokeList smokes = RQtModule::smokes();
+  SmokeList smokes = SmokeModule::smokes();
   SEXP rsmokes, rnames;
   PROTECT(rsmokes = allocVector(VECSXP, smokes.size()));
   rnames = allocVector(STRSXP, length(rsmokes));

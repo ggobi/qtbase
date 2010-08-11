@@ -46,7 +46,7 @@ extern "C" {
   SEXP invokeSmokeMethod(Smoke::ModuleIndex m, SEXP x, SEXP args);
 
   // registration of Smoke modules from other packages
-  Smoke *registerRQtModule(Smoke *smoke);
+  Smoke *registerSmokeModule(Smoke *smoke);
 
   // DataFrameModel
   SEXP qt_qdataFrameModel();
@@ -136,5 +136,5 @@ void R_init_qtbase(DllInfo *dll)
     REG_CALLABLE(sexp2qstring);
     REG_CALLABLE(qstring2sexp);
 
-    REG_CALLABLE(registerRQtModule);
+    REG_CALLABLE(registerSmokeModule);
 }

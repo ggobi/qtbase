@@ -831,6 +831,6 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
 };
 
 void init_type_handlers() {
-  // FIXME: do we want to integrate this with RQtModule?
+  // FIXME: do we want to integrate this with SmokeModule?
   MethodCall::registerTypeHandlers(Qt_handlers);
 }

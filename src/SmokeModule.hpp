@@ -13,7 +13,7 @@ class SmokeObject;
 typedef int (*ResolveClassIdFn)(const SmokeObject * so);
 typedef bool (*MemoryIsOwnedFn)(const SmokeObject *so);
 
-class RQtModule {
+class SmokeModule {
   
 private:
   
@@ -21,11 +21,11 @@ private:
   ResolveClassIdFn _resolveClassId;
   MemoryIsOwnedFn _memoryIsOwned;
   
-  static QHash<Smoke *, RQtModule *> modules;
+  static QHash<Smoke *, SmokeModule *> modules;
   
 public:
 
-  RQtModule(RSmokeBinding *binding,
+  SmokeModule(RSmokeBinding *binding,
             ResolveClassIdFn resolveClassId, MemoryIsOwnedFn memoryIsOwned)
     : _binding(binding), _resolveClassId(resolveClassId),
       _memoryIsOwned(memoryIsOwned) { }
@@ -41,11 +41,11 @@ public:
     return _memoryIsOwned(so);
   }
   
-  static RQtModule *registerModule(RQtModule *module);
-  static RQtModule *module(Smoke *smoke);
+  static SmokeModule *registerModule(SmokeModule *module);
+  static SmokeModule *module(Smoke *smoke);
   static SmokeList smokes();
 };
 
-extern "C" Smoke* registerRQtModule(Smoke *smoke);
+extern "C" Smoke* registerSmokeModule(Smoke *smoke);
 
 #endif

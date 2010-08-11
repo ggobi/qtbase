@@ -9,7 +9,7 @@
 #include <QTreeWidgetItem>
 #include <QWidget>
 
-#include "RQtModule.hpp"
+#include "SmokeModule.hpp"
 #include "SmokeObject.hpp"
 #include "Class.hpp"
 
@@ -31,7 +31,9 @@ resolve_classname_qt(const SmokeObject * o)
   const char *className = smoke->classes[classId].className;
   if (smoke->isDerivedFrom(className, "QObject")) {
     QObject *obj = (QObject *)o->castPtr("QObject");
-    classId = smoke->idClass(obj->metaObject()->className()).index;
+    int smokeClassId = smoke->idClass(obj->metaObject()->className()).index;
+    if (smokeClassId) // could be a private subclass
+      classId = smokeClassId;
   } else if (smoke->isDerivedFrom(className, "QEvent")) {
     QEvent * qevent = (QEvent *)
       smoke->cast(o->ptr(), classId, smoke->idClass("QEvent").index);
@@ -381,7 +383,7 @@ memory_is_owned_qt(const SmokeObject *o)
   return false;
 }
 
-Smoke *registerRQtModule(Smoke *smoke /* resolveClass, memoryIsOwned */)
+Smoke *registerSmokeModule(Smoke *smoke /* resolveClass, memoryIsOwned */)
 {
   /* If 'smoke' comes from another package, we need to recreate it, so
      that it is registered in OUR Smoke::classMap. */
@@ -397,14 +399,14 @@ Smoke *registerRQtModule(Smoke *smoke /* resolveClass, memoryIsOwned */)
                       smoke->ambiguousMethodList,
                       smoke->castFn);
   RSmokeBinding *binding = new RSmokeBinding(smoke);
-  RQtModule *module = new RQtModule(binding, resolve_classname_qt,
+  SmokeModule *module = new SmokeModule(binding, resolve_classname_qt,
                                     memory_is_owned_qt);
-  RQtModule::registerModule(module);
+  SmokeModule::registerModule(module);
   return smoke;
 }
 
 void init_smoke(void) {
   if (qt_Smoke == 0) init_qt_Smoke();
-  registerRQtModule(qt_Smoke);
+  registerSmokeModule(qt_Smoke);
 }
 

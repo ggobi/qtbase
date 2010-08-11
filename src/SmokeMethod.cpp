@@ -1,6 +1,6 @@
 #include "SmokeMethod.hpp"
 #include "SmokeObject.hpp"
-#include "RQtModule.hpp"
+#include "SmokeModule.hpp"
 
 void SmokeMethod::invoke(SmokeObject *obj, Smoke::Stack stack) {
   if (!obj && !isStatic() && !isConstructor()) {
@@ -21,7 +21,7 @@ void SmokeMethod::invoke(SmokeObject *obj, Smoke::Stack stack) {
   
   if (isConstructor()) {
     Smoke::StackItem s[2];
-    s[1].s_voidp = RQtModule::module(_smoke)->binding();
+    s[1].s_voidp = SmokeModule::module(_smoke)->binding();
     (*fn)(0, stack[0].s_voidp, s);
   }
 

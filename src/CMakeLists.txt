@@ -18,7 +18,7 @@ set(qtbase_LIB_SRCS init.cpp EventLoop.cpp convert.cpp
    MocClass.cpp RClass.cpp classes.cpp ForeignMethod.cpp
    SmokeMethod.cpp RMethod.cpp MocMethod.cpp DynamicBinding.cpp
    MocDynamicBinding.cpp MethodCall.cpp type-handlers.cpp MocStack.cpp
-   MocProperty.cpp RQtModule.cpp module.cpp RSmokeBinding.cpp
+   MocProperty.cpp SmokeModule.cpp module.cpp RSmokeBinding.cpp
    SmokeList.cpp SmokeObject.cpp ObjectTable.cpp
    InstanceObjectTable.cpp smoke.cpp DataFrameModel.cpp )
 

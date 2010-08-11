@@ -4,7 +4,7 @@
 #include "SmokeObject.hpp"
 #include "SmokeList.hpp"
 #include "SmokeType.hpp"
-#include "RQtModule.hpp"
+#include "SmokeModule.hpp"
 #include "Class.hpp"
 
 MocMethod::MocMethod(Smoke *smoke, const QMetaObject *meta, int id)
@@ -63,7 +63,7 @@ QVector<SmokeType> MocMethod::types() const {
       typeId = smokeTypeForName(smoke, name);
       // Yes, slot arguments can come from different smoke modules
       if (typeId == 0) {
-        SmokeList smokes = RQtModule::smokes();
+        SmokeList smokes = SmokeModule::smokes();
         foreach(smoke, smokes) {
           typeId = smokeTypeForName(smoke, name);
           if (typeId != 0)
