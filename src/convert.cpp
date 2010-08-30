@@ -302,6 +302,8 @@ QVariant qvariant_from_sexp(SEXP rvalue, int index) {
     }
   }
     break;
+  case NILSXP: // invalid QVariant
+    break;
   default:
     error("Converting to QVariant: unhandled R type");
   }
