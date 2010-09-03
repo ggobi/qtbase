@@ -10,8 +10,7 @@ qsetClass("CharacterWidget", Qt$QWidget, function(parent = NULL) {
 })
 
 ## The signal emitted when the selected character changes
-qsetSignal("characterSelected", CharacterWidget,
-           c(character = "const QString&"))
+qsetSignal("characterSelected(QString character)", CharacterWidget)
 
 ## Allow user to change the font family and size
 

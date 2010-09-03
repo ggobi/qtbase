@@ -1,8 +1,11 @@
-addressBook Fully-functioning address book application
-classWizard Wizard for defining an R extension of a Qt class
-widget Basic widget usage
-textEdit Extending a QValidator to validate text input
-analogClock Custom painting of widgets
-characterWidget Character palette, interaction with custom drawing
-groupBox Various types of buttons, grouped into boxes
-imageViewer View, zoom, pan, and print an image
+addressBook	Fully-functioning address book application
+classWizard	Wizard for defining an R extension of a Qt class
+widget	Basic widget usage
+textEdit	Extending a QValidator to validate text input
+analogClock	Custom painting of widgets
+characterWidget	Character palette, interaction with custom drawing
+groupBox	Various types of buttons, grouped into boxes
+imageViewer	View, zoom, pan, and print an image
+lineEdit	Validation, alignment, masking, etc with QLineEdit
+movie	Display an animated image format
+sliders	Sliders, scroll bars and dials

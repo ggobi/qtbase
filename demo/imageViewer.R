@@ -1,5 +1,5 @@
 ## Image viewer with zoom/pan and print function
-library(qtbase)
+
 qsetClass("ImageViewer", Qt$QMainWindow, function() {
   ## Qt displays images with QLabel
   this$imageLabel <- Qt$QLabel()
