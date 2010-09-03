@@ -1,10 +1,26 @@
 qmocMethods <- function(x) {
-  stopifnot(is(x, "QObject"))
-  methods <- .Call(qt_qmocMethods, x)
+  if (is(x, "QObject"))
+    metaObject <- x$metaObject()
+  else if (is(x, "RQtClass") && !is.null(x$staticMetaObject))
+    metaObject <- x$staticMetaObject()
+  else stop("'x' should be a QObject-derived instance or class")
+  methods <- .Call(qt_qmocMethods, metaObject)
   methods[[1]] <- c("method", "signal", "slot", "constructor")[methods[[1]] + 1]
   methods <- c(list(sub("\\(.*", "", methods[[2]])), methods)
   names(methods) <- c("name", "type", "signature", "return", "nargs")
   as.data.frame(methods, stringsAsFactors=FALSE, row.names = methods$signature)
+}
+
+qsignals <- function(x) {
+  s <- subset(qmocMethods(x), type == "signal", select = c("name", "signature"))
+  rownames(s) <- NULL
+  s
+}
+qslots <- function(x) {
+  s <- subset(qmocMethods(x), type == "slot",
+              select = c("name", "signature", "return"))
+  rownames(s) <- NULL
+  s
 }
 
 qnormalizedSignature <- function(x) {
@@ -57,20 +73,51 @@ qmetadata <- function(x) {
 ## Every time metadata is set, we recompile it and reset the methods
 ## so that they refer to the new metadata
 "qmetadata<-" <- function(x, value) {
-  attr(x, "metadata") <- value
-  compiled <- compileMetaObject(x)
-  attr(x, "metaObject") <- compiled
+  compiled <- compileMetaObject(x, value)
   qsetMethod("metaObject", x, function() compiled)
   ## Lets MocClass see our methods
   qsetMethod("staticMetaObject", x, function() compiled)
-  ## Ensure this method is defined
+  ## Ensure this method is defined if it isn't yet
   qsetMethod("qt_metacall", x,
              function(call, id, args) .Call(qt_qmetacall, this, call, id, args))
   x
 }
 
 qmetaObject <- function(x) {
-  attr(x, "metaObject")
+  attr(x, "instanceEnv")$staticMetaObject()
+}
+
+## Does not handle 'const' types yet -- but do we want this?
+qmetaMethod <- function(signature, access = c("public", "protected", "private"),
+                        argNames)
+{
+  access <- match.arg(access)
+  if (!grepl(")$", signature))
+    signature <- paste(signature, "()", sep = "")
+  signature <- qnormalizedSignature(signature)
+  args <- strsplit(gsub(".*?\\((.*?)\\)", "\\1", signature), ",",
+                   fixed=TRUE)[[1]]
+  haveNames <- grepl("[^ ] [^ ]", args)
+  if (!all(haveNames)) {
+    if (any(haveNames))
+      stop("If any arguments are named, all must be named")
+    if (missing(argNames))
+      argNames <- paste("x", seq(args), sep = "")
+    argTypes <- args
+  } else {
+    argTokens <-
+      matrix(as.character(unlist(strsplit(args, " ", fixed=TRUE))), 2)
+    argTypes <- argTokens[1,]
+    argNames <- argTokens[2,]
+  }
+  lhs <- strsplit(sub("\\(.*", "", signature), " ", fixed=TRUE)[[1]]
+  name <- tail(lhs, 1)
+  returnType <- paste(head(lhs, -1), collapse = " ")
+  if (!length(returnType))
+    returnType <- ""
+  signature <- paste(name, "(", paste(argTypes, collapse=","), ")", sep="")
+  list(signature = signature, args = argNames, type = returnType,
+       access = access, name = name)
 }
 
 ### Some stuff derived from QtRuby for creating a MetaData blob
@@ -87,15 +134,13 @@ qmetaObject <- function(x) {
 ### - Class info: useful for describing dbus services
 ### X Enums: probably not necessary
 
-compileMetaObject <- function(x) {
-  metadata <- qmetadata(x)
-  
-  infos <- metadata[["classinfos"]]
-  signals <- metadata[["signals"]]
-  slots <- metadata[["slots"]]
+compileMetaObject <- function(x, metadata) {
+  infos <- metadata$classinfos
+  signals <- metadata$signals
+  slots <- metadata$slots
 
   ## generate 'stringdata' table
-  allNames <- unique(c(unlist(metadata), attr(x, "name"), ""))
+  allNames <- unique(c(unlist(as.list(metadata)), attr(x, "name"), ""))
   offsets <- cumsum(c(0, head(nchar(allNames), -1) + 1))
   names(offsets) <- allNames
   

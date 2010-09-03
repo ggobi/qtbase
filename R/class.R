@@ -101,11 +101,13 @@ normConstructor <- function(x, parent) {
 qsetClass <- function(name, parent, constructor = function(...) parent(...),
                       where = topenv(parent.frame()))
 {
-  ## get our real constructor
-  constructor <- normConstructor(constructor, parent)
   ## mangle the class name to prevent conflicts
   module <- getPackageName(where)
   prefixedName <- paste("R", module, name, sep = "::")
+  if (exists(name, where))
+    warning("Symbol '", name, "' already exists in '", module, "'")
+  ## get our real constructor
+  constructor <- normConstructor(constructor, parent)
   ### FIXME: May want to support reregistration of classes. This requires:
   ### 1) chaining up at the C++ Class level, rather than at instanceEnv
   ### 2) reducing the 'parent' attribute to a light-weight reference
@@ -118,6 +120,7 @@ qsetClass <- function(name, parent, constructor = function(...) parent(...),
   env <- attr(parent, "env") # do not support user static methods yet
   cl <- structure(constructor, module = module, name = prefixedName,
                   parent = parent, env = env, instanceEnv = instanceEnv,
+                  metadata = new.env(),
                   class = c("RQtUserClass", "RQtClass", "function"))
   assign(name, cl, where)
   cl
@@ -154,16 +157,14 @@ qsetMethod <- function(name, class, FUN,
 ## virtual. All methods could be forwarded to R, but we might
 ## short-circuit signal emissions (and call QMetaObject::activate).
 
-qsetSlot <- function(name, class, FUN, type = "", sig = "",
+qsetSlot <- function(signature, class, FUN,
                      access = c("public", "protected", "private"))
 {
   access <- match.arg(access)
-  qsetMethod(name, class, FUN, access)
-  sig <- paste(name, "(", paste(sig, collapse=","), ")", sep = "")
-  qmetadata(class)$slots[[sig]] <-
-    list(signature = sig, args = names(formals(FUN)), type = type,
-         access = access)
-  name
+  method <- qmetaMethod(signature, access, names(formals(FUN)))
+  qsetMethod(method$name, class, FUN, access)
+  qmetadata(class)$slots[[signature]] <- method
+  method$name
 }
 
 ## Signals are essentially implemented by QMetaObject::activate(). We
@@ -172,18 +173,16 @@ qsetSlot <- function(name, class, FUN, type = "", sig = "",
 ## caught by the qt_metacall override which then calls
 ## QMetaObject::activate().
 
-qsetSignal <- function(name, class, sig = "",
+qsetSignal <- function(signature, class,
                        access = c("public", "protected", "private"))
 {
   access <- match.arg(access)
-  argNames <- names(sig)
-  sig <- paste(name, "(", paste(sig, collapse=","), ")", sep = "")
-  qmetadata(class)$signals[[sig]] <-
-    list(signature = sig, args = argNames, type = "", access = access)
+  method <- qmetaMethod(signature, access)
+  qmetadata(class)$signals[[signature]] <- method
   meta <- qmetaObject(class)
   index <- meta$methodCount() - 1L
-  qsetMethod(name, class,
+  qsetMethod(method$name, class,
              function(...) .Call(qt_qmetaInvoke, this, index, list(...)),
              access)
-  name
+  method$name
 }
