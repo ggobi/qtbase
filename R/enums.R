@@ -20,3 +20,7 @@
 "&.QtEnum" <- function(x, y) {
   as.numeric(packBits(intToBits(x) & intToBits(y), "integer"))
 }
+
+print.QtEnum <- function(x) {
+  cat("Enum value: ", names(x), " (", x, ")\n", sep = "")
+}

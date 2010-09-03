@@ -20,7 +20,8 @@ S3method(print, RQtLibrary)
 S3method("$", RQtClass)
 S3method(print, RQtClass)
 S3method(names, RQtClass)
-export(qmethods, qsetClass, qsetMethod, qsetSlot, qsetSignal)
+export(qmethods, qsetClass, qsetMethod, qsetSlot, qsetSignal, qmocMethods,
+       qsignals, qslots)
 
 # objects
 S3method(print, RQtObject)
@@ -32,6 +33,7 @@ export("%<<%", "%>>%")
 # enums
 S3method("|", QtEnum)
 S3method("&", QtEnum)
+S3method(print, QtEnum)
 
 # the Qt smoke library
 export(Qt)
