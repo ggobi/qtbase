@@ -54,8 +54,8 @@ DEFINE_CCALLABLE_STUB(SEXP, _wrapSmoke,
 /* Invocation */
 
 DEFINE_CCALLABLE_STUB(SEXP, invokeSmokeMethod,
-                      (Smoke::ModuleIndex m, SEXP x, SEXP args),
-                      (                   m,      x,      args))
+                      (Smoke *smoke, short index, SEXP x, SEXP args),
+                      (       smoke,       index,      x,      args))
 
 /* Conversion */
 

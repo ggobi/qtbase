@@ -31,8 +31,9 @@ SEXP qt_qinvokeStatic(SEXP rklass, SEXP method, SEXP args) {
   return ans;
 }
 
-extern "C" SEXP invokeSmokeMethod(Smoke::ModuleIndex m, SEXP x, SEXP args) {
-  SmokeMethod method(m);
+extern "C" SEXP invokeSmokeMethod(Smoke *smoke, short index, SEXP x, SEXP args)
+{
+  SmokeMethod method(smoke, index);
   SEXP ans = method.invoke(x, args);
   if (method.lastError() > Method::NoError)
     reportMethodError(method, method.klass()->name());  

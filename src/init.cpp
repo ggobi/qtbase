@@ -43,7 +43,7 @@ extern "C" {
   SEXP qt_qenclose(SEXP x, SEXP fun);
 
   // Invoke a Smoke method with R types
-  SEXP invokeSmokeMethod(Smoke::ModuleIndex m, SEXP x, SEXP args);
+  SEXP invokeSmokeMethod(Smoke *smoke, short index, SEXP x, SEXP args);
 
   // registration of Smoke modules from other packages
   Smoke *registerSmokeModule(Smoke *smoke);
