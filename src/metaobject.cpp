@@ -14,8 +14,7 @@
 #include <smoke/qt_smoke.h>
 
 extern "C" SEXP qt_qmocMethods(SEXP x) {
-  QObject *self = unwrapSmoke(x, QObject);
-  const QMetaObject *meta = self->metaObject();
+  const QMetaObject *meta = unwrapSmoke(x, QMetaObject);
   int n = meta->methodCount();
   
   SEXP ans, ans_type, ans_signature, ans_return, ans_nargs;
