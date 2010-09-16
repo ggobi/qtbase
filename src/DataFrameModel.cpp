@@ -72,6 +72,41 @@ QVariant DataFrameModel::headerData(int section, Qt::Orientation orientation,
   return value;
 }
 
+void DataFrameModel::beginChanges(int nr, int nc) {
+  if (_dataframe != R_NilValue) {
+    int oldnr = rowCount(QModelIndex());
+    int oldnc = columnCount(QModelIndex());
+    if (oldnr > nr)
+      beginRemoveRows(QModelIndex(), oldnr - 1L, nr);
+    else if (oldnr < nr)
+      beginInsertRows(QModelIndex(), oldnr, nr - 1L);
+    if (oldnc > nc)
+      beginRemoveColumns(QModelIndex(), oldnc - 1L, nc);
+    else if (oldnc < nc)
+      beginInsertColumns(QModelIndex(), oldnc, nc - 1L);
+  }
+}
+
+void DataFrameModel::endChanges(int oldnr, int oldnc) {
+  if (oldnr != -1) {
+    int nr = rowCount(QModelIndex());
+    int nc = columnCount(QModelIndex());
+    if (oldnc > nc)
+      endRemoveColumns();
+    else if (oldnc < nc)
+      endInsertColumns(); // just in case column names/roles changed
+    else headerDataChanged(Qt::Horizontal, 0, nc);
+    if (oldnr > nr) // insert rows
+      endRemoveRows();
+    else if (oldnr < nr)
+      endInsertRows();
+    else headerDataChanged(Qt::Vertical, 0, nr);
+    // be lazy and just say everything changed
+    // will not matter unless many rows/cols are in view (rare)
+    dataChanged(index(0, nr), index(0, nc));
+  }
+}
+
 void DataFrameModel::setDataFrame(SEXP dataframe, SEXP roles, SEXP rowHeader,
                                   SEXP colHeader)
 {
@@ -80,10 +115,19 @@ void DataFrameModel::setDataFrame(SEXP dataframe, SEXP roles, SEXP rowHeader,
   R_PreserveObject(rowHeader);
   R_PreserveObject(colHeader);
 
+  // need dimension changes up-front
+  beginChanges(headerLength(rowHeader), headerLength(colHeader));
+
+  int oldnr = rowCount(QModelIndex()); // returns -1 if no dataframe
+  int oldnc = columnCount(QModelIndex());
+  
   _dataframe = dataframe;
   _roles = roles;
   _rowHeader = rowHeader;
   _colHeader = colHeader;
+
+  // finish change notifications
+  endChanges(oldnr, oldnc);
 }
 
 DataFrameModel::~DataFrameModel() {

@@ -21,17 +21,14 @@
 qdataFrameModel <- function(df, ...)
 {
   model <- .Call(qt_qdataFrameModel)
-  qsetDataFrame(model, df, ...)
+  qdataFrame(model, ...) <- df
   model
 }
 
-qsetDataFrame <- function(model, df)
+`qdataFrame<-` <- function(model, useRoles = FALSE, value)
 {
   stopifnot(inherits(model, "DataFrameModel"))
-  df <- as.data.frame(df)
-  getHeaderNames <- function(x)
-    strsplit(sub("^\\.", "", sub("\\.[^.]*$", "", x)), "\\.")
-  header <- unique(unlist(getHeaderNames(colnames(df))))
+  df <- as.data.frame(value)
   ## this order must match the order of the Qt::ItemDataRole enumeration
   roleNames <- c("display", "decoration", "edit", "toolTip", "statusTip",
                  "whatsThis", "font", "textAlignment", "background",
@@ -41,37 +38,48 @@ qsetDataFrame <- function(model, df)
   createRoleList <- function()
     structure(vector("list", length(roleNames)), names = roleNames)
   roles <- createRoleList()
-  cn <- sub("(^[^\\.].*)", ".\\1.display", colnames(df))
-  getRoleNames <- function(x) gsub(".*\\.", "", x)
-  dataRoles <- getRoleNames(cn)
-  resolveRole <- function(role) {
-    headerNames <- getHeaderNames(role)
-    nheaders <- sapply(headerNames, length)
-    headerNames[nheaders == 0L] <- list(header)
-    headerNames <- unlist(headerNames)
-    if (anyDuplicated(headerNames))
-      stop("Redundant role information: ", paste(role, collapse=", "))
-    role <- rep(role, nheaders)
-    headerInd <- match(headerNames, header)
-    map <- integer(length(header))
-    map[headerInd] <- match(role, cn)
-    map - 1L
+  if (useRoles) {
+    getHeaderNames <- function(x)
+      strsplit(sub("^\\.", "", sub("\\.[^.]*$", "", x)), "\\.")
+    header <- unique(unlist(getHeaderNames(colnames(df))))    
+    cn <- sub("(^[^\\.].*)", ".\\1.display", colnames(df))
+    getRoleNames <- function(x) gsub(".*\\.", "", x)
+    dataRoles <- getRoleNames(cn)
+    resolveRole <- function(role) {
+      headerNames <- getHeaderNames(role)
+      nheaders <- sapply(headerNames, length)
+      headerNames[nheaders == 0L] <- list(header)
+      headerNames <- unlist(headerNames)
+      if (anyDuplicated(headerNames))
+        stop("Redundant role information: ", paste(role, collapse=", "))
+      role <- rep(role, nheaders)
+      headerInd <- match(headerNames, header)
+      map <- integer(length(header))
+      map[headerInd] <- match(role, cn)
+      map - 1L
+    }
+    resolvedRoles <- tapply(cn, factor(dataRoles, unique(dataRoles)),
+                            resolveRole, simplify=FALSE)
+    roles[names(resolvedRoles)] <- resolvedRoles
+  } else {
+    roles$display <- seq(ncol(df)) - 1L
+    header <- colnames(df)
   }
-  resolvedRoles <- tapply(cn, factor(dataRoles, unique(dataRoles)), resolveRole,
-                          simplify=FALSE)
-  roles[names(resolvedRoles)] <- resolvedRoles
   attrs <- attributes(df)
   getHeaderRoles <- function(attrName, display = attrs[[attrName]]) {
-    attrPrefix <- paste(attrName, ".", sep = "")
-    headerAttrs <- grep(attrPrefix, names(attrs), fixed=TRUE, value=TRUE)
     headerRoles <- createRoleList()
     headerRoles$display <- display
-    headerRoles[getRoleNames(headerAttrs)] <- attrs[headerAttrs]
+    if (useRoles) {
+      attrPrefix <- paste(attrName, ".", sep = "")
+      headerAttrs <- grep(attrPrefix, names(attrs), fixed=TRUE, value=TRUE)
+      headerRoles[getRoleNames(headerAttrs)] <- attrs[headerAttrs]
+    }
     headerRoles
   }
   rowRoles <- getHeaderRoles("row.names")
-  colRoles <- getHeaderRoles("names", header)
+  colRoles <- getHeaderRoles("names", header)    
   .Call(qt_qsetDataFrame, model, df, roles, rowRoles, colRoles)
+  model
 }
 
 qdataFrame <- function(model) {

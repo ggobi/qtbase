@@ -5,15 +5,18 @@
 
 class DataFrameModel : public QAbstractTableModel {
 public:
+
+  DataFrameModel() : _dataframe(R_NilValue), _rowHeader(R_NilValue),
+                     _colHeader(R_NilValue), _roles(R_NilValue) { }
   
   ~DataFrameModel();
 
   int rowCount(const QModelIndex &/*parent*/) const {
-    return length(VECTOR_ELT(_rowHeader, Qt::DisplayRole));
+    return headerLength(_rowHeader);
   }
 
   int columnCount (const QModelIndex &/*parent*/) const {
-    return length(VECTOR_ELT(_colHeader, Qt::DisplayRole));
+    return headerLength(_colHeader);
   }
 
   QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
@@ -25,6 +28,15 @@ public:
   SEXP dataFrame() { return _dataframe; }
   
 private:
+
+  int headerLength(SEXP header) const {
+    return header == R_NilValue ? -1 :
+      length(VECTOR_ELT(header, Qt::DisplayRole));
+  }
+  
+  void beginChanges(int nr, int nc);
+  void endChanges(int nr, int nc);
+  
   SEXP _dataframe;
   SEXP _roles;
   SEXP _rowHeader;
