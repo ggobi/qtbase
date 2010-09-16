@@ -252,6 +252,7 @@
         <class>QDropEvent</class>
         <class>QDynamicPropertyChangeEvent</class>
         <class>QEasingCurve</class>
+        <class>QElapsedTimer</class>
         <class>QErrorMessage</class>
         <class>QEvent</class>
         <class>QEventLoop</class>
@@ -289,6 +290,7 @@
         <class>QGesture</class>
         <class>QGLColormap</class>
         <class>QGLContext</class>
+        <class>QGLBuffer</class>
         <class>QGLFormat</class>
         <class>QGLFramebufferObject</class>
         <class>QGLFramebufferObjectFormat</class>
@@ -445,6 +447,8 @@
         <class>QNetworkCacheMetaData</class>
         <class>QNetworkCookie</class>
         <class>QNetworkCookieJar</class>
+        <class>QNetworkConfiguration</class>
+        <class>QNetworkConfigurationManager</class>
         <class>QNetworkDiskCache</class>
         <class>QNetworkInterface</class>
         <class>QNetworkProxy</class>
@@ -452,6 +456,7 @@
         <class>QNetworkProxyQuery</class>
         <class>QNetworkReply</class>
         <class>QNetworkRequest</class>
+        <class>QNetworkSession</class>
         <class>QNoDebug</class>
         <class>QObject</class>
         <class>QObjectCleanupHandler</class>
@@ -551,6 +556,7 @@
         <class>QSqlQueryModel</class>
         <class>QSqlRecord</class>
         <class>QSqlRelation</class>
+        <class>QSqlRelationalDelegate</class>
         <class>QSqlRelationalTableModel</class>
         <class>QSqlResult</class>
         <class>QSqlTableModel</class>
@@ -855,7 +861,25 @@
         <class>QHelpSearchQuery</class>
         <class>QHelpSearchQueryWidget</class>
         <class>QHelpSearchResultWidget</class>
-        
+
+        <!-- QtDeclarative -->
+        <class>QDeclarativeComponent</class>
+        <class>QDeclarativeContext</class>
+        <class>QDeclarativeEngine</class>
+        <class>QDeclarativeError</class>
+        <class>QDeclarativeExpression</class>
+        <class>QDeclarativeExtensionPlugin</class>
+        <class>QDeclarativeImageProvider</class>
+        <class>QDeclarativeItem</class>
+        <class>QDeclarativeListProperty</class>
+        <class>QDeclarativeListReference</class>
+        <class>QDeclarativeNetworkAccessManagerFactory</class>
+        <class>QDeclarativeParserStatus</class>
+        <class>QDeclarativeProperty</class>
+        <class>QDeclarativePropertyMap</class>
+        <class>QDeclarativeScriptString</class>
+        <class>QDeclarativeView</class>
+
         <!-- namespaces -->
         <class>Qt</class>
         <class>QDBus</class>
