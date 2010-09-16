@@ -273,8 +273,18 @@ QVariant qvariant_from_sexp(SEXP rvalue, int index) {
     break;
   case INTSXP:
     // Rprintf("Integer\n");
-    variant = QVariant(INTEGER(rvalue)[index]);
-    break;
+    {
+      SEXP levels;
+      if ((levels = getAttrib(rvalue, R_LevelsSymbol)) != R_NilValue) {
+        int level = INTEGER(rvalue)[index];
+        SEXP level_str = NA_STRING;
+        /*Rprintf("getting level: %d\n", level);*/
+        if (level != NA_INTEGER)
+          level_str = STRING_ELT(levels, level - 1);
+        variant = QVariant(sexp2qstring(level_str));
+      } else variant = QVariant(INTEGER(rvalue)[index]);
+      break;
+    }
   case STRSXP:
     // Rprintf("String\n");
     variant = QVariant(sexp2qstring(STRING_ELT(rvalue, index)));
