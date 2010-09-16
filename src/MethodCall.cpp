@@ -93,8 +93,14 @@ void MethodCall::marshal() {
 }
 
 void MethodCall::invokeMethod() {
-  if (_mode == SmokeToR || (_mode == Identity && _args))
+  if (_mode == SmokeToR || (_mode == Identity && _args)) {
     _ret = _method->invoke(_target ? _target->sexp() : NULL, _args);
+    // TODO: handle out parameters as a 'qreturn' object, distribute
+    // to arguments. For other direction, RToSmoke, introduce a new
+    // method, 'sexpReturn' that dynamically creates a 'qreturn'
+    // object, if necessary. This requires tracking which arguments
+    // the user wants returned.
+  }
   else _method->invoke(_target, _stack);
 }
 

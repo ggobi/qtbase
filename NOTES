@@ -86,6 +86,48 @@ Static methods: Use $ syntax on a class object.
 Global functions: Use $ syntax on a module object. Unlikely to be
 useful, but could be stored with the class objects.
 
+(In-)Out parameters: RGtk2 handles this through basic lists. If a
+function has an out parameter, a list is returned with the actual
+return value and the out parameters. The first challenge is
+identifying an 'out' parameter. This is difficult. Non-const reference
+parameters are probably in-out. Pointers are difficult to distinguish
+from arrays. The second challenge is method overload resolution:
+arguments cannot be omitted, as they would be for an 'out' parameter,
+if we are to select a method. We could have the user pass a special
+type of parameter, that indicates the type of an out parameter or, for
+in-out parameters, the input value. The function 'qout()' marks an
+out parameter and 'qinout()' an in-out parameter.
+
+str <- "broken"
+v <- QValidator()
+fixed <- v$fixup(qinout(str))
+str <- fixed$str
+
+For in-out parameters, we do not need any help selecting a method, but
+this still offers benefits. It makes it obvious that we are obtaining
+a value by reference parameter. C# does the same thing with its 'ref'
+and 'out' keywords. It also makes it easy to ignore uninteresting
+return parameters, i.e.:
+
+text <- clipboard$text(subtype) # ignore change in subtype
+# worry about subtype
+ret <- clipboard$text(qinout(subtype))
+subtype <- ret$subtype
+text <- ret$text
+
+If the return value of the method is void, do we just assume that the
+marked out parameter is the desired return value?
+str <- v$fixup(qinout(str))
+This seems reasonable.
+
+What about pure out parameters?
+ns <- QXmlNamespaceSupport()
+names <- ns$splitName("ns:element", qout(""), qout(""))
+prefix <- names$prefix
+This is similar to the .C() contract.
+
+We'll hold off on out parameters until we need them.
+
 Signals:
 Emitting a signal: just like an instance method
 Connecting a signal handler: qconnect() or some fancy syntax?
