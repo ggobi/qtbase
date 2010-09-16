@@ -151,7 +151,7 @@ void SmokeObject::maybeDestroy() {
 
 void SmokeObject::invalidateSexp() {
 #ifdef MEM_DEBUG
-  qDebug("%p: invalidating sexp %p", this, _sexp);
+  qDebug("%p: invalidating sexp %p (%s)", this, _sexp, _klass->name());
 #endif
   _sexp = NULL;
   maybeDestroy();

@@ -74,4 +74,7 @@ S3method(as.character, QChar)
 export(qrect, qpoint, qsize, qcolor, qfont, qpen, qbrush, qtransform, qpolygon)
 
 ## DataFrameModel
-export(qdataFrameModel, qdataFrame, qsetDataFrame)
+export(qdataFrameModel, qdataFrame, "qdataFrame<-")
+
+## RTextFormattingDelegate
+export(qrTextFormattingDelegate)

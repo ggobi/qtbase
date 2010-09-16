@@ -53,6 +53,9 @@ extern "C" {
   SEXP qt_qsetDataFrame(SEXP rmodel, SEXP df, SEXP roles, SEXP rowHeader,
                         SEXP colHeader);
   SEXP qt_qdataFrame(SEXP rmodel);
+
+  // RTextFormattingDelegate
+  SEXP qt_qrTextFormattingDelegate();
 }
 
 #define CALLDEF(name, n)  {#name, (DL_FUNC) &name, n}
@@ -109,6 +112,9 @@ static R_CallMethodDef CallEntries[] = {
     CALLDEF(qt_qdataFrameModel, 0),
     CALLDEF(qt_qdataFrame, 1),
     CALLDEF(qt_qsetDataFrame, 5),
+
+    // RTextFormattingDelegate
+    CALLDEF(qt_qrTextFormattingDelegate, 0),
     
     {NULL, NULL, 0}
 };
