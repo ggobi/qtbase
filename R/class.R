@@ -4,6 +4,10 @@
 "$.RQtClass" <- function(x, name) {
   attr(x, "env")[[name]]
 }
+"[[.RQtClass" <- function(x, name) {
+  attr(x, "env")[[name]]
+}
+
 
 names.RQtClass <- function(x) {
   ls(attr(x, "env"))
