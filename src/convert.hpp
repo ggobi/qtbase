@@ -235,6 +235,18 @@ inline SEXP to_sexp(const char *s) {
   return ScalarString(mkChar(s));
 }
 
+// const unsigned char*
+
+template<> inline const unsigned char* from_sexp<const unsigned char*>(SEXP s) {
+  if (!length(s))
+    return NULL;
+  return RAW(s);
+}
+inline SEXP to_sexp(const unsigned char *s) {
+  warning("Cannot handle return type 'const unsigned char *' (length unknown)");
+  return R_NilValue;
+}
+
 /* NOTE: overloaded functions and template functions cannot be shared
    with other packages. Thus, we define these wrappers for the common
    case of QString conversion. */
