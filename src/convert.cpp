@@ -89,8 +89,10 @@ SEXP to_sexp(QVariant variant) {
   case QMetaType::Char:
   case QMetaType::UChar:
   case QMetaType::QString:
-  case QMetaType::QByteArray:
     ans = qstring2sexp(variant.value<QString>());
+    break;
+  case QMetaType::QByteArray:
+    ans = to_sexp(variant.value<QByteArray>());
     break;
   case QMetaType::VoidStar:
     ans = wrapPointer(variant.value<void *>());
@@ -252,8 +254,11 @@ QVariant qvariant_from_sexp(SEXP rvalue, int index) {
   if (index == -1) {
     /* If a particular element is not selected, then non-lists of
        length one are considered scalars. Otherwise, collections.
+       Except for raw vectors, which are naturally QByteArrays.
     */
-    if (TYPEOF(rvalue) == VECSXP || length(rvalue) > 1) {
+    if (TYPEOF(rvalue) == RAWSXP)
+      return QVariant(from_sexp<QByteArray>(rvalue));
+    else if (TYPEOF(rvalue) == VECSXP || length(rvalue) > 1) {
       SEXP rlist = coerceVector(rvalue, VECSXP);
       if (getAttrib(rvalue, R_NamesSymbol) != R_NilValue)
         variant = asQVariantOfType(rlist, QMetaType::QVariantMap);
@@ -263,6 +268,9 @@ QVariant qvariant_from_sexp(SEXP rvalue, int index) {
     index = 0;
   }
   switch(TYPEOF(rvalue)) {
+  case RAWSXP:
+    variant = QVariant(from_sexp<QByteArray>(ScalarRaw(RAW(rvalue)[index])));
+    break;
   case LGLSXP:
     // Rprintf("Logical\n");
     variant = QVariant(LOGICAL(rvalue)[index]);
@@ -522,8 +530,6 @@ from_sexp<QByteArray>(SEXP sexp, const SmokeType &type) {
 /* marked 'static' because we want a different implementation for the
    type handlers (to an externalptr, instead of raw) */
 SEXP to_sexp(QByteArray s) {
-  if (s.isNull())
-    return R_NilValue;
   SEXP sexp = allocVector(RAWSXP, s.size());
   const char *data = s.constData();
   for (int i = 0; i < s.size(); i++)

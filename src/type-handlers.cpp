@@ -463,6 +463,12 @@ template<> int scoreArg<const char*>(SEXP arg, const SmokeType &type) {
   else return 0;
 }
 
+template<> int scoreArg<const unsigned char*>(SEXP arg, const SmokeType &type) {
+  if (TYPEOF(arg) == RAWSXP)
+    return 2;
+  else return 0;
+}
+
 template <> int scoreArg<QStringList>(SEXP arg, const SmokeType &/*type*/) {
   if (TYPEOF(arg) == STRSXP) {
     if (length(arg) > 1)
@@ -496,7 +502,7 @@ template<> int scoreArg<QVariant>(SEXP arg, const SmokeType &type) {
 DEF_PAIR_CONVERTERS(double, QColor, value, class)
 DEF_PAIR_CONVERTERS(double, QVariant, value, value)
 DEF_PAIR_CONVERTERS(QString, QString, value, value)
-DEF_PAIR_CONVERTERS(QByteArray, QByteArray, class, class)
+DEF_PAIR_CONVERTERS(QByteArray, QByteArray, value, value)
 DEF_PAIR_CONVERTERS(double, QPointF, value, class)
 DEF_PAIR_CONVERTERS(double, double, value, value)
 DEF_PAIR_CONVERTERS(int, int, value, value)
@@ -514,7 +520,7 @@ DEF_COLLECTION_CONVERTERS(QList, QTreeWidgetItem*, ptr)
 DEF_COLLECTION_CONVERTERS(QList, QTreeWidget*, ptr)
 DEF_COLLECTION_CONVERTERS(QList, QWidget*, ptr)
 
-DEF_COLLECTION_CONVERTERS(QList, QByteArray, class)
+DEF_COLLECTION_CONVERTERS(QList, QByteArray, value)
 DEF_COLLECTION_CONVERTERS(QVector, QColor, class)
 DEF_COLLECTION_CONVERTERS(QList, QColor, class)
 DEF_COLLECTION_CONVERTERS(QList, QFileInfo, class)
@@ -575,6 +581,7 @@ DEF_COLLECTION_CONVERTERS(QSet, QAccessible::Method, enum)
 DEF_MAP_CONVERTERS(QMap, int, QVariant)
 DEF_MAP_CONVERTERS(QMap, QDate, QTextCharFormat)
 DEF_MAP_CONVERTERS(QHash, int, QByteArray)
+DEF_STRING_MAP_CONVERTERS(QMap, QUrl)
 
 #ifdef QT_NETWORK_LIB
 DEF_COLLECTION_CONVERTERS(QList, QHostAddress, class)
@@ -660,12 +667,12 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   /* 'char' is a little special, as 'const (unsigned) char*' is a string */
   TYPE_HANDLER_ENTRY_FULL(char&, char),
   TYPE_HANDLER_ENTRY_FULL(signed char&, char),
-  TYPE_HANDLER_ENTRY_FULL(unsigned char&, char),
-  TYPE_HANDLER_ENTRY_FULL(char*&, char),
+  TYPE_HANDLER_ENTRY_FULL(unsigned char&, unsigned char),
+  TYPE_HANDLER_ENTRY_FULL(char*&, char), // does this work?
   TYPE_HANDLER_ENTRY_FULL(char*, char),
-  TYPE_HANDLER_ENTRY_FULL(unsigned char*, char),
+  TYPE_HANDLER_ENTRY_FULL(unsigned char*, unsigned char),
   TYPE_HANDLER_ENTRY(const char*),
-  TYPE_HANDLER_ENTRY_FULL(const unsigned char*, const char*),
+  TYPE_HANDLER_ENTRY(const unsigned char*),
   TYPE_HANDLER_ENTRY(const char* const *),
   TYPE_HANDLER_ENTRY_INT(int),
   TYPE_HANDLER_ENTRY_INT(long),
@@ -675,6 +682,7 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   TYPE_HANDLER_ENTRY_CLASS(QString),
   TYPE_HANDLER_ENTRY_FULL(QString*, QString),
   TYPE_HANDLER_ENTRY_FULL(QString&, QString),
+  TYPE_HANDLER_ENTRY_FULL(const QString, QString),
   TYPE_HANDLER_ENTRY_CLASS(QByteArray),
   TYPE_HANDLER_ENTRY_FULL(QByteArray*, QByteArray),
   /* Handle various collection classes */
@@ -740,6 +748,8 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   TYPE_HANDLER_ENTRY_CLASS2(QMap<int,QVariant>),
   TYPE_HANDLER_ENTRY_CLASS2(QHash<int,QByteArray>),
   TYPE_HANDLER_ENTRY_CLASS2(QMap<QDate,QTextCharFormat>),
+  TYPE_HANDLER_ENTRY_CLASS2(QMap<QString,QUrl>),
+  TYPE_HANDLER_ENTRY_CLASS2(QMap<QString,QVariant>),
   TYPE_HANDLER_ENTRY_CLASS2(QPair<int,int>),
 #ifdef QT_OPENGL_LIB
 #if QT_VERSION >= 0x40600
