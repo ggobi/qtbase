@@ -274,6 +274,20 @@ void marshal_to_sexp<const char*>(MethodCall *m)
   m->setSexp(to_sexp(itemValue<const char*>(m)));
 }
 
+/* Handling byte arrays (raw vectors) as const unsigned char* */
+
+template <>
+void marshal_from_sexp<const unsigned char*>(MethodCall *m) 
+{
+  setItemValue(m, from_sexp<const unsigned char*>(m->sexp()));  
+  m->marshal();
+}
+
+template <>
+void marshal_to_sexp<const unsigned char*>(MethodCall *m)
+{
+  m->setSexp(to_sexp(itemValue<const unsigned char*>(m)));
+}
 
 /* Macros for initializing TypeHandler structures in an array. */  
 
