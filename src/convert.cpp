@@ -34,6 +34,7 @@
 #include <QLocale>
 #include <QBitmap>
 #include <QMatrix>
+#include <QItemSelection>
 #if QT_VERSION >= 0x40300
 #include <QTransform>
 #endif
@@ -679,6 +680,25 @@ SEXP to_sexp(QChar qchar) {
   return to_sexp(QString(qchar));
 }
 
+DEF_COLLECTION_CONVERTERS(QList, QItemSelectionRange, class)
+SEXP to_sexp(QItemSelection selection) {
+  return to_sexp(static_cast<QList<QItemSelectionRange> >(selection),
+                 SmokeType(qt_Smoke, "QItemSelection"));
+}
+
+#ifdef QT_TEST_LIB
+DEF_COLLECTION_CONVERTERS(QList, QTestEvent*, ptr)
+SEXP to_sexp(QTestEventList eventList) {
+  return to_sexp(static_cast<QList<QTestEvent*> >(eventList),
+                 SmokeType(qt_Smoke, "QTestEventList"));
+}
+DEF_COLLECTION_CONVERTERS(QList, QList<QVariant>, value)
+SEXP to_sexp(QSignalSpy signalSpy) {
+  return to_sexp(static_cast<QList<QList<QVariant> > >(signalSpy),
+                 SmokeType(qt_Smoke, "QSignalSpy"));
+}
+#endif
+
 /* Helper function */
 /* Sometimes, an element only exists in a collection (as a value). But
    Smoke will include a type for it in pointer (*) form. */
@@ -713,3 +733,11 @@ DEF_COERCE_ENTRY_POINT(QSizeF)
 DEF_COERCE_ENTRY_POINT(QSize)
 DEF_COERCE_ENTRY_POINT(QColor)
 DEF_COERCE_ENTRY_POINT(QChar)
+DEF_COERCE_ENTRY_POINT(QItemSelection)
+
+#ifdef QT_TEST_LIB
+DEF_COERCE_ENTRY_POINT(QSignalSpy)
+DEF_COERCE_ENTRY_POINT(QTestEventList)
+#endif
+
+

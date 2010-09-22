@@ -107,7 +107,11 @@ static R_CallMethodDef CallEntries[] = {
     CALLDEF_COERCE(QSize),
     CALLDEF_COERCE(QColor),
     CALLDEF_COERCE(QChar),
-
+    CALLDEF_COERCE(QItemSelection),
+    #ifdef QT_TEST_LIB
+    CALLDEF_COERCE(QTestEventList),
+    CALLDEF_COERCE(QSignalSpy),
+    #endif
     // DataFrame
     CALLDEF(qt_qdataFrameModel, 0),
     CALLDEF(qt_qdataFrame, 1),

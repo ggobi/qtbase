@@ -27,3 +27,8 @@ as.matrix.QTransform <- function(x, ...) .Call(qt_coerce_QTransform, x)
 qcol2rgb <- as.matrix.QColor <- function(x, ...) .Call(qt_coerce_QColor, x)
 
 as.character.QChar <- function(x, ...) .Call(qt_coerce_QChar, x)
+
+as.list.QItemSelection <- function(x, ...) .Call(qt_coerce_QItemSelection, x)
+
+as.list.QTestEventList <- function(x, ...) .Call(qt_coerce_QTestEventList, x)
+as.list.QSignalSpy <- function(x, ...) .Call(qt_coerce_QSignalSpy, x)

@@ -71,6 +71,10 @@ export(qcol2rgb)
 
 S3method(as.character, QChar)
 
+S3method(as.list, QItemSelection)
+S3method(as.list, QTestEventList)
+S3method(as.list, QSignalSpy)
+
 ## constructors of simple types
 export(qrect, qpoint, qsize, qcolor, qfont, qpen, qbrush, qtransform, qpolygon)
 

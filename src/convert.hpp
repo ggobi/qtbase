@@ -422,6 +422,7 @@ DECL_COERCE_ENTRY_POINT(QSizeF);
 DECL_COERCE_ENTRY_POINT(QSize);
 DECL_COERCE_ENTRY_POINT(QColor);
 DECL_COERCE_ENTRY_POINT(QChar);
+DECL_COERCE_ENTRY_POINT(QItemSelection);
 
 /* Conversion of non-scalars (collection, map, pair, ...) */
 
