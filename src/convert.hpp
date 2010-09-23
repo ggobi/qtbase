@@ -424,6 +424,11 @@ DECL_COERCE_ENTRY_POINT(QColor);
 DECL_COERCE_ENTRY_POINT(QChar);
 DECL_COERCE_ENTRY_POINT(QItemSelection);
 
+#ifdef QT_TEST_LIB
+DECL_COERCE_ENTRY_POINT(QSignalSpy);
+DECL_COERCE_ENTRY_POINT(QTestEventList);
+#endif
+
 /* Conversion of non-scalars (collection, map, pair, ...) */
 
 #define value_to_sexp to_sexp

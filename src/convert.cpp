@@ -34,7 +34,6 @@
 #include <QLocale>
 #include <QBitmap>
 #include <QMatrix>
-#include <QItemSelection>
 #if QT_VERSION >= 0x40300
 #include <QTransform>
 #endif
@@ -46,6 +45,13 @@
 #include <QQuaternion>
 #endif
 /* End QVariant includes */
+
+/* Explicit coercion */
+#include <QItemSelection>
+#ifdef QT_TEST_LIB
+#include <QTestEventList>
+#include <QSignalSpy>
+#endif
 
 #include "SmokeObject.hpp"
 #include "convert.hpp"
@@ -693,8 +699,8 @@ SEXP to_sexp(QTestEventList eventList) {
                  SmokeType(qt_Smoke, "QTestEventList"));
 }
 DEF_COLLECTION_CONVERTERS(QList, QList<QVariant>, value)
-SEXP to_sexp(QSignalSpy signalSpy) {
-  return to_sexp(static_cast<QList<QList<QVariant> > >(signalSpy),
+SEXP to_sexp(QSignalSpy *signalSpy) {
+  return to_sexp(*static_cast<QList<QList<QVariant> > *>(signalSpy),
                  SmokeType(qt_Smoke, "QSignalSpy"));
 }
 #endif
@@ -736,7 +742,9 @@ DEF_COERCE_ENTRY_POINT(QChar)
 DEF_COERCE_ENTRY_POINT(QItemSelection)
 
 #ifdef QT_TEST_LIB
-DEF_COERCE_ENTRY_POINT(QSignalSpy)
+SEXP qt_coerce_QSignalSpy(SEXP sexp) {
+  return to_sexp(unwrapSmoke(sexp, QSignalSpy));
+}
 DEF_COERCE_ENTRY_POINT(QTestEventList)
 #endif
 

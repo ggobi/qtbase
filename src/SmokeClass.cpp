@@ -51,17 +51,18 @@ QList<QByteArray> SmokeClass::mungedMethodNames(const MethodCall &call) const {
     int nmunged = mungedNames.size();
     for (int j = 0; j < nmunged; j++) {
       QByteArray munged = mungedNames[j];
-      /* could be a "scalar" or length-one vector */
-      if (isVectorAtomic(arg) && length(arg) == 1) {
+      if (TYPEOF(arg) == RAWSXP) {
+        mungedNames << munged + "#"; // for QByteArray
+        munged += "$"; // for uchar*
+        /* could be a "scalar" or length-one vector */
+      } else if (isVectorAtomic(arg) && length(arg) == 1) {
         mungedNames << munged + "?";
         munged += "$";
-      }
-      else if (isNull(arg) || isEnvironment(arg)) {
+      } else if (isNull(arg) || isEnvironment(arg)) {
         if (isNull(arg))
           mungedNames << munged + "$"; // for NULL QStrings
         munged += "#";
-      }
-      else munged += "?";
+      } else munged += "?";
       mungedNames[j] = munged;
     }
   }

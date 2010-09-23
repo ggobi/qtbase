@@ -469,6 +469,26 @@ template<> int scoreArg<const unsigned char*>(SEXP arg, const SmokeType &type) {
   else return 0;
 }
 
+
+template<> int scoreArg<unsigned char>(SEXP arg, const SmokeType &type) {
+  int score = 0;
+  // we consider ptr as array of bytes, and Qt will not copy, but R might free
+  if (!type.isPtr()) {
+    switch(TYPEOF(arg)) {
+    case RAWSXP:
+      score = 3;
+      break;
+    case INTSXP:
+    case REALSXP:
+      score = 1;
+      break;
+    default:
+      break;
+    }
+  }
+  return score;
+}
+
 template <> int scoreArg<QStringList>(SEXP arg, const SmokeType &/*type*/) {
   if (TYPEOF(arg) == STRSXP) {
     if (length(arg) > 1)
@@ -664,7 +684,7 @@ DEF_COLLECTION_CONVERTERS(QList, QWebElement, class)
 Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   /* Handle primitive pointers/references */
   TYPE_HANDLER_ENTRY_PRIM(bool),
-  /* 'char' is a little special, as 'const (unsigned) char*' is a string */
+  /* 'char' is a little special, as 'const char*' is a string */
   TYPE_HANDLER_ENTRY_FULL(char&, char),
   TYPE_HANDLER_ENTRY_FULL(signed char&, char),
   TYPE_HANDLER_ENTRY_FULL(unsigned char&, unsigned char),
