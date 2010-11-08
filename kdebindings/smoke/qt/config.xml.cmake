@@ -28,5 +28,6 @@
         <dir>@QT_QTWEBKIT_INCLUDE_DIR@</dir>
         <dir>@QT_QTMULTIMEDIA_INCLUDE_DIR@</dir>
         <dir>@QT_QTHELP_INCLUDE_DIR@</dir>
+        <dir>@QT_QTDECLARATIVE_INCLUDE_DIR@</dir>
     </includeDirs>
 </config>

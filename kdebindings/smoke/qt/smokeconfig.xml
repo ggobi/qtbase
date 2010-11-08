@@ -88,6 +88,9 @@
 
         <!-- Phonon excludes -->
         <signature>.*Phonon::.*::k_ptr</signature>
+
+        <!-- QtDeclarative excludes -->
+        <signature>.*qmlRegisterTypeNotAvailable.*</signature>
         
     </exclude>
     <functions>

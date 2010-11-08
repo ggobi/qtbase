@@ -39,6 +39,9 @@
 #ifdef QT_MULTIMEDIA_LIB
 #include <QtMultimedia/QtMultimedia>
 #endif
+#ifdef QT_DECLARATIVE_LIB
+#include <QtDeclarative/QtDeclarative>
+#endif
 
 // some MS headers do
 // #define interface struct
