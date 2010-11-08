@@ -2,3 +2,8 @@
 /kdebindings-build
 /src-build
 /src/qtbase.so
+/inst/qdoc/images
+/inst/qdoc/.Rhistory
+/inst/qdoc/classic.css
+/inst/qdoc/qt.qhp
+/R/.Rhistory
