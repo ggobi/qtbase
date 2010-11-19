@@ -25,7 +25,8 @@ qdataFrameModel <- function(df, ...)
   model
 }
 
-`qdataFrame<-` <- function(model, useRoles = FALSE, value)
+`qdataFrame<-` <- function(model, useRoles = FALSE, editable = character(0),
+                           value)
 {
   stopifnot(inherits(model, "DataFrameModel"))
   df <- as.data.frame(value)
@@ -41,8 +42,10 @@ qdataFrameModel <- function(df, ...)
   if (useRoles) {
     getHeaderNames <- function(x)
       strsplit(sub("^\\.", "", sub("\\.[^.]*$", "", x)), "\\.")
-    header <- unique(unlist(getHeaderNames(colnames(df))))    
-    cn <- sub("(^[^\\.].*)", ".\\1.display", colnames(df))
+    header <- unique(unlist(getHeaderNames(colnames(df))))
+    editOrDisplay <- ifelse(colnames(df) %in% editable, "edit", "display")
+    cn <- paste(sub("(^[^\\.].*)", ".\\1.", colnames(df)), editOrDisplay,
+                sep = "")
     getRoleNames <- function(x) gsub(".*\\.", "", x)
     dataRoles <- getRoleNames(cn)
     resolveRole <- function(role) {
@@ -62,7 +65,10 @@ qdataFrameModel <- function(df, ...)
                             resolveRole, simplify=FALSE)
     roles[names(resolvedRoles)] <- resolvedRoles
   } else {
-    roles$display <- seq(ncol(df)) - 1L
+    isEditable <- colnames(df) %in% editable
+    inds <- seq_len(ncol(df)) - 1L
+    roles$display <- ifelse(isEditable, -1L, inds)
+    roles$edit <- ifelse(isEditable, inds, -1L)
     header <- colnames(df)
   }
   attrs <- attributes(df)
