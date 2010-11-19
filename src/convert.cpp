@@ -75,6 +75,9 @@ SEXP to_sexp(QVariant variant) {
   case QMetaType::Void:
     ans = R_NilValue;
     break;
+  case QMetaType::UChar:
+    ans = ScalarRaw(variant.value<unsigned char>());
+    break;
   case QMetaType::Bool:
     ans = ScalarLogical(variant.value<bool>());
     break;
@@ -94,7 +97,6 @@ SEXP to_sexp(QVariant variant) {
     break;
   case QMetaType::QChar:
   case QMetaType::Char:
-  case QMetaType::UChar:
   case QMetaType::QString:
     ans = qstring2sexp(variant.value<QString>());
     break;
@@ -255,6 +257,45 @@ SEXP to_sexp(QVariant variant) {
   return ans;
 }
 
+bool qvariant_into_vector(QVariant variant, SEXP v, int index) {
+  if (!isVector(v))
+    error("Setting vector element from QVariant: not a vector");
+  switch(TYPEOF(v)) {
+  case RAWSXP:
+    RAW(v)[index] = variant.value<unsigned char>();
+    break;
+  case LGLSXP:
+    LOGICAL(v)[index] = variant.value<bool>();
+    break;
+  case REALSXP:
+    REAL(v)[index] = variant.value<double>();
+    break;
+  case INTSXP:
+    {
+      SEXP levels;
+      if ((levels = getAttrib(v, R_LevelsSymbol)) != R_NilValue) {
+        QString qstr = variant.value<QString>();
+        int level = 0;
+        for (int i = 0; i < length(levels); i++)
+          if (qstr == CHAR(STRING_ELT(levels, i)))
+            level = i + 1;
+        if (level == 0)
+          return(false);
+        INTEGER(v)[index] = level;
+      } else INTEGER(v)[index] = variant.value<int>();
+      break;
+    }
+  case STRSXP:
+    SET_STRING_ELT(v, index, qstring2sexp(variant.value<QString>()));
+    break;
+  case VECSXP:
+    SET_VECTOR_ELT(v, index, to_sexp(variant));
+    break;
+  default:
+    error("Setting vector element from QVariant: unhandled vector type");
+  }
+  return(true);
+}
 
 QVariant qvariant_from_sexp(SEXP rvalue, int index) {
   QVariant variant;
@@ -276,7 +317,7 @@ QVariant qvariant_from_sexp(SEXP rvalue, int index) {
   }
   switch(TYPEOF(rvalue)) {
   case RAWSXP:
-    variant = QVariant(from_sexp<QByteArray>(ScalarRaw(RAW(rvalue)[index])));
+    variant = qVariantFromValue(RAW(rvalue)[index]);
     break;
   case LGLSXP:
     // Rprintf("Logical\n");

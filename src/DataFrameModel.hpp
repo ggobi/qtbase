@@ -23,6 +23,11 @@ public:
   QVariant headerData(int section, Qt::Orientation orientation,
                       int role = Qt::DisplayRole) const;
 
+  bool setData(const QModelIndex &index, const QVariant &value,
+               int role = Qt::EditRole);
+
+  Qt::ItemFlags flags(const QModelIndex &index) const;
+
   void setDataFrame(SEXP dataframe, SEXP roles, SEXP rowHeader, SEXP colHeader);
 
   SEXP dataFrame() { return _dataframe; }

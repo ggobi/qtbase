@@ -30,6 +30,8 @@ QVariant DataFrameModel::data(const QModelIndex &index, int role) const
   if (roleVector == R_NilValue || (dfIndex = INTEGER(roleVector)[col]) == -1) {
     if (role == Qt::ToolTipRole)
       value = data(index, Qt::DisplayRole);
+    if (role == Qt::DisplayRole)
+      value = data(index, Qt::EditRole);
   } else value = qvariant_from_sexp(VECTOR_ELT(_dataframe, dfIndex), row);
 
   return value;
@@ -70,6 +72,68 @@ QVariant DataFrameModel::headerData(int section, Qt::Orientation orientation,
       value = qvariant_from_sexp(roleVector, section);
   }
   return value;
+}
+
+bool DataFrameModel::setData(const QModelIndex &index, const QVariant &value,
+                             int role)
+{
+  int col = index.column();
+  int row = index.row();
+  QModelIndex dummy;
+
+  if (!index.isValid()) {
+    qCritical("Model index is invalid");
+    return false;
+  }
+  if (col >= columnCount(dummy)) {
+    qCritical("Column index %d out of bounds", col);
+    return false;
+  }
+  if (row >= rowCount(dummy)) {
+    qCritical("Row index %d out of bounds", row);
+    return false;
+  }
+  if (role >= length(_roles)) {
+    qCritical("Role index %d out of bounds", role);
+    return false;
+  }
+
+  SEXP roleVector = VECTOR_ELT(_roles, role);
+  int dfIndex;
+  
+  if (roleVector == R_NilValue || (dfIndex = INTEGER(roleVector)[col]) == -1)
+    return(false);
+
+  SEXP tmpDataframe = duplicate(_dataframe);
+  R_ReleaseObject(_dataframe);
+  _dataframe = tmpDataframe;
+  R_PreserveObject(_dataframe);
+
+  SEXP v = VECTOR_ELT(_dataframe, dfIndex);
+  return qvariant_into_vector(value, v, row);
+}
+
+Qt::ItemFlags DataFrameModel::flags(const QModelIndex &index) const {
+  int col = index.column();
+  int row = index.row();
+  QModelIndex dummy;
+  if (!index.isValid()) {
+    qCritical("Model index is invalid");
+    return 0;
+  }
+  if (col >= columnCount(dummy)) {
+    qCritical("Column index %d out of bounds", col);
+    return 0;
+  }
+  if (row >= rowCount(dummy)) {
+    qCritical("Row index %d out of bounds", row);
+    return 0;
+  }
+  SEXP roleVector = VECTOR_ELT(_roles, Qt::EditRole);
+  Qt::ItemFlags f = QAbstractItemModel::flags(index);
+  if (roleVector != R_NilValue && INTEGER(roleVector)[col] != -1)
+    f |= Qt::ItemIsEditable;
+  return f;
 }
 
 void DataFrameModel::beginChanges(int nr, int nc) {

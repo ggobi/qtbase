@@ -354,6 +354,7 @@ QVariant qvariant_from_sexp(SEXP rvalue, int index = -1);
 template<> inline QVariant from_sexp<QVariant>(SEXP rvalue) {
   return qvariant_from_sexp(rvalue);
 }
+bool qvariant_into_vector(QVariant variant, SEXP v, int index);
 QVariant asQVariantOfType(SEXP rvalue, QMetaType::Type type,
                           bool tryDirect = true);
 template<> QList<QVariant> from_sexp<QList<QVariant> >(SEXP s,
