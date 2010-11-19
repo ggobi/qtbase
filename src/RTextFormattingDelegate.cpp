@@ -9,6 +9,13 @@ QString RTextFormattingDelegate::displayText (const QVariant &value,
   QString str;
   
   switch(value.type()) {
+  case QMetaType::Bool:
+    {
+      int b = value.value<int>();
+      formatLogical(&b, 1, &w);
+      str = QString(EncodeLogical(b, w));
+    }
+    break;
   case QMetaType::Int:
   case QMetaType::UInt:
   case QMetaType::Long:
