@@ -78,6 +78,12 @@ S3method(as.list, QSignalSpy)
 ## constructors of simple types
 export(qrect, qpoint, qsize, qcolor, qfont, qpen, qbrush, qtransform, qpolygon)
 
+## dim methods
+S3method(dim, QGraphicsView)
+S3method(dim, QGraphicsScene)
+S3method(dim, QGraphicsItem)
+S3method(dim, QRectF)
+
 ## DataFrameModel
 export(qdataFrameModel, qdataFrame, "qdataFrame<-")
 
