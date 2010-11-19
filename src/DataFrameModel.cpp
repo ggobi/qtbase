@@ -110,7 +110,10 @@ bool DataFrameModel::setData(const QModelIndex &index, const QVariant &value,
   R_PreserveObject(_dataframe);
 
   SEXP v = VECTOR_ELT(_dataframe, dfIndex);
-  return qvariant_into_vector(value, v, row);
+  bool success = qvariant_into_vector(value, v, row);
+  if (success)
+    dataChanged(index, index);
+  return success;
 }
 
 Qt::ItemFlags DataFrameModel::flags(const QModelIndex &index) const {
@@ -167,7 +170,7 @@ void DataFrameModel::endChanges(int oldnr, int oldnc) {
     else headerDataChanged(Qt::Vertical, 0, nr);
     // be lazy and just say everything changed
     // will not matter unless many rows/cols are in view (rare)
-    dataChanged(index(0, nr), index(0, nc));
+    dataChanged(index(0, 0), index(nr, nc));
   }
 }
 
