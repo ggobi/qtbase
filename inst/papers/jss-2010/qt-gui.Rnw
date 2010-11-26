@@ -1,0 +1,41 @@
+\documentclass[article,shortnames]{jss}
+
+\newcommand{\Qt}{\pkg{Qt}}
+\newcommand{\R}{\proglang{R}}
+
+\title{Developing \R{} GUIs with \pkg{Qt}}
+
+\author{Michael Lawrence \\ Genentech \And Deepayan Sarkar \\
+  Indian Statistics Institute}
+
+\Plainauthor{Michael Lawrence, Deepayan Sarkar}
+\Plaintitle{Developing R GUIs with Qt} 
+
+\Abstract{
+}
+
+\Keywords{graphical user interface, GUI, \proglang{R}, \pkg{Qt}}
+\Plainkeywords{graphical user interface, GUI, R, Qt}
+
+\Address{Michael Lawrence\\
+  Bioinformatics and Computational Biology\\
+  Genentech Research and Early Development\\
+  South San Francisco, CA, USA\\
+  E-mail: michafla@gene.com\\
+}
+
+\begin{document}
+
+\section{Introduction}
+
+\section{Fundamentals}
+
+\section{Example}
+
+\section{Advanced Topics}
+
+\section{Conclusion}
+
+%\bibliography{qt-gui}
+
+\end{document}
