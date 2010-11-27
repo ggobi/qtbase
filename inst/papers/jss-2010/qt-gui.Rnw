@@ -2,8 +2,9 @@
 
 \newcommand{\Qt}{\pkg{Qt}}
 \newcommand{\R}{\proglang{R}}
+\newcommand{\qtbase}{\pkg{qtbase}}
 
-\title{Developing \R{} GUIs with \pkg{Qt}}
+\title{Developing \R/ GUIs with \Qt/}}
 
 \author{Michael Lawrence \\ Genentech \And Deepayan Sarkar \\
   Indian Statistics Institute}
@@ -14,7 +15,7 @@
 \Abstract{
 }
 
-\Keywords{graphical user interface, GUI, \proglang{R}, \pkg{Qt}}
+\Keywords{graphical user interface, GUI, \R/, \Qt/}
 \Plainkeywords{graphical user interface, GUI, R, Qt}
 
 \Address{Michael Lawrence\\
@@ -27,6 +28,24 @@
 \begin{document}
 
 \section{Introduction}
+
+R is typically accessed via the command line, so it is no surprise
+that the most popular R GUI's are graphical shells around a
+console. Such interfaces offer simple, general utilities, such
+as switching the working directory or fitting a basic linear
+model. More complex tasks are usually best left to the command line,
+except when a GUI is developed specifically for a particular task and
+is able to abstract away the unnecessary details. An example would be
+a wizard for analysis of gene expression microarrays, where the user
+is led from preprocessing through to the detection of differentially
+expressed genes. Given the high frequency at which such use cases are
+encountered, it is desirable to implement GUI's directly in \R/,
+avoiding the difficulties and overhead involved in cross-language
+development.
+
+This paper introduces infrastructure for developing GUI's in \R/
+through an interface to the \Qt/ toolkit, a \proglang{C++} application
+library.
 
 \section{Fundamentals}
 
