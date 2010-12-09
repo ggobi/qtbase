@@ -1,4 +1,5 @@
 \documentclass[article,shortnames]{jss}
+%\usepackage{Sweave}
 
 \newcommand{\Qt}{\pkg{Qt}}
 \newcommand{\R}{\proglang{R}}
@@ -6,26 +7,26 @@
 \newcommand{\cpp}{\proglang{C++}}
 
 
-\title{Developing Graphics User Interfaces in \R/ with \Qt/}}
+\title{Developing Graphics User Interfaces in \R\ with \Qt{}}
 
 \author{Michael Lawrence \\ Genentech \And Deepayan Sarkar \\
-  Indian Statistics Institute}
+  Indian Statistical Institute}
 
 \Plainauthor{Michael Lawrence, Deepayan Sarkar}
 \Plaintitle{Developing R GUIs with Qt} 
 
-\Abstract{ It is often desirable to program an \R/ GUI in the \R/
+\Abstract{ It is often desirable to program an \R\ GUI in the \R\ 
   language itself. We present infrastructure for programming a GUI in
-  \R/ through an interface to the \Qt/ toolkit, a \cpp/ application
+  \R\ through an interface to the \Qt\ toolkit, a \cpp\ application
   library that provides a collection of widgets, the fundamental
   building blocks of a GUI. We will introduce the basics of the
   interface and give several examples of its application to GUI
   development. Some advanced topics, including the ability to extend
-  the \cpp/ classes of \Qt/ in \R/, are discussed. The interface is
-  implemented by the \qtbase/ package, available at
+  the \cpp\ classes of \Qt\ in \R{}, are discussed. The interface is
+  implemented by the \qtbase\ package, available at
   \url{http://github.com/ggobi/qtbase}.  }
 
-\Keywords{graphical user interface, GUI, \R/, \Qt/}
+\Keywords{graphical user interface, GUI, \R{}, \Qt{}}
 \Plainkeywords{graphical user interface, GUI, R, Qt}
 
 \Address{Michael Lawrence\\
@@ -33,6 +34,12 @@
   Genentech Research and Early Development\\
   South San Francisco, CA, USA\\
   E-mail: michafla@gene.com\\
+  \\
+  Deepayan Sarkar\\
+  Theoretical Statistics and Mathematics Unit\\
+  Indian Statistical Institute, Delhi Centre\\
+  7 SJSS Marg, New Delhi 110016, India\\
+  E-mail: deepayan.sarkar@r-project.org\\
 }
 
 \begin{document}
@@ -40,7 +47,7 @@
 \section{Introduction}
 
 R is typically accessed via the command line, so it is no surprise
-that the most popular R GUI's are graphical shells around a
+that the most popular R GUIs are graphical shells around a
 console. Such interfaces offer simple, general utilities, such
 as switching the working directory or fitting a basic linear
 model. More complex tasks are usually best left to the command line,
@@ -49,51 +56,51 @@ is able to abstract away the unnecessary details. An example would be
 a wizard for analysis of gene expression microarrays, where the user
 is led from preprocessing through to the detection of differentially
 expressed genes. Given the high frequency at which such use cases are
-encountered, it is desirable to implement GUI's directly in \R/,
+encountered, it is desirable to implement GUIs directly in \R{},
 avoiding the difficulties and overhead involved in cross-language
 development.
 
-This paper introduces infrastructure for developing GUI's in \R/
-through an interface to the \Qt/ toolkit, a \cpp/ application library
-developed by Nokia. \Qt/ consists of a number of modules, and
+This paper introduces infrastructure for developing GUIs in \R\ 
+through an interface to the \Qt\ toolkit, a \cpp\ application library
+developed by Nokia. \Qt\ consists of a number of modules, and
 principal among them is the GUI module, which provides a collection of
 widgets, the graphical controls that serve as the fundamental building
-blocks of a GUI. Other interesting \Qt/ modules include a WebKit web
+blocks of a GUI. Other interesting \Qt\ modules include a WebKit web
 browser implementation, enabling hybrid desktop and web applications,
 and an OpenGL-based renderer for hardware accelerated graphics. An
-automatic installer for the entirety of \Qt/ is available from Nokia
+automatic installer for the entirety of \Qt\ is available from Nokia
 for the major platforms, including Windows and Mac.
 
-The interface between \R/ and \Qt/ is primarily implemented by the
-\qtbase/ package. The interface is low-level, in that the \R/ user
-directly constructs instances of \Qt/ classes and calls their
-methods. All of the \Qt/ modules are accessible through the
+The interface between \R\ and \Qt\ is primarily implemented by the
+\qtbase\ package. The interface is low-level, in that the \R\ user
+directly constructs instances of \Qt\ classes and calls their
+methods. All of the \Qt\ modules are accessible through the
 interface. There are currently several packages that extend
-\qtbase/ for particular applications. These include \pkg{qtpaint}, for
+\qtbase\ for particular applications. These include \pkg{qtpaint}, for
 efficient interactive graphics, and \pkg{qtutils}, which includes
-utilities such as an object browser and an \R/ graphics device based
-on the \Qt/ graphics engine.
+utilities such as an object browser and an \R\ graphics device based
+on the \Qt\ graphics engine.
 
-A number of other packages enable GUI construction in \R/ by
+A number of other packages enable GUI construction in \R\ by
 interfacing with external libraries. The \pkg{tcltk} package provides
 access to the \proglang{Tcl/Tk} GUI toolkit. It is often the
-convenient option, as \pkg{tcltk} is bundled with \R/. However,
+convenient option, as \pkg{tcltk} is bundled with \R{}. However,
 \proglang{Tcl/Tk} offers fewer and less sophisticated widgets compared
-to \Qt/. The \pkg{RGtk2} package interfaces \R/ with the \pkg{GTK+}
+to \Qt{}. The \pkg{RGtk2} package interfaces \R\ with the \pkg{GTK+}
 toolkit and several of its dependencies. \pkg{GTK+} may be more
-accessible than \Qt/ to the typical \R/ programmer, because \Qt/
+accessible than \Qt\ to the typical \R\ programmer, because \Qt\ 
 requires a stronger understanding of technical topics like memory
 management and object-oriented inheritance. However, \pkg{GTK+} falls
-short of \Qt/ in terms of features, particularly in the areas of
+short of \Qt\ in terms of features, particularly in the areas of
 graphics and web integration. The \pkg{Swing} toolkit is available
-through \R/ and \proglang{Java} interfaces like \pkg{rJava} and
-\pkg{SJava}. \Qt/ compares favorably to \pkg{Swing}, although
+through \R\ and \proglang{Java} interfaces like \pkg{rJava} and
+\pkg{SJava}. \Qt\ compares favorably to \pkg{Swing}, although
 \pkg{Swing} has the advantage of integration with the extensive
 \proglang{Java} platform.
 
 The next section will introduce the fundamentals of the interface and
 its application to GUI development. We will follow with several
-examples of programming a practical GUI in \R with \Qt. 
+examples of programming a practical GUI in \R\ with \Qt. 
 
 \section{Fundamentals}
 
@@ -104,6 +111,7 @@ examples of programming a practical GUI in \R with \Qt.
 \label{sec:widgets}
 
 \section{Examples}
+
 
 \section{Conclusion}
 
