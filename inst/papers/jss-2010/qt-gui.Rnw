@@ -6,8 +6,12 @@
 \newcommand{\qtbase}{\pkg{qtbase}}
 \newcommand{\cpp}{\proglang{C++}}
 
+\newcommand{\Rfunction}[1]{\code{#1()}}
+\newcommand{\Rclass}[1]{\textsf{``#1''}}
+\newcommand{\Qtclass}[1]{\textsf{#1}}
 
-\title{Developing Graphics User Interfaces in \R\ with \Qt{}}
+
+\title{Developing Graphical User Interfaces in \R\ with \Qt{}}
 
 \author{Michael Lawrence \\ Genentech \And Deepayan Sarkar \\
   Indian Statistical Institute}
@@ -112,6 +116,61 @@ examples of programming a practical GUI in \R\ with \Qt.
 
 \section{Examples}
 
+The \qtbase\ package itself provides very low-level access to \Qt\
+classes and methods.  Developing useful GUIs involves additional work,
+paralleling the process of building a GUI in \cpp\ using \Qt{}, except
+of course that the language used is \R\ instead of \cpp{}.  We will
+first describe a few examples already implemented in the \pkg{qtutils}
+package, followed by a more involved (but simpler) example developed
+from scratch.
+
+\subsection{An object browser}
+\label{sec:browser}
+
+The \pkg{qtutils} package contains several GUIs developed using
+\pkg{qtbase}, primarily as proof-of-concept illustrations, but with
+eventual real-life use in mind.  These applications are typically
+created by calling suitable functions that return a widget, shown by
+its print method (usually invoked by auto-printing).  One such
+function is \Rfunction{qstr}, a graphical analog of \Rfunction{str}.
+\Rfunction{qstr} is a (S3) generic function, allowing for specific
+methods for various \R\ classes.  The default method simply captures
+the results of \Rfunction{print} called on the object and displays it
+in a \Qtclass{QTextEdit}.  However, obvious candidates for specific
+methods are the \Rclass{data.frame} and \Rclass{matrix} classes, which
+can be displayed using the spreadsheet-like \Qtclass{QTableWidget}.
+For example, one might inspect the \code{iris} dataset using (result
+not shown)
+<<echo=FALSE>>=
+library(qtutils)
+w <- qstr(iris)
+w
+@ 
+%
+Another specific (and less trivial) method is available for the
+\Rclass{list} and \Rclass{environment} classes.  
+
+
+\subsection{Debugging: a graphical replacement for \code{recover}}
+\label{sec:debug}
+
+
+
+\subsection{A graphics device}
+\label{sec:device}
+
+\subsection{An interactive demo}
+\label{sec:intdemo}
+
+
+
+\subsection{Going further}
+\label{sec:more}
+
+These examples barely start to explore the possibilities, and have
+been chosen to highlight the use of traditional GUI elements used
+through the \qtbase\ API.  Richer applications can be developed using
+\Qt{}'s own efficient interactive graphics capabilities, ...
 
 \section{Conclusion}
 
