@@ -148,7 +148,29 @@ w
 @ 
 %
 Another specific (and less trivial) method is available for the
-\Rclass{list} and \Rclass{environment} classes.  
+\Rclass{list} and \Rclass{environment} classes.  These methods return
+a \Qtclass{QSplitter} widget, with a \Qtclass{QListWidget} on the left
+containing an entry for each element of the list (or object in the
+environment), and an initially empty ``preview'' on the right.  When
+an entry on the left is activated, \Rfunction{qstr} is called on the
+corresponding object, and the resulting widget is placed on the
+``preview'' area.
+
+This simple abstraction enables a basic object browser without further
+effort.  For example, one can run 
+<<>>=
+qstr(.GlobalEnv)
+@ 
+%
+to list and inspect all objects currently in the workspace.  Going a
+bit further, \pkg{qtutils} provides a \Rfunction{qbrowser} function
+that starts with an initial list containing all environments in the
+current search path.
+
+[Optional: Output of \code{fm <- lm(...)} is a list, and is shown as
+such.  One may prefer to see the output of summary(fm).  We can write
+our custom method \code{qstr.lm}, and behavior will change. ]
+
 
 
 \subsection{Debugging: a graphical replacement for \code{recover}}
