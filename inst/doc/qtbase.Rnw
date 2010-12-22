@@ -164,7 +164,7 @@ package. We start by declaring the class:
 <<qsetClass>>=
 qsetClass("PositiveValidator", Qt$QValidator)
 @ 
-%
+% 
 The class name is given as \Rcode{PositiveValidator} and it extends the
 \Rcode{QValidator} class in \Qt. Note that only single inheritance is
 supported.
@@ -175,7 +175,7 @@ environment (the scoping is similar to \Rfunction{methods::setClass}):
 <<list-validator-class>>=
 PositiveValidator
 @ 
-%
+% 
 To define a method on our class, we call the \Rfunction{qsetMethod}
 function:
 <<validate, echo=FALSE>>=
@@ -183,11 +183,11 @@ validatePositive <- function(input, pos) {
   val <- suppressWarnings(as.integer(input))
   if (!is.na(val)) {
     if (val > 0)
-      Qt$QValidator$Acceptable
+    Qt$QValidator$Acceptable
     else Qt$QValidator$Invalid
   } else {
     if (input == "")
-      Qt$QValidator$Acceptable
+    Qt$QValidator$Acceptable
     else Qt$QValidator$Invalid
   }
 }
@@ -195,7 +195,7 @@ validatePositive <- function(input, pos) {
 <<qsetMethod>>=
 qsetMethod("validate", PositiveValidator, validatePositive)
 @ 
-%
+% 
 The virtual method \Rcode{validate} declared by \Rcode{QValidator} has
 been overriden by the \Rcode{PositiveValidator} class.  The
 \Rfunction{validatePositive} function implements the override and has
@@ -206,7 +206,7 @@ As an \Rclass{RQtClass} object, we can create an instance by invoking
 <<construct-validator>>=
 validator <- PositiveValidator()
 @ 
-%
+% 
 Now that we have our validator, we can use it with a text entry:
 <<text-entry>>=
 e <- Qt$QLineEdit()
@@ -218,23 +218,51 @@ e$show()
 Often, it is necessary to customize the constructor of an \R\/
 class. The \R\/ function implementing the constructor must be passed
 during the call to \Rfunction{qsetClass}. Here, we extend
-\Rcode{QMainWindow} so that its title is always a preset string:
+\Rcode{QMessageBox} to create a dialog, shown when the application is
+closing, that asks the user whether a document should be saved:
 <<extend-window-title>>=
-qsetClass("MyMainWindow", Qt$QMainWindow, function(parent = NULL) {
-  super(parent)
-  setWindowTitle("My Application")
+qsetClass("SaveConfirmationDialog", Qt$QMessageBox, 
+function(filename = NULL, parent = NULL) 
+{
+  super(icon = Qt$QMessageBox$Question, title = "Save confirmation", 
+  text = "Save the current document?", 
+  buttons = Qt$QMessageBox$Cancel | Qt$QMessageBox$Discard | 
+  Qt$QMessageBox$Save,
+  parent = parent)
+  this$filename <- filename
 })
-MyMainWindow()$show()
 @ 
-%
-By convention, every widget in \Qt\/ accepts its parent as an argument
-to its constructor. Via \Rfunction{super}, the parent is passed to the
-base class constructor and on up the hierarchy. The \Rfunction{super}
-function does not exist outside the scope of a constructor (or
-method). Within a constructor, \Rfunction{super} invokes the
-constructor of the parent (super) class, with the given
-arguments. Within a method implementation, \Rcode{super} will call a
-method (named in the first parameter) in the parent class.
+% 
+The \Rfunction{super} function exists only within the scope of the
+constructor. It passes its arguments to the constructor of the super
+(parent) class. Above, we pass various parameters of the dialog
+to the \Rclass{QMessageBox} constructor.  By convention, every
+\Rclass{QObject} derivative, including any widget, accepts its parent
+instance as an argument to its constructor and forwards it to the
+super constructor. Another special variable, \Robject{this},
+corresponds to the current instance being constructed. We reference it
+to create an attribute for the \Robject{filename} on the
+instance. Similar to attributes on ordinary R objects, these
+attributes are dynamically typed and are implicitly defined at the
+instance-level by setting a value.
+
+Within a method implementation, \Rcode{super} will call a
+named method in the parent class. We demonstrate in our override of
+\Rfunction{accept}, which is invoked when the user decides to save the
+document:
+<<accept-override>>=
+qsetMethod("accept", SaveConfirmationDialog, function() {
+  saveDocument(filename)
+  super("accept")
+})
+@ 
+% 
+After saving the current document, the method calls \Rfunction{super}
+to forward the user response to one of the super classes. This is
+similar to \Rfunction{callNextMethod}, except \Rfunction{super} will
+invoke any named method, not only the current one. Also,
+\Rfunction{super} does not implicitly forward method arguments: they
+must be passed after the name argument.
 
 For more examples of extending C++ classes, please see
 \Rcode{demo(package="qtbase")}.
