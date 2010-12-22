@@ -53,7 +53,7 @@ public:
     return elem() && !isClass();
   }
   inline bool fitsStack() const {
-    return !isPrimitive() && !isStack();
+    return isPrimitive() || !isStack();
   }
   
   bool operator ==(const SmokeType &b) const {
