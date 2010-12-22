@@ -407,6 +407,9 @@ SEXP to_sexp(QTransform tform);
 template<> QColor from_sexp<QColor>(SEXP c); /* <-> 4x1 matrix */
 SEXP to_sexp(QColor color);
 
+template<> QMap<QString,QVariant>
+from_sexp<QMap<QString,QVariant> >(SEXP sexp, const SmokeType &type);
+
 /* .Call entry points for explicit coercion */
 
 #define DECL_COERCE_ENTRY_POINT(type)            \

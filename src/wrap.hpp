@@ -3,8 +3,12 @@
 
 #include <QList>
 
+#undef ERROR
+
 #include <R.h>
 #include <Rinternals.h>
+
+
 
 #define checkPointer(x, type) ({                                       \
       if (TYPEOF(x) != EXTPTRSXP)                                      \

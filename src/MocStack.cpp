@@ -1,5 +1,7 @@
 #include <QByteArray>
+#ifdef QT_DBUS_LIB
 #include <QDBusVariant>
+#endif
 
 #include "MocStack.hpp"
 #include "SmokeStack.hpp"
