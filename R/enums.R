@@ -14,11 +14,13 @@
 ## (integer for enums, double for flags).
 
 "|.QtEnum" <- function(x, y) {
-  as.numeric(packBits(intToBits(x) | intToBits(y), "integer"))
+  structure(as.numeric(packBits(intToBits(x) | intToBits(y), "integer")),
+            class = "QtEnum")
 }
 
 "&.QtEnum" <- function(x, y) {
-  as.numeric(packBits(intToBits(x) & intToBits(y), "integer"))
+  structure(as.numeric(packBits(intToBits(x) & intToBits(y), "integer")),
+            class = "QtEnum")
 }
 
 print.QtEnum <- function(x) {
