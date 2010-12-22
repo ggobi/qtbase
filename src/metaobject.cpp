@@ -4,7 +4,7 @@
 
 #include "MocMethod.hpp"
 #include "MocClass.hpp"
-#include "DynamicBinding.hpp"
+#include "MocDynamicBinding.hpp"
 #include "MocStack.hpp"
 #include "SmokeStack.hpp"
 #include "SmokeType.hpp"
@@ -117,16 +117,21 @@ extern "C" SEXP qt_qmetacall(SEXP x, SEXP s_call, SEXP s_id, SEXP s_args)
   
   QMetaMethod method = metaobject->method(id);
   if (method.methodType() == QMetaMethod::Signal) {
-    // FIXME: this override of 'activate' is obsolete
+    // FIXME: this overload of 'activate' is obsolete
     metaobject->activate(qobj, id, (void**) args);
     return ScalarInteger(id - count);
   }
-  DynamicBinding binding(MocMethod(so->smoke(), metaobject, id));
-  QVector<SmokeType> stackTypes = binding.types();
-  MocStack mocStack = MocStack(args, stackTypes.size());
-  SmokeStack smokeStack = mocStack.toSmoke(stackTypes);
-  binding.invoke(so, smokeStack.items());
-  mocStack.returnFromSmoke(smokeStack, stackTypes[0]);
+  
+  MocDynamicBinding binding(MocMethod(so->smoke(), metaobject, id));
+  binding.invoke(qobj, args);
+  /*
+    DynamicBinding binding(MocMethod(so->smoke(), metaobject, id));
+    QVector<SmokeType> stackTypes = binding.types();
+    MocStack mocStack = MocStack(args, stackTypes.size());
+    SmokeStack smokeStack = mocStack.toSmoke(stackTypes);
+    binding.invoke(so, smokeStack.items());
+    mocStack.returnFromSmoke(smokeStack, stackTypes[0]);
+  */
   if (binding.lastError() == Method::NoError)
     warning("Slot invocation failed for %s::%s", so->klass()->name(),
             binding.name());
