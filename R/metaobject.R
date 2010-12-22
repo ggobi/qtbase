@@ -125,14 +125,14 @@ qmetaMethod <- function(signature, access = c("public", "protected", "private"),
 ## 'x' is a class
 ## 'metadata' is an environment of classinfos, signals and slots
 
-### NOTE: This does not work yet.
-### It would let an R class define:
+### It lets an R class define:
 ### - Slots: useful for providing dbus services, and easy
 ### - Signals: very useful
+### - Class info: useful for describing dbus services
+
+### TODO:
 ### - Properties: Encapsulated fields are nice, but do we want to be bound
 ###   by QValue? Could just implement our own custom properties.
-### - Class info: useful for describing dbus services
-### X Enums: probably not necessary
 
 compileMetaObject <- function(x, metadata) {
   infos <- metadata$classinfos
