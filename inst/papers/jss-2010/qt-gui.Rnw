@@ -1,31 +1,36 @@
 \documentclass[article,shortnames]{jss}
+%\usepackage{Sweave}
 
 \newcommand{\Qt}{\pkg{Qt}}
 \newcommand{\R}{\proglang{R}}
 \newcommand{\qtbase}{\pkg{qtbase}}
 \newcommand{\cpp}{\proglang{C++}}
 
+\newcommand{\Rfunction}[1]{\code{#1()}}
+\newcommand{\Rclass}[1]{\textsf{``#1''}}
+\newcommand{\Qtclass}[1]{\textsf{#1}}
 
-\title{Developing Graphics User Interfaces in \R/ with \Qt/}}
+
+\title{Developing Graphical User Interfaces in \R\ with \Qt{}}
 
 \author{Michael Lawrence \\ Genentech \And Deepayan Sarkar \\
-  Indian Statistics Institute}
+  Indian Statistical Institute}
 
 \Plainauthor{Michael Lawrence, Deepayan Sarkar}
 \Plaintitle{Developing R GUIs with Qt} 
 
-\Abstract{ It is often desirable to program an \R/ GUI in the \R/
+\Abstract{ It is often desirable to program an \R\ GUI in the \R\ 
   language itself. We present infrastructure for programming a GUI in
-  \R/ through an interface to the \Qt/ toolkit, a \cpp/ application
+  \R\ through an interface to the \Qt\ toolkit, a \cpp\ application
   library that provides a collection of widgets, the fundamental
   building blocks of a GUI. We will introduce the basics of the
   interface and give several examples of its application to GUI
   development. Some advanced topics, including the ability to extend
-  the \cpp/ classes of \Qt/ in \R/, are discussed. The interface is
-  implemented by the \qtbase/ package, available at
+  the \cpp\ classes of \Qt\ in \R{}, are discussed. The interface is
+  implemented by the \qtbase\ package, available at
   \url{http://github.com/ggobi/qtbase}.  }
 
-\Keywords{graphical user interface, GUI, \R/, \Qt/}
+\Keywords{graphical user interface, GUI, \R{}, \Qt{}}
 \Plainkeywords{graphical user interface, GUI, R, Qt}
 
 \Address{Michael Lawrence\\
@@ -33,6 +38,12 @@
   Genentech Research and Early Development\\
   South San Francisco, CA, USA\\
   E-mail: michafla@gene.com\\
+  \\
+  Deepayan Sarkar\\
+  Theoretical Statistics and Mathematics Unit\\
+  Indian Statistical Institute, Delhi Centre\\
+  7 SJSS Marg, New Delhi 110016, India\\
+  E-mail: deepayan.sarkar@r-project.org\\
 }
 
 \begin{document}
@@ -40,7 +51,7 @@
 \section{Introduction}
 
 R is typically accessed via the command line, so it is no surprise
-that the most popular R GUI's are graphical shells around a
+that the most popular R GUIs are graphical shells around a
 console. Such interfaces offer simple, general utilities, such
 as switching the working directory or fitting a basic linear
 model. More complex tasks are usually best left to the command line,
@@ -49,47 +60,47 @@ is able to abstract away the unnecessary details. An example would be
 a wizard for analysis of gene expression microarrays, where the user
 is led from preprocessing through to the detection of differentially
 expressed genes. Given the high frequency at which such use cases are
-encountered, it is desirable to implement GUI's directly in \R/,
+encountered, it is desirable to implement GUIs directly in \R{},
 avoiding the difficulties and overhead involved in cross-language
 development.
 
-This paper introduces infrastructure for developing GUI's in \R/
-through an interface to the \Qt/ toolkit, a \cpp/ application library
-developed by Nokia. \Qt/ consists of a number of modules, and
+This paper introduces infrastructure for developing GUIs in \R\ 
+through an interface to the \Qt\ toolkit, a \cpp\ application library
+developed by Nokia. \Qt\ consists of a number of modules, and
 principal among them is the GUI module, which provides a collection of
 widgets, the graphical controls that serve as the fundamental building
-blocks of a GUI. Other interesting \Qt/ modules include a WebKit web
+blocks of a GUI. Other interesting \Qt\ modules include a WebKit web
 browser implementation, enabling hybrid desktop and web applications,
 and an OpenGL-based renderer for hardware accelerated graphics. An
-automatic installer for the entirety of \Qt/ is available from Nokia
+automatic installer for the entirety of \Qt\ is available from Nokia
 for the major platforms, including Windows and Mac.
 
-The interface between \R/ and \Qt/ is primarily implemented by the
-\qtbase/ package. The interface is low-level, in that the \R/ user
-directly constructs instances of \Qt/ classes and calls their
-methods. All of the \Qt/ modules are accessible through the
+The interface between \R\ and \Qt\ is primarily implemented by the
+\qtbase\ package. The interface is low-level, in that the \R\ user
+directly constructs instances of \Qt\ classes and calls their
+methods. All of the \Qt\ modules are accessible through the
 interface. 
 
-A number of other packages enable GUI construction in \R/ by
+A number of other packages enable GUI construction in \R\ by
 interfacing with external libraries. The \pkg{tcltk} package provides
 access to the \proglang{Tcl/Tk} GUI toolkit. It is often the
-convenient option, as \pkg{tcltk} is bundled with \R/. However,
+convenient option, as \pkg{tcltk} is bundled with \R{}. However,
 \proglang{Tcl/Tk} offers fewer and less sophisticated widgets compared
-to \Qt/. The \pkg{RGtk2} package interfaces \R/ with the \pkg{GTK+}
+to \Qt{}. The \pkg{RGtk2} package interfaces \R\ with the \pkg{GTK+}
 toolkit and several of its dependencies. \pkg{GTK+} may be more
-accessible than \Qt/ to the typical \R/ programmer, because \Qt/
+accessible than \Qt\ to the typical \R\ programmer, because \Qt\ 
 requires a stronger understanding of technical topics like memory
 management and object-oriented inheritance. However, \pkg{GTK+} falls
-short of \Qt/ in terms of features, particularly in the areas of
+short of \Qt\ in terms of features, particularly in the areas of
 graphics and web integration. The \pkg{Swing} toolkit is available
-to \R/ through \proglang{Java} interfaces like \pkg{rJava} and
-\pkg{SJava}. \Qt/ compares favorably to \pkg{Swing}, although
+to \R\ through \proglang{Java} interfaces like \pkg{rJava} and
+\pkg{SJava}. \Qt\ compares favorably to \pkg{Swing}, although
 \pkg{Swing} has the advantage of integration with the extensive
 \proglang{Java} platform.
 
 The next sections will introduce the fundamentals of the interface and
 its application to GUI development. We will follow with several
-examples of programming a practical GUI in \R/ with \Qt. 
+examples of programming a practical GUI in \R\ with \Qt. 
 
 \section{The Interface to Qt}
 \label{sec:objects}
@@ -183,6 +194,84 @@ advanced concepts, including the ability to extend C++ classes in \R.
 
 \section{Examples}
 
+The \qtbase\ package itself provides very low-level access to \Qt\
+classes and methods.  Developing useful GUIs involves additional work,
+paralleling the process of building a GUI in \cpp\ using \Qt{}, except
+of course that the language used is \R\ instead of \cpp{}.  We will
+first describe a few examples already implemented in the \pkg{qtutils}
+package, followed by a more involved (but simpler) example developed
+from scratch.
+
+\subsection{An object browser}
+\label{sec:browser}
+
+The \pkg{qtutils} package contains several GUIs developed using
+\pkg{qtbase}, primarily as proof-of-concept illustrations, but with
+eventual real-life use in mind.  These applications are typically
+created by calling suitable functions that return a widget, shown by
+its print method (usually invoked by auto-printing).  One such
+function is \Rfunction{qstr}, a graphical analog of \Rfunction{str}.
+\Rfunction{qstr} is a (S3) generic function, allowing for specific
+methods for various \R\ classes.  The default method simply captures
+the results of \Rfunction{print} called on the object and displays it
+in a \Qtclass{QTextEdit}.  However, obvious candidates for specific
+methods are the \Rclass{data.frame} and \Rclass{matrix} classes, which
+can be displayed using the spreadsheet-like \Qtclass{QTableWidget}.
+For example, one might inspect the \code{iris} dataset using (result
+not shown)
+<<echo=FALSE>>=
+library(qtutils)
+w <- qstr(iris)
+w
+@ 
+%
+Another specific (and less trivial) method is available for the
+\Rclass{list} and \Rclass{environment} classes.  These methods return
+a \Qtclass{QSplitter} widget, with a \Qtclass{QListWidget} on the left
+containing an entry for each element of the list (or object in the
+environment), and an initially empty ``preview'' on the right.  When
+an entry on the left is activated, \Rfunction{qstr} is called on the
+corresponding object, and the resulting widget is placed on the
+``preview'' area.
+
+This simple abstraction enables a basic object browser without further
+effort.  For example, one can run 
+<<>>=
+qstr(.GlobalEnv)
+@ 
+%
+to list and inspect all objects currently in the workspace.  Going a
+bit further, \pkg{qtutils} provides a \Rfunction{qbrowser} function
+that starts with an initial list containing all environments in the
+current search path.
+
+[Optional: Output of \code{fm <- lm(...)} is a list, and is shown as
+such.  One may prefer to see the output of summary(fm).  We can write
+our custom method \code{qstr.lm}, and behavior will change. ]
+
+
+
+\subsection{Debugging: a graphical replacement for \code{recover}}
+\label{sec:debug}
+
+
+
+\subsection{A graphics device}
+\label{sec:device}
+
+\subsection{An interactive demo}
+\label{sec:intdemo}
+
+
+
+\subsection{Going further}
+\label{sec:more}
+
+These examples barely start to explore the possibilities, and have
+been chosen to highlight the use of traditional GUI elements used
+through the \qtbase\ API.  Richer applications can be developed using
+\Qt{}'s own efficient interactive graphics capabilities, ...
+
 \section{Advanced: Extending Qt Classes}
 
 Many C++ libraries expect the user to extend C++ classes in normal
@@ -256,13 +345,13 @@ during the call to \Rfunction{qsetClass}. Here, we extend
 closing, that asks the user whether a document should be saved:
 <<extend-window-title>>=
 qsetClass("SaveConfirmationDialog", Qt$QMessageBox, 
-          function(filename = NULL, parent = NULL) 
+function(filename = NULL, parent = NULL) 
 {
   super(icon = Qt$QMessageBox$Question, title = "Save confirmation", 
-        text = "Save the current document?", 
-        buttons = Qt$QMessageBox$Cancel | Qt$QMessageBox$Discard | 
-          Qt$QMessageBox$Save,
-        parent = parent)
+  text = "Save the current document?", 
+  buttons = Qt$QMessageBox$Cancel | Qt$QMessageBox$Discard | 
+  Qt$QMessageBox$Save,
+  parent = parent)
   this$filename <- filename
 })
 @ 
@@ -290,7 +379,7 @@ qsetMethod("accept", SaveConfirmationDialog, function() {
   super("accept")
 })
 @ 
-%
+% 
 After saving the current document, the method calls \Rfunction{super}
 to forward the user response to one of the super classes. This is
 similar to \Rfunction{callNextMethod}, except \Rfunction{super} will
