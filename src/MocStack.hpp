@@ -2,6 +2,7 @@
 #define MOC_STACK_H
 
 #include <QVector>
+#include <QMetaType>
 
 #include <smoke.h>
 
@@ -16,6 +17,8 @@ public:
   MocStack(void **o, int size);
   MocStack(const SmokeStack &smoke, QVector<SmokeType> types);
 
+  virtual ~MocStack();
+  
   inline void ** items() const { return _o; }
   
   SmokeStack toSmoke(QVector<SmokeType> types);
@@ -32,6 +35,7 @@ private:
 
   int _size;
   void **_o;
+  bool _allocated;
 };
 
 #endif

@@ -1,15 +1,13 @@
 #include <QByteArray>
-#include <QDBusVariant>
-
 #include "MocStack.hpp"
 #include "SmokeStack.hpp"
 #include "SmokeType.hpp"
 #include "SmokeClass.hpp"
 
-MocStack::MocStack(void **o, int size) : _size(size), _o(o) {
+MocStack::MocStack(void **o, int size) : _size(size), _o(o), _allocated(false) {
 }
 MocStack::MocStack(const SmokeStack &smoke, QVector<SmokeType> types)
-  : _size(smoke.size()), _o(new void*[_size])
+  : _size(smoke.size()), _o(new void*[_size]), _allocated(true)
 {
   setFromSmoke(smoke.items(), types);
 }
@@ -72,16 +70,10 @@ MocStack::returnFromSmoke(const SmokeStack &stack, const SmokeType &type) {
     if (strchr(type.name(), '*') != 0)
       *reinterpret_cast<void **>(val) = item.s_voidp;
     else {
-      QByteArray t(type.name());
-      t.replace("const ", "");
-      t.replace("&", "");
-      // probably the only real reason to define a slot in R
-      if (t == "QDBusVariant") {
-#ifdef QT_DBUS_LIB
-        *reinterpret_cast<QDBusVariant*>(val) =
-          *(QDBusVariant*) item.s_class;
-#endif
-      }
+      // It looks like we can just set our own pointer
+      _o[0] = item.s_class;
+      // Qt will just copy it if it is different from what it
+      // allocated and is smart enough to free the original memory.
     }
     break;
   }
@@ -89,10 +81,15 @@ MocStack::returnFromSmoke(const SmokeStack &stack, const SmokeType &type) {
 
 void MocStack::setFromSmoke(Smoke::Stack stack, QVector<SmokeType> types)
 {
+  if (!types[0].fitsStack()) {
+    // allocate memory for return value; marshalling code should free
+    stack[0].s_voidp =
+      QMetaType::construct(QMetaType::type(types[0].className()));
+  }
   for (int i = 0; i < _size; i++) {
     Smoke::StackItem *si = stack + i;
     SmokeType t = types[i];
-    void *p;
+    void *p = NULL;
     if (t.isVoid())
       continue;
     switch(t.elem()) {
@@ -229,4 +226,9 @@ void MocStack::setSmoke(Smoke::Stack stack, QVector<SmokeType> types)
     if (!t.isVoid())
       setSmokeItem(stack + i, _o[i], t);
   }
+}
+
+MocStack::~MocStack() {
+  if (_allocated)
+    delete _o;
 }
