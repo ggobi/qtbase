@@ -18,7 +18,7 @@ set(qtbase_LIB_SRCS init.cpp EventLoop.cpp convert.cpp
    MocClass.cpp RClass.cpp classes.cpp ForeignMethod.cpp
    SmokeMethod.cpp RMethod.cpp MocMethod.cpp DynamicBinding.cpp
    MocDynamicBinding.cpp MethodCall.cpp type-handlers.cpp MocStack.cpp
-   MocProperty.cpp SmokeModule.cpp module.cpp RSmokeBinding.cpp
+   MocProperty.cpp RProperty.cpp SmokeModule.cpp module.cpp RSmokeBinding.cpp
    SmokeList.cpp SmokeObject.cpp ObjectTable.cpp
    InstanceObjectTable.cpp smoke.cpp DataFrameModel.cpp
    RTextFormattingDelegate.cpp)
@@ -42,6 +42,9 @@ target_link_libraries(qtbase smokeqt ${QT_LIBRARIES} ${R_LIBRARIES})
 set_target_properties(qtbase PROPERTIES PREFIX "")
 if(NOT WIN32) # Need to force .so on Mac, but Windows needs to be .dll
 set_target_properties(qtbase PROPERTIES SUFFIX ".so")
+install(TARGETS qtbase LIBRARY DESTINATION . )
+else(NOT WIN32)
+install(TARGETS qtbase RUNTIME DESTINATION . )
 endif(NOT WIN32)
 
-install(TARGETS qtbase RUNTIME DESTINATION . )
+
