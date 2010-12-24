@@ -1,4 +1,6 @@
 #include "MocProperty.hpp"
+#include "MocStack.hpp"
+#include "SmokeStack.hpp"
 #include "DynamicBinding.hpp"
 
 #include "convert.hpp"
@@ -8,11 +10,35 @@ SEXP MocProperty::read(SEXP obj) const {
   return to_sexp(qobj->property(name()));
 }
 
+Smoke::StackItem MocProperty::stackItemFromQVariant(QVariant variant, Smoke *s)
+  const
+{
+  void *ptr = const_cast<void *>(variant.constData()); // undocumented
+  MocStack mocStack(&ptr, 1);
+  QVector<SmokeType> types;
+  types += SmokeType(s, variant.typeName());
+  return mocStack.toSmoke(types).ret();
+}
+
+QVariant MocProperty::stackItemToQVariant(const Smoke::StackItem &item,
+                                          Smoke *s) const
+{
+  QVector<SmokeType> types;
+  types += SmokeType(s, _property.typeName());
+  MocStack mocStack(SmokeStack(const_cast<Smoke::Stack>(&item), 1), types);
+  QVariant(_property.type(), mocStack.items()[0]);
+}
+
+/* We could either call QObject::property and convert between QVariant
+   and the Smoke::Stack (which is not yet implemented) or convert from
+   Smoke::Stack to the MocStack and use QObject::qt_metacall(). The
+   latter is faster, easier and consistent with MocMethod, although
+   one worries about depending on Qt internals. An alternative is to
+   call MetaProperty::read(), get the QVariant, and put the const-data of the
+   QVariant on a pretend Moc stack for conversion. */
 Smoke::StackItem MocProperty::read(SmokeObject *so) const {
-  Smoke::StackItem items[2];
-  items[1].s_voidp = const_cast<char *>(name());
-  so->invokeMethod("property", items);
-  return items[0];
+  QObject *qobj = reinterpret_cast<QObject *>(so->castPtr("QObject"));
+  return stackItemFromQVariant(_property.read(qobj), so->smoke());
 }
 
 bool MocProperty::write(SEXP obj, SEXP val) {
@@ -21,9 +47,6 @@ bool MocProperty::write(SEXP obj, SEXP val) {
 }
 
 bool MocProperty::write(SmokeObject *so, const Smoke::StackItem &item) {
-  Smoke::StackItem items[3];
-  items[1].s_voidp = const_cast<char *>(name());
-  items[2] = item;
-  so->invokeMethod("setProperty", items);
-  return items[0].s_bool;
+  QObject *qobj = reinterpret_cast<QObject *>(so->castPtr("QObject"));
+  return _property.write(qobj, stackItemToQVariant(item, so->smoke()));
 }

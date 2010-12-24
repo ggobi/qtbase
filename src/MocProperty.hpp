@@ -27,6 +27,9 @@ public:
   }
 
 private:
+  Smoke::StackItem stackItemFromQVariant(QVariant variant, Smoke *s) const;
+  QVariant stackItemToQVariant(const Smoke::StackItem &item, Smoke *s) const;
+  
   QMetaProperty _property;
 };
 
