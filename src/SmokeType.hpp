@@ -1,7 +1,9 @@
 #ifndef SMOKE_TYPE_H
 #define SMOKE_TYPE_H
 
-#include <QByteArray> // for qstrcmp
+#undef isNull
+
+#include <QByteArray>
 
 #include <smoke.h>
 
@@ -16,7 +18,9 @@ public:
   SmokeType(Smoke::ModuleIndex ind) : _smoke(ind.smoke), _id(ind.index) {
     findType();
   }
-  SmokeType(Smoke *s, const char *name) : _smoke(s), _id(s->idType(name)) {
+  SmokeType(Smoke *s, const char *name, const char *qualifier = NULL)
+    : _smoke(s), _id(indexForName(name, qualifier))
+  {
     findType();
   }
   
@@ -67,8 +71,30 @@ public:
     const SmokeType &a = *this;
     return !(a == b);
   }
-  
+
 private:
+
+  /* Qt normalizes value type names by removing 'const' and '&'; we work
+     around that here. Note that we only look inside our Smoke
+     module, so that had better be correct. */
+  Smoke::Index indexForName(QByteArray name, QByteArray qualifier) const {
+    Smoke::Index typeId = _smoke->idType(name);
+    if (typeId == 0 && !name.endsWith("*")) {
+      QByteArray constName = "const " + name;
+      typeId = _smoke->idType(constName);
+      if (typeId == 0) {
+        constName += "&";
+        typeId = _smoke->idType(constName);
+        if (typeId == 0 && !qualifier.isNull()) {
+          // could be an enum or internal class
+          QByteArray enumName = qualifier + ("::" + name);
+          typeId = _smoke->idType(enumName);
+        }
+      }
+    }
+    return typeId;
+  }
+
   void findType() {
     if(_id < 0 || _id > _smoke->numTypes) _id = 0;
     _t = _smoke->types + _id;

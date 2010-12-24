@@ -32,49 +32,31 @@ void MocMethod::invoke(QObject *obj, void **o) {
   }
 }
 
-/* Qt normalizes value type names by removing 'const' and '&'; we work
-   around that here. */
-Smoke::Index MocMethod::smokeTypeForName(Smoke *smoke, QByteArray name) const {
-  Smoke::Index typeId = smoke->idType(name);
-  if (typeId == 0 && !name.endsWith("*")) {
-    QByteArray constName = "const " + name;
-    typeId = smoke->idType(constName);
-    if (typeId == 0) {
-      constName += "&";
-      typeId = smoke->idType(constName);
-      if (typeId == 0) { // could be an enum or internal class
-        QByteArray enumName = _meta->className() + ("::" + name);
-        typeId = smoke->idType(enumName);
-      }
-    }
-  }
-  return typeId;
-}
-
 QVector<SmokeType> MocMethod::types() const {
   int i = 0;
   QList<QByteArray> methodTypes = _method.parameterTypes();
+  const char *className = _meta->className();
   QVector<SmokeType> _types(methodTypes.size() + 1);
   methodTypes.prepend(QByteArray(_method.typeName()));
   foreach (QByteArray name, methodTypes) {
     Smoke *smoke = _smoke;
-    Smoke::Index typeId = 0;
+    SmokeType type;
     if (!name.isEmpty()) { // should only be empty for void (return)
-      typeId = smokeTypeForName(smoke, name);
+      type = SmokeType(smoke, name, className);
       // Yes, slot arguments can come from different smoke modules
-      if (typeId == 0) {
+      if (type.isVoid()) {
         SmokeList smokes = SmokeModule::smokes();
         foreach(smoke, smokes) {
-          typeId = smokeTypeForName(smoke, name);
-          if (typeId != 0)
+          type = SmokeType(smoke, name, className);
+          if (!type.isVoid())
             break;
         }
       }
-      if (typeId == 0) {
+      if (type.isVoid()) {
         qCritical("Cannot handle Moc type '%s'\n", name.constData());
       }
     }
-    _types[i++] = SmokeType(smoke, typeId);
+    _types[i++] = type;
   }
   return _types;
 }
