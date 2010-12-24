@@ -517,6 +517,17 @@ template<> int scoreArg<QVariant>(SEXP arg, const SmokeType &type) {
   return 2;
 }
 
+template<> int scoreArg<long long>(SEXP arg, const SmokeType &type) {
+  Q_UNUSED(type);
+  if (TYPEOF(arg) == REALSXP || TYPEOF(arg) == INTSXP || TYPEOF(arg) == RAWSXP)
+    return 2;
+  return 0;
+}
+
+template<> int scoreArg<unsigned long long>(SEXP arg, const SmokeType &type) {
+  return scoreArg<long long>(arg, type);
+}
+
 /* Converter definitions */
 
 DEF_PAIR_CONVERTERS(double, QColor, value, class)
