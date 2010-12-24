@@ -122,9 +122,11 @@ qsetClass <- function(name, parent, constructor = function(...) parent(...),
     parentEnv <- emptyenv() # a smoke class, no instance symbols
   instanceEnv <- new.env(parent = parentEnv)
   env <- attr(parent, "env") # do not support user static methods yet
+  metadata <- new.env(parent = emptyenv())
+  metadata$properties <- new.env(parent = emptyenv())
   cl <- structure(constructor, module = module, name = prefixedName,
                   parent = parent, env = env, instanceEnv = instanceEnv,
-                  metadata = new.env(),
+                  metadata = metadata,
                   class = c("RQtUserClass", "RQtClass", "function"))
   assign(name, cl, where)
   cl
@@ -189,4 +191,27 @@ qsetSignal <- function(signature, class,
              function(...) .Call(qt_qmetaInvoke, this, index, list(...)),
              access)
   method$name
+}
+
+qsetProperty <- function(name, class, type,
+                         read = function() this[[.name]],
+                         write = function(val) this[[.name]] <- val,
+                         ##reset = NULL,
+                         notify = NULL, 
+                         constant = FALSE, final = FALSE,
+                         ##designable = TRUE, scriptable = TRUE,
+                         stored = TRUE, user = FALSE)
+{
+  if (missing(name))
+    stop("'name' is required")
+  if (missing(class))
+    stop("'class' is required")
+  if (missing(type))
+    stop("'type' is required")
+  .name <- paste(".", name, sep = "")
+  prop <- list(name = name, type = type, read = read,
+               write = write, notify = notify, constant = constant,
+               final = final, stored = stored, user = user)
+  qmetadata(class)$properties[[name]] <- prop
+  name
 }

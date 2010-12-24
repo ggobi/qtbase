@@ -1,5 +1,6 @@
 #include "RClass.hpp"
 #include "RMethod.hpp"
+#include "RProperty.hpp"
 #include "MethodCall.hpp"
 #include "SmokeClass.hpp"
 
@@ -83,8 +84,34 @@ QHash<const char *, int> RClass::enumValues() const {
   return smokeBase()->enumValues();
 }
 
+SEXP RClass::metadata() const {
+  static SEXP metadataSym = install("metadata");
+  return getAttrib(_klass, metadataSym);
+}
+
+SEXP RClass::properties() const {
+  static SEXP propSym = install("properties");
+  return findVarInFrame(metadata(), propSym);
+}
+
+enum {
+  R_PROP_NAME,
+  R_PROP_TYPE,
+  R_PROP_READER,
+  R_PROP_WRITER
+};
+
 Property *RClass::property(const char *name) const {
-  return parent()->property(name);
+  Property *prop;
+  SEXP rprop = findVarInFrame(properties(), install(name));
+  if (rprop != R_UnboundValue) {
+    SmokeType type(smokeBase()->smoke(),
+                   CHAR(asChar(VECTOR_ELT(rprop, R_PROP_TYPE))));
+    prop = new RProperty(name, type, VECTOR_ELT(rprop, R_PROP_READER),
+                         VECTOR_ELT(rprop, R_PROP_WRITER));
+  }
+  else prop = parent()->property(name);
+  return prop;
 }
 
 bool RClass::implementsMethod(const char *name) const {

@@ -9,6 +9,7 @@
 #include "SmokeStack.hpp"
 #include "SmokeType.hpp"
 #include "SmokeObject.hpp"
+#include "Property.hpp"
 #include "convert.hpp"
 
 #include <smoke/qt_smoke.h>
@@ -105,12 +106,27 @@ extern "C" SEXP qt_qmetacall(SEXP x, SEXP s_call, SEXP s_id, SEXP s_args)
     return ScalarInteger(ret);
   }
 
-  if (call != QMetaObject::InvokeMetaMethod)
-    return ScalarInteger(id);
-
   QObject * qobj = reinterpret_cast<QObject *>(so->castPtr("QObject"));
   // get obj metaobject with a virtual call
   const QMetaObject *metaobject = qobj->metaObject();
+  
+  if (call == QMetaObject::ReadProperty || call == QMetaObject::WriteProperty) {
+    MocStack mocStack = MocStack(args, 1);
+    QMetaProperty metaProp = metaobject->property(id);
+    Property *prop = so->klass()->property(metaProp.name());
+    SmokeType type(so->smoke(), metaProp.typeName(), metaobject->className());
+    if (call == QMetaObject::ReadProperty) {
+      Smoke::StackItem item = prop->read(so);
+      mocStack.returnFromSmoke(SmokeStack(&item, 1), type);
+    } else if (call == QMetaObject::WriteProperty) {
+      QVector<SmokeType> types;
+      types += type;
+      prop->write(so, mocStack.toSmoke(types).ret());
+    }
+  }
+
+  if (call != QMetaObject::InvokeMetaMethod)
+    return ScalarInteger(id);
   
   // get method count
   int count = metaobject->methodCount();

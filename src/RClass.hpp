@@ -36,6 +36,8 @@ public:
 private:
 
   const Class* parent() const; // support only single inheritance
+  SEXP metadata() const;
+  SEXP properties() const;
   
   SEXP _klass;
 };

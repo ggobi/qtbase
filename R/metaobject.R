@@ -135,12 +135,16 @@ qmetaMethod <- function(signature, access = c("public", "protected", "private"),
 ###   by QValue? Could just implement our own custom properties.
 
 compileMetaObject <- function(x, metadata) {
+  metalist <- as.list(metadata)
+  
   infos <- metadata$classinfos
   signals <- metadata$signals
   slots <- metadata$slots
-
+  props <- as.list(metadata$properties)
+  metalist$properties <- lapply(props, `[`, c("name", "type"))
+  
   ## generate 'stringdata' table
-  allNames <- unique(c(unlist(as.list(metadata)), attr(x, "name"), ""))
+  allNames <- unique(c(unlist(metalist), attr(x, "name"), ""))
   offsets <- cumsum(c(0, head(nchar(allNames), -1) + 1))
   names(offsets) <- allNames
   
@@ -161,16 +165,41 @@ compileMetaObject <- function(x, metadata) {
   MethodCompatibility <- 0x10
   MethodCloned <- 0x20
   MethodScriptable <- 0x40
+  
+  ##
+  ## From the enum PropertyFlags in qmetaobject_p.h
+  ##
+  PropertyFlags <- list(Readable = 0x1,
+                        Writable = 0x2,
+                        Resettable = 0x4,
+                        EnumOrFlag = 0x8,
+                        Constant = 0x400,
+                        Final = 0x800,
+                        Designable = 0x1000,
+                        ResolveDesignable = 0x2000,
+                        Scriptable = 0x4000,
+                        ResolveScriptable = 0x8000,
+                        Stored = 0x10000,
+                        ResolveStored = 0x20000,
+                        Editable = 0x40000,
+                        ResolvedEditable = 0x80000,
+                        User = 0x100000,
+                        ResolveUser = 0x200000,
+                        Notify = 0x400000)
 
   access <- c(private = AccessPrivate, protected = AccessProtected,
               public = AccessPublic)
-  
+
+  nmethods <- length(signals) + length(slots)
+  ninfos <- length(infos)
+  nprops <- length(props)
+  headerLen <- 10L
   data <-
     c(1, # revision
       offsets[attr(x, "name")], 	# classname
-      length(infos), ifelse(length(infos) > 0, 10, 0), # class info
-      length(signals) + length(slots), 10 + (2*length(infos)), # methods
-      0, 0, # properties
+      length(infos), headerLen, # class info
+      nmethods, headerLen + 2*ninfos, # methods
+      nprops, headerLen + 2*ninfos + 5*nmethods, # properties
       0, 0) # enums
 
   ## the class info
@@ -190,6 +219,33 @@ compileMetaObject <- function(x, metadata) {
   
   ## the slots
   data <- c(data, methodData(slots, MethodSlot))
+
+  ## the properties
+  data <- c(data, do.call(c, lapply(props, function(prop) {
+    flags <- with(PropertyFlags, {
+      flags <- Designable + Scriptable + Readable
+      if (!is.null(prop$write))
+        flags <- flags + Writable
+      if (is.character(prop$notify))
+        flags <- flags + Notify
+      ## if (!is.null(prop$reset))
+      ##   flags <- flags + Resettable
+      if (isTRUE(props$constant))
+        flags <- flags + Constant
+      if (isTRUE(props$final))
+        flags <- flags + Final
+      ## if (isTRUE(props$designable))
+      ##   flags <- flags + Designable
+      ## if (isTRUE(props$scriptable))
+      ##   flags <- flags + Scriptable
+      if (isTRUE(props$stored))
+        flags <- flags + Stored
+      if (isTRUE(props$user))
+        flags <- flags + User
+      flags
+    })
+    c(offsets[c(prop$name, prop$type)], flags)
+  })))
 
   .Call(qt_qnewMetaObject, x, stringdata, data)
 }
