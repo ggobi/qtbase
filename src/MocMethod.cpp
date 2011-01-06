@@ -40,7 +40,7 @@ QVector<SmokeType> MocMethod::types() const {
   methodTypes.prepend(QByteArray(_method.typeName()));
   foreach (QByteArray name, methodTypes) {
     Smoke *smoke = _smoke;
-    SmokeType type;
+    SmokeType type(smoke, (Smoke::Index)0);
     if (!name.isEmpty()) { // should only be empty for void (return)
       type = SmokeType(smoke, name, className);
       // Yes, slot arguments can come from different smoke modules
