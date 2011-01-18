@@ -212,6 +212,8 @@ compileMetaObject <- function(x, metadata) {
   methodData <- function(methods, flag) {
     do.call("c", lapply(methods, function(method) {
       ## cannot use character extraction due to empty strings
+      if (!length(method$args))
+        method$args <- ""
       offm <- match(c(method$signature, method$args, method$type, ""),
                     names(offsets))
       c(offsets[offm], access[method$access] + flag + MethodScriptable)
