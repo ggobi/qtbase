@@ -73,6 +73,8 @@ qmetadata <- function(x) {
 ## Every time metadata is set, we recompile it and reset the methods
 ## so that they refer to the new metadata
 "qmetadata<-" <- function(x, value) {
+  if (is.null(x$staticMetaObject)) # not a QObject class, no compilation
+    return(x)
   compiled <- compileMetaObject(x, value)
   qsetMethod("metaObject", x, function() compiled)
   ## Lets MocClass see our methods
@@ -141,6 +143,8 @@ compileMetaObject <- function(x, metadata) {
   signals <- metadata$signals
   slots <- metadata$slots
   props <- as.list(metadata$properties)
+  ## we only export to metadata if a type is provided
+  props <- Filter(function(p) !is.null(p$type), props)
   metalist$properties <- lapply(props, `[`, c("name", "type"))
   
   ## generate 'stringdata' table

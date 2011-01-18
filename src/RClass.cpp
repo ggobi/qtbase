@@ -105,8 +105,11 @@ Property *RClass::property(const char *name) const {
   Property *prop;
   SEXP rprop = findVarInFrame(properties(), install(name));
   if (rprop != R_UnboundValue) {
-    SmokeType type(smokeBase()->smoke(),
-                   CHAR(asChar(VECTOR_ELT(rprop, R_PROP_TYPE))));
+    SEXP rtype = VECTOR_ELT(rprop, R_PROP_TYPE);
+    SmokeType type;
+    if (rtype == R_NilValue)
+      type = SmokeType(smokeBase()->smoke(), (Smoke::Index)0);
+    else type = SmokeType(smokeBase()->smoke(), CHAR(asChar(rtype)));
     prop = new RProperty(name, type, VECTOR_ELT(rprop, R_PROP_READER),
                          VECTOR_ELT(rprop, R_PROP_WRITER));
   }

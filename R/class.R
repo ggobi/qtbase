@@ -193,7 +193,7 @@ qsetSignal <- function(signature, class,
   method$name
 }
 
-qsetProperty <- function(name, class, type,
+qsetProperty <- function(name, class, type = NULL,
                          read = function() this[[.name]],
                          write = function(val) this[[.name]] <- val,
                          ##reset = NULL,
@@ -202,12 +202,13 @@ qsetProperty <- function(name, class, type,
                          ##designable = TRUE, scriptable = TRUE,
                          stored = TRUE, user = FALSE)
 {
-  if (missing(name))
-    stop("'name' is required")
+  ## FIXME: obviously have to do better job of checking arguments here
+  if (missing(name) || !is.character(name))
+    stop("'name' is required, as character vector")
   if (missing(class))
     stop("'class' is required")
-  if (missing(type))
-    stop("'type' is required")
+  if (!is.null(type) && !is.character(type))
+    stop("'type' should be NULL or a character vector")
   .name <- paste(".", name, sep = "")
   prop <- list(name = name, type = type, read = read,
                write = write, notify = notify, constant = constant,
