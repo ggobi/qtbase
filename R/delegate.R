@@ -1,6 +1,6 @@
 ## A QAbstractItemDelegate extension that formats numbers to text using R
 
-qrTextFormattingDelegate <- function()
+qrTextFormattingDelegate <- function(parent = NULL)
 {
-  .Call(qt_qrTextFormattingDelegate)
+  .Call(qt_qrTextFormattingDelegate, parent)
 }

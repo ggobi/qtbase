@@ -1,5 +1,10 @@
 #include "DataFrameModel.hpp"
+
+#include <QStringList>
+#include <QMimeData>
+
 #include "convert.hpp"
+#include "NameOnlyClass.hpp"
 
 QVariant DataFrameModel::data(const QModelIndex &index, int role) const
 {
@@ -205,18 +210,14 @@ DataFrameModel::~DataFrameModel() {
 }
 
 extern "C"
-SEXP qt_qdataFrameModel() {
-  SEXP dfm = wrapSmoke(new DataFrameModel, QAbstractTableModel, true);
-  SEXP smokeClass, rClass;
-  /* tricky: prepend class, which is not known to Smoke */
-  smokeClass = getAttrib(dfm, R_ClassSymbol);
-  PROTECT(rClass = allocVector(STRSXP, length(smokeClass) + 1));
-  for (int i = 0; i < length(smokeClass); i++)
-    SET_STRING_ELT(rClass, i+1, STRING_ELT(smokeClass, i));
-  SET_STRING_ELT(rClass, 0, mkChar("DataFrameModel"));
-  setAttrib(dfm, R_ClassSymbol, rClass);
-  UNPROTECT(1);
-  return dfm;
+SEXP qt_qdataFrameModel(SEXP rparent) {
+  static Class *dataFrameModelClass =
+    new NameOnlyClass("DataFrameModel", Class::fromName("QAbstractTableModel"));
+  SmokeObject *so =
+    SmokeObject::fromPtr(new DataFrameModel(unwrapSmoke(rparent, QObject)),
+                         Class::fromName("QAbstractTableModel"), true);
+  so->cast(dataFrameModelClass);
+  return so->sexp();
 }
 
 extern "C"

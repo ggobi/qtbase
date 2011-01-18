@@ -41,14 +41,17 @@
 ##' need-be.
 ##' @title DataFrameModel
 ##' @param df The \code{data.frame} that provides the data of the model
+##' @param parent The parent \code{QObject} for the model. Important
+##' for preventing garbage collection of the model if the only
+##' reference to it is through a view. 
 ##' @param ... Extra arguments passed to \code{qdataFrame<-},
 ##' which actually loads the \code{data.frame} into the model.
 ##' @return An instance of C++ \code{DataFrameModel}
 ##' @author Michael Lawrence
 ##' @rdname DataFrameModel
-qdataFrameModel <- function(df, ...)
+qdataFrameModel <- function(df, parent = NULL, ...)
 {
-  model <- .Call(qt_qdataFrameModel)
+  model <- .Call(qt_qdataFrameModel, parent)
   qdataFrame(model, ...) <- df
   model
 }

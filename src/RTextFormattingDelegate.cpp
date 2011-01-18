@@ -1,6 +1,8 @@
 #include <R_ext/PrtUtil.h>
 
 #include "RTextFormattingDelegate.hpp"
+#include "NameOnlyClass.hpp"
+#include "SmokeObject.hpp"
 
 QString RTextFormattingDelegate::displayText (const QVariant &value,
                                               const QLocale &locale) const
@@ -48,16 +50,14 @@ QString RTextFormattingDelegate::displayText (const QVariant &value,
 #include "wrap.hpp"
 
 extern "C"
-SEXP qt_qrTextFormattingDelegate() {
-  SEXP dfm = wrapSmoke(new RTextFormattingDelegate, QStyledItemDelegate, true);
-  SEXP smokeClass, rClass;
-  /* tricky: prepend class, which is not known to Smoke */
-  smokeClass = getAttrib(dfm, R_ClassSymbol);
-  PROTECT(rClass = allocVector(STRSXP, length(smokeClass) + 1));
-  for (int i = 0; i < length(smokeClass); i++)
-    SET_STRING_ELT(rClass, i+1, STRING_ELT(smokeClass, i));
-  SET_STRING_ELT(rClass, 0, mkChar("RTextFormattingDelegate"));
-  setAttrib(dfm, R_ClassSymbol, rClass);
-  UNPROTECT(1);
-  return dfm;
+SEXP qt_qrTextFormattingDelegate(SEXP rparent) {
+  static Class *delegateClass =
+    new NameOnlyClass("RTextFormattingDelegate",
+                      Class::fromName("QStyledItemDelegate"));
+  QObject *parent = unwrapSmoke(rparent, QObject);
+  SmokeObject *so =
+    SmokeObject::fromPtr(new RTextFormattingDelegate(parent),
+                         Class::fromName("QStyledItemDelegate"), true);
+  so->cast(delegateClass);
+  return so->sexp();
 }
