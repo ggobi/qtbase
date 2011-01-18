@@ -6,8 +6,9 @@
 class DataFrameModel : public QAbstractTableModel {
 public:
 
-  DataFrameModel() : _dataframe(R_NilValue), _rowHeader(R_NilValue),
-                     _colHeader(R_NilValue), _roles(R_NilValue) { }
+  DataFrameModel(QObject *parent = NULL)
+    : _dataframe(R_NilValue), _rowHeader(R_NilValue), _colHeader(R_NilValue),
+      _roles(R_NilValue), QAbstractTableModel(parent) { }
   
   ~DataFrameModel();
 
