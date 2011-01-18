@@ -26,10 +26,8 @@ public:
   virtual bool implementsMethod(const char *name) const;
   virtual QHash<const char *, int> enumValues() const;
   virtual Property *property(const char *name) const;
-  
-  
+    
   /* R specific accessors */
-  SEXP env() const;
   inline SEXP sexp() const { return _klass; }
   inline bool isNull() const { return _klass == NULL; }
 
@@ -38,6 +36,7 @@ private:
   const Class* parent() const; // support only single inheritance
   SEXP metadata() const;
   SEXP properties() const;
+  SEXP methodEnv() const;
   
   SEXP _klass;
 };

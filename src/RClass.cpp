@@ -19,7 +19,7 @@ const char *RClass::name() const {
   return CHAR(asChar(getAttrib(_klass, nameSym)));
 }
 
-SEXP RClass::env() const {
+SEXP RClass::methodEnv() const {
   /* Eventually we might have one 'env' attribute that holds all user
      symbols, with the environment of static symbols becoming dynamic.
   */
@@ -43,7 +43,7 @@ const SmokeClass *RClass::smokeBase() const {
 }
 
 QList<Method *> RClass::methods(Method::Qualifiers qualifiers) const {
-  SEXP _env = env();
+  SEXP _env = methodEnv();
   SEXP names = R_lsInternal(_env, (Rboolean)false);
   QList<Method *> meths;
   for (int i = 0; i < length(names); i++) {
@@ -58,7 +58,7 @@ QList<Method *> RClass::methods(Method::Qualifiers qualifiers) const {
 
 Method *RClass::findMethod(const MethodCall &call) const {
   const char * methodName = call.method()->name();
-  SEXP fun = findVarInFrame(env(), install(methodName));
+  SEXP fun = findVarInFrame(methodEnv(), install(methodName));
   Method *meth = NULL;
   if (fun != R_UnboundValue && TYPEOF(fun) == CLOSXP &&
       (!call.super() ||
@@ -72,7 +72,7 @@ bool
 RClass::hasMethod(const char *name, Method::Qualifiers qualifiers) const {
   bool found = parent()->hasMethod(name, qualifiers | Method::NotPrivate);
   if (!found) {
-    SEXP fun = findVarInFrame(env(), install(name));
+    SEXP fun = findVarInFrame(methodEnv(), install(name));
     if (fun != R_UnboundValue && TYPEOF(fun) == CLOSXP)
       found = (RMethod(this, name, fun).qualifiers() & qualifiers) ==
         qualifiers;
@@ -115,6 +115,6 @@ Property *RClass::property(const char *name) const {
 }
 
 bool RClass::implementsMethod(const char *name) const {
-  SEXP fun = findVarInFrame(env(), install(name));
+  SEXP fun = findVarInFrame(methodEnv(), install(name));
   return fun != R_UnboundValue && TYPEOF(fun) == CLOSXP;
 }
