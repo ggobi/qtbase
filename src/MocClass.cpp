@@ -120,3 +120,7 @@ Property *MocClass::property(const char *name) const {
     prop = new MocProperty(_meta->property(index));
   return prop;
 }
+
+const char* MocClass::name() const {
+  return _meta->className();
+}
