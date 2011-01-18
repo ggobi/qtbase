@@ -26,7 +26,7 @@ QVariant DataFrameModel::data(const QModelIndex &index, int role) const
     return value;
   }
   if (role >= length(_roles)) {
-    qCritical("Role index %d out of bounds", role);
+    //qCritical("Role index %d out of bounds", role);
     return value;
   }
 
