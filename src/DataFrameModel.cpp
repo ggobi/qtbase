@@ -125,23 +125,61 @@ Qt::ItemFlags DataFrameModel::flags(const QModelIndex &index) const {
   int col = index.column();
   int row = index.row();
   QModelIndex dummy;
-  if (!index.isValid()) {
-    qCritical("Model index is invalid");
-    return 0;
-  }
-  if (col >= columnCount(dummy)) {
-    qCritical("Column index %d out of bounds", col);
-    return 0;
-  }
-  if (row >= rowCount(dummy)) {
-    qCritical("Row index %d out of bounds", row);
-    return 0;
-  }
-  SEXP roleVector = VECTOR_ELT(_roles, Qt::EditRole);
+
   Qt::ItemFlags f = QAbstractItemModel::flags(index);
-  if (roleVector != R_NilValue && INTEGER(roleVector)[col] != -1)
-    f |= Qt::ItemIsEditable;
+  if (index.isValid()) {
+    SEXP roleVector = VECTOR_ELT(_roles, Qt::EditRole);
+    if (roleVector != R_NilValue && INTEGER(roleVector)[col] != -1)
+      f |= Qt::ItemIsEditable;
+    f |= Qt::ItemIsDragEnabled;
+  }
   return f;
+}
+
+static void OutCharQDS(R_outpstream_t stream, int c)
+{
+  QDataStream *qds = reinterpret_cast<QDataStream *>(stream->data);
+  (*qds) << c;
+}
+
+static void OutBytesQDS(R_outpstream_t stream, void *buf, int length)
+{
+  QDataStream *qds = reinterpret_cast<QDataStream *>(stream->data);
+  qds->writeRawData(reinterpret_cast<const char *>(buf), length);
+}
+
+static void InitQDSOutPStream(R_outpstream_t stream, QDataStream *data) {
+  R_InitOutPStream(stream, data, R_pstream_xdr_format, 0,
+                   OutCharQDS, OutBytesQDS, NULL, NULL);
+}
+
+QStringList DataFrameModel::mimeTypes() const
+{
+  QStringList types = QAbstractItemModel::mimeTypes();
+  types << "application/x-rlang-transport";
+  return types;
+}
+
+QMimeData *DataFrameModel::mimeData(const QModelIndexList &indexes) const
+{
+  SEXP r_list = allocVector(VECSXP, indexes.size());
+  for (int i = 0; i < indexes.size(); i++) {
+    QModelIndex index = indexes[i];
+    if (index.isValid()) {
+      SEXP obj = to_sexp(data(index, Qt::DisplayRole));
+      SET_VECTOR_ELT(r_list, i, obj);
+    }
+  }
+
+  QMimeData *mimeData = QAbstractItemModel::mimeData(indexes);
+  QByteArray encodedData;
+  QDataStream stream(&encodedData, QIODevice::WriteOnly);
+  struct R_outpstream_st r_stream;
+  InitQDSOutPStream(&r_stream, &stream);
+  R_Serialize(r_list, &r_stream);
+  
+  mimeData->setData("application/x-rlang-transport", encodedData);
+  return mimeData;
 }
 
 void DataFrameModel::beginChanges(int nr, int nc) {
@@ -149,11 +187,11 @@ void DataFrameModel::beginChanges(int nr, int nc) {
     int oldnr = rowCount(QModelIndex());
     int oldnc = columnCount(QModelIndex());
     if (oldnr > nr)
-      beginRemoveRows(QModelIndex(), oldnr - 1L, nr);
+      beginRemoveRows(QModelIndex(), nr, oldnr - 1L);
     else if (oldnr < nr)
       beginInsertRows(QModelIndex(), oldnr, nr - 1L);
     if (oldnc > nc)
-      beginRemoveColumns(QModelIndex(), oldnc - 1L, nc);
+      beginRemoveColumns(QModelIndex(), nc, oldnc - 1L);
     else if (oldnc < nc)
       beginInsertColumns(QModelIndex(), oldnc, nc - 1L);
   }

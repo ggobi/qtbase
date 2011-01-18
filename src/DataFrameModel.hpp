@@ -27,7 +27,10 @@ public:
                int role = Qt::EditRole);
 
   Qt::ItemFlags flags(const QModelIndex &index) const;
-
+  
+  QStringList mimeTypes() const;
+  QMimeData *mimeData(const QModelIndexList &indexes) const;
+  
   void setDataFrame(SEXP dataframe, SEXP roles, SEXP rowHeader, SEXP colHeader);
 
   SEXP dataFrame() { return _dataframe; }
