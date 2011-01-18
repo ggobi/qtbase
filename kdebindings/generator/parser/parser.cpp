@@ -411,6 +411,7 @@ bool Parser::skipUntilDeclaration()
         case Token_identifier:
         case Token_operator:
         case Token_char:
+        case Token_size_t:
         case Token_wchar_t:
         case Token_bool:
         case Token_short:
@@ -476,6 +477,7 @@ bool Parser::skipUntilStatement()
         case Token_catch:
         case Token_throw:
         case Token_char:
+        case Token_size_t:
         case Token_wchar_t:
         case Token_bool:
         case Token_short:
@@ -1199,6 +1201,7 @@ bool Parser::parseSimpleTypeSpecifier(TypeSpecifierAST *&node,
       switch(session->token_stream->lookAhead())
         {
         case Token_char:
+        case Token_size_t:
         case Token_wchar_t:
         case Token_bool:
         case Token_short:
