@@ -49,13 +49,13 @@ extern "C" {
   Smoke *registerSmokeModule(Smoke *smoke);
 
   // DataFrameModel
-  SEXP qt_qdataFrameModel();
+  SEXP qt_qdataFrameModel(SEXP rparent);
   SEXP qt_qsetDataFrame(SEXP rmodel, SEXP df, SEXP roles, SEXP rowHeader,
                         SEXP colHeader);
   SEXP qt_qdataFrame(SEXP rmodel);
 
   // RTextFormattingDelegate
-  SEXP qt_qrTextFormattingDelegate();
+  SEXP qt_qrTextFormattingDelegate(SEXP rparent);
 }
 
 #define CALLDEF(name, n)  {#name, (DL_FUNC) &name, n}
@@ -113,12 +113,12 @@ static R_CallMethodDef CallEntries[] = {
     CALLDEF_COERCE(QSignalSpy),
     #endif
     // DataFrame
-    CALLDEF(qt_qdataFrameModel, 0),
+    CALLDEF(qt_qdataFrameModel, 1),
     CALLDEF(qt_qdataFrame, 1),
     CALLDEF(qt_qsetDataFrame, 5),
 
     // RTextFormattingDelegate
-    CALLDEF(qt_qrTextFormattingDelegate, 0),
+    CALLDEF(qt_qrTextFormattingDelegate, 1),
     
     {NULL, NULL, 0}
 };
