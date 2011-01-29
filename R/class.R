@@ -207,7 +207,12 @@ qsetProperty <- function(name, class, type = NULL,
     stop("'name' is required, as character vector")
   if (missing(class))
     stop("'class' is required")
-  if (!is.null(type) && !is.character(type))
+  if (is.null(type))
+    if (!missing(notify) || !missing(constant) || !missing(final) ||
+        !missing(stored) || !missing(user))
+      stop("Arguments 'notify', 'constant', 'final', 'stored', and 'user' are"
+           " ignored if 'type' is NULL")
+  else if (!is.character(type))
     stop("'type' should be NULL or a character vector")
   .name <- paste(".", name, sep = "")
   prop <- list(name = name, type = type, read = read,
