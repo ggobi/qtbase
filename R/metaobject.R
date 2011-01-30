@@ -1,8 +1,8 @@
 qmocMethods <- function(x) {
   if (is(x, "QObject"))
     metaObject <- x$metaObject()
-  else if (is(x, "RQtClass") && !is.null(x$staticMetaObject))
-    metaObject <- x$staticMetaObject()
+  else if (is(x, "RQtClass") && isQObjectClass(x))
+    metaObject <- qmetaObject(x)
   else stop("'x' should be a QObject-derived instance or class")
   methods <- .Call(qt_qmocMethods, metaObject)
   methods[[1]] <- c("method", "signal", "slot", "constructor")[methods[[1]] + 1]
@@ -73,7 +73,7 @@ qmetadata <- function(x) {
 ## Every time metadata is set, we recompile it and reset the methods
 ## so that they refer to the new metadata
 "qmetadata<-" <- function(x, value) {
-  if (is.null(x$staticMetaObject)) # not a QObject class, no compilation
+  if (!isQObjectClass(x)) # not a QObject class, no compilation
     return(x)
   compiled <- compileMetaObject(x, value)
   qsetMethod("metaObject", x, function() compiled)
@@ -85,7 +85,11 @@ qmetadata <- function(x) {
   x
 }
 
-qmetaObject <- function(x) {
+isQObjectClass <- function(x) !is.null(x$staticMetaObject())
+
+qmetaObject <- function(x, ...) UseMethod("qmetaObject")
+qmetaObject.RQtSmokeClass <- function(x) x$staticMetaObject()
+qmetaObject.RQtUserClass <- function(x) {
   attr(x, "instanceEnv")$staticMetaObject()
 }
 
@@ -253,5 +257,15 @@ compileMetaObject <- function(x, metadata) {
     c(offsets[c(prop$name, prop$type)], flags)
   })))
 
+  notifies <- sapply(props, function(p) {
+    if (is.null(p$notify))
+      NA
+    else p$notify
+  })
+  signalNames <- sapply(signals, `[[`, "signature")
+  notify_ids <- match(notifies, signalNames) - 1L 
+  notify_ids[is.na(notify_ids)] <- 0
+  data <- c(data, notify_ids)
+  
   .Call(qt_qnewMetaObject, x, stringdata, data)
 }
