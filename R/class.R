@@ -193,14 +193,6 @@ qsetSignal <- function(signature, class,
   method$name
 }
 
-appendToBody <- function(fun, expr) {
-  b <- body(fun)
-  if (identical(b[[1]], quote(`{`)))
-    b <- as.list(b[-1])
-  body(fun) <- as.call(c(quote(`{`), b, expr))
-  fun
-}
-
 qsetProperty <- function(name, class, type = NULL,
                          read = function() this[[.name]],
                          write = function(val) this[[.name]] <- val,
@@ -215,16 +207,20 @@ qsetProperty <- function(name, class, type = NULL,
     stop("'name' is required, as character vector")
   if (missing(class))
     stop("'class' is required")
-  if (is.null(type))
+  if (is.null(type)) {
     if (!missing(constant) || !missing(final) || !missing(stored) ||
         !missing(user))
       stop("Arguments 'constant', 'final', 'stored', and 'user' are",
            " ignored if 'type' is NULL")
-  else if (!is.character(type))
+  } else if (!is.character(type))
     stop("'type' should be NULL or a character vector")
   if (!is.null(notify)) {
     notify <- qresolveSignature(class, notify, "signal")
-    write <- appendToBody(write, call(sub("\\(.*", "", notify)))
+    writeArg <- formals(write)
+    writeBody <- call("{",
+                      as.call(list(write, as.name(names(writeArg)))),
+                      call(sub("\\(.*", "", notify)))
+    write <- as.function(c(writeArg, writeBody), environment(write))
   }
   .name <- paste(".", name, sep = "")
   prop <- list(name = name, type = type, read = read,
