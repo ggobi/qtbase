@@ -219,8 +219,9 @@ qsetProperty <- function(name, class, type = NULL,
   if (!is.null(notify)) {
     notify <- qresolveSignature(class, notify, "signal")
     writeArg <- formals(write)
+    writeExpr <- call("function", writeArg, body(write))
     writeBody <- call("{",
-                      as.call(list(write, as.name(names(writeArg)))),
+                      as.call(list(writeExpr, as.name(names(writeArg)))),
                       call(sub("\\(.*", "", notify)))
     write <- as.function(c(writeArg, writeBody), environment(write))
   }
