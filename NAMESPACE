@@ -84,6 +84,9 @@ S3method(dim, QGraphicsScene)
 S3method(dim, QGraphicsItem)
 S3method(dim, QRectF)
 
+## special case wrappers (e.g., for template functions)
+export(qfindChild)
+
 ## DataFrameModel
 export(qdataFrameModel, qdataFrame, "qdataFrame<-")
 

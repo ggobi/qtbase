@@ -203,6 +203,8 @@ qsetProperty <- function(name, class, type = NULL,
                          stored = TRUE, user = FALSE)
 {
   ## FIXME: obviously have to do better job of checking arguments here
+  ## FIXME: do we want to map R types to C++ types for 'type'?
+  ##        - if so, we also need to map method signatures
   if (missing(name) || !is.character(name))
     stop("'name' is required, as character vector")
   if (missing(class))
