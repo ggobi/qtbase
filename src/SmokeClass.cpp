@@ -57,12 +57,16 @@ QList<QByteArray> SmokeClass::mungedMethodNames(const MethodCall &call) const {
         /* could be a "scalar" or length-one vector */
       } else if (isVectorAtomic(arg) && length(arg) == 1) {
         mungedNames << munged + "?";
+        mungedNames << munged + "#"; // for QVariant
         munged += "$";
       } else if (isNull(arg) || isEnvironment(arg)) {
         if (isNull(arg))
           mungedNames << munged + "$"; // for NULL QStrings
         munged += "#";
-      } else munged += "?";
+      } else {
+        mungedNames << munged + "#"; // for QVariant
+        munged += "?";
+      }
       mungedNames[j] = munged;
     }
   }
