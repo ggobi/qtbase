@@ -199,7 +199,7 @@ MethodCall::argKey(SEXP arg) const
     r = "s";
   else if(TYPEOF(arg) == LGLSXP)
     r = "B";
-  else if (TYPEOF(arg) == EXTPTRSXP) {
+  else if (TYPEOF(arg) == ENVSXP) {
     SmokeObject *o = SmokeObject::fromSexp(arg);
     if (o == 0 || o->smoke() == 0) {
       r = "a";

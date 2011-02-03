@@ -97,7 +97,6 @@ Smoke::ModuleIndex SmokeClass::findIndex(const MethodCall& call) const
   }
   if (methIds.size() == 1) { // fast path 
     found.index = methIds[0];
-    SmokeMethodCache::insert(call, found); // cache
   } else if (methIds.size() > 1) {
     /* If we have more than one choice, we score the arguments */
     SEXP rargs = call.args();
@@ -124,6 +123,7 @@ Smoke::ModuleIndex SmokeClass::findIndex(const MethodCall& call) const
     if (ambiguous)
       error("Unable to disambiguate method %s::%s", name(), m->name());
     found.index = bestMethod;
+    SmokeMethodCache::insert(call, found); // cache
   }
   return found;
 }
