@@ -64,7 +64,9 @@ QList<QByteArray> SmokeClass::mungedMethodNames(const MethodCall &call) const {
           mungedNames << munged + "$"; // for NULL QStrings
         munged += "#";
       } else {
-        mungedNames << munged + "#"; // for QVariant
+        // this introduces annoying ambiguities
+        // really only useful if passing lists as QVariant
+        // mungedNames << munged + "#";
         munged += "?";
       }
       mungedNames[j] = munged;
