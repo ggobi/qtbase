@@ -608,3 +608,45 @@ object representing the search hits, essentially URLs pointing to
 qthelp resources. Then, the print method for the object will display
 the help in Qt Assistant. Calling as.character on a single hit would
 convert to HTML string, supporting integration.
+
+
+========================================================
+Support for Reference Classes
+========================================================
+
+We want to have Qt classes, including R derivatives, registered in the
+S4/R5 class system. How to achieve this?
+
+Obviously, we need a setRefClass() wrapper that will see the classes
+in the Smoke typelib. Call it setSmokeRefClass(). At least for now,
+this should sit on top of the existing R interface to Smoke, i.e.,
+RQtClass, RQtObject, etc. Calling setSmokeRefClass on one class will
+automatically register the base classes. Anyway, seems pretty trivial.
+
+The question is whether to implicitly declare the class when loading
+the Smoke module. This would involve a fair bit of overhead. But more
+importantly, would we necessarily expect a large, external library,
+like Qt or Java, to be entirely represented in the R5 hierarchy, upon
+load? The namespace system could manage this in the case of Qt,
+maybe. Still, do we consider the symbols in Qt to be on the same level
+as the R symbols declared by the qtbase package? Not currently, at
+least. We always need to qualify symbols with the module object. This
+is helpful for separating the low-level from the high-level
+interface. The qtbase package is a bridge; it does not inject all of
+Qt into R. In Rcpp, which does use implicit registration, the
+programmer has already explicitly imported a C++ library into R using
+their macro system. In our case, we import all of Qt, wholesale, as
+the module object. Explicitly registering a reference class would thus
+be analogous to declaring an interface with Rcpp macros.
+
+This would be easier if we had some use cases, which are currently
+unclear. It may be that an R package will define a S4/R5 API for a
+GUI, where the Qt classes (and R subclasses) are only used
+internally. We have seen, from gWidgets for example, that this is not
+always the case. The gWidgets package calls setOldClass to bring the
+S3 RGtk2 objects into S4. That is a chore that should be avoided. Then
+again, calling setSmokeRefClass("Foo") is not much worse than calling
+importClass("Foo") in the NAMESPACE. Sure, it's better to have things
+in the NAMESPACE, but it's not clear how to get there.
+
+
