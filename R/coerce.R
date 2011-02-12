@@ -32,3 +32,13 @@ as.list.QItemSelection <- function(x, ...) .Call(qt_coerce_QItemSelection, x)
 
 as.list.QTestEventList <- function(x, ...) .Call(qt_coerce_QTestEventList, x)
 as.list.QSignalSpy <- function(x, ...) .Call(qt_coerce_QSignalSpy, x)
+
+as.QImage <- function(x, ...) UseMethod("as.QImage")
+as.QImage.matrix <- function(x) {
+  if (!is.matrix(x) || !is.integer(x) || (nrow(x) != 4 && nrow(x) != 3))
+    rgb <- col2rgb(x, TRUE)
+  else rgb <- x
+  Qt$QImage(as.raw(rgb), ncol(x), nrow(x), ncol(x) * nrow(rgb),
+            if (nrow(rgb) == 3) Qt$QImage$Format_RGB888
+            else Qt$QImage$Format_ARGB32)
+}
