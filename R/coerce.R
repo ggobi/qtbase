@@ -42,3 +42,4 @@ as.QImage.matrix <- function(x) {
             if (nrow(rgb) == 3) Qt$QImage$Format_RGB888
             else Qt$QImage$Format_ARGB32)
 }
+as.QImage.raster <- function(x) as.QImage.matrix(x)
