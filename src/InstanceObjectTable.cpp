@@ -9,8 +9,10 @@
 
 SmokeObject *InstanceObjectTable::instanceFromSexp(SEXP sexp) {
   checkPointer(sexp, "InstanceObjectTable");
-  ObjectTable *table = ObjectTable::fromSexp(sexp);
-  return static_cast<InstanceObjectTable *>(table)->instance();
+  InstanceObjectTable *table =
+    static_cast<InstanceObjectTable *>(ObjectTable::fromSexp(sexp));
+  table->checkInstance();
+  return table->instance();
 }
 
 QList<QByteArray> InstanceObjectTable::sexpClasses() const {
