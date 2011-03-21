@@ -2,7 +2,7 @@
 .noGenerics <- TRUE
 
 .onUnload <- function(libpath) {
-  .Call(cleanupQtApp)
+  .Call("cleanupQtApp", PACKAGE="qtbase")
   library.dynam.unload("qtbase", libpath)
 }
 
@@ -20,7 +20,7 @@
   if (!is.null(Qt$QGL$setPreferredPaintEngine))
     Qt$QGL$setPreferredPaintEngine(Qt$QPaintEngine$OpenGL)
 
-  .Call(addQtEventHandler)
+  .Call("addQtEventHandler", PACKAGE="qtbase")
   reg.finalizer(getNamespace("qtbase"), function(ns)
                 {
                   if ("qtbase" %in% loadedNamespaces())

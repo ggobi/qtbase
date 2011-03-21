@@ -2,5 +2,5 @@
 
 qrTextFormattingDelegate <- function(parent = NULL)
 {
-  .Call(qt_qrTextFormattingDelegate, parent)
+  .Call("qt_qrTextFormattingDelegate", parent, PACKAGE="qtbase")
 }

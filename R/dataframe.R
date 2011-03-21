@@ -51,7 +51,7 @@
 ##' @rdname DataFrameModel
 qdataFrameModel <- function(df, parent = NULL, ...)
 {
-  model <- .Call(qt_qdataFrameModel, parent)
+  model <- .Call("qt_qdataFrameModel", parent, PACKAGE="qtbase")
   qdataFrame(model, ...) <- df
   model
 }
@@ -122,12 +122,12 @@ qdataFrameModel <- function(df, parent = NULL, ...)
   }
   rowRoles <- getHeaderRoles("row.names")
   colRoles <- getHeaderRoles("names", header)    
-  .Call(qt_qsetDataFrame, model, df, roles, rowRoles, colRoles)
+  .Call("qt_qsetDataFrame", model, df, roles, rowRoles, colRoles, PACKAGE="qtbase")
   model
 }
 
 ##' @rdname DataFrameModel
 qdataFrame <- function(model) {
   stopifnot(inherits(model, "DataFrameModel"))
-  .Call(qt_qdataFrame, model)
+  .Call("qt_qdataFrame", model, PACKAGE="qtbase")
 }

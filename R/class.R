@@ -15,7 +15,7 @@ names.RQtClass <- function(x) {
 
 qmethods <- function(x) {
   stopifnot(is(x, "RQtClass"))
-  methods <- .Call(qt_qmethods, x)
+  methods <- .Call("qt_qmethods", x, PACKAGE="qtbase")
   names(methods) <- c("name", "return", "signature", "protected", "static")
   df <- as.data.frame(methods, stringsAsFactors=FALSE)
   df[!duplicated(df$signature),]
@@ -23,7 +23,7 @@ qmethods <- function(x) {
 
 qenums <- function(x) {
   stopifnot(is(x, "RQtClass"))
-  .Call(qt_qenums, x)
+  .Call("qt_qenums", x, PACKAGE="qtbase")
 }
 
 print.RQtClass <- function(x, ...) {
@@ -133,11 +133,11 @@ qsetClass <- function(name, parent, constructor = function(...) parent(...),
 }
 
 qcast <- function(x, class) {
-  .Call(qt_qcast, x, class)
+  .Call("qt_qcast", x, class, PACKAGE="qtbase")
 }
 
 qenclose <- function(x, fun) {
-  .Call(qt_qenclose, x, fun)
+  .Call("qt_qenclose", x, fun, PACKAGE="qtbase")
 }
 
 qsetMethod <- function(name, class, FUN,
@@ -188,7 +188,8 @@ qsetSignal <- function(signature, class,
   meta <- qmetaObject(class)
   index <- meta$methodCount() - 1L
   qsetMethod(method$name, class,
-             function(...) .Call(qt_qmetaInvoke, this, index, list(...)),
+             function(...) .Call("qt_qmetaInvoke", this, index, list(...),
+                                 PACKAGE="qtbase"),
              access)
   method$name
 }
