@@ -5,7 +5,7 @@
 
 ## Get available Smoke modules
 qsmokes <- function() {
-  .Call(qt_qsmokes)
+  .Call("qt_qsmokes", PACKAGE="qtbase")
 }
 
 qsmoke <- function(x) {
@@ -18,7 +18,7 @@ qsmoke <- function(x) {
   
 ## Get classes in library
 qclasses <- function(x) {
-  .Call(qt_qclasses, qsmoke(x))
+  .Call("qt_qclasses", qsmoke(x), PACKAGE="qtbase")
 }
 
 ## Many libraries define all of their classes within a namespace of

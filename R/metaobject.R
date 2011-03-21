@@ -4,7 +4,7 @@ qmocMethods <- function(x) {
   else if (is(x, "RQtClass") && isQObjectClass(x))
     metaObject <- qmetaObject(x)
   else stop("'x' should be a QObject-derived instance or class")
-  methods <- .Call(qt_qmocMethods, metaObject)
+  methods <- .Call("qt_qmocMethods", metaObject, PACKAGE="qtbase")
   methods[[1]] <- c("method", "signal", "slot", "constructor")[methods[[1]] + 1]
   methods <- c(list(sub("\\(.*", "", methods[[2]])), methods)
   names(methods) <- c("name", "type", "signature", "return", "nargs")
@@ -24,7 +24,7 @@ qslots <- function(x) {
 }
 
 qnormalizedSignature <- function(x) {
-  .Call(qt_qnormalizedSignature, as.character(x))
+  .Call("qt_qnormalizedSignature", as.character(x), PACKAGE="qtbase")
 }
 
 qresolveSignature <- function(x, sig, type, nargs) {
@@ -59,7 +59,7 @@ qresolveSignature <- function(x, sig, type, nargs) {
 
 qproperties <- function(x) {
   stopifnot(is(x, "QObject"))
-  props <- .Call(qt_qproperties, x)
+  props <- .Call("qt_qproperties", x, PACKAGE="qtbase")
   names(props) <- c("name", "type", "readable", "writable")
   name <- props$name
   props$name <- NULL
@@ -81,7 +81,7 @@ qmetadata <- function(x) {
   qsetMethod("staticMetaObject", x, function() compiled)
   ## Ensure this method is defined if it isn't yet
   qsetMethod("qt_metacall", x,
-             function(call, id, args) .Call(qt_qmetacall, this, call, id, args))
+             function(call, id, args) .Call("qt_qmetacall", this, call, id, args, PACKAGE="qtbase"))
   x
 }
 
@@ -267,5 +267,5 @@ compileMetaObject <- function(x, metadata) {
   notify_ids[is.na(notify_ids)] <- 0
   data <- c(data, notify_ids)
   
-  .Call(qt_qnewMetaObject, x, stringdata, data)
+  .Call("qt_qnewMetaObject", x, stringdata, data, PACKAGE="qtbase")
 }
