@@ -35,7 +35,7 @@ else(WIN32)
 add_library(qtbase SHARED ${qtbase_LIB_SRCS} ${qtbase_MOC_FILES})
 endif(WIN32)
 
-set_target_properties(qtbase PROPERTIES COMPILE_FLAGS "-ggdb")
+#set_target_properties(qtbase PROPERTIES COMPILE_FLAGS "-ggdb")
 
 target_link_libraries(qtbase smokeqt ${QT_LIBRARIES} ${R_LIBRARIES})
 
