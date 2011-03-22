@@ -106,9 +106,15 @@ foreach(test_entry ${define_tests})
   endif(${${test_entry}} GREATER ${qt_test_threshold})
 endforeach(test_entry ${define_tests})
 
+if(WIN32)
+file(STRINGS "${QT_QTCORE_INCLUDE_DIR}/../../src/corelib/global/qglobal.h" qglobal_h NEWLINE_CONSUME)
+file(STRINGS "${QT_QTCORE_INCLUDE_DIR}/../../src/corelib/global/qconfig.h" qconfig_h NEWLINE_CONSUME)
+file(STRINGS "${QT_QTCORE_INCLUDE_DIR}/../../src/corelib/global/qfeatures.h" qfeatures_h NEWLINE_CONSUME)
+else(WIN32)
 file(STRINGS "${QT_QTCORE_INCLUDE_DIR}/qglobal.h" qglobal_h NEWLINE_CONSUME)
 file(STRINGS "${QT_QTCORE_INCLUDE_DIR}/qconfig.h" qconfig_h NEWLINE_CONSUME)
 file(STRINGS "${QT_QTCORE_INCLUDE_DIR}/qfeatures.h" qfeatures_h NEWLINE_CONSUME)
+endif(WIN32)
 set(qtheaders "${qglobal_h}\n${qconfig_h}\n${qfeatures}")
 string(REGEX REPLACE "\n" ";" qtheaders "${qtheaders}")
 
@@ -125,11 +131,12 @@ file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/qtdefines.cpp "return 0;\n}\n")
 try_run(qtdefines_run qtdefines_compile ${CMAKE_CURRENT_BINARY_DIR}/qtdefines
   ${CMAKE_CURRENT_BINARY_DIR}/qtdefines.cpp
   CMAKE_FLAGS "-DINCLUDE_DIRECTORIES:STRING=${QT_INCLUDE_DIR};${QT_QTCORE_INCLUDE_DIR};${CMAKE_SYSTEM_INCLUDE_PATH}"
+  COMPILE_OUTPUT_VARIABLE qtdefines_compile_output
   RUN_OUTPUT_VARIABLE qtdefines_output)
 if(${qtdefines_run} EQUAL 0)
   list(REMOVE_DUPLICATES qtdefines_output)
   list(REMOVE_ITEM qtdefines_output "QT_DEBUG")
-  # message(STATUS "Got defines from Qt headers ${qtdefines_output}")
+  #message(STATUS "Got defines from Qt headers ${qtdefines_compile_output}")
   list(APPEND qtdefines ${qtdefines_output})
   list(REMOVE_ITEM test_targets ${qtdefines_output})
 endif(${qtdefines_run} EQUAL 0)

@@ -1,6 +1,4 @@
 
-useDynLib(qtbase, .registration = TRUE)
-
 # metadata
 export(qproperties)
 

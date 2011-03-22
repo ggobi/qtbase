@@ -8,9 +8,12 @@
 
 .onLoad <- function(libname, pkgname) 
 {
-  ## dir <- system.file(file.path("local", "lib"), package=pkgname)
-  ## dyn.load(paste(file.path(dir, "libsmokeqt"), .Platform$dynlib.ext, sep=""))
-  ## library.dynam("qtbase", pkgname, libname )
+  if (.Platform$OS.type=="windows") {
+    lp <- gsub("/", "\\\\", paste(libname, pkgname, "bin", sep="/"))
+    Sys.setenv(PATH = paste(lp, Sys.getenv("PATH"), sep=";"))
+  }
+
+  library.dynam("qtbase", pkgname, libname)
 
   qlibrary(Qt, NULL)
 
