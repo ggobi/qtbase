@@ -91,6 +91,11 @@
 
         <!-- QtDeclarative excludes -->
         <signature>.*qmlRegisterTypeNotAvailable.*</signature>
+
+        <!-- OS X internal stuff -->
+        <signature>.*qt_mac_set_cursor.*</signature>
+        <signature>.*QMenu::macMenu\(.*</signature>
+        <signature>*qdrawPixmaps*</signature>
         
     </exclude>
     <functions>

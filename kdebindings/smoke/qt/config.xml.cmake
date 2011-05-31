@@ -7,8 +7,8 @@
      Qt installer sticks everything under the default framework
      directory where our hacked generator knows to look.  The ideal
      solution would be to have a <frameworkDirs> element in this file,
-     which would specify @QT_LIBRARY_DIR@ as a directory element. This
-     is awaiting a use-case. Also note that @QT_LIBRARY_DIR@ can
+     which would specify @QT_INCLUDE_DIR@ as a directory element. This
+     is awaiting a use-case. Also note that @QT_INCLUDE_DIR@ can
      sometimes be set to a compound path on the Mac. Though obviously
      a bug, this will apparently not be fixed:
      http://public.kitware.com/Bug/view.php?id=10632. As noted above,
