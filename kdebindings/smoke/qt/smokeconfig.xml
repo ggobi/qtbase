@@ -95,7 +95,7 @@
         <!-- OS X internal stuff -->
         <signature>.*qt_mac_set_cursor.*</signature>
         <signature>.*QMenu::macMenu\(.*</signature>
-        <signature>*qdrawPixmaps*</signature>
+        <signature>*drawPixmaps*</signature>
         
     </exclude>
     <functions>
