@@ -10,10 +10,12 @@ int main(int argc, char ** argv)
 
 #ifdef TEST_QT_NO_ACCESSIBILITY
 #include "QtGui/qaccessible.h"
+#include "QtGui/qaccessiblebridge.h"
 
 int main(int argc, char ** argv)
 {
   QAccessibleEvent event(QEvent::AccessibilityHelp, 0);
+  const QMetaObject& mo = QAccessibleBridgePlugin::staticMetaObject;
 }
 
 #endif
