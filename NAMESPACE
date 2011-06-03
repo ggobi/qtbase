@@ -1,0 +1,96 @@
+
+# metadata
+export(qproperties)
+
+# timer
+export(qtimer)
+
+# signals
+export(qconnect)
+
+# invoke
+export(qinvoke, qinvokeStatic)
+
+# smoke library
+S3method(print, RQtLibrary)
+
+# classes
+S3method("$", RQtClass)
+S3method("[[", RQtClass)
+S3method(print, RQtClass)
+S3method(names, RQtClass)
+export(qmethods, qsetClass, qsetMethod, qsetSlot, qsetSignal, qsetProperty,
+       qmocMethods, qsignals, qslots)
+
+# objects
+S3method(print, RQtObject)
+S3method(print, QWidget) ## calls $show()
+S3method(Ops, RQtObject)
+S3method("[", RQtObject)
+export("%<<%", "%>>%")
+
+# enums
+S3method("|", QtEnum)
+S3method("&", QtEnum)
+S3method(print, QtEnum)
+
+# the Qt smoke library
+export(Qt)
+
+## allow other packages to provide Smoke modules
+export(qlibrary)
+
+## convenience for stylesheet manipulation
+export(qsetStyleSheet, qstyleSheet)
+
+## explicit coercions
+
+S3method(as.matrix, QRectF)
+S3method(as.matrix, QRect)
+S3method(as.matrix, QTransform)
+S3method(as.matrix, QColor)
+S3method(as.matrix, QPolygonF)
+S3method(as.matrix, QPolygon)
+
+S3method(as.vector, QPointF)
+S3method(as.vector, QPoint)
+S3method(as.vector, QSizeF)
+S3method(as.vector, QSize)
+
+S3method(as.double, QPointF)
+S3method(as.double, QPoint)
+S3method(as.double, QSizeF)
+S3method(as.double, QSize)
+
+S3method(as.integer, QPoint)
+S3method(as.integer, QSize)
+
+export(qcol2rgb)
+
+S3method(as.character, QChar)
+
+S3method(as.list, QItemSelection)
+S3method(as.list, QTestEventList)
+S3method(as.list, QSignalSpy)
+
+export(as.QImage)
+S3method(as.QImage, matrix)
+S3method(as.QImage, raster)
+
+## constructors of simple types
+export(qrect, qpoint, qsize, qcolor, qfont, qpen, qbrush, qtransform, qpolygon)
+
+## dim methods
+S3method(dim, QGraphicsView)
+S3method(dim, QGraphicsScene)
+S3method(dim, QGraphicsItem)
+S3method(dim, QRectF)
+
+## special case wrappers (e.g., for template functions)
+export(qfindChild)
+
+## DataFrameModel
+export(qdataFrameModel, qdataFrame, "qdataFrame<-")
+
+## RTextFormattingDelegate
+export(qrTextFormattingDelegate)

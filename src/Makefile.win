@@ -1,0 +1,22 @@
+##CMAKE_C_COMPILER=gcc
+##CMAKE_CXX_COMPILER=g++
+LIBR = "-L$(R_HOME)/bin/i386 -lR"
+##/$(IMPDIR) 
+
+all:
+	mkdir -p ../kdebindings-build;
+	cd ../kdebindings-build; \
+	cmake -G "MSYS Makefiles" ../kdebindings -DCMAKE_INSTALL_PREFIX=../inst/local; \
+	LD_LIBRARY_PATH=../../generator/bin make install
+	mkdir -p ../src-build;
+	cd ../src-build; \
+	cmake -G "MSYS Makefiles" ../src \
+	      -DR_LIBRARIES=${LIBR} \
+	      -DR_INCLUDES=${R_INCLUDE_DIR} \
+	      -DCMAKE_INSTALL_PREFIX=../src; \
+	make install
+
+clean:
+	rm -rf ../kdebindings-build
+	rm -rf ../src-build
+	rm -rf ../inst/local

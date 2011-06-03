@@ -1,0 +1,86 @@
+
+Prerequisites: Qt >= 4.2.x installed and PATH updated accordingly.
+qmake must be found.
+
+
+R/Qt/Windows has many weirdnesses.  This file attempts to be a guide
+to those for my own benefit.  It also provides instructions which may
+(or may not) help in compiling from source on Windows.  
+
+YOU DON'T NEED TO READ ANYTHING BELOW IF YOU INSTALL FROM THE BINARY.
+
+
+
+(Suggestions on how to make this less of a hack welcome)
+
+1. The Qt Project file
+======================
+
+Qt creates its own Makefile from a project file.  On Linux, this file
+is created by createProject.sh, which is called by make.  This is
+needed to put in some R specific variables in, specifically, the lines 
+
+INCLUDEPATH += ${R_INCLUDE_DIR}
+LIBS += -L${R_HOME/lib}
+
+On Windows, these need to be 
+
+INCLUDEPATH += `R RHOME`/include
+LIBS += -L`R RHOME`/bin -lR
+
+I don't know how (and won't bother to find out) how to write a script
+to do that inside R CMD INSTALL.  Currently, values suitable to MY
+build environment are hard-coded in the qviz.pro.win file, which
+is copied over by Makefile.win.
+
+
+2. Path separator
+=================
+
+qmake produces Makefiles that use \ as path separator.  Someone (maybe
+sh.exe, but not sure) doesn't like this and slilently drops all \-s.
+My extremely hackish solution is to use the script replace.sh to
+change all \ to /, except those at the end of a line (continuation).
+This is not foolproof (a / at the end will get converted to \).  For
+some reason, doing this directly in Makefile.win doesn't work.
+
+
+3. DLLs
+=======
+
+On Linux, the shared library file created on successful compilation is
+libqviz.so.  On Windows, this is release/qviz.dll.  To deal
+with this, I have the line
+
+	cp release/* .
+
+in Makefile.win.  (.First.lib could need to try both, but renaming
+seems to work on Linux (though not on Windows, but I haven't really
+explored all the options)).
+
+
+4. Tools
+========
+
+R needs a specific set of Cygwin tools.  If you are compiling from
+source, you probably have a different set that Qt uses.  It's not
+entirely clear how well these interact.  One approach that seems to
+work is to source these commands from a file before attempting R CMD
+INSTALL:
+
+export QTDIR=C:/Qt/4.2.3
+export PATH="C:/QtMinGW/bin;C:/Qt/4.2.3/bin;$PATH"
+export QMAKESPEC="win32-g++"
+
+
+5. Windows specific code
+========================
+
+There are a couple of pieces under #ifdef WIN32.  One involves fd_set
+in eventloop.h (which is in winsock2.h, not sys/types.h), and the
+other is the declaration of R_polled_events etc.
+
+
+
+
+

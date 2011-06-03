@@ -1,0 +1,652 @@
+====================================================
+R Design
+====================================================
+
+General organization: modules contain classes, which contain methods
+
+Modules: A module (i.e. all of Qt) roughly corresponds to an R
+namespace. A package is required to define a namespace, which would
+make sense here. While this would be quite natural for user-defined
+classes, the smoke-based modules are most easily provided dynamically.
+We could try populating the namespace with the classes at build-time,
+but it would be difficult. We would need to link to a shared object to
+get the class names and then use exportPattern() in NAMESPACE. Then
+there is the documentation, which is not yet build-time dynamic. Even
+if it were, we would need to find the entire Qt documentation (for
+conversion).  
+
+Of course, at some point we would want documentation in R (and it
+would be nice to avoid the use of Qt$ for retrieving every
+class). Perhaps as a separate package?
+
+To keep everything dynamic, we provide a special smoke module object
+(e.g. "Qt") that supports '$' access. How is a such an object
+represented in R? Extptr would be the obvious first choice, but the
+symbol would need to be replaced or populated somehow at load
+time. This is tricky, because all objects are duplicated upon
+export. Could change the pointer address, or make it an environment,
+instead. But what goes into the environment? A single external
+pointer, or populate it with the class objects (directly or lazily)?
+The most efficient would be to lazily accumulate the class
+objects. Simplest would be to fully populate the environment and, if
+done natively, this would be fast. Of course, the environment should
+be locked after it is populated. The advantage over using an external
+pointer is that everything is stored in a well-supported R object.
+
+One interesting feature of an environment-based Smoke module is the
+ability to attach() it, though this would not work in the package
+context. Not that it would help much.
+
+Class objects: extracted using $ from a module object. These should
+extend 'function' so that they can be invoked as constructors.
+
+Methods: These are the messages that can be received by a particular
+class of object. Some are static (sent to the class), while others are
+sent to specific instances. Methods must be keyed by signature, not
+only by name, like classes. But the user will not want to specify the
+signature; this should be automatically resolved from the method name
+and argument types. The latter are not known until invocation, so the
+method wrapper, retrieved by name, needs to perform the selection.
+
+Given the functional nature of R, it may be natural to represent a
+method as a function, where say the first argument represents the
+class object or instance. This gives rise to familiar behavior, like:
+
+> lapply(widgets, Qt$QWidget$show)
+
+This leads quickly to questioning why the first argument is special,
+and then one arrives at multiple dispatch systems like S4. Multiple
+dispatch interferes with bundling, and thus conflicts with the design
+of C++ and thus Qt. With single dispatch, it seems redundant to
+specify the initial 'self' parameter, as the message has already been
+delivered to a specific instance. The parameters then consitute the
+message contents. Here is a compromise:
+
+> lapply(widgets, qinvoke, "show")
+
+This uses a function, qinvoke, to send the message of type "show" to
+each widget in the list. This might be preferable to the former
+approach, since calling '$' is more explicitly leveraging named state,
+which is not a purely functional concept. Explicit 'self' can come in
+handy, however, to implement a method with an existing ordinary
+function. In this case, though, delegation is probably sufficient. In
+short, we take Ruby over Python.
+
+How then is the named state stored? The natural way is an
+environment. We would prefer not to create a static environment for
+every class, though. Rather, the environment for a class (or rather
+two environments, to separate static and instance methods) should be
+populated upon first retrieval of the class from the Smoke
+module. This suggests that the module environment needs to be
+dynamically bound, using makeActiveBinding(), to avoid any overhead.
+
+Instance methods: Use the $ syntax on the instance.
+Static methods: Use $ syntax on a class object.
+
+Global functions: Use $ syntax on a module object. Unlikely to be
+useful, but could be stored with the class objects.
+
+(In-)Out parameters: RGtk2 handles this through basic lists. If a
+function has an out parameter, a list is returned with the actual
+return value and the out parameters. The first challenge is
+identifying an 'out' parameter. This is difficult. Non-const reference
+parameters are probably in-out. Pointers are difficult to distinguish
+from arrays. The second challenge is method overload resolution:
+arguments cannot be omitted, as they would be for an 'out' parameter,
+if we are to select a method. We could have the user pass a special
+type of parameter, that indicates the type of an out parameter or, for
+in-out parameters, the input value. The function 'qout()' marks an
+out parameter and 'qinout()' an in-out parameter.
+
+str <- "broken"
+v <- QValidator()
+fixed <- v$fixup(qinout(str))
+str <- fixed$str
+
+For in-out parameters, we do not need any help selecting a method, but
+this still offers benefits. It makes it obvious that we are obtaining
+a value by reference parameter. C# does the same thing with its 'ref'
+and 'out' keywords. It also makes it easy to ignore uninteresting
+return parameters, i.e.:
+
+text <- clipboard$text(subtype) # ignore change in subtype
+# worry about subtype
+ret <- clipboard$text(qinout(subtype))
+subtype <- ret$subtype
+text <- ret$text
+
+If the return value of the method is void, do we just assume that the
+marked out parameter is the desired return value?
+str <- v$fixup(qinout(str))
+This seems reasonable.
+
+What about pure out parameters?
+ns <- QXmlNamespaceSupport()
+names <- ns$splitName("ns:element", qout(""), qout(""))
+prefix <- names$prefix
+This is similar to the .C() contract.
+
+We'll hold off on out parameters until we need them.
+
+Signals:
+Emitting a signal: just like an instance method
+Connecting a signal handler: qconnect() or some fancy syntax?
+
+Accessing properties: Should be be consistent with accessor patterns
+in R. One idea is to use the element extraction operator:
+
+> val <- obj$prop
+> obj$prop <- val
+
+However, vector element extraction/replacement is somewhat different
+from setting fields on an object. The closest thing to a 'field' in R
+is the S4 slot. Slots are internally accessed via '@' but externally
+via accessors of the form:
+
+> val <- prop(obj)
+> prop(obj) <- val
+
+Unfortunately, it is technically too difficult to support this syntax
+dynamically. Both of the above rely on the replacement function
+'<-'. The underlying logic is that the left hand side is being
+replaced by the modified copy of the original object. With mutable
+objects, however, this becomes unecessary, and we can use the
+C++/Java-like set syntax:
+
+> obj$prop()
+> obj$setProp(val)
+
+This means a bit more typing, but might make it clear that we are
+dealing with mutable objects. Then again, since our objects are
+environments, the '$<-' syntax is perfectly consistent with R.
+
+Instances: Need to store the pointer somewhere. Could just make this
+an external pointer, but might be more useful as an environment, with
+the pointer stored as an attribute. The environment would dynamically
+bind closures for each method (and property if a QObject). It would
+also contain the symbol 'self' which refers to the environment.
+
+User Classes: We need a simple mechanism for defining new classes and
+add methods to classes. Usually, these will be overrides of native
+virtual methods. Example syntax:
+
+> MyWindow <- qclass("MyWindow", Qt$QWindow)
+> MyWindow$actionEvent <- function(event) { }
+> MyWindow$mySlot <- qslot(function(x) { })
+> MyWindow$myStaticMethod <- qstatic(function(x) { })
+
+The 'MyWindow' object is a class object, like Qt$QWidget.
+
+User Methods: Methods stored in a class-level environment, which is
+referenced from each instance. The methods will be enclosed within the
+instance environment.
+
+Do we really want to bind every method (wrapper) to the class
+environments, or do we want them dynamic, e.g. through ObjectTable?
+
+Static binding would mean generating wrappers for each method. We
+already have this working for static methods. For object methods, the
+wrappers would be similar, just using qinvoke() rather than
+qinvokeStatic(). We would want the static symbols in a separate
+environment from the object symbols. For R classes, the wrapper could
+directly invoke the class, after enclosing it, or call qinvoke(),
+relying on RMethod to do the enclosing. I would favor the direct
+invocation mechanism, at least at first. Of course, the instance could
+remain as a dynamic environment, feeding off the field and class
+environments. This design makes sense, because:
+
+- The symbols for R classes are already stored in an environment.
+
+- There are not that many classes, so storing them (lazily) into
+  environments will not incur much overhead, though it is unfortunate
+  that we cannot use chaining due to multiple inheritance.
+
+- While there is some redundancy between the Class objects and these
+  environments, they are really different. The former is a database of
+  actual methods, while the latter is just a database of wrappers. The
+  Class should hold a reference to the environment.
+
+The main concerns is that this does not gracefully handle evaluation
+of user static methods. Need to change the parent of the static
+environment to the original function enclosure. However, we are not
+sure yet if we are going to support user static symbols.
+
+As a compromise, we could keep the static symbols in "static" R
+environments and place the object symbols (for R classes) in a
+separate environment.
+
+One question is disambiguation of overloaded virtuals. In such cases,
+it may be necessary to do something like:
+
+> MyWindow$overloadedMethod <- qmethod(function(x) { }, c("integer", "integer"))
+
+In order to keep the method selection centralized in native code, a
+wrapper also needs to be added, just like for native methods. The
+method implementation is then called from native code. This might be
+going too far though. R is a dynamically typed language, and a
+function will accept any invocation, as long as the argument count is
+not exceeded. If multiple dispatch is required, one can always
+delegate to an S4 generic.
+
+Another issue is chaining up to the parent class. Here is one syntax:
+
+> Parent$foo()
+
+Where 'Parent' is the name of a class from which this instance is
+derived. This means the classes need to behave specially inside the
+instance method. Or we can use 'super' like in Java:
+
+> super$foo()
+
+But what is 'super'? It needs to be some object, most conveniently
+another reference to the instance, like 'this'. This does not make
+sense though. There is no such thing as a "super instance" -- only a
+"super class". The user could do weird things, like pass 'super' as an
+argument to other methods. Instead, we could take the S3/S4 route,
+with a special function that calls a super method, as in:
+
+> callSuper(...)
+
+But unlike S3/S4, it makes sense when bundling to allow an alternative
+method name.
+
+> callSuper("foo", ...)
+
+A little extra typing, but it is more explicit.
+
+User objects: Should support storing fields in an environment. Should
+not need to declare these, unless they are properties. The instance
+environment should inherit from this field environment.
+
+----------------------------------------------------------
+C++ Design
+----------------------------------------------------------
+
+
+Thoughts:
+   An R user requests a method invocation, providing the method name,
+   the target and the arguments. We need to:
+   1) Find the method given the name, target class and argument types
+   2) Marshal the arguments
+   3) Invoke the method
+   4) Marshal the return value
+   5) Return the value to R
+
+   We start with a MethodCallRequest, constructed by the R
+   wrapper. Currently, we pass the MethodCallRequest to a
+   MethodSelector to obtain the MethodCall, which is then evaluated to
+   obtain the result for returning to R. The MethodCall consists of an
+   Executor and the arguments. When evaluated, the MethodCall marshals
+   the arguments by delegating to TypeHandlers and then passes itself
+   to an Executor for method execution. The Executor is an adaptor
+   that obtains the necessary information from the MethodCall to
+   invoke the Method. Finally, it marshals the return value with a
+   TypeHandler and returns the result to the wrappers. This could be
+   simplified by having the Method play the role of the Executor and
+   perform the low-level invocation based on the MethodCall.
+
+   We could reduce the MethodCallRequest to a MethodRequest, with only
+   type information, no data. This would then be passed to the
+   MethodSelectors to obtain a Method. The Method would be passed the
+   arguments, perhaps through overloading invoke() or passing a
+   MarshalContext. The MarshalContext might be preferred, since it
+   would avoid the need for each Method to have its own set of
+   overloads. Either way, the Method obtains a MarshalContext to
+   marshal the arguments, call itself, and marshal the return value,
+   which the Method returns to the wrappers. This is strange, because
+   the Method is presiding over the marshalling, as well as the
+   low-level invocation. This could be avoided by creating a
+   MethodCall from the Method and the arguments, and evaluating
+   it. The Method would be the most natural factory of the MethodCall,
+   but then it is playing too many roles. The question is whether the
+   ability to select a method separate from invocation is worth the
+   complexity. Given there is no use-case, probably not.
+
+   Here is a variation on the first idea:
+   1) MethodSelector transforms the MethodCallRequest to a MethodCall.
+   2) When MethodCall is evaluated, it passes itself to its Method
+   3) The Method requests the required stack from the Methodcall,
+   either R or C++/Smoke.
+   4) If the request is across the marshalling boundary, the arguments
+   are marshalled, and the method is invoked again, this time with the
+   arguments available. The original request comes back empty, and is
+   ignored by the Method.
+   5) The result is retrieved and returned to R by the wrappers.
+
+   Wow, #4 is a bit complicated. Given that we only have two stacks (R
+   and Smoke/C++), we can just ask the Method which it requires. The
+   combination of the Method type and the stack provided to the
+   MethodCall determines the marshal mode (Identity, RToSmoke, SmokeToR).
+   
+   This should easily handle R->R, R->Smoke, and R->Moc. Handling
+   callbacks, e.g. Smoke->R and Moc->R, is more complicated. Idea:
+   reverse the process. Start with a SmokeMethod or MocMethod that
+   delegates to an RMethod. The Smoke/MocMethod creates a MethodCall
+   to the RMethod and evaluates it. For SmokeMethod, it would probably
+   be more direct to just create the MethodCall and eval it. MocMethod
+   handles the bridging of the Moc and Smoke stacks.
+
+   Taking that idea to the extreme, we have all invocations going
+   through proxy methods. For example, the R invocation will call an
+   RProxyMethod, which will create the MethodCallRequest, pass it to
+   the MethodSelector to obtain a MethodCall, evaluate the call, and
+   return the result in the appropriate manner. This seems elegant.
+
+   Another question: should the MethodCallRequest and MethodCall be
+   part of the same hierarchy, as they share many of the same
+   attributes? As in, BoundMethodCall and UnboundMethodCall, both
+   inheriting from MethodCall? The BoundMethodCall would gain a
+   Method. It is also possible to make the Method optional on the
+   MethodCall and add an isBound() method. This might work, but the
+   Binder/Selector usually only understands one type of request
+   (foreign or native). Is that true?  In theory, the MethodSelector only
+   needs to know:
+   1) Identity of instance, if object method (SmokeObject <-> SEXP)
+   2) Class of method, if static method (string)
+   3) Name of method (string)
+   4) Types of arguments (vector of SmokeTypes)
+   Note that the actual argument values are not on this list. They are
+   only used now to build the MethodCall, but if we already *have* a
+   MethodCall, this is not an issue.
+   
+   To get SmokeTypes for R objects, we will need an extensible
+   mechanism that could probably replace the current scoring
+   mechanism, i.e. all scoring is based on SmokeTypes, which is
+   straight-forward.
+
+   So should there be a separate (Un)BoundMethodCall type? The bound
+   variant would add the eval() method. When binding, are we really
+   making a new object, or just changing the state of the existing
+   one? In some ways, this is identical to opening and closing a
+   connection. We don't use different classes for that, so....
+
+   How do properties integrate with this? Properties seem general
+   enough to be included in the base Class interface, even though
+   Smoke does not implement them. The question is the abstraction:
+   what type system? QVariant is convenient for Moc, but it is limited
+   by compile-time support. The MocProperty could be implemented via a
+   Moc call to setProperty(), with a QVariant type handler.
+   
+========================================================
+User Classes Design
+========================================================
+
+One of the main reasons we are using Qt from R, rather than from C++,
+is the dynamic nature of R. Thus, we should retain flexibility when
+defining new Qt-based classes. This follows the route of 'proto'.
+
+To define a class, we need to specify the name of the parent and the
+constructor. Only single inheritance is allowed, mostly due to
+technical limitations. This also makes things easier to implement with
+environments. Note that there is only one constructor (and only one
+method of a given name), because overloading is a difficult problem in
+dynamic languages. S4 already does a good job of dispatch, so users
+are encouraged to leverage it to simulate overloading.
+
+Example:
+MyClass <- qclass(Qt$QWidget, function() { this$x <- 0 })
+
+The class, like the other classes, is simply an environment, although
+it is unlocked by default. Methods, static fields and enums may be
+defined/replaced at any time. It would even be possible to extract a
+method and insert it into another class. Sometimes, simple casts are
+required. Examples:
+
+qmethods(MyClass)$method <- function(...) { }
+qmethods(MyClass)$staticMethod <- qstatic(function(...) { })
+qenums(MyClass)$enum <- c("small", "medium", "large")
+MyClass$staticField <- "foobar"
+
+There is some debate as to whether we really require static method
+support. The examples seem to use static methods for:
+
+- Private utility functions. In R, we can often define these inline,
+  inside the client functions. Obviously, this is not possible in C++.
+- Easy namespacing of functions
+- Singletons
+
+The last two can be handled by simple closure tricks like local(), but
+it might be nice to have the name match the class name, which may not
+always be possible...
+
+Anyway, do we like the qmethods()$<- syntax, or would qsetMethod() be
+better? The latter is more like qsetClass() and the setGeneric/Method
+from the methods package. Compare:
+
+> qmethods(MyClass)$method <- qprotected(function(...) { })
+> qsetMethod(MyClass, "method", function(...) { }, "protected")
+
+The main difference is that the former requires three method calls,
+while the latter consists of a single call. It is much easier to
+document the process of defining a method as a single call. For
+example, how many casting functions are available, and which can be
+combined? This would be made immediately obvious by qsetMethod().
+
+While it is nice to be consistent with familiar syntax from S4, the
+requirements of this design are completely different: we are bundling
+a method, identified by a name, into a class. However, let us consider
+a more complex case, that of slot definition. We need to specify the
+signature of the slot. Compare:
+
+> qmethods(MyClass)$slotName <- qslot(function(...) { }, "int")
+> qsetSlot(MyClass, "slotName(int)", function(...) { })
+
+Now what happens when defining a new signature on the same name?
+
+> qmethods(MyClass)$slotName <- qslot(function(...) { }, "double") # oops!
+> qsetSlot(MyClass, "slotName(double)", function(...) { })
+
+The former syntax is misleading, because it appears as if we are
+replacing the previous slot. There is this alternative:
+
+> qslots(MyClass)$"slotName(double)" <- function(...) { }
+
+A bit ugly, but it works. Now let us consider signals, where there is
+no function to set.
+
+> qsignals(MyClass)$"signalName(int, int)" <- what goes here? access?
+> qsetSignal(MyClass, "signalName(int, int)", "protected")
+
+Thus, we will take the simpler qset* route for now.
+
+Do we really want a separate function for each slot? As a
+dynamically-typed language, we could implement multiple slots (of the
+same name) with the same function. If we need more advanced dispatch,
+there is always S4. Going this route:
+
+> qsetMethod(MyClass, "methodName", function(...) { })
+> qsetSlot(MyClass, "methodName(int)")
+
+In other words, we are simply advertising our function to the
+statically-typed world. The above could certainly be the default
+behavior, even if we support functions per slot, which would be a lot
+more complicated. We would need to perform method selection within
+RClass. It is not common within Qt to have multiple signatures for a
+slot, but when this does occur it is limited to leaving off a single
+argument (remember that 95% of slots have one argument or less). This
+is why QtRuby based Moc method selection merely on argument count.
+
+For now, we go the single function route. To make this easier, what
+about adding a 'slot' argument to qsetMethod?
+
+> qsetMethod(MyClass, "methodName", function() { }, slot = "methodName()")
+
+Saves a bit of typing, but still suffers from the redundancy.
+
+> qsetMethod(MyClass, "methodName", function() { }, slot = "")
+
+No more typing, but a bit odd looking.
+
+> qsetMethod(MyClass, "methodName", function() { }, slot = TRUE)
+
+Looks nice, but what about when we have arguments?
+
+> qsetMethod(MyClass, "methodName", function(x) { }, slot = "int")
+
+Ok, but what if 'x' is optional?
+
+> qsetMethod(MyClass, "methodName", function(x = 0) { }, slot = c("", "int"))
+
+Could be worse.
+
+Since we are following the bundling idiom, methods do not take a
+'this' or 'self' argument. Rather, the methods are enclosed,
+transiently during evaluation, in an instance environment. This
+environment has the special symbol 'this' that refers to the instance.
+
+The MyClass object needs to be serializable, so it cannot consist of
+any external pointers. The link to the base Smoke class should be
+encoded by the module name and class name.
+
+Upon construction, we need to create an instance of the parent class
+(eventually chaining up to an actual Smoke class). This has to happen
+first, though we do not know how to invoke the base constructor. C++
+uses initializer lists to solve this. R does not have them, so we can
+take the Java route, where the base constructor must come first,
+defaulting to the no-arg constructor. As in:
+
+MyClass <- qclass(Qt$QWidget, function(parent = NULL) { super(parent); ... })
+
+The next challenge is specifying then class name. We want to enforce,
+if possible, the symbol in the environment to have the same name as
+the class. One way is the assign()/setClass()-like syntax:
+
+qclass("MyClass", Qt$QWidget, constructor, where = topenv())
+
+Which has the side-effect of assigning "MyClass" into the 'where'
+env. That seems reasonable; it's the same contract of setGeneric().
+
+How is the reference to the parent class stored? At first thought,
+simply storing the base class object with the new class seems
+reasonable. The base environment could become the parent of the
+environment for the new class, which facilitates propagating changes
+on the base class. However, note that lazy loading will cause
+trouble. Consider:
+- To define subclass, access a class, thus caching it in the library
+- Load package, library is regenerated, class envs are different
+Anyway, users need to disable lazy loading to make that work.
+
+
+> qmethods(MyClass)$method <- function(...) { }
+
+This has a number of advantages. First, qmethods(MyClass)$method
+retrieves the unmodified function (i.e. we might want to have
+qmethods() anyway). It also makes it obvious that we are setting a
+method. What about:
+
+- Fields: We probably do not need to define fields; just set them at run-time.
+
+- Properties: These require special treatment, as they have a type,
+  permissions, etc. Use qproperties() accessor. 
+  > qproperties(MyClass)$prop <- qproperty("integer", writable = FALSE)
+  > qproperties(MyClass)$prop <- 0L # read/write, integer, defaults to 0
+
+- Enums: 
+  > qenums(MyClass)$enum <- c("small", "medium", "large")
+
+  Are these necessary? R already has enumerations in the form of
+  factors. Enumerations are mostly useful for type safety. The
+  possible values are fixed, and consistency can be verified by the
+  compiler. The same is true in many respects for factors, even though
+  R is dynamically typed. For example, we can protect against setting
+  an illegal value:
+
+  > f <- factor("small", levels = c("small", "big"))
+  > f[] <- "huge" # error
+
+  When passing an enumeration to a function, there is the match.arg()
+  idiom:
+
+  > fun <- function(x = levels(f)) { x <- match.arg(x); ... }
+
+  Thus, we will hold off on formal enums.
+
+========================================================
+Documentation
+========================================================
+
+We need documentation for Qt and other libraries in a form that works
+for the R user. It is not clear if integrating with the R help system
+(like we did with RGtk2) is the best approach:
+
+- The bindings do not exist in any R namespace, so there is no need to
+  give help aliases to them.
+
+- Translating C++ HTML to R HTML is much easier than HTML to Rd.
+
+- Overhead: storage, installation, managing, etc of R documentation
+  incurs a lot of overhead. Definitely a pain with RGtk2.
+
+- Although R help has many output targets, it is not clear if anything
+  beyond HTML is necessary.
+
+- The Qt Assistant utility is a useful interface that is well designed
+  for our use case. People are working on new interfaces to R help,
+  but Qt Assistant already works well. It would be nice if the new R
+  help front-ends supported interfacing with other systems that served
+  up HTML.
+
+How to provide our documentation? Could perform translation at
+installation. Or it could just be semi-statically generated by running
+a script periodically. Lazy run-time generation would not work well,
+because there would be no index. Any dynamic generation requires us to
+find the installed Qt docs, if any, on the user machine. While that
+may not be tough, it's an extra complication. An alternative is to
+distribute it with a separate package, maybe called 'qthelp'. But
+again, that's an extra complication. How much overhead is involved in
+generating the documentation? There's quite a lot of it.
+
+Let us just embed the compiled documentation in qtbase. That is what
+Qt does.  Most people get binary packages anyway, which means they
+will need to download all the help, whether it is generated at build
+time or not. What about version differences? Most people (binary
+users) are tied to a particular version anyway. Just make sure that
+the version of the documentation corresponds to the binary builds.
+
+API: the qhelp() function will lookup an identifier and return an
+object representing the search hits, essentially URLs pointing to
+qthelp resources. Then, the print method for the object will display
+the help in Qt Assistant. Calling as.character on a single hit would
+convert to HTML string, supporting integration.
+
+
+========================================================
+Support for Reference Classes
+========================================================
+
+We want to have Qt classes, including R derivatives, registered in the
+S4/R5 class system. How to achieve this?
+
+Obviously, we need a setRefClass() wrapper that will see the classes
+in the Smoke typelib. Call it setSmokeRefClass(). At least for now,
+this should sit on top of the existing R interface to Smoke, i.e.,
+RQtClass, RQtObject, etc. Calling setSmokeRefClass on one class will
+automatically register the base classes. Anyway, seems pretty trivial.
+
+The question is whether to implicitly declare the class when loading
+the Smoke module. This would involve a fair bit of overhead. But more
+importantly, would we necessarily expect a large, external library,
+like Qt or Java, to be entirely represented in the R5 hierarchy, upon
+load? The namespace system could manage this in the case of Qt,
+maybe. Still, do we consider the symbols in Qt to be on the same level
+as the R symbols declared by the qtbase package? Not currently, at
+least. We always need to qualify symbols with the module object. This
+is helpful for separating the low-level from the high-level
+interface. The qtbase package is a bridge; it does not inject all of
+Qt into R. In Rcpp, which does use implicit registration, the
+programmer has already explicitly imported a C++ library into R using
+their macro system. In our case, we import all of Qt, wholesale, as
+the module object. Explicitly registering a reference class would thus
+be analogous to declaring an interface with Rcpp macros.
+
+This would be easier if we had some use cases, which are currently
+unclear. It may be that an R package will define a S4/R5 API for a
+GUI, where the Qt classes (and R subclasses) are only used
+internally. We have seen, from gWidgets for example, that this is not
+always the case. The gWidgets package calls setOldClass to bring the
+S3 RGtk2 objects into S4. That is a chore that should be avoided. Then
+again, calling setSmokeRefClass("Foo") is not much worse than calling
+importClass("Foo") in the NAMESPACE. Sure, it's better to have things
+in the NAMESPACE, but it's not clear how to get there.
+
+

@@ -1,0 +1,228 @@
+These are the types that Smoke cannot handle as primitives or classes.
+At least with Michael's Qt installation (missing xmlpatterns,
+assistant and webkit).
+
+FT_FaceRec_*
+GLbitfield
+GLenum
+GLfloat
+GLint
+GLuint
+QDBusReply<QDBusConnectionInterface::RegisterServiceReply>
+QDBusReply<QString>
+QDBusReply<QStringList>
+QDBusReply<bool>
+QDBusReply<unsigned int>
+QDBusReply<void>
+QExplicitlySharedDataPointer<QPicturePrivate>&
+QHash<QNetworkRequest::Attribute,QVariant>
+QHash<QString,QVariant>
+QIntegerForSizeof< void* >::Unsigned
+QList<QAbstractAnimation*>
+QList<QAbstractButton*>
+QList<QAbstractState*>
+QList<QAction*>
+QList<QByteArray>
+QList<QByteArray>&
+QList<QDockWidget*>
+QList<QFileInfo>
+QList<QFontDatabase::WritingSystem>
+QList<QGLShader*>
+QList<QGraphicsItem*>
+QList<QGraphicsTransform*>
+QList<QGraphicsView*>
+QList<QGraphicsWidget*>
+QList<QHostAddress>
+QList<QImageTextKeyLang>
+QList<QKeySequence>
+QList<QListWidgetItem*>
+QList<QLocale::Country>
+QList<QMdiSubWindow*>
+QList<QModelIndex>
+QList<QNetworkAddressEntry>
+QList<QNetworkCookie>
+QList<QNetworkInterface>
+QList<QNetworkProxy>
+QList<QObject*>
+QList<QPair<QByteArray,QByteArray> >
+QList<QPair<QString,QString> >
+QList<QPair<double,QPointF> >
+QList<QPair<double,double> >
+QList<QPair<int,int> >
+QList<QPolygonF>
+QList<QPrinter::PageSize>
+QList<QPrinterInfo>
+QList<QSize>
+QList<QSize>&
+QList<QSslCertificate>
+QList<QSslCipher>
+QList<QSslError>
+QList<QStandardItem*>
+QList<QTableWidgetItem*>
+QList<QTableWidgetSelectionRange>
+QList<QTextBlock>
+QList<QTextEdit::ExtraSelection>
+QList<QTextFrame*>
+QList<QTextLayout::FormatRange>
+QList<QTextOption::Tab>
+QList<QTreeWidgetItem*>
+QList<QUndoStack*>
+QList<QUrl>
+QList<QVariant>
+QList<QWidget*>
+QList<double>
+QList<int>
+QList<int>*
+QList<void*>*
+QMap<QDate,QTextCharFormat>
+QMap<QString,QVariant>
+QMap<int,QVariant>
+QMultiMap<QSsl::AlternateNameEntryType,QString>
+QPair<QHostAddress,int>
+QScopedPointer<QBrushData,QBrushDataPointerDeleter>&
+QSet<QAbstractState*>
+QSet<QAccessible::Method>
+QString
+QString&
+QString(*)(const QByteArray&)
+QString*
+QStringList
+QStringList&
+QVector<QAbstractTextDocumentLayout::Selection>&
+QVector<QPair<double,QColor> >
+QVector<QPair<double,QVariant> >
+QVector<QRect>
+QVector<QTextFormat>
+QVector<QTextLength>
+QVector<QVariant>&
+QVector<QXmlStreamEntityDeclaration>
+QVector<QXmlStreamNamespaceDeclaration>
+QVector<QXmlStreamNotationDeclaration>
+QVector<double>
+QVector<unsigned int>
+_XDisplay*
+_XEvent*
+_XRegion*
+bool&
+bool*
+char&
+char*
+char*&
+char**
+const GLfloat*
+const GLfloat[4][4]
+const GLint*
+const GLuint*
+const QGenericMatrix<2,2,double>&
+const QGenericMatrix<2,2,double>*
+const QGenericMatrix<2,3,double>&
+const QGenericMatrix<2,3,double>*
+const QGenericMatrix<2,4,double>&
+const QGenericMatrix<2,4,double>*
+const QGenericMatrix<3,2,double>&
+const QGenericMatrix<3,2,double>*
+const QGenericMatrix<3,3,double>&
+const QGenericMatrix<3,3,double>*
+const QGenericMatrix<3,4,double>&
+const QGenericMatrix<3,4,double>*
+const QGenericMatrix<4,2,double>&
+const QGenericMatrix<4,2,double>*
+const QGenericMatrix<4,3,double>&
+const QGenericMatrix<4,3,double>*
+const QHash<QNetworkRequest::Attribute,QVariant>&
+const QHash<QString,QVariant>&
+const QHash<int,QByteArray>&
+const QList<QAbstractState*>&
+const QList<QByteArray>&
+const QList<QGraphicsItem*>&
+const QList<QGraphicsTransform*>&
+const QList<QHostAddress>&
+const QList<QInputMethodEvent::Attribute>&
+const QList<QKeySequence>&
+const QList<QListWidgetItem*>
+const QList<QModelIndex>&
+const QList<QNetworkCookie>&
+const QList<QObject*>&
+const QList<QPair<QByteArray,QByteArray> >&
+const QList<QPair<QString,QString> >&
+const QList<QRectF>&
+const QList<QSize>&
+const QList<QSslCertificate>&
+const QList<QSslCipher>&
+const QList<QSslError>&
+const QList<QStandardItem*>&
+const QList<QTableWidgetItem*>
+const QList<QTextEdit::ExtraSelection>&
+const QList<QTextLayout::FormatRange>&
+const QList<QTextOption::Tab>&
+const QList<QTreeWidgetItem*>
+const QList<QTreeWidgetItem*>&
+const QList<QUrl>&
+const QList<QVariant>&
+const QList<QWidget*>&
+const QList<QWizard::WizardButton>&
+const QList<int>&
+const QMap<QString,QVariant>&
+const QMap<int,QVariant>&
+const QPair<QHostAddress,int>&
+const QString
+const QString&
+const QString*
+const QStringList&
+const QVector<QAbstractTextDocumentLayout::Selection>&
+const QVector<QColor>
+const QVector<QLine>&
+const QVector<QLineF>&
+const QVector<QPair<double,QColor> >&
+const QVector<QPair<double,QVariant> >&
+const QVector<QPoint>&
+const QVector<QPointF>&
+const QVector<QRect>&
+const QVector<QRectF>&
+const QVector<QTextLayout::FormatRange>&
+const QVector<QTextLength>&
+const QVector<QXmlStreamNamespaceDeclaration>&
+const QVector<double>&
+const QVector<unsigned int>
+const QVector<unsigned int>&
+const char*
+const char* const *
+const int*
+const unsigned char*
+const unsigned int*
+const void*
+double&
+double*
+float&
+int&
+int*
+long long&
+long long*
+long*
+short&
+signed char&
+signed int&
+signed long&
+signed short&
+size_t
+unsigned char&
+unsigned char*
+unsigned int&
+unsigned long long&
+unsigned long&
+unsigned short&
+unsigned short*
+va_list
+void(*)()
+void(*)(QDBusArgument&,const void*)
+void(*)(QDataStream&,const void*)
+void(*)(QDataStream&,void*)
+void(*)(QObject*)
+void(*)(QObject*,int,QAccessible::Event)
+void(*)(QPictureIO*)
+void(*)(QtMsgType,const char*)
+void(*)(const QDBusArgument&,void*)
+void(*)(void*)
+void*
+void*(*)(const void*)
+void**

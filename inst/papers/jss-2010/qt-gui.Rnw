@@ -1,0 +1,409 @@
+\documentclass[article,shortnames]{jss}
+%\usepackage{Sweave}
+
+\newcommand{\Qt}{\pkg{Qt}}
+\newcommand{\R}{\proglang{R}}
+\newcommand{\qtbase}{\pkg{qtbase}}
+\newcommand{\cpp}{\proglang{C++}}
+
+\newcommand{\Rfunction}[1]{\code{#1()}}
+\newcommand{\Rclass}[1]{\textsf{``#1''}}
+\newcommand{\Qtclass}[1]{\textsf{#1}}
+
+
+\title{Developing Graphical User Interfaces in \R\ with \Qt{}}
+
+\author{Michael Lawrence \\ Genentech \And Deepayan Sarkar \\
+  Indian Statistical Institute}
+
+\Plainauthor{Michael Lawrence, Deepayan Sarkar}
+\Plaintitle{Developing R GUIs with Qt} 
+
+\Abstract{ It is often desirable to program an \R\ GUI in the \R\ 
+  language itself. We present infrastructure for programming a GUI in
+  \R\ through an interface to the \Qt\ toolkit, a \cpp\ application
+  library that provides a collection of widgets, the fundamental
+  building blocks of a GUI. We will introduce the basics of the
+  interface and give several examples of its application to GUI
+  development. Some advanced topics, including the ability to extend
+  the \cpp\ classes of \Qt\ in \R{}, are discussed. The interface is
+  implemented by the \qtbase\ package, available at
+  \url{http://github.com/ggobi/qtbase}.  }
+
+\Keywords{graphical user interface, GUI, \R{}, \Qt{}}
+\Plainkeywords{graphical user interface, GUI, R, Qt}
+
+\Address{Michael Lawrence\\
+  Bioinformatics and Computational Biology\\
+  Genentech Research and Early Development\\
+  South San Francisco, CA, USA\\
+  E-mail: michafla@gene.com\\
+  \\
+  Deepayan Sarkar\\
+  Theoretical Statistics and Mathematics Unit\\
+  Indian Statistical Institute, Delhi Centre\\
+  7 SJSS Marg, New Delhi 110016, India\\
+  E-mail: deepayan.sarkar@r-project.org\\
+}
+
+\begin{document}
+
+\section{Introduction}
+
+R is typically accessed via the command line, so it is no surprise
+that the most popular R GUIs are graphical shells around a
+console. Such interfaces offer simple, general utilities, such
+as switching the working directory or fitting a basic linear
+model. More complex tasks are usually best left to the command line,
+except when a GUI is developed specifically for a particular task and
+is able to abstract away the unnecessary details. An example would be
+a wizard for analysis of gene expression microarrays, where the user
+is led from preprocessing through to the detection of differentially
+expressed genes. Given the high frequency at which such use cases are
+encountered, it is desirable to implement GUIs directly in \R{},
+avoiding the difficulties and overhead involved in cross-language
+development.
+
+This paper introduces infrastructure for developing GUIs in \R\ 
+through an interface to the \Qt\ toolkit, a \cpp\ application library
+developed by Nokia. \Qt\ consists of a number of modules, and
+principal among them is the GUI module, which provides a collection of
+widgets, the graphical controls that serve as the fundamental building
+blocks of a GUI. Other interesting \Qt\ modules include a WebKit web
+browser implementation, enabling hybrid desktop and web applications,
+and an OpenGL-based renderer for hardware accelerated graphics. An
+automatic installer for the entirety of \Qt\ is available from Nokia
+for the major platforms, including Windows and Mac.
+
+The interface between \R\ and \Qt\ is primarily implemented by the
+\qtbase\ package. The interface is low-level, in that the \R\ user
+directly constructs instances of \Qt\ classes and calls their
+methods. All of the \Qt\ modules are accessible through the
+interface. 
+
+A number of other packages enable GUI construction in \R\ by
+interfacing with external libraries. The \pkg{tcltk} package provides
+access to the \proglang{Tcl/Tk} GUI toolkit. It is often the
+convenient option, as \pkg{tcltk} is bundled with \R{}. However,
+\proglang{Tcl/Tk} offers fewer and less sophisticated widgets compared
+to \Qt{}. The \pkg{RGtk2} package interfaces \R\ with the \pkg{GTK+}
+toolkit and several of its dependencies. \pkg{GTK+} may be more
+accessible than \Qt\ to the typical \R\ programmer, because \Qt\ 
+requires a stronger understanding of technical topics like memory
+management and object-oriented inheritance. However, \pkg{GTK+} falls
+short of \Qt\ in terms of features, particularly in the areas of
+graphics and web integration. The \pkg{Swing} toolkit is available
+to \R\ through \proglang{Java} interfaces like \pkg{rJava} and
+\pkg{SJava}. \Qt\ compares favorably to \pkg{Swing}, although
+\pkg{Swing} has the advantage of integration with the extensive
+\proglang{Java} platform.
+
+The next sections will introduce the fundamentals of the interface and
+its application to GUI development. We will follow with several
+examples of programming a practical GUI in \R\ with \Qt. 
+
+\section{The Interface to Qt}
+\label{sec:objects}
+
+\subsection{Libraries}
+\label{sec:libraries}
+
+Each package that binds a library provides a \Rclass{RQtLibrary}
+object. The \qtbase{} package itself provides the \Rcode{Qt} object,
+which binds the Qt library.
+<<Qt>>=
+Qt
+@
+% 
+As evident from the above output, each library object is a container
+of class objects, of type \Rclass{RQtClass}. 
+
+A \Rclass{RQtLibrary} is a special type of \Rcode{environment} and may be
+manipulated as any other environment:
+<<libraries-as-environments>>=
+head(ls(Qt))
+Qt$QPushButton
+@ 
+% 
+We have just extracted the \R\/ class object for the C++ \Rcode{QWidget}
+class, and we describe such objects in the next section.
+
+\subsection{Classes}
+\label{sec:classes}
+
+A class object might represent an actual C++ class, an \R\/ derivative of
+a C++ class, or a C++ namespace. A class object is a special type of \R\/
+\Rcode{function} that serves as the constructor for the class:
+<<QWidget>>=
+button <- Qt$QPushButton("Press Me!")
+@ 
+% 
+Beyond its role as a constructor, the class object is a container of
+static methods (or simple functions in the case of a namespace) and
+enumerations. We invoke the static method \Rcode{tr} for translating text:
+<<tr>>=
+Qt$QPushButton$tr("Hello World")
+@ 
+% 
+The above code relies on a method for \Rcode{\$} that is specially
+defined for the \Rclass{RQtClass}.
+
+\subsection{Objects}
+\label{sec:objects}
+
+The \Rcode{button} object constructed above is a
+\Rclass{RQtObject}. Like \Rclass{RQtClass}, \Rclass{RQtObject} is an
+\Rcode{environment}. It contains methods and, for \Rcode{QObject}
+derived instances, properties.
+<<show>>=
+button$show()
+@ 
+% 
+In the above, we obtain the \Rcode{show} method and invoke it to show
+the button on the screen.
+
+As \Rcode{QPushButton} extends \Rcode{QObject}, it has properties, and
+one of its properties is its \Rcode{text} label:
+<<text-property>>=
+button$text
+button$text <- "PUSH ME!"
+@ 
+
+\subsection{Connecting Signal Handlers}
+\label{sec:signals}
+
+In any GUI, the application needs to react to user
+events. Qt supports this with signals. Here, we connect an \R\/ handler
+to a signal that is emitted when the button is \Rcode{pressed}:
+<<qconnect>>=
+qconnect(button, "pressed", function() print("pushed"))
+@ 
+% 
+The signal connection is achieved with the \Rcode{qconnect}
+function. The \R\/ function is invoked when the \Rcode{pressed} signal
+is emitted on \Rcode{button}.
+
+We now have a trivial but complete GUI. A widget, specifically a
+button, is displayed on the screen, and \R\/ code is responding to user
+input, a click of the button. For more examples, please see
+\Rcode{demo(package="qtbase")}.  The rest of this vignette treats
+advanced concepts, including the ability to extend C++ classes in \R.
+
+\section{GUI Fundamentals: Widgets and Layout}
+\label{sec:widgets}
+
+\section{Examples}
+
+The \qtbase\ package itself provides very low-level access to \Qt\
+classes and methods.  Developing useful GUIs involves additional work,
+paralleling the process of building a GUI in \cpp\ using \Qt{}, except
+of course that the language used is \R\ instead of \cpp{}.  We will
+first describe a few examples already implemented in the \pkg{qtutils}
+package, followed by a more involved (but simpler) example developed
+from scratch.
+
+\subsection{An object browser}
+\label{sec:browser}
+
+The \pkg{qtutils} package contains several GUIs developed using
+\pkg{qtbase}, primarily as proof-of-concept illustrations, but with
+eventual real-life use in mind.  These applications are typically
+created by calling suitable functions that return a widget, shown by
+its print method (usually invoked by auto-printing).  One such
+function is \Rfunction{qstr}, a graphical analog of \Rfunction{str}.
+\Rfunction{qstr} is a (S3) generic function, allowing for specific
+methods for various \R\ classes.  The default method simply captures
+the results of \Rfunction{print} called on the object and displays it
+in a \Qtclass{QTextEdit}.  However, obvious candidates for specific
+methods are the \Rclass{data.frame} and \Rclass{matrix} classes, which
+can be displayed using the spreadsheet-like \Qtclass{QTableWidget}.
+For example, one might inspect the \code{iris} dataset using (result
+not shown)
+<<echo=FALSE>>=
+library(qtutils)
+w <- qstr(iris)
+w
+@ 
+%
+Another specific (and less trivial) method is available for the
+\Rclass{list} and \Rclass{environment} classes.  These methods return
+a \Qtclass{QSplitter} widget, with a \Qtclass{QListWidget} on the left
+containing an entry for each element of the list (or object in the
+environment), and an initially empty ``preview'' on the right.  When
+an entry on the left is activated, \Rfunction{qstr} is called on the
+corresponding object, and the resulting widget is placed on the
+``preview'' area.
+
+This simple abstraction enables a basic object browser without further
+effort.  For example, one can run 
+<<>>=
+qstr(.GlobalEnv)
+@ 
+%
+to list and inspect all objects currently in the workspace.  Going a
+bit further, \pkg{qtutils} provides a \Rfunction{qbrowser} function
+that starts with an initial list containing all environments in the
+current search path.
+
+[Optional: Output of \code{fm <- lm(...)} is a list, and is shown as
+such.  One may prefer to see the output of summary(fm).  We can write
+our custom method \code{qstr.lm}, and behavior will change. ]
+
+
+
+\subsection{Debugging: a graphical replacement for \code{recover}}
+\label{sec:debug}
+
+
+
+\subsection{A graphics device}
+\label{sec:device}
+
+\subsection{An interactive demo}
+\label{sec:intdemo}
+
+
+
+\subsection{Going further}
+\label{sec:more}
+
+These examples barely start to explore the possibilities, and have
+been chosen to highlight the use of traditional GUI elements used
+through the \qtbase\ API.  Richer applications can be developed using
+\Qt{}'s own efficient interactive graphics capabilities, ...
+
+\section{Advanced: Extending Qt Classes}
+
+Many C++ libraries expect the user to extend C++ classes in normal
+course. For interfacing \R\/ with \Qt, this presents a complication: the \R\/
+user must be able to extend a \Qt/C++ class. 
+
+We will demonstrate this functionality by example. Our aim is to
+extend the \Rcode{QValidator} class to restrict the input in a text
+entry (\Rcode{QTextEdit}) to positive numbers. The first step is to
+declare the class, and then methods are added individually to the
+class definition, in an analogous manner to the \Rpackage{methods}
+package. We start by declaring the class:
+<<qsetClass>>=
+qsetClass("PositiveValidator", Qt$QValidator)
+@ 
+% 
+The class name is given as \Rcode{PositiveValidator} and it extends the
+\Rcode{QValidator} class in \Qt. Note that only single inheritance is
+supported.
+
+As a side-effect of the call to \Rfunction{qsetClass}, a variable
+named \Rcode{PositiveValidator} has been assigned into the global
+environment (the scoping is similar to \Rfunction{methods::setClass}):
+<<list-validator-class>>=
+PositiveValidator
+@ 
+% 
+To define a method on our class, we call the \Rfunction{qsetMethod}
+function:
+<<validate, echo=FALSE>>=
+validatePositive <- function(input, pos) {
+  val <- suppressWarnings(as.integer(input))
+  if (!is.na(val)) {
+    if (val > 0)
+    Qt$QValidator$Acceptable
+    else Qt$QValidator$Invalid
+  } else {
+    if (input == "")
+    Qt$QValidator$Acceptable
+    else Qt$QValidator$Invalid
+  }
+}
+@ 
+<<qsetMethod>>=
+qsetMethod("validate", PositiveValidator, validatePositive)
+@ 
+% 
+The virtual method \Rcode{validate} declared by \Rcode{QValidator} has
+been overriden by the \Rcode{PositiveValidator} class.  The
+\Rfunction{validatePositive} function implements the override and has
+been defined invisibly for readability.
+
+As an \Rclass{RQtClass} object, we can create an instance by invoking
+\Rfunction{PositiveValidator} as a \Rcode{function}:
+<<construct-validator>>=
+validator <- PositiveValidator()
+@ 
+% 
+Now that we have our validator, we can use it with a text entry:
+<<text-entry>>=
+e <- Qt$QLineEdit()
+v <- PositiveValidator(e)
+e$setValidator(v)
+e$show()
+@ 
+
+Often, it is necessary to customize the constructor of an \R\/
+class. The \R\/ function implementing the constructor must be passed
+during the call to \Rfunction{qsetClass}. Here, we extend
+\Rcode{QMessageBox} to create a dialog, shown when the application is
+closing, that asks the user whether a document should be saved:
+<<extend-window-title>>=
+qsetClass("SaveConfirmationDialog", Qt$QMessageBox, 
+function(filename = NULL, parent = NULL) 
+{
+  super(icon = Qt$QMessageBox$Question, title = "Save confirmation", 
+  text = "Save the current document?", 
+  buttons = Qt$QMessageBox$Cancel | Qt$QMessageBox$Discard | 
+  Qt$QMessageBox$Save,
+  parent = parent)
+  this$filename <- filename
+})
+@ 
+% 
+The \Rfunction{super} function exists only within the scope of the
+constructor. It passes its arguments to the constructor of the super
+(parent) class. Above, we pass various parameters of the dialog
+to the \Rclass{QMessageBox} constructor.  By convention, every
+\Rclass{QObject} derivative, including any widget, accepts its parent
+instance as an argument to its constructor and forwards it to the
+super constructor. Another special variable, \Robject{this},
+corresponds to the current instance being constructed. We reference it
+to create an attribute for the \Robject{filename} on the
+instance. Similar to attributes on ordinary R objects, these
+attributes are dynamically typed and are implicitly defined at the
+instance-level by setting a value.
+
+Within a method implementation, \Rcode{super} will call a
+named method in the parent class. We demonstrate in our override of
+\Rfunction{accept}, which is invoked when the user decides to save the
+document:
+<<accept-override>>=
+qsetMethod("accept", SaveConfirmationDialog, function() {
+  saveDocument(filename)
+  super("accept")
+})
+@ 
+% 
+After saving the current document, the method calls \Rfunction{super}
+to forward the user response to one of the super classes. This is
+similar to \Rfunction{callNextMethod}, except \Rfunction{super} will
+invoke any named method, not only the current one. Also,
+\Rfunction{super} does not implicitly forward method arguments: they
+must be passed after the name argument.
+
+Internally, \qtbase/ defines abstractions for a class-based
+object-oriented runtime in \cpp, using Smoke as the common type
+currency. This could serve as the base for an implementation of the
+reference class system defined by the \pkg{methods} package.
+
+For more examples of extending C++ classes, please see
+\Rcode{demo(package="qtbase")}.
+
+\section{Conclusion}
+
+There are currently several packages that extend \qtbase/ for
+particular applications. These include \pkg{qtpaint}, for efficient
+interactive graphics, and \pkg{qtutils}, which includes utilities such
+as an object browser and an \R/ graphics device based on the \Qt/
+graphics engine.
+
+
+%\bibliography{qt-gui}
+
+\end{document}
