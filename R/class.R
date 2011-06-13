@@ -88,13 +88,15 @@ normConstructor <- function(x, parent) {
   ## - casts the base instance down to this class
   ## - encloses the constructor in the instance env (enclosed by original env)
   ## - invokes the constructor
+  argNames <- lapply(names(formals(x)), as.name)
   wrapperBody <- substitute({
-    mc <- as.list(match.call())[-1]
-    base <- do.call(baseConstructor, mc)
+    base <- callBaseConstructor
     this <- qcast(base, sys.function())
-    do.call(qenclose(this, x), mc)
+    x_enclosed <- qenclose(this, x)
+    callConstructor
     this
-  }, list(x = x, baseConstructor = baseConstructor))
+  }, list(callBaseConstructor = as.call(c(baseConstructor, argNames)),
+          callConstructor = as.call(c(quote(x_enclosed), argNames)), x = x))
   if (!length(first)) # no need to call constructor
     wrapperBody[[5]] <- NULL
   fun <- as.function(c(formals(x), wrapperBody))
