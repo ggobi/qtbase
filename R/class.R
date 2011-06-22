@@ -39,14 +39,24 @@ print.RQtClass <- function(x, ...) {
 ## obtain a class object from a smoke module and a name
 qsmokeClass <- function(x, name, internals = character()) {
   env <- new.env(parent = emptyenv())
-  basename <- gsub(".*::", "", name)
-  cl <- structure(function(...) qinvokeStatic(cl, basename, ...), name = name,
+  ## we have to be extra careful about the enclosing environments for
+  ## these functions; otherwise, we could end up e.g. serializing the
+  ## big library 'x' -- could do this more idiomatically by defining
+  ## the functions outside the scope of this one.. but lets just be explicit.
+  constructor <- function(...) qinvokeStatic(cl, basename, ...)
+  constructorEnv <- new.env(parent = getNamespace("qtbase"))
+  environment(constructor) <- constructorEnv
+  constructorEnv$basename <- gsub(".*::", "", name)
+  cl <- structure(constructor, name = name,
                   env = env, module = attr(x, "name"),
                   class = c("RQtSmokeClass", "RQtClass", "function"))
+  constructorEnv$cl <- cl
   methods <- qmethods(cl)
   methods <- subset(methods, !duplicated(name) & static & !protected)
   lapply(methods$name, function(name) {
     fun <- structure(function(...) qinvokeStatic(cl, name, ...), static = TRUE)
+    environment(fun) <- list2env(list(cl = cl, name = name),
+                                 parent = getNamespace("qtbase"))
     assign(name, fun, env)
   })
   enums <- qenums(cl)
