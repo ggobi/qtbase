@@ -18,8 +18,10 @@ const Class* Class::fromSmokeId(Smoke *smoke, int classId) {
   if (!klass) {
     if (smoke->classes[classId].external) { // ensure we have actual class
       Smoke::ModuleIndex mi = Smoke::classMap[name];
-      smoke = mi.smoke;
-      classId = mi.index;
+      if (mi.index) {
+        smoke = mi.smoke;
+        classId = mi.index;
+      } // else we have a ghost class; we have done the best we could
     }
     if (!_classFactory) _classFactory = new ClassFactory;
     klass = _classFactory->createClass(smoke, classId);

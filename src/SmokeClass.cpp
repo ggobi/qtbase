@@ -201,8 +201,9 @@ QList<Method *> SmokeClass::methods(Method::Qualifiers qualifiers) const {
       }
     }
   }
-  foreach(const Class *p, parents())
+  foreach(const Class *p, parents()) {
     meths.append(p->methods(qualifiers | Method::NotPrivate));
+  }
   return meths;
 }
 
