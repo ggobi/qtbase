@@ -33,7 +33,7 @@ public:
                    ImplementationMissing, BadArguments };
   enum Qualifier { None, Static = 1 << 0, NotStatic = 1 << 1, Public = 1 << 2,
                    Protected = 1 << 3, Private = 1 << 4, NotPrivate = 1 << 5,
-                   Constructor = 1 << 6, Implicit = 1 << 7
+                   Constructor = 1 << 6, Implicit = 1 << 7, Destructor = 1 << 8
                    /*Virtual = 1 << 2*/ };
   Q_DECLARE_FLAGS(Qualifiers, Qualifier)
 

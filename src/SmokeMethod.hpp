@@ -44,6 +44,8 @@ public:
       if (!(_m->flags & Smoke::mf_explicit))
         flags |= Implicit;
     }
+    if (_m->flags & Smoke::mf_dtor)
+      flags |= Destructor;
     return flags;
   }
 
