@@ -66,6 +66,7 @@ qsmokeClass <- function(x, name, internals = character()) {
                   env = env, module = attr(x, "name"),
                   class = c("RQtSmokeClass", "RQtClass", "function"))
   constructorEnv$cl <- cl
+  attr(cl, "parents") <- mget(qparentClasses(cl), x)
   methods <- qmethods(cl)
   methods <- subset(methods, !duplicated(name) & static & !protected)
   lapply(methods$name, function(name) {
