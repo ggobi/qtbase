@@ -117,6 +117,22 @@ SEXP qt_qenums(SEXP klass) {
 }
 
 extern "C"
+SEXP qt_qparentClasses(SEXP klass) {
+  SEXP result;
+  const Class *c = Class::fromSexp(klass);
+  QList<const Class *> superClasses = c->parents();
+  
+  PROTECT(result = allocVector(STRSXP, superClasses.size()));
+  
+  for (int i = 0; i < length(result); i++) {
+    SET_STRING_ELT(result, i, mkChar(superClasses[i]->name()));
+  }
+  
+  UNPROTECT(1);
+  return result;
+}
+
+extern "C"
 SEXP qt_qclasses(SEXP rsmoke) {
   Smoke *smoke = asSmoke(rsmoke);
   SEXP rclasses;

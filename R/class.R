@@ -27,6 +27,20 @@ qenums <- function(x) {
   .Call("qt_qenums", x, PACKAGE="qtbase")
 }
 
+qparentClasses <- function(x) {
+  stopifnot(is(x, "RQtClass"))
+  .Call("qt_qparentClasses", x, PACKAGE="qtbase")
+}
+
+## We enforce single inheritance in the implementation of
+## RQtUserClass, but we abstract that here.
+qparents <- function(x, ...) UseMethod("qparents")
+qparents.RQtSmokeClass <- function(x) attr(x, "parents")
+qparents.RQtUserClass <- function(x) {
+  parent <- attr(x, "parent")
+  structure(list(parent), names = attr(parent, "name"))
+}
+
 print.RQtClass <- function(x, ...) {
   methods <- subset(qmethods(x), !protected)
   cat("Class '", attr(x, "name"), "' with ", nrow(methods), " public methods\n",

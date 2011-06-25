@@ -23,7 +23,8 @@ extern "C" {
   SEXP qt_qenums(SEXP klass);
   SEXP qt_qproperties(SEXP x);
   SEXP qt_qclasses(SEXP rsmoke);
-
+  SEXP qt_qparentClasses(SEXP klass);
+  
   // Smoke-specific metadata
   SEXP qt_qsmokes(void);
 
@@ -83,6 +84,7 @@ static R_CallMethodDef CallEntries[] = {
     CALLDEF(qt_qenums, 1),
     CALLDEF(qt_qproperties, 1),
     CALLDEF(qt_qclasses, 1),
+    CALLDEF(qt_qparentClasses, 1),
 
     // Smoke metadata
     CALLDEF(qt_qsmokes, 0),
