@@ -1,9 +1,7 @@
 qmocMethods <- function(x) {
-  if (is(x, "QObject"))
-    metaObject <- x$metaObject()
-  else if (is(x, "RQtClass") && isQObjectClass(x))
-    metaObject <- qmetaObject(x)
-  else stop("'x' should be a QObject-derived instance or class")
+  metaObject <- qmetaObject(x)
+  if (is.null(metaObject))
+    stop("'x' should be a QObject instance or class")
   methods <- .Call("qt_qmocMethods", metaObject, PACKAGE="qtbase")
   methods[[1]] <- c("method", "signal", "slot", "constructor")[methods[[1]] + 1]
   methods <- c(list(sub("\\(.*", "", methods[[2]])), methods)
