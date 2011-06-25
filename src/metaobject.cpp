@@ -47,8 +47,7 @@ extern "C" SEXP qt_qnormalizedSignature(SEXP x) {
 }
 
 extern "C" SEXP qt_qproperties(SEXP x) {
-  QObject *self = unwrapSmoke(x, QObject);
-  const QMetaObject *meta = self->metaObject();
+  const QMetaObject *meta = unwrapSmoke(x, QMetaObject);
   int n = meta->propertyCount();
   
   SEXP ans, ans_type, ans_name, ans_readable, ans_writable;

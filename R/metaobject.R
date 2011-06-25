@@ -56,12 +56,15 @@ qresolveSignature <- function(x, sig, type, nargs) {
 }
 
 qproperties <- function(x) {
-  stopifnot(is(x, "QObject"))
-  props <- .Call("qt_qproperties", x, PACKAGE="qtbase")
-  names(props) <- c("name", "type", "readable", "writable")
-  name <- props$name
-  props$name <- NULL
-  as.data.frame(props, row.names=name)
+  metaObject <- qmetaObject(x)
+  if (!is.null(metaObject)) {
+    props <- .Call("qt_qproperties", metaObject, PACKAGE="qtbase")
+    names(props) <- c("name", "type", "readable", "writable")
+    name <- props$name
+    props$name <- NULL
+    as.data.frame(props, row.names=name)
+  } else data.frame(name = character(), type = character(),
+                    readable = logical(), writable = logical())
 }
 
 qmetadata <- function(x) {
