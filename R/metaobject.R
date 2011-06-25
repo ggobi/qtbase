@@ -85,10 +85,17 @@ qmetadata <- function(x) {
   x
 }
 
-isQObjectClass <- function(x) !is.null(x$staticMetaObject())
+isQObjectClass <- function(x) !is.null(x$staticMetaObject)
 
 qmetaObject <- function(x, ...) UseMethod("qmetaObject")
-qmetaObject.RQtSmokeClass <- function(x) x$staticMetaObject()
+qmetaObject.default <- function(x, ...) NULL
+qmetaObject.QMetaObject <- function(x) x
+qmetaObject.QObject <- function(x) x$metaObject()
+qmetaObject.RQtSmokeClass <- function(x) {
+  if (isQObjectClass(x))
+    x$staticMetaObject()
+  else NULL
+}
 qmetaObject.RQtUserClass <- function(x) {
   attr(x, "instanceEnv")$staticMetaObject()
 }
