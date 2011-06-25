@@ -261,3 +261,43 @@ qsetProperty <- function(name, class, type = NULL,
   qmetadata(class)$properties[[name]] <- prop
   name
 }
+
+qsetRefClass <- function(Class, where = topenv(parent.frame()), ...) {
+  if (!is(Class, "RQtClass"))
+    stop("'Class' must be an RQtClass, e.g., Qt$QWidget")
+  parents <- qparents(Class)
+  for (parent in parents)
+    if (!isClass(attr(parent, "name")))
+      qsetRefClass(parent, where = where)
+  getPropertyNames <- function(x) rownames(qproperties(x))
+  propertyNames <- getPropertyNames(Class)
+  propertyNames <- setdiff(propertyNames,
+                           unlist(lapply(parents, getPropertyNames)))
+  fields <- sapply(propertyNames, function(propertyName) {
+    eval(substitute(function(value) {
+      if (missing(value))
+        .ref$propertyName
+      else .ref$propertyName <- value
+    }, list(propertyName = as.name(propertyName))))
+  })
+  className <- attr(Class, "name")
+  getMethodNames <- function(x) {
+    methodInfo <- qmethods(x)
+    subset(methodInfo, !static & !constructor)$name
+  }
+  methodNames <- getMethodNames(Class)
+  methodNames <- setdiff(methodNames, unlist(lapply(parents, getMethodNames)))
+  methods <- sapply(methodNames, function(methodName) {
+    eval(substitute(function(...) {
+      qinvoke(.ref, methodName, ...)
+    }, list(methodName = methodName)))
+  })
+  methods <- c(methods,
+               initialize = eval(substitute(function(...) {
+                 Class(...)
+               }, list(Class = Class))))
+  
+  setRefClass(className, fields = c(fields, .ref = "RQtObject"),
+              methods = methods, contains = sapply(parents, attr, "name"),
+              where = where, ...)
+}
