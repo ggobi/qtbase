@@ -16,7 +16,8 @@ names.RQtClass <- function(x) {
 qmethods <- function(x) {
   stopifnot(is(x, "RQtClass"))
   methods <- .Call("qt_qmethods", x, PACKAGE="qtbase")
-  names(methods) <- c("name", "return", "signature", "protected", "static")
+  names(methods) <- c("name", "return", "signature", "protected", "static",
+                      "constructor")
   df <- as.data.frame(methods, stringsAsFactors=FALSE)
   df[!duplicated(df$signature),]
 }

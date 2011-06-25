@@ -27,6 +27,7 @@ enum {
   MD_SIG,
   MD_PROTECTED,
   MD_STATIC,
+  MD_CONSTRUCTOR,
   MD_LAST
 };
 
@@ -44,7 +45,12 @@ SEXP qt_qmethods(SEXP klass)
   SEXP result;
   const Class *c = Class::fromSexp(klass);
   QList<Method *> methods = c->methods();
-  int i = 0;
+  int i;
+
+  for (i = 0; i < methods.size(); i++)
+    if (methods[i]->qualifiers() & Method::Destructor)
+      methods.removeAt(i);
+  i = 0;
   
   PROTECT(result = allocVector(VECSXP, MD_LAST));
   SEXP resultName = allocVector(STRSXP, methods.size());
@@ -57,7 +63,9 @@ SEXP qt_qmethods(SEXP klass)
   SET_VECTOR_ELT(result, MD_PROTECTED, resultProtected);
   SEXP resultStatic = allocVector(LGLSXP, methods.size());
   SET_VECTOR_ELT(result, MD_STATIC, resultStatic);
-  
+  SEXP resultConstructor = allocVector(LGLSXP, methods.size());
+  SET_VECTOR_ELT(result, MD_CONSTRUCTOR, resultConstructor);
+
   while(!methods.isEmpty()) {
     Method * m = methods.takeFirst();
     QVector<SmokeType> types = m->types();
@@ -76,6 +84,7 @@ SEXP qt_qmethods(SEXP klass)
     SET_STRING_ELT(resultSig, i, mkChar(sig.constData()));
     LOGICAL(resultProtected)[i] = m->qualifiers() & Method::Protected;
     LOGICAL(resultStatic)[i] = m->qualifiers() & Method::Static;
+    LOGICAL(resultConstructor)[i] = m->qualifiers() & Method::Constructor;
     delete m;
     i++;
   }
