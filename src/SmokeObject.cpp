@@ -193,11 +193,12 @@ SEXP SmokeObject::createSexp(SEXP parentEnv) {
 
 SEXP SmokeObject::sexp() {
   if (!_sexp) {
-    _sexp = createSexp(R_EmptyEnv);
+    PROTECT(_sexp = createSexp(R_EmptyEnv));
     SET_HASHTAB(_sexp, _klass->createObjectTable(this)->sexp());
 #ifdef MEM_DEBUG
     qDebug("%p: created sexp %p", this, _sexp);
 #endif
+    UNPROTECT(1);
   }
   return _sexp;
 }
