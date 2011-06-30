@@ -92,13 +92,17 @@ qmetaObject <- function(x, ...) UseMethod("qmetaObject")
 qmetaObject.default <- function(x, ...) NULL
 qmetaObject.QMetaObject <- function(x) x
 qmetaObject.QObject <- function(x) x$metaObject()
-qmetaObject.RQtSmokeClass <- function(x) {
+qmetaObject.RQtClass <- function(x) {
   if (isQObjectClass(x))
     x$staticMetaObject()
   else NULL
 }
 qmetaObject.RQtUserClass <- function(x) {
-  attr(x, "instanceEnv")$staticMetaObject()
+### FIXME: hack because we do not support user static methods
+  staticMetaObject <- attr(x, "instanceEnv")$staticMetaObject
+  if (!is.null(staticMetaObject))
+    staticMetaObject()
+  else NextMethod()
 }
 
 ## Does not handle 'const' types yet -- but do we want this?
