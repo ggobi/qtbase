@@ -10,11 +10,12 @@
 
 
 
-#define checkPointer(x, type) ({                                       \
-      if (TYPEOF(x) != EXTPTRSXP)                                      \
-        error("checkPointer: not an externalptr");                     \
-      if (!inherits(x, type))                                          \
-        error("checkPointer: expected object of class '", type, "'");  \
+#define checkPointer(x, type) ({                                               \
+      if (TYPEOF(x) != EXTPTRSXP)                                              \
+        error("checkPointer: expected object of type 'externalptr', not '%s'", \
+              type2char(TYPEOF(x)));                                           \
+      if (!inherits(x, type))                                                  \
+        error("checkPointer: expected object of class '", type, "'");          \
     })
 
 #define unwrapPointerSep(x, rtype, ctype) ({                            \
