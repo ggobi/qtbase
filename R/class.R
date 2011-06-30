@@ -176,6 +176,10 @@ qsetMethod <- function(name, class, FUN,
   name
 }
 
+qhasMethod <- function(name, class) {
+  exists(name, attr(class, "instanceEnv"))
+}
+
 ## Integration with the Qt Meta Object Compiler (MOC)
 
 ## The basic idea: define methods in R that are described by
