@@ -216,13 +216,15 @@ qsetSignal <- function(signature, class,
 {
   access <- match.arg(access)
   method <- qmetaMethod(signature, access)
-  qmetadata(class)$signals[[signature]] <- method
   meta <- qmetaObject(class)
-  index <- meta$methodCount() - 1L
+  index <- meta$methodCount()
   qsetMethod(method$name, class,
              function(...) .Call("qt_qmetaInvoke", this, index, list(...),
                                  PACKAGE="qtbase"),
              access)
+  ## set this last so that the compiled metadata does not end up in a
+  ## lazy-loaded package
+  qmetadata(class)$signals[[signature]] <- method
   method$name
 }
 
