@@ -131,6 +131,10 @@ SmokeObject::SmokeObject(void *ptr, const Class *klass, bool allocated)
 }
 
 void SmokeObject::maybeDestroy() {
+#ifdef MEM_DEBUG
+  if (!_allocated)
+    qDebug("%p: unallocated", this);
+#endif
   if (_allocated && !memoryIsOwned()) {
 #ifdef MEM_DEBUG
     qDebug("%p: invoking destructor", this);
