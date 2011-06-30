@@ -71,18 +71,34 @@ qmetadata <- function(x) {
   attr(x, "metadata")
 }
 
-## Every time metadata is set, we recompile it and reset the methods
-## so that they refer to the new metadata
+## Every time metadata is set, we set the accessor methods to
+## regenerate it. After regneration, the accessors merely retrieve the
+## compiled form.
 "qmetadata<-" <- function(x, value) {
   if (!isQObjectClass(x)) # not a QObject class, no compilation
     return(x)
-  compiled <- compileMetaObject(x, value)
-  qsetMethod("metaObject", x, function() compiled)
-  ## Lets MocClass see our methods
-  qsetMethod("staticMetaObject", x, function() compiled)
-  ## Ensure this method is defined if it isn't yet
-  qsetMethod("qt_metacall", x,
-             function(call, id, args) .Call("qt_qmetacall", this, call, id, args, PACKAGE="qtbase"))
+  
+  ### We use direct substitution here to avoid any conflicts with the
+  ### instance environment. These methods are set on any user-defined,
+  ### QObject-drived class, so we need to be careful. We could go up
+  ### the environment chain, but this approach seems more robust.
+  
+  ### FIXME: it is possible for this compiled metadata to end up in a
+  ### lazily-loaded package. How could we avoid this, short of having
+  ### the user package reset the metadata for each class on load?
+  createMetaObject <- eval(substitute(function() {
+    compiledMetaObject <- qtbase:::compileMetaObject(class, metadata)
+    getMetaObject <- eval(substitute(function() { x },
+                                     list(x = compiledMetaObject)))
+    qtbase::qsetMethod("metaObject", class, getMetaObject)
+    qtbase::qsetMethod("staticMetaObject", class, getMetaObject)
+    compiledMetaObject
+  }, list(class = x, metadata = value)))
+  qsetMethod("metaObject", x, createMetaObject)
+  qsetMethod("staticMetaObject", x, createMetaObject)
+  qsetMethod("qt_metacall", x, # just ensure we have this method defined
+             function(call, id, args)
+             .Call("qt_qmetacall", this, call, id, args, PACKAGE="qtbase"))
   x
 }
 
