@@ -136,13 +136,13 @@ extern "C"
 SEXP qt_qclasses(SEXP rsmoke) {
   Smoke *smoke = asSmoke(rsmoke);
   SEXP rclasses;
-  PROTECT(rclasses = allocVector(STRSXP, smoke->numClasses));
-  for (int i = 1; i <= smoke->numClasses; i++) {
-    QString name = smoke->classes[i].className;
-    if (smoke->classes[i].external)
-      name = "." + name;
-    SET_STRING_ELT(rclasses, i-1, mkChar(name.toLocal8Bit().data()));
-  }
+  int numClasses = 0;
+  for (int i = 1; i <= smoke->numClasses; i++)
+    numClasses += !smoke->classes[i].external;
+  PROTECT(rclasses = allocVector(STRSXP, numClasses));
+  for (int i = 1, j = 0; i <= smoke->numClasses; i++)
+    if (!smoke->classes[i].external)
+      SET_STRING_ELT(rclasses, j++, mkChar(smoke->classes[i].className));
   UNPROTECT(1);
   return rclasses;
 }

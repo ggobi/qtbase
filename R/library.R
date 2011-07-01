@@ -21,29 +21,28 @@ qclasses <- function(x) {
   .Call("qt_qclasses", qsmoke(x), PACKAGE="qtbase")
 }
 
+.qlibraries <- new.env(parent = emptyenv())
+
+qlibraries <- function() as.list(.qlibraries)
+
 ## Many libraries define all of their classes within a namespace of
 ## the same name. We want to avoid syntax like Qanviz$Qanviz$Layer, so
 ## the top namespace is implied. Qt itself is of course an exception.
-qlibrary <- function(lib, namespace = deparse(substitute(lib)),
-                     restrictToNamespace = FALSE)
+qlibrary <- function(lib, namespace = deparse(substitute(lib)), register = TRUE)
 {
+  force(namespace)
   name <- tolower(deparse(substitute(lib)))
-  attr(lib, "ns") <- namespace
   if (is.null(attr(lib, "name")))
     attr(lib, "name") <- name
+  if (register)
+    assign(attr(lib, "name"), lib, .qlibraries)
+  attr(lib, "ns") <- namespace
   class(lib) <- c("RQtLibrary", "environment")
   classes <- qclasses(lib)
-  hidden <- substring(classes, 1, 1) == "."
-  classes[hidden] <- substring(classes[hidden], 2, nchar(classes[hidden]))
   if (!is.null(namespace)) { # remove the implied namespace
-    prefix <- paste("^", sub("^\\.", "", namespace), "::", sep = "")
-    if (restrictToNamespace) {
-      inNS <- grep(prefix, classes)
-      classes <- classes[inNS]
-      hidden <- hidden[inNS]
-    }
+    prefix <- paste("^", namespace, "::", sep = "")
+    classes <- grep(prefix, classes, value = TRUE)
     names(classes) <- sub(prefix, "", classes)
-    names(classes)[hidden] <- paste(".", names(classes)[hidden], sep = "")
   } else names(classes) <- classes
   hasPrefix <- grepl("::", names(classes))
   ## take care of non-namespaced/non-internal classes first
@@ -58,13 +57,11 @@ qlibrary <- function(lib, namespace = deparse(substitute(lib)),
     makeActiveBinding(classAlias, getClass, lib)
   })
   ## now we need a separate environment for each namespace
-  ns <- sub("\\.?(.*?)::.*", "\\1", names(classes)[hasPrefix])
+  ns <- sub("(.*?)::.*", "\\1", names(classes)[hasPrefix])
   if (length(ns) && !is.null(namespace))
     ns <- paste(namespace, ns, sep = "::")
-  uns <- setdiff(ns, classes)
-  hiddenNS <- !(uns %in% ns[!hidden[hasPrefix]])
-  uns[hiddenNS] <- paste(".", uns[hiddenNS], sep = "")
-  for (nsi in uns) {
+  ns <- setdiff(ns, classes)
+  for (nsi in ns) {
     env <- new.env()
     attributes(env) <- attributes(lib)
     assign(sub(paste("^", namespace, "::", sep = ""), "", nsi),
@@ -77,19 +74,21 @@ qlibrary <- function(lib, namespace = deparse(substitute(lib)),
 ## class name through nested namespaces and internal classes.
 qclassForName <- function(name, lib) {
   classes <- vector("list", length(name))
+  if (missing(lib)) {
+    libs <- qlibraries()
+    notfound <- rep(TRUE, length(classes))
+    for(lib in libs) { # simple linear search probably OK for now
+      classes[notfound] <- qclassForName(name[notfound], lib)
+      notfound[notfound] <- unlist(lapply(classes[notfound], is.null))
+    }
+    return(classes)
+  }
   if (is.null(lib))
     return(classes)
-  .mget <- function(x) {
-    objs <- mget(x, lib, ifnotfound = list(NULL))
-    notfound <- unlist(lapply(objs, is.null))
-    if (any(notfound))
-      objs[notfound] <- mget(paste(".", x[notfound], sep = ""), lib,
-                             ifnotfound = list(NULL))
-    objs
-  }
+  .mget <- function(x) mget(x, lib, ifnotfound = list(NULL))
   if (is(lib, "RQtClass")) {
     namespace <- attr(lib, "name")
-    lib <- attr(x, "env")
+    lib <- attr(lib, "env")
   }
   else namespace <- attr(lib, "ns")
   name <- sub(paste(namespace, "::", sep = ""), "", name)
