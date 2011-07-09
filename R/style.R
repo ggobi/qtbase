@@ -23,7 +23,8 @@ qsetStyleSheet <- function(..., what = "*", widget = NULL, append = TRUE)
     if (append) style <- c(qstyleSheet(widget), style)
     style <- paste(style, collapse = "\n")
     if (is.null(widget)) {
-      Qt$QApplication$instance()$styleSheet <- style
+      app <- Qt$QApplication$instance()
+      app$styleSheet <- style
     } else {
       widget$styleSheet <- style
     }
