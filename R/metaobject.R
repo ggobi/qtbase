@@ -180,7 +180,7 @@ compileMetaObject <- function(x, metadata) {
   metalist$properties <- lapply(props, `[`, c("name", "type"))
   
   ## generate 'stringdata' table
-  allNames <- unique(c(unlist(metalist), attr(x, "name"), ""))
+  allNames <- unique(c(attr(x, "name"), unlist(metalist), ""))
   offsets <- cumsum(c(0, head(nchar(allNames), -1) + 1))
   names(offsets) <- allNames
   
@@ -231,7 +231,7 @@ compileMetaObject <- function(x, metadata) {
   nprops <- length(props)
   headerLen <- 10L
   data <-
-    c(1, # revision
+    c(5, # revision
       offsets[attr(x, "name")], 	# classname
       length(infos), headerLen, # class info
       nmethods, headerLen + 2*ninfos, # methods
