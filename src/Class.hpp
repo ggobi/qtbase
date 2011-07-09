@@ -93,7 +93,7 @@ public:
   
 private:
   static ClassFactory *_classFactory;
-  static QHash<const char *, const Class *> _classMap;
+  static QHash<QByteArray, const Class *> _classMap;
 
 };
 

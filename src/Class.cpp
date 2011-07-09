@@ -10,7 +10,7 @@
 #include <Rinternals.h>
 
 ClassFactory *Class::_classFactory = NULL;
-QHash<const char *, const Class *> Class::_classMap;
+QHash<QByteArray, const Class *> Class::_classMap;
 
 const Class* Class::fromSmokeId(Smoke *smoke, int classId) {
   const char *name = smoke->classes[classId].className;
