@@ -42,6 +42,9 @@
 #ifdef QT_DECLARATIVE_LIB
 #include <QtDeclarative/QtDeclarative>
 #endif
+#ifdef QT_UITOOLS_LIB
+#include <QtUiTools/QtUiTools>
+#endif
 
 // some MS headers do
 // #define interface struct

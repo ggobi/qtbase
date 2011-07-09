@@ -13,6 +13,9 @@
      a bug, this will apparently not be fixed:
      http://public.kitware.com/Bug/view.php?id=10632. As noted above,
      everything will still work. -->
+<!-- NOTE: As of Qt 4.7? QtUiTools has its own include directory, but cmake
+     does not give us a QT_QTUITOOLS_INCLUDE_DIR variable. It should probably
+     still work, though. -->
         <dir>@QT_INCLUDE_DIR@</dir>
         <dir>@QT_QTCORE_INCLUDE_DIR@</dir>
         <dir>@QT_QTGUI_INCLUDE_DIR@</dir>

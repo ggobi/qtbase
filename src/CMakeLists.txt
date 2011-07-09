@@ -4,7 +4,7 @@ project(qtbase)
 
 find_package(Qt4 4.0.0 COMPONENTS QtCore QtGui QtXml QtXmlPatterns
   QtNetwork QtOpenGL QtSql QtSvg QtDBus QtScript QtWebkit
-  QtTest QtHelp QtMultimedia QtDeclarative REQUIRED )
+  QtTest QtHelp QtMultimedia QtDeclarative QtUiTools REQUIRED )
 
 include(${QT_USE_FILE})
 
@@ -38,7 +38,7 @@ else(WIN32)
 add_library(qtbase SHARED ${qtbase_LIB_SRCS} ${qtbase_MOC_FILES})
 endif(WIN32)
 
-#set_target_properties(qtbase PROPERTIES COMPILE_FLAGS "-ggdb")
+set_target_properties(qtbase PROPERTIES COMPILE_FLAGS "-ggdb")
 
 target_link_libraries(qtbase smokeqt ${QT_LIBRARIES} ${R_LIBRARIES})
 
