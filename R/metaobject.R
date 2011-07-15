@@ -35,7 +35,7 @@ qresolveSignature <- function(x, sig, type, nargs) {
     sigs <- sigs[grep(paste("^", sig, "\\(", sep = ""), sigs)]
     if (length(sigs) > 1) {
       argmatch <- (if (missing(nargs)) 0 else nargs) == methods[sigs, "nargs"]
-      if (sum(argmatch) == 0) # just take first, will fail below
+      if (sum(argmatch) == 0) # just take first, may fail below
         argmatch[1] <- TRUE
       if (sum(argmatch) > 1)
         stop("ambiguous method selection: ", paste(sigs, collapse=", "))
@@ -50,8 +50,8 @@ qresolveSignature <- function(x, sig, type, nargs) {
       stop("method does not exist")
   }
   ## slots cannot have default arguments, usually signals are multiplied
-  if (!missing(nargs) && methods[sig, "nargs"] != nargs)
-    stop("number of arguments does not match method signature")
+  if (!missing(nargs) && methods[sig, "nargs"] > nargs)
+    stop("method has more arguments than provided signature")
   sig
 }
 
