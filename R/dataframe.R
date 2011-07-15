@@ -43,30 +43,31 @@
 ##' @param df The \code{data.frame} that provides the data of the model
 ##' @param parent The parent \code{QObject} for the model. Important
 ##' for preventing garbage collection of the model if the only
-##' reference to it is through a view. 
+##' reference to it is through a view.
+##' @param useRoles Whether to interpret column names as indicating
+##' alternative roles; see details.
 ##' @param ... Extra arguments passed to \code{qdataFrame<-},
 ##' which actually loads the \code{data.frame} into the model.
 ##' @return An instance of C++ \code{DataFrameModel}
 ##' @author Michael Lawrence
 ##' @rdname DataFrameModel
-qdataFrameModel <- function(df, parent = NULL, ...)
+qdataFrameModel <- function(df, parent = NULL, useRoles = FALSE, ...)
 {
   model <- .Call("qt_qdataFrameModel", parent, PACKAGE="qtbase")
+  attr(model, "useRoles") <- useRoles
   qdataFrame(model, ...) <- df
   model
 }
 
 ##' @param model \code{DataFrameModel} instance
-##' @param useRoles Whether to interpret column names as indicating
-##' alternative roles; see details.
 ##' @param editable Character vector of column names in the
 ##' \code{data.frame} that should be editable
 ##' @param value A \code{data.frame} that provides the data of the model
 ##' @rdname DataFrameModel
-`qdataFrame<-` <- function(model, useRoles = FALSE, editable = character(0),
-                           value)
+`qdataFrame<-` <- function(model, editable = character(0), value)
 {
   stopifnot(inherits(model, "DataFrameModel"))
+  useRoles <- attr(model, "useRoles")
   df <- as.data.frame(value)
   ## this order must match the order of the Qt::ItemDataRole enumeration
   roleNames <- c("display", "decoration", "edit", "toolTip", "statusTip",
@@ -80,10 +81,12 @@ qdataFrameModel <- function(df, parent = NULL, ...)
   if (useRoles) {
     getHeaderNames <- function(x)
       strsplit(sub("^\\.", "", sub("\\.[^.]*$", "", x)), "\\.")
-    header <- unique(unlist(getHeaderNames(colnames(df))))
-    editOrDisplay <- ifelse(colnames(df) %in% editable, "edit", "display")
-    cn <- paste(sub("(^[^\\.].*)", ".\\1.", colnames(df)), editOrDisplay,
-                sep = "")
+    cn <- colnames(df)
+    header <- unique(unlist(getHeaderNames(cn)))
+    hasRole <- grepl("\\.[^.]+\\..+", cn)
+    editOrDisplay <- ifelse(cn[!hasRole] %in% editable, "edit", "display")
+    cn[!hasRole] <- paste(sub("(^[^\\.].*)", ".\\1.", cn[!hasRole]),
+                          editOrDisplay, sep = "")
     getRoleNames <- function(x) gsub(".*\\.", "", x)
     dataRoles <- getRoleNames(cn)
     resolveRole <- function(role) {
@@ -122,7 +125,8 @@ qdataFrameModel <- function(df, parent = NULL, ...)
   }
   rowRoles <- getHeaderRoles("row.names")
   colRoles <- getHeaderRoles("names", header)    
-  .Call("qt_qsetDataFrame", model, df, roles, rowRoles, colRoles, PACKAGE="qtbase")
+  .Call("qt_qsetDataFrame", model, df, roles, rowRoles, colRoles,
+        PACKAGE="qtbase")
   model
 }
 
