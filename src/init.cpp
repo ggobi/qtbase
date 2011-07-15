@@ -42,6 +42,7 @@ extern "C" {
   // user classes
   SEXP qt_qcast(SEXP x, SEXP className);
   SEXP qt_qenclose(SEXP x, SEXP fun);
+  SEXP qt_qinitClass(SEXP x);
 
   // Invoke a Smoke method with R types
   SEXP invokeSmokeMethod(Smoke *smoke, short index, SEXP x, SEXP args);
@@ -96,6 +97,7 @@ static R_CallMethodDef CallEntries[] = {
     // User classes
     CALLDEF(qt_qcast, 2),
     CALLDEF(qt_qenclose, 2),
+    CALLDEF(qt_qinitClass, 1),
 
     // Explicit coercions
     CALLDEF_COERCE(QRectF),

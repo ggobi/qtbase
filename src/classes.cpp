@@ -14,3 +14,9 @@ extern "C"
 SEXP qt_qenclose(SEXP x, SEXP fun) {
   return SmokeObject::fromSexp(x)->enclose(fun);
 }
+
+extern "C"
+SEXP qt_qinitClass(SEXP x) {
+  Class::fromSexp(x, true);
+  return R_NilValue;
+}

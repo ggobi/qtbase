@@ -156,8 +156,14 @@ qsetClass <- function(name, parent, constructor = function(...) parent(...),
                   parent = parent, env = env, instanceEnv = instanceEnv,
                   metadata = metadata,
                   class = c("RQtUserClass", "RQtClass", "function"))
+  qinitClass(cl)
   assign(name, cl, where)
   cl
+}
+
+## ensures that the class is (re)initialized
+qinitClass <- function(x) {
+  .Call("qt_qinitClass", x, PACKAGE="qtbase")
 }
 
 qcast <- function(x, class) {

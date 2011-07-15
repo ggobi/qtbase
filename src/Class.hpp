@@ -84,7 +84,7 @@ public:
   static const Class* fromSmokeType(const SmokeType &type);
   static const Class* fromSmokeName(Smoke *smoke, const char *name);
   static const Class* fromName(const char *name);
-  static const Class* fromSexp(SEXP sexp);
+  static const Class* fromSexp(SEXP sexp, bool forceNew = false);
   
   static ClassFactory *classFactory() { return _classFactory; }
   static void setClassFactory(ClassFactory *factory) {

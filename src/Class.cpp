@@ -49,13 +49,13 @@ const Class* Class::fromName(const char *name) {
   return klass;
 }
 
-const Class* Class::fromSexp(SEXP sexp) {
+const Class* Class::fromSexp(SEXP sexp, bool forceNew) {
   static SEXP nameSym = install("name");
   const Class *klass = NULL;
   if (inherits(sexp, "RQtClass")) {
     const char *name = CHAR(asChar(getAttrib(sexp, nameSym)));
     klass = _classMap[name];
-    if (!klass) {
+    if (!klass || forceNew) {
       if (inherits(sexp, "RQtSmokeClass"))
         klass = Class::fromSmokeName(NULL, name);
       else if (inherits(sexp, "RQtUserClass")) {
