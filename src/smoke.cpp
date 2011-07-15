@@ -31,11 +31,11 @@ enum {
   MD_LAST
 };
 
-static const char* rTypeName(const SmokeType &type) {
+static QByteArray rTypeName(const SmokeType &type) {
   QByteArray name(type.name());
   name.replace("const ", "");
   name.replace("&", "");
-  return name.constData();
+  return name;
 }
 
 /* Get a list of method names with their argument types */
@@ -47,9 +47,10 @@ SEXP qt_qmethods(SEXP klass)
   QList<Method *> methods = c->methods();
   int i;
 
-  for (i = 0; i < methods.size(); i++)
+  for (i = 0; i < methods.size();)
     if (methods[i]->qualifiers() & Method::Destructor)
       methods.removeAt(i);
+    else i++;
   i = 0;
   
   PROTECT(result = allocVector(VECSXP, MD_LAST));
