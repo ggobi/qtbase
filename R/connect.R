@@ -12,6 +12,14 @@ qconnect <- function(x, signal, handler, user.data)
   nargs <- length(formals(handler))
   if (has.user.data && !nargs)
     stop("if 'user.data' specified, handler must take at least one argument")
-  signal <- qresolveSignature(x, signal, "signal")
+  hasDots <- "..." %in% names(formals(handler))
+  if (hasDots && nargs == 1) # only '...'
+    ## could be a wrapper, so we do not know actual argument count
+    signal <- qresolveSignature(x, signal, "signal")
+  else {
+    if (hasDots)
+      nargs <- Inf
+    signal <- qresolveSignature(x, signal, "signal", nargs)
+  }
   .Call("qt_qconnect", x, signal, handler, user.data, has.user.data, PACKAGE="qtbase")
 }
