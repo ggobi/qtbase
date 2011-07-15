@@ -1,0 +1,42 @@
+-----------------------------------------
+Installation notes for the qtbase package
+-----------------------------------------
+
+The qtbase package should work on Linux, Windows and Mac. Binary
+packages for Windows and Mac are available from the Bioconductor
+project. Only follow these instructions if you are using Linux or
+desire a custom build. Or if you are a Bioconductor maintainer.
+
+Requirements
+------------
+1. Qt >= 4.0.0 SDK (>= 4.7.0 recommended to be on the safe side)
+2. cmake >= 2.8.1
+
+Mac OS X instructions
+---------------------
+
+1. Make sure that you have a recent version of xcode installed.
+2. Install Qt from http://qt.nokia.com/. Use the LGPL version and the
+   SDK complete development environment, and most people with new
+   machines should use the cocoa version from
+   http://qt.nokia.com/downloads/qt-for-open-sourcecpp-development-on-mac-os-x.
+   Make sure you download the latest version.
+3. Install cmake (version 2.8.1 or later); obtain it from cmake.org.
+4. Check your PATH, ensuring that both are visible.
+5. Run R CMD INSTALL qtbase.
+
+Windows instructions
+--------------------
+
+1. Install Qt from http://qt.nokia.com/;
+   The LPGL'd SDK (complete developer environment).
+2. Install cmake >= 2.8.1 from http://www.cmake.org/.
+3. Make sure that the machine is properly configured to build binary packages.
+4. Make sure that PATH contains the directories with qmake.exe and cmake.exe.
+5. Using MSYS, run R CMD INSTALL qtbase.
+
+Linux instructions
+------------------
+
+1. Install the Qt SDK (i.e., devel) >= 4.0 and cmake >= 2.8.1 packages.
+2. R CMD INSTALL qtbase.
