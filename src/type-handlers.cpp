@@ -374,6 +374,10 @@ int scoreArg_basetype(SEXP arg, const SmokeType &type) {
       score = 3;
       break;
     case Smoke::t_uint:
+      if (inherits(value, "QtEnum")) {
+        score = 3; // favor QFlags over enums
+        break;
+      }
     case Smoke::t_long:
     case Smoke::t_ulong:
     case Smoke::t_float:
