@@ -17,6 +17,11 @@
 
   qlibrary(Qt, NULL)
 
+  ### HACK: populate QGlobalSpace now, as other Smoke libs will have
+  ### the same class. Really, Smoke should namespace this thing, but
+  ### maybe we cannot assume that every class has a unique name?
+  Qt$QGlobalSpace
+  
   ## Prefer OpenGL1.x engine, rather than the OpenGL2 ES engine
   ## R is usually running on non-mobile platforms
   ## This must be called before QApplication is constructed!
