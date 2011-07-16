@@ -231,7 +231,7 @@ compileMetaObject <- function(x, metadata) {
   nprops <- length(props)
   headerLen <- 10L
   data <-
-    c(5, # revision
+    c(1, # revision
       offsets[attr(x, "name")], 	# classname
       length(infos), headerLen, # class info
       nmethods, headerLen + 2*ninfos, # methods
