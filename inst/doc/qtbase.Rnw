@@ -37,6 +37,9 @@
 <<setup,echo=FALSE>>=
 options(width=72)
 library(qtbase)
+supported <- 
+!length(grep("darwin", R.version$platform)) || 
+nzchar(Sys.getenv("SECURITYSESSIONID"))
 @
 
 \section{Overview}
@@ -48,12 +51,17 @@ widgets, and is developed by Nokia. Please see
 
 All methods in \Qt\/ may be invoked from \R, and \R\/ may extend any \Qt\/
 class. Here is a basic example of \qtbase{} syntax: 
-<<syntax>>=
+<<syntax,eval=FALSE>>=
 button <- Qt$QPushButton("Press Me!")
 qconnect(button, "pressed", function() print("Pressed"))
 button$show()
 @ 
-%
+<<syntax-real,echo=FALSE>>=
+if (supported) {
+<<syntax>>
+}
+@ 
+% 
 In the above, we create a button, register a callback
 that is called when the button is pressed, and show the button on
 the screen.
@@ -70,20 +78,30 @@ in the following sections.
 Each package that binds a library provides a \Rclass{RQtLibrary}
 object. The \qtbase{} package itself provides the \Rcode{Qt} object,
 which binds the Qt library.
-<<Qt>>=
+<<Qt,eval=FALSE>>=
 Qt
 @
-%
+<<Qt-real,echo=FALSE>>=
+if (supported) {
+<<Qt>>
+}
+@ 
+% 
 As evident from the above output, each library object is a container
 of class objects, of type \Rclass{RQtClass}. 
 
 A \Rclass{RQtLibrary} is a special type of \Rcode{environment} and may be
 manipulated as any other environment:
-<<libraries-as-environments>>=
+<<libraries-as-environments,eval=FALSE>>=
 head(ls(Qt))
 Qt$QPushButton
+@
+<<libraries-as-environments-real,echo=FALSE>>=
+if (supported) {
+<<libraries-as-environments>>
+}
 @ 
-%
+% 
 We have just extracted the \R\/ class object for the C++ \Rcode{QWidget}
 class, and we describe such objects in the next section.
 
@@ -93,17 +111,27 @@ class, and we describe such objects in the next section.
 A class object might represent an actual C++ class, an \R\/ derivative of
 a C++ class, or a C++ namespace. A class object is a special type of \R\/
 \Rcode{function} that serves as the constructor for the class:
-<<QWidget>>=
+<<QWidget,eval=FALSE>>=
 button <- Qt$QPushButton("Press Me!")
+@
+<<QWidget-real,echo=FALSE>>=
+if (supported) {
+<<QWidget>>
+}
 @ 
-%
+% 
 Beyond its role as a constructor, the class object is a container of
 static methods (or simple functions in the case of a namespace) and
 enumerations. We invoke the static method \Rcode{tr} for translating text:
-<<tr>>=
+<<tr,eval=FALSE>>=
 Qt$QPushButton$tr("Hello World")
+@
+<<tr-real,echo=FALSE>>=
+if (supported) {
+<<tr>>
+}
 @ 
-%
+% 
 The above code relies on a method for \Rcode{\$} that is specially
 defined for the \Rclass{RQtClass}.
 
@@ -114,18 +142,29 @@ The \Rcode{button} object constructed above is a
 \Rclass{RQtObject}. Like \Rclass{RQtClass}, \Rclass{RQtObject} is an
 \Rcode{environment}. It contains methods and, for \Rcode{QObject}
 derived instances, properties.
-<<show>>=
+<<show,eval=FALSE>>=
 button$show()
+@
+<<show-real,echo=FALSE>>=
+if (supported) {
+<<show>>
+}
 @ 
-%
+
+% 
 In the above, we obtain the \Rcode{show} method and invoke it to show
 the button on the screen.
 
 As \Rcode{QPushButton} extends \Rcode{QObject}, it has properties, and
 one of its properties is its \Rcode{text} label:
-<<text-property>>=
+<<text,eval=FALSE>>=
 button$text
 button$text <- "PUSH ME!"
+@
+<<text-real,echo=FALSE>>=
+if (supported) {
+<<text>>
+}
 @ 
 
 \section{Connecting Signal Handlers}
@@ -134,10 +173,16 @@ button$text <- "PUSH ME!"
 In any GUI, the application needs to react to user
 events. Qt supports this with signals. Here, we connect an \R\/ handler
 to a signal that is emitted when the button is \Rcode{pressed}:
-<<qconnect>>=
+<<qconnect,eval=FALSE>>=
 qconnect(button, "pressed", function() print("pushed"))
+@
+<<qconnect-real,echo=FALSE>>=
+if (supported) {
+<<qconnect>>
+}
 @ 
-%
+
+% 
 The signal connection is achieved with the \Rcode{qconnect}
 function. The \R\/ function is invoked when the \Rcode{pressed} signal
 is emitted on \Rcode{button}.
@@ -161,8 +206,13 @@ entry (\Rcode{QTextEdit}) to positive numbers. The first step is to
 declare the class, and then methods are added individually to the
 class definition, in an analogous manner to the \Rpackage{methods}
 package. We start by declaring the class:
-<<qsetClass>>=
+<<qsetClass,eval=FALSE>>=
 qsetClass("PositiveValidator", Qt$QValidator)
+@
+<<qsetClass-real,echo=FALSE>>=
+if (supported) {
+<<qsetClass>>
+}
 @ 
 % 
 The class name is given as \Rcode{PositiveValidator} and it extends the
@@ -172,13 +222,19 @@ supported.
 As a side-effect of the call to \Rfunction{qsetClass}, a variable
 named \Rcode{PositiveValidator} has been assigned into the global
 environment (the scoping is similar to \Rfunction{methods::setClass}):
-<<list-validator-class>>=
+<<list-validator-class,eval=FALSE>>=
 PositiveValidator
+@
+<<list-validator-class-real,echo=FALSE>>=
+if (supported) {
+<<list-validator-class>>
+}
 @ 
+
 % 
 To define a method on our class, we call the \Rfunction{qsetMethod}
 function:
-<<validate, echo=FALSE>>=
+<<validate,eval=FALSE>>=
 validatePositive <- function(input, pos) {
   val <- suppressWarnings(as.integer(input))
   if (!is.na(val)) {
@@ -191,9 +247,19 @@ validatePositive <- function(input, pos) {
     else Qt$QValidator$Invalid
   }
 }
+@
+<<validate-real,echo=FALSE>>=
+if (supported) {
+<<validate>>
+}
 @ 
-<<qsetMethod>>=
+<<qsetMethod,eval=FALSE>>=
 qsetMethod("validate", PositiveValidator, validatePositive)
+@ 
+<<qsetMethod-real,echo=FALSE>>=
+if (supported) {
+<<qsetMethod>>
+}
 @ 
 % 
 The virtual method \Rcode{validate} declared by \Rcode{QValidator} has
@@ -203,16 +269,27 @@ been defined invisibly for readability.
 
 As an \Rclass{RQtClass} object, we can create an instance by invoking
 \Rfunction{PositiveValidator} as a \Rcode{function}:
-<<construct-validator>>=
+<<construct-validator,eval=FALSE>>=
 validator <- PositiveValidator()
 @ 
+<<construct-validator-real,echo=FALSE>>=
+if (supported) {
+<<construct-validator>>
+}
+@ 
+
 % 
 Now that we have our validator, we can use it with a text entry:
-<<text-entry>>=
+<<text-entry,eval=FALSE>>=
 e <- Qt$QLineEdit()
 v <- PositiveValidator(e)
 e$setValidator(v)
 e$show()
+@ 
+<<text-entry-real,echo=FALSE>>=
+if (supported) {
+<<text-entry>>
+}
 @ 
 
 Often, it is necessary to customize the constructor of an \R\/
@@ -220,7 +297,7 @@ class. The \R\/ function implementing the constructor must be passed
 during the call to \Rfunction{qsetClass}. Here, we extend
 \Rcode{QMessageBox} to create a dialog, shown when the application is
 closing, that asks the user whether a document should be saved:
-<<extend-window-title>>=
+<<extend-window-title,eval=FALSE>>=
 qsetClass("SaveConfirmationDialog", Qt$QMessageBox, 
 function(filename = NULL, parent = NULL) 
 {
@@ -232,6 +309,12 @@ function(filename = NULL, parent = NULL)
   this$filename <- filename
 })
 @ 
+<<extend-window-title-real,echo=FALSE>>=
+if (supported) {
+<<extend-window-title>>
+}
+@ 
+
 % 
 The \Rfunction{super} function exists only within the scope of the
 constructor. It passes its arguments to the constructor of the super
@@ -250,12 +333,18 @@ Within a method implementation, \Rcode{super} will call a
 named method in the parent class. We demonstrate in our override of
 \Rfunction{accept}, which is invoked when the user decides to save the
 document:
-<<accept-override>>=
+<<accept-override,eval=FALSE>>=
 qsetMethod("accept", SaveConfirmationDialog, function() {
   saveDocument(filename)
   super("accept")
 })
 @ 
+<<accept-override-real,echo=FALSE>>=
+if (supported) {
+<<accept-override>>
+}
+@ 
+
 % 
 After saving the current document, the method calls \Rfunction{super}
 to forward the user response to one of the super classes. This is
