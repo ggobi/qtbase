@@ -2,9 +2,16 @@ cmake_minimum_required(VERSION 2.6)
 
 project(kdebindings)
 
-FIND_PACKAGE(Qt4 REQUIRED 4.0.0 COMPONENTS QtCore QtGui QtXml QtXmlPatterns
+find_package(Qt4 4.0.0 COMPONENTS QtCore QtGui  REQUIRED )
+
+find_package(Qt4 4.0.0 COMPONENTS QtCore QtGui QtXml QtXmlPatterns
   QtNetwork QtOpenGL QtSql QtSvg QtDBus QtScript QtWebkit
-  QtHelp QtTest QtMultimedia QtDeclarative QtUiTools REQUIRED)
+  QtTest QtHelp QtMultimedia QtDeclarative QtUiTools)
+
+## QtUiTools not installed as a framework on OS X
+if(APPLE)
+set(QT_USE_QTUITOOLS FALSE)
+endif(APPLE)
 
 include(${QT_USE_FILE})
 
