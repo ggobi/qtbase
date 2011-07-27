@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.1)
 
 project(qtbase)
 
-find_package(Qt4 4.0.0 COMPONENTS QtCore QtGui  REQUIRED )
+find_package(Qt4 4.0.0 COMPONENTS QtCore QtGui REQUIRED)
 
 find_package(Qt4 4.0.0 COMPONENTS QtCore QtGui QtXml QtXmlPatterns
   QtNetwork QtOpenGL QtSql QtSvg QtDBus QtScript QtWebkit
