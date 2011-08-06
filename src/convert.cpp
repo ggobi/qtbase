@@ -321,7 +321,8 @@ QVariant qvariant_from_sexp(SEXP rvalue, int index) {
     break;
   case LGLSXP:
     // Rprintf("Logical\n");
-    variant = QVariant(LOGICAL(rvalue)[index]);
+    // FIXME: by converting to 'bool' all NA become TRUE
+    variant = QVariant((bool)LOGICAL(rvalue)[index]);
     break;
   case REALSXP:
     // Rprintf("Real\n");
