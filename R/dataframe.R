@@ -51,10 +51,12 @@
 ##' @return An instance of C++ \code{DataFrameModel}
 ##' @author Michael Lawrence
 ##' @rdname DataFrameModel
-qdataFrameModel <- function(df, parent = NULL, useRoles = FALSE, ...)
+qdataFrameModel <- function(df, parent = NULL, useRoles = FALSE,
+                            editable = character(), ...)
 {
   model <- .Call("qt_qdataFrameModel", parent, PACKAGE="qtbase")
   attr(model, "useRoles") <- useRoles
+  attr(model, "editable") <- editable
   qdataFrame(model, ...) <- df
   model
 }
@@ -64,10 +66,11 @@ qdataFrameModel <- function(df, parent = NULL, useRoles = FALSE, ...)
 ##' \code{data.frame} that should be editable
 ##' @param value A \code{data.frame} that provides the data of the model
 ##' @rdname DataFrameModel
-`qdataFrame<-` <- function(model, editable = character(0), value)
+`qdataFrame<-` <- function(model, value)
 {
   stopifnot(inherits(model, "DataFrameModel"))
   useRoles <- attr(model, "useRoles")
+  editable <- attr(model, "editable")
   df <- as.data.frame(value)
   ## this order must match the order of the Qt::ItemDataRole enumeration
   roleNames <- c("display", "decoration", "edit", "toolTip", "statusTip",
@@ -136,3 +139,5 @@ qdataFrame <- function(model) {
   stopifnot(inherits(model, "DataFrameModel"))
   .Call("qt_qdataFrame", model, PACKAGE="qtbase")
 }
+
+### TODO: add a qeditable<-()
