@@ -72,9 +72,8 @@ qdataFrameModel <- function(df, parent = NULL, useRoles = FALSE, ...)
   ## this order must match the order of the Qt::ItemDataRole enumeration
   roleNames <- c("display", "decoration", "edit", "toolTip", "statusTip",
                  "whatsThis", "font", "textAlignment", "background",
-                 "backgroundColor", "foreground", "foregroundColor",
-                 "checkState", "accessibleText", "accessibleDescription",
-                 "sizeHint")
+                 "foreground", "checkState", "accessibleText",
+                 "accessibleDescription", "sizeHint")
   createRoleList <- function()
     structure(vector("list", length(roleNames)), names = roleNames)
   roles <- createRoleList()
@@ -83,7 +82,7 @@ qdataFrameModel <- function(df, parent = NULL, useRoles = FALSE, ...)
       strsplit(sub("^\\.", "", sub("\\.[^.]*$", "", x)), "\\.")
     cn <- colnames(df)
     header <- unique(unlist(getHeaderNames(cn)))
-    hasRole <- grepl("\\.[^.]+\\..+", cn)
+    hasRole <- grepl("^\\.", cn)
     editOrDisplay <- ifelse(cn[!hasRole] %in% editable, "edit", "display")
     cn[!hasRole] <- paste(sub("(^[^\\.].*)", ".\\1.", cn[!hasRole]),
                           editOrDisplay, sep = "")
@@ -92,7 +91,9 @@ qdataFrameModel <- function(df, parent = NULL, useRoles = FALSE, ...)
     resolveRole <- function(role) {
       headerNames <- getHeaderNames(role)
       nheaders <- sapply(headerNames, length)
-      headerNames[nheaders == 0L] <- list(header)
+      otherNames <- setdiff(header, unlist(headerNames))
+      headerNames[nheaders == 0L] <- list(otherNames)
+      nheaders <- sapply(headerNames, length)
       headerNames <- unlist(headerNames)
       if (anyDuplicated(headerNames))
         stop("Redundant role information: ", paste(role, collapse=", "))
