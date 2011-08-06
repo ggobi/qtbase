@@ -81,14 +81,23 @@ qdataFrameModel <- function(df, parent = NULL, useRoles = FALSE,
     structure(vector("list", length(roleNames)), names = roleNames)
   roles <- createRoleList()
   if (useRoles) {
-    getHeaderNames <- function(x)
-      strsplit(sub("^\\.", "", sub("\\.[^.]*$", "", x)), "\\.")
+    getHasRole <- function(cn) structure(grepl("^\\.", cn), names = cn)
+    getHeaderNames <- function(x) {
+      headerNames <- sub("^\\.", "", sub("\\.[^.]*$", "", x))
+      hasRole <- hasRole[x]
+      headerNameList <- as.list(headerNames)
+      headerNameList[hasRole] <- strsplit(headerNames[hasRole], "\\.")
+      headerNameList
+    }
     cn <- colnames(df)
-    header <- unique(unlist(getHeaderNames(cn)))
-    hasRole <- grepl("^\\.", cn)
+    hasRole <- getHasRole(cn)
+    header <- as.list(cn)
+    header[hasRole] <- getHeaderNames(cn[hasRole])
+    header <- unique(unlist(header))
     editOrDisplay <- ifelse(cn[!hasRole] %in% editable, "edit", "display")
     cn[!hasRole] <- paste(sub("(^[^\\.].*)", ".\\1.", cn[!hasRole]),
                           editOrDisplay, sep = "")
+    names(hasRole) <- cn
     getRoleNames <- function(x) gsub(".*\\.", "", x)
     dataRoles <- getRoleNames(cn)
     resolveRole <- function(role) {
