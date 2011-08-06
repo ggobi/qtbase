@@ -6,9 +6,14 @@
 class DataFrameModel : public QAbstractTableModel {
 public:
 
-  DataFrameModel(QObject *parent = NULL)
+  DataFrameModel(QObject *parent, SEXP useRoles, SEXP editable)
     : _dataframe(R_NilValue), _rowHeader(R_NilValue), _colHeader(R_NilValue),
-      _roles(R_NilValue), QAbstractTableModel(parent) { }
+      _roles(R_NilValue), _useRoles(useRoles), _editable(editable),
+      QAbstractTableModel(parent)
+  {
+    R_PreserveObject(_useRoles);
+    R_PreserveObject(_editable);
+  }
   
   ~DataFrameModel();
 
@@ -35,6 +40,9 @@ public:
   void setDataFrame(SEXP dataframe, SEXP roles, SEXP rowHeader, SEXP colHeader);
 
   SEXP dataFrame() { return _dataframe; }
+
+  SEXP useRoles() { return _useRoles; }
+  SEXP editable() { return _editable; }
   
 private:
 
@@ -50,4 +58,8 @@ private:
   SEXP _roles;
   SEXP _rowHeader;
   SEXP _colHeader;
+
+  /* These are saved here for use on the R side */
+  SEXP _useRoles;
+  SEXP _editable;
 };

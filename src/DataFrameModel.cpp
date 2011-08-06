@@ -245,14 +245,17 @@ DataFrameModel::~DataFrameModel() {
   R_ReleaseObject(_roles);
   R_ReleaseObject(_rowHeader);
   R_ReleaseObject(_colHeader);
+  R_ReleaseObject(_useRoles);
+  R_ReleaseObject(_editable);
 }
 
 extern "C"
-SEXP qt_qdataFrameModel(SEXP rparent) {
+SEXP qt_qdataFrameModel(SEXP rparent, SEXP useRoles, SEXP editable) {
   static Class *dataFrameModelClass =
     new NameOnlyClass("DataFrameModel", Class::fromName("QAbstractTableModel"));
   SmokeObject *so =
-    SmokeObject::fromPtr(new DataFrameModel(unwrapSmoke(rparent, QObject)),
+    SmokeObject::fromPtr(new DataFrameModel(unwrapSmoke(rparent, QObject),
+                                            useRoles, editable),
                          Class::fromName("QAbstractTableModel"), true);
   so->cast(dataFrameModelClass);
   return so->sexp();
@@ -273,4 +276,18 @@ SEXP qt_qdataFrame(SEXP rmodel) {
   DataFrameModel *model =
     static_cast<DataFrameModel *>(unwrapSmoke(rmodel, QAbstractTableModel));
   return model->dataFrame();
+}
+
+extern "C"
+SEXP qt_quseRoles(SEXP rmodel) {
+  DataFrameModel *model =
+    static_cast<DataFrameModel *>(unwrapSmoke(rmodel, QAbstractTableModel));
+  return model->useRoles();
+}
+
+extern "C"
+SEXP qt_qeditable(SEXP rmodel) {
+  DataFrameModel *model =
+    static_cast<DataFrameModel *>(unwrapSmoke(rmodel, QAbstractTableModel));
+  return model->editable();
 }

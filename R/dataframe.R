@@ -54,9 +54,8 @@
 qdataFrameModel <- function(df, parent = NULL, useRoles = FALSE,
                             editable = character(), ...)
 {
-  model <- .Call("qt_qdataFrameModel", parent, PACKAGE="qtbase")
-  attr(model, "useRoles") <- useRoles
-  attr(model, "editable") <- editable
+  model <- .Call("qt_qdataFrameModel", parent, useRoles, editable,
+                 PACKAGE="qtbase")
   qdataFrame(model, ...) <- df
   model
 }
@@ -69,8 +68,8 @@ qdataFrameModel <- function(df, parent = NULL, useRoles = FALSE,
 `qdataFrame<-` <- function(model, value)
 {
   stopifnot(inherits(model, "DataFrameModel"))
-  useRoles <- attr(model, "useRoles")
-  editable <- attr(model, "editable")
+  useRoles <- quseRoles(model)
+  editable <- qeditable(model)
   df <- as.data.frame(value)
   ## this order must match the order of the Qt::ItemDataRole enumeration
   roleNames <- c("display", "decoration", "edit", "toolTip", "statusTip",
@@ -149,4 +148,7 @@ qdataFrame <- function(model) {
   .Call("qt_qdataFrame", model, PACKAGE="qtbase")
 }
 
-### TODO: add a qeditable<-()
+### TODO: add setters
+
+quseRoles <- function(model) .Call("qt_quseRoles", model, PACKAGE="qtbase")
+qeditable <- function(model) .Call("qt_qeditable", model, PACKAGE="qtbase")
