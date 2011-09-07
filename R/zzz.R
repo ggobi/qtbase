@@ -2,8 +2,8 @@
 .noGenerics <- TRUE
 
 .onUnload <- function(libpath) {
-  .Call("cleanupQtApp", PACKAGE="qtbase")
-  library.dynam.unload("qtbase", libpath)
+ .Call("cleanupQtApp", PACKAGE="qtbase")
+ library.dynam.unload("qtbase", libpath)
 }
 
 .onLoad <- function(libname, pkgname) 
@@ -29,9 +29,10 @@
     Qt$QGL$setPreferredPaintEngine(Qt$QPaintEngine$OpenGL)
 
   .Call("addQtEventHandler", PACKAGE="qtbase")
-  reg.finalizer(getNamespace("qtbase"), function(ns)
-                {
-                  if ("qtbase" %in% loadedNamespaces())
-                    .onUnload(file.path(libname, pkgname))
-                }, onexit=TRUE)
+### Temporarily disabled until we figure out why this crashes (on my machine)
+  ## reg.finalizer(getNamespace("qtbase"), function(ns)
+  ##               {
+  ##                 if ("qtbase" %in% loadedNamespaces())
+  ##                   .onUnload(file.path(libname, pkgname))
+  ##               }, onexit=TRUE)
 }
