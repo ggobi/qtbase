@@ -1,3 +1,5 @@
+# imports
+importFrom(methods, is)
 
 # metadata
 export(qproperties)
