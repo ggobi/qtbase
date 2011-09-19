@@ -78,6 +78,7 @@ resolve_classname_qt(const SmokeObject * o)
       break;
     case QEvent::Hide:
       classId = smoke->idClass("QHideEvent").index;
+      break;
     case QEvent::Close:
       classId = smoke->idClass("QCloseEvent").index;
       break;
@@ -121,6 +122,7 @@ resolve_classname_qt(const SmokeObject * o)
       break;
     case QEvent::DragMove:
       classId = smoke->idClass("QDragMoveEvent").index;
+      break;
     case QEvent::Drop:
       classId = smoke->idClass("QDropEvent").index;
       break;
@@ -268,6 +270,7 @@ resolve_classname_qt(const SmokeObject * o)
       break;
     case 3:
       classId = smoke->idClass("QGraphicsRectItem").index;
+      break;
     case 4:
       classId = smoke->idClass("QGraphicsEllipseItem").index;
       break;
