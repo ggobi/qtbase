@@ -131,10 +131,6 @@ SmokeObject::SmokeObject(void *ptr, const Class *klass, bool allocated)
 }
 
 void SmokeObject::maybeDestroy() {
-#ifdef MEM_DEBUG
-  if (!_allocated)
-    qDebug("%p: unallocated", this);
-#endif
   if (_allocated && !memoryIsOwned()) {
 #ifdef MEM_DEBUG
     qDebug("%p: invoking destructor", this);
@@ -150,6 +146,19 @@ void SmokeObject::maybeDestroy() {
     delete[] destructor;
     if (instances.contains(_ptr)) // we are still around
       delete this;
+  } else if (!_allocated) {
+#ifdef MEM_DEBUG
+    if (!_allocated)
+      qDebug("%p: unallocated, forfeiting reference", this);
+#endif
+    /* If _allocated is FALSE, we do not have a Smoke binding, so we
+       will not be alerted if the memory is deleted by Qt. Thus, we
+       have to forfeit our reference; otherwise, the contents of the
+       memory will be replaced without our knowledge. Note that the
+       lack of a Smoke binding means that there is very little
+       information associated with this reference, so there are
+       probably few consequences to its deletion.  */
+    delete this;
   }
 }
 
