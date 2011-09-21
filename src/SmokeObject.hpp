@@ -54,7 +54,7 @@ public:
   
   inline const Class *klass() const { return _klass; }
   inline bool allocated() const { return _allocated; }
-  inline void setAllocated(bool allocated) { _allocated = allocated; }
+  void deallocate();
   bool memoryIsOwned() const;
 
   /* Various utilities */

@@ -240,7 +240,7 @@ void marshal_to_sexp<SmokeClassWrapper>(MethodCall *m)
   */
   if (sexp != R_NilValue &&
       !(m->returning() && m->method()->qualifiers() & Method::Constructor))
-    SmokeObject::fromSexp(sexp)->setAllocated(false);
+    SmokeObject::fromSexp(sexp)->deallocate();
   m->setSexp(sexp);
 }
 

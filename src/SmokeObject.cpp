@@ -5,7 +5,7 @@
 
 #include <Rinternals.h>
 
-//#define MEM_DEBUG
+#define MEM_DEBUG
 
 /* One SmokeObject for each object,
    to ensure 1-1 mapping from Qt objects to R objects */
@@ -25,13 +25,17 @@ SmokeObject * SmokeObject::fromPtr(void *ptr, const Class *klass,
     qDebug("%p: created for %p (%s)", so, ptr, klass->name());
 #endif
     // record this ASAP, resolveClassId() needs it for virtual callbacks
-    instances[so->ptr()] = so; 
+    if (allocated) // do not record unallocated; not informed when deleted
+      instances[so->ptr()] = so;
+#ifdef MEM_DEBUG
+    else qDebug("%p: unallocated, not registering pointer", so);
+#endif
     so->cast(Class::fromSmokeId(so->smoke(), so->module()->resolveClassId(so)));
     /* it seems that all multiple inheritance in Qt goes through
        QObject or QEvent, so we can catch offset pointers at run-time */
     // FIXME: what happens with other libraries? take QtRuby approach?
 #ifdef MEM_DEBUG
-    if (so->klass() != klass)
+    if (allocated && so->klass() != klass)
       qDebug("%p: class switch %s::%s -> %s::%s", so,
              klass->smokeBase()->smoke()->moduleName(),
              klass->name(), so->klass()->smokeBase()->smoke()->moduleName(),
@@ -149,7 +153,7 @@ void SmokeObject::maybeDestroy() {
   } else if (!_allocated) {
 #ifdef MEM_DEBUG
     if (!_allocated)
-      qDebug("%p: unallocated, forfeiting reference", this);
+      qDebug("%p: unallocated, deleting reference", this);
 #endif
     /* If _allocated is FALSE, we do not have a Smoke binding, so we
        will not be alerted if the memory is deleted by Qt. Thus, we
@@ -228,6 +232,14 @@ const char *SmokeObject::className() const { return _klass->name(); }
 
 SmokeModule *SmokeObject::module() const {
   return SmokeModule::module(smoke());
+}
+
+void SmokeObject::deallocate() {
+#ifdef MEM_DEBUG
+  qDebug("%p: deallocating, removing pointer from hash", this);
+#endif
+  _allocated = false;
+  instances.remove(_ptr);
 }
 
 bool SmokeObject::memoryIsOwned() const {
