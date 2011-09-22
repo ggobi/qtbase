@@ -5,7 +5,7 @@
 
 #include <Rinternals.h>
 
-#define MEM_DEBUG
+//#define MEM_DEBUG
 
 /* One SmokeObject for each object,
    to ensure 1-1 mapping from Qt objects to R objects */
@@ -232,14 +232,6 @@ const char *SmokeObject::className() const { return _klass->name(); }
 
 SmokeModule *SmokeObject::module() const {
   return SmokeModule::module(smoke());
-}
-
-void SmokeObject::deallocate() {
-#ifdef MEM_DEBUG
-  qDebug("%p: deallocating, removing pointer from hash", this);
-#endif
-  _allocated = false;
-  instances.remove(_ptr);
 }
 
 bool SmokeObject::memoryIsOwned() const {

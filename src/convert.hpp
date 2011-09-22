@@ -325,20 +325,29 @@ class_from_sexp(SEXP sexp,  const SmokeType &type) {
    On the stack: Smoke allocates these and thus we need to free. We
    ignore the 'const' variant; it is very rare anyway.
 
-   References: We need to copy the 'const' variant, and free it later.
+   References: We need to copy the 'const' variant, and free it
+   later. Non-const references are probably very rare.
 
-   Pointers: We consider any non-const pointer to be allocated to R,
-   even though objects are often owned by Qt. We try to catch this
+   Pointers: All pointers are considered to not be owned us,
+   unless we have constructed them directly (caught later in
+   marshal_to_sexp). Even when constructed directly, the object might
+   still become owned by Qt.  We try to catch this
    when the object falls out of R scope, but this only works for
-   certain objects, like QObjects and QGraphicsItems. We ignore
-   'const' pointers, as it usually does not make sense to copy them
-   (unlike references), and they are somewhat rare.
+   certain objects, like QObjects and QGraphicsItems. Not assuming
+   ownership can lead to memory leaks for objects created via
+   factory methods. But the alternative is the possibility for
+   seg-faults, because if an object is not a Smoke instance, we will
+   not know when it is deleted. Granted, the R user can still call a
+   dead object and crash R, but at least the memory management code
+   will be well behaved.
 */
 
-inline SEXP ptr_to_sexp(void *value, const SmokeType &type) {
+inline SEXP ptr_to_sexp(void *value, const SmokeType &type,
+                        bool hasBinding = false)
+{
   if (!value)
     return(R_NilValue);
-  return SmokeObject::sexpFromPtr(value, type, !type.isConst(),
+  return SmokeObject::sexpFromPtr(value, type, hasBinding || type.isStack(),
                                   type.isConst() && type.isRef());
 }
 

@@ -230,17 +230,13 @@ template <>
 void marshal_to_sexp<SmokeClassWrapper>(MethodCall *m)
 {
   void *p = itemValue<void *>(m);
-  SEXP sexp = ptr_to_sexp(p, m->type());
-  /* NOTE: This can lead to memory leaks for objects created via
-     factory methods. But the alternative is the possibility for
-     seg-faults, because if an object is not a Smoke instance, we will
-     not know when it is deleted. Granted, the R user can still call a
-     dead object and crash R, but at least the memory management code
-     will be well behaved.
+  /* If we have constructed the object, we assume ownership and
+     allocate the object in our hash. We will at least know if the
+     object is deleted by Qt.
   */
-  if (sexp != R_NilValue &&
-      !(m->returning() && m->method()->qualifiers() & Method::Constructor))
-    SmokeObject::fromSexp(sexp)->deallocate();
+  bool constructed = m->returning() &&
+    m->method()->qualifiers() & Method::Constructor;
+  SEXP sexp = ptr_to_sexp(p, m->type(), constructed);
   m->setSexp(sexp);
 }
 
