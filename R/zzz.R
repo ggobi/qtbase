@@ -26,8 +26,8 @@
   ## R is usually running on non-mobile platforms
   ## This must be called before QApplication is constructed!
   ## Currently disabled, since 1.x engine seems unmaintained.
-  ## if (!is.null(Qt$QGL$setPreferredPaintEngine))
-  ##   Qt$QGL$setPreferredPaintEngine(Qt$QPaintEngine$OpenGL)
+  if (!is.null(Qt$QGL$setPreferredPaintEngine))
+    Qt$QGL$setPreferredPaintEngine(Qt$QPaintEngine$OpenGL)
 
   .Call("addQtEventHandler", PACKAGE="qtbase")
 ### Temporarily disabled until we figure out why this crashes (on my machine)
