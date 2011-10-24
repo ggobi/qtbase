@@ -34,7 +34,7 @@ as.list.QTestEventList <- function(x, ...) .Call("qt_coerce_QTestEventList", x, 
 as.list.QSignalSpy <- function(x, ...) .Call("qt_coerce_QSignalSpy", x, PACKAGE="qtbase")
 
 as.QImage <- function(x, ...) UseMethod("as.QImage")
-as.QImage.matrix <- function(x) {
+as.QImage.matrix <- function(x, ...) {
   if (!is.matrix(x) || !is.integer(x) || (nrow(x) != 4 && nrow(x) != 3))
     rgb <- col2rgb(x, TRUE)
   else rgb <- x
@@ -42,4 +42,4 @@ as.QImage.matrix <- function(x) {
             if (nrow(rgb) == 3) Qt$QImage$Format_RGB888
             else Qt$QImage$Format_ARGB32)
 }
-as.QImage.raster <- function(x) as.QImage.matrix(x)
+as.QImage.raster <- function(x, ...) as.QImage.matrix(x)

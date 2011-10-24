@@ -18,6 +18,6 @@
             class = "QtEnum")
 }
 
-print.QtEnum <- function(x) {
+print.QtEnum <- function(x, ...) {
   cat("Enum value: ", names(x), " (", x, ")\n", sep = "")
 }
