@@ -110,3 +110,13 @@ qtransform <- function(m11 = 1.0, m12 = 0.0, m13 = 0.0, m21 = 0.0, m22 = 1.0,
   }
   Qt$QTransform(m11, m12, m13, m21, m22, m23, m31, m32, m33)
 }
+
+as.QImage <- function(x, ...) UseMethod("as.QImage")
+as.QImage.default <- function(x, ...) {
+  if (!is.matrix(x) || !is.integer(x) || (nrow(x) != 4 && nrow(x) != 3))
+    rgb <- col2rgb(x, TRUE)
+  else rgb <- x
+  Qt$QImage(as.raw(rgb), ncol(x), nrow(x), ncol(x) * nrow(rgb),
+            if (nrow(rgb) == 3) Qt$QImage$Format_RGB888
+            else Qt$QImage$Format_ARGB32)
+}
