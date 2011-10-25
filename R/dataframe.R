@@ -46,6 +46,8 @@
 ##' reference to it is through a view.
 ##' @param useRoles Whether to interpret column names as indicating
 ##' alternative roles; see details.
+##' @param editable Character vector of column names in the
+##' \code{data.frame} that should be editable
 ##' @param ... Extra arguments passed to \code{qdataFrame<-},
 ##' which actually loads the \code{data.frame} into the model.
 ##' @return An instance of C++ \code{DataFrameModel}
@@ -61,8 +63,6 @@ qdataFrameModel <- function(df, parent = NULL, useRoles = FALSE,
 }
 
 ##' @param model \code{DataFrameModel} instance
-##' @param editable Character vector of column names in the
-##' \code{data.frame} that should be editable
 ##' @param value A \code{data.frame} that provides the data of the model
 ##' @rdname DataFrameModel
 `qdataFrame<-` <- function(model, value)

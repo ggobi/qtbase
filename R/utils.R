@@ -30,6 +30,12 @@ dim.QGraphicsView <- function(x) dim(x$viewport()$rect)
 ##' @param name The name of the child
 ##' @return The child \code{QObject}
 ##' @author Michael Lawrence
+##' @examples
+##' parent <- Qt$QObject()
+##' child <- Qt$QObject(parent)
+##' child$objectName <- "foo"
+##' qfindChild(parent, "foo")
+
 qfindChild <- function(x, name) {
   ## not exactly sure how to use this one
   Qt$QGlobalSpace$qt_qFindChild_helper(x, name, x$metaObject())
