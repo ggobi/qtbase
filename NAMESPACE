@@ -76,8 +76,7 @@ S3method(as.list, QTestEventList)
 S3method(as.list, QSignalSpy)
 
 export(as.QImage)
-S3method(as.QImage, matrix)
-S3method(as.QImage, raster)
+S3method(as.QImage, default)
 
 ## constructors of simple types
 export(qrect, qpoint, qsize, qcolor, qfont, qpen, qbrush, qtransform, qpolygon)

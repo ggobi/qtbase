@@ -2,7 +2,7 @@
 \alias{qdataFrameModel}
 \title{DataFrameModel}
 \usage{qdataFrameModel(df, parent=NULL, useRoles=FALSE,
-editable=character(0), ...)
+editable=character(), ...)
 qdataFrame(model) <- value
 qdataFrame(model)
 }

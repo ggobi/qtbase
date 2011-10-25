@@ -1,6 +1,6 @@
 \name{as.QImage}
 \alias{as.QImage}
-
+\alias{as.QImage.default}
 \title{
   Coerce to QImage
 }

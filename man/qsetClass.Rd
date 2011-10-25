@@ -25,7 +25,7 @@ qsetMethod(name, class, FUN,
            access = c("public", "protected", "private"))
 qsetSlot(signature, class, FUN,
          access = c("public", "protected", "private"))
-qsetSignal(signature, class, FUN,
+qsetSignal(signature, class,
            access = c("public", "protected", "private"))
 qsetProperty(name, class, type = NULL, read = function() this[[.name]], 
     write = function(val) this[[.name]] <- val, notify = NULL, 
@@ -95,8 +95,6 @@ qsetRefClass(Class, where = topenv(parent.frame()), ...)
     class. Like the current value for a scrollbar. Used when autowiring
     widgets to data models, as in \code{QDataWidgetMapper}.
   }
-  \item{where}{The environment in which to define the reference class.}
-  \item{...}{Arguments to pass to \link[methods]{setRefClass}.}
 }
 \details{
   The side-effect of \code{qsetClass} is that a \code{RQtClass} object
