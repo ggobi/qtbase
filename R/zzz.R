@@ -30,6 +30,10 @@
     Qt$QGL$setPreferredPaintEngine(Qt$QPaintEngine$OpenGL)
 
   .Call("addQtEventHandler", PACKAGE="qtbase")
+
+  if (!is.null(Qt$QGL$setPreferredPaintEngine))
+    Qt$QGL$setPreferredPaintEngine(Qt$QPaintEngine$OpenGL2)
+
 ### Temporarily disabled until we figure out why this crashes (on my machine)
   ## reg.finalizer(getNamespace("qtbase"), function(ns)
   ##               {
