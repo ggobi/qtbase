@@ -1,8 +1,9 @@
 \name{DataFrameModel}
 \alias{qdataFrameModel}
 \title{DataFrameModel}
-\usage{qdataFrameModel(df, ...)
-qdataFrame<-(model, useRoles=FALSE, editable=character(0), value)
+\usage{qdataFrameModel(df, parent=NULL, useRoles=FALSE,
+editable=character(0), ...)
+qdataFrame(model) <- value
 qdataFrame(model)
 }
 \description{The \code{qdataFrameModel} function creates a
@@ -52,6 +53,7 @@ need-be.}
 \item{...}{Extra arguments passed to \code{qdataFrame<-},
 which actually loads the \code{data.frame} into the model.}
 \item{model}{\code{DataFrameModel} instance}
+\item{parent}{The parent \code{QObject}}
 \item{useRoles}{Whether to interpret column names as indicating
 alternative roles; see details.}
 \item{editable}{Character vector of column names in the

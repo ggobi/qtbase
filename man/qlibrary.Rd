@@ -9,7 +9,7 @@
   package.
 }
 \usage{
-qlibrary(lib, namespace = deparse(substitute(lib)))
+qlibrary(lib, namespace = deparse(substitute(lib)), register = TRUE)
 }
 \arguments{
   \item{lib}{
@@ -24,6 +24,7 @@ qlibrary(lib, namespace = deparse(substitute(lib)))
     the case for Qt, even though it does place many enumerations inside
     the \code{Qt} namespace.
   }
+  \item{register}{Whether to register the library in the global list.}
 }
 \value{
   The library object, but catching the return value is useless, since,

@@ -21,7 +21,10 @@ qrect(x0, y0, x1, y1)
 qpoint(x, y)
 qsize(width, height)
 qpolygon(x = NULL, y = NULL)
-qfont(family = "Arial", pointsize = -1L, weight = -1L, italic = FALSE)
+qfont(family = baseFont$family(), pointsize =
+      baseFont$pointSize(), weight = baseFont$weight(),
+      italic = baseFont$style() == Qt$QFont$StyleItalic,
+      baseFont = Qt$QApplication$font())
 qpen(brush = qbrush(), width = 0L, style = Qt$Qt$SolidLine,
                  cap = Qt$Qt$SquareCap, join = Qt$Qt$BevelJoin)
 qbrush(color = qcolor(), style = Qt$Qt$SolidPattern)
@@ -50,6 +53,8 @@ qtransform(m11 = 1.0, m12 = 0.0, m13 = 0.0, m21 = 0.0, m22 = 1.0,
   \item{pointsize}{Font point size.}
   \item{weight}{Font weight (bold).}
   \item{italic}{Whether font is italicized.}
+  \item{baseFont}{The base font to use for the defaults. By default,
+    this is the global application font.}
   \item{brush}{Something coercible to a \code{QBrush} object
     via \code{qbrush(brush)}.}
   \item{style}{Line dashing for \code{qpen}, pattern type for \code{qbrush}.}
