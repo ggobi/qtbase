@@ -61,6 +61,9 @@ SmokeObject * SmokeObject::fromPtr(void *ptr, const Class *klass,
       so->_ptr = so->clonePtr(); 
       instances[so->ptr()] = so; // update the instances hash after cloning
       instances.remove(tmp_ptr);
+#ifdef MEM_DEBUG
+      qDebug("%p: copied to %p", so, so->ptr());
+#endif
       so->_allocated = true;
     }
   }
@@ -137,7 +140,7 @@ SmokeObject::SmokeObject(void *ptr, const Class *klass, bool allocated)
 void SmokeObject::maybeDestroy() {
   if (_allocated && !memoryIsOwned()) {
 #ifdef MEM_DEBUG
-    qDebug("%p: invoking destructor", this);
+    qDebug("%p: invoking destructor on %p", this, ptr());
 #endif
     const char *cname = _klass->smokeBase()->name();
     const char *colon = strrchr(cname, ':');
