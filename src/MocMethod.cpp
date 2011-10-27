@@ -52,6 +52,13 @@ QVector<SmokeType> MocMethod::types() const {
             break;
         }
       }
+      /* When it comes to method arguments, MOC types that do not fit
+         on the stack are typically const references. MOC does not
+         tell us one way or the other, so we just force it here.
+      */
+      if (!type.fitsStack()) {
+        type = SmokeType(type.smoke(), "const " + name + "&", className);
+      }
       if (type.isVoid()) {
         qCritical("Cannot handle Moc type '%s'\n", name.constData());
       }
