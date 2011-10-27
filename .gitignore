@@ -12,3 +12,6 @@
 /inst/qdoc/links.rda
 /src/.Rhistory
 /demo/.Rhistory
+/inst/doc/.Rhistory
+/man/.Rhistory
+/inst/doc/qtbase.tex
