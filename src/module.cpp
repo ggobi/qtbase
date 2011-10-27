@@ -311,13 +311,7 @@ Q_DECL_EXPORT bool
 memory_is_owned_qt(const SmokeObject *o)
 {
   const char *className = o->klass()->name();
-  if (	qstrcmp(className, "QListBoxItem") == 0
-        || qstrcmp(className, "QStyleSheetItem") == 0
-        || qstrcmp(className, "QSqlCursor") == 0
-        || qstrcmp(className, "QModelIndex") == 0 )
-  {
-    return true;
-  } else if (o->instanceOf("QStandardItem")) {
+  if (o->instanceOf("QStandardItem")) {
     QStandardItem * item = (QStandardItem *) o->castPtr("QStandardItem");
     return item->model() != NULL;
   }
