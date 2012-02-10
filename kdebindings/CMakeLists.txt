@@ -13,6 +13,11 @@ if(APPLE)
 set(QT_USE_QTUITOOLS FALSE)
 endif(APPLE)
 
+## QtUiTools not linked correctly on Windows (_personality_v0 missing symbol)
+if(WIN32)
+set(QT_USE_QTUITOOLS FALSE)
+endif(WIN32)
+
 include(${QT_USE_FILE})
 
 add_subdirectory(generator)
