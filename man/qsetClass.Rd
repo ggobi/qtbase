@@ -95,6 +95,7 @@ qsetRefClass(Class, where = topenv(parent.frame()), ...)
     class. Like the current value for a scrollbar. Used when autowiring
     widgets to data models, as in \code{QDataWidgetMapper}.
   }
+  \item{...}{Additional arguments to pass to \code{setRefClass}.}
 }
 \details{
   The side-effect of \code{qsetClass} is that a \code{RQtClass} object
