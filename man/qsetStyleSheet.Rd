@@ -33,7 +33,3 @@ qstyleSheet(widget = NULL)
 \author{
   Michael Lawrence
 }
-
-\examples{
-
-}
