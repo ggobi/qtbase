@@ -88,7 +88,7 @@ set_target_properties(smokeqt PROPERTIES VERSION 3.0.0 SOVERSION 3 )
 
 # Don't use the KDE ${LIB_INSTALL_DIR} macro here as this file is
 # for Qt only installs
-install(TARGETS smokeqt DESTINATION lib${LIB_SUFFIX} )
+# install(TARGETS smokeqt DESTINATION lib${LIB_SUFFIX} )
 
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/../qtdefines
   ${CMAKE_CURRENT_BINARY_DIR}/config.xml DESTINATION share/kdebindings )
