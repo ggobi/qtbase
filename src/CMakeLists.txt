@@ -60,10 +60,6 @@ set_target_properties(qtbase PROPERTIES SUFFIX ".so")
 install(TARGETS qtbase LIBRARY DESTINATION . )
 else(NOT WIN32)
 install(TARGETS qtbase RUNTIME DESTINATION . )
-install(DIRECTORY ${QT_BINARY_DIR} DESTINATION ../inst
-        FILES_MATCHING 
-        PATTERN "*d4.dll" EXCLUDE
-        PATTERN "*.dll")
 endif(NOT WIN32)
 
 
