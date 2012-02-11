@@ -9,11 +9,13 @@
 .onLoad <- function(libname, pkgname) 
 {
   if (.Platform$OS.type=="windows") {
-    lp <- gsub("/", "\\\\", paste(libname, pkgname, "bin", sep="/"))
-    Sys.setenv(PATH = paste(lp, Sys.getenv("PATH"), sep=";"))
-  }
-
-  library.dynam("qtbase", pkgname, libname)
+    dllpath <- Sys.getenv("QTBASE_QT_PATH")
+    if (!nzchar(dllpath))
+      dllpath <- .windows_qt_path()
+    if (!file.exists(dllpath))
+      .install_system_dependencies()
+    library.dynam("qtbase", pkgname, libname, DLLpath = dllpath)
+  } else library.dynam("qtbase", pkgname, libname)
 
   qlibrary(Qt, NULL)
 
