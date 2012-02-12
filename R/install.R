@@ -9,10 +9,10 @@
          url =
          "http://ggobi-documentation.googlecode.com/files/qt-4.8.0-win32.zip",
          installer = function(path) {
-           path <- .windows_qt_path()
+           dest_path <- .windows_qt_path()
            ## unzip does this, but we want to see any warnings
-           dir.create(path, recursive = TRUE) 
-           unzip(path, exdir = path)
+           dir.create(dest_path, recursive = TRUE) 
+           unzip(path, exdir = dest_path)
          }
          )
 
