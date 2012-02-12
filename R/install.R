@@ -6,7 +6,7 @@
   windows32_config <-
     list(
          source = FALSE,
-         url = "https://github.com/downloads/ggobi/qtbase/qt-4.8.0-win32.zip",
+         url = "http://github.com/downloads/ggobi/qtbase/qt-4.8.0-win32.zip",
          installer = function(path) {
            path <- .windows_qt_path()
            ## unzip does this, but we want to see any warnings
