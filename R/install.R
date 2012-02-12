@@ -30,8 +30,8 @@
         message("Please install ", dep_name, " from ", dep_url)
         return()
       }
-      choice <- menu(paste(c("Install", "Do not install"), dep_name), T, 
-                     paste("Need", dep_name, "? (Restart R after installing)"))
+      choice <- menu(paste(c("Install", "Do not install"), dep_name), TRUE, 
+                     paste("The qtbase package requires", dep_name))
       if (choice == 1) {
         path <- file.path(tempdir(), basename(sub("\\?.*", "", dep_url)))
         if (download.file(dep_url, path, mode="wb") > 0)
