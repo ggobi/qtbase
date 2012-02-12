@@ -51,14 +51,10 @@
     
     if (is.null(config))
       stop("This platform is not yet supported by the automatic installer. ",
-           "Please install GTK+ manually, if necessary. See: ", web)
+           "Please install Qt manually, if necessary. See: ", web)
     
-    install_system_dep("GTK+", config$url, web, config$installer)
+    install_system_dep("Qt", config$url, web, config$installer)
   }
   
   install_all()
-  
-  message("If the package still does not load, please ensure that GTK+ is",
-          " installed and that it is on your PATH environment variable")
-  message("IN ANY CASE, RESTART R BEFORE TRYING TO LOAD THE PACKAGE AGAIN")
 }
