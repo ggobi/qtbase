@@ -57,7 +57,7 @@ target_link_libraries(qtbase smokeqt ${QT_LIBRARIES} ${R_LIBRARIES})
 set_target_properties(qtbase PROPERTIES PREFIX "")
 if(NOT WIN32) # Need to force .so on Mac, but Windows needs to be .dll
 set_target_properties(qtbase PROPERTIES SUFFIX ".so")
-install(TARGETS qtbase LIBRARY DESTINATION ../libs)
+install(TARGETS qtbase LIBRARY DESTINATION . )
 else(NOT WIN32)
 install(TARGETS qtbase RUNTIME DESTINATION . )
 endif(NOT WIN32)
