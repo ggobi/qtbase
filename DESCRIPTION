@@ -10,6 +10,7 @@ Description: Dynamic bindings to the Qt library for calling Qt
     methods and extending Qt clases from R. Other packages build upon qtbase
     to provide special-purpose high-level interfaces to specific parts of Qt.
 License: GPL (>= 2)
-SystemRequirements: Qt (>= 4.0)
+SystemRequirements: Qt4 libraries and headers (http://qt.nokia.com),
+                    cmake (http://www.cmake.org)
 Acknowledgements: QtRuby and Qyoto projects for head-start on the Smoke-based
                   interface
