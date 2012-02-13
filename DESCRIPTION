@@ -1,11 +1,10 @@
 Package: qtbase
-Version: 1.0.2
+Version: 1.0.3
 Title: Interface between R and Qt 
 Author: Michael Lawrence, Deepayan Sarkar
 Depends: R (>= 2.10.0), methods, utils
 URL: http://qtinterfaces.r-forge.r-project.org
-Maintainer: Michael Lawrence <michafla@gene.com>,
-            Deepayan Sarkar <deepayan.sarkar@gmail.com>
+Maintainer: Michael Lawrence <michafla@gene.com>
 Description: Dynamic bindings to the Qt library for calling Qt
     methods and extending Qt clases from R. Other packages build upon qtbase
     to provide special-purpose high-level interfaces to specific parts of Qt.
