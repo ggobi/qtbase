@@ -1,17 +1,3 @@
-
-
-This package is intended to be the provider of a low-level API
-allowing the manipulation of Qt widgets from R.  Of course, various
-high-level extensions are possible.  Those of particular interest to
-me are (1) a high-level static graphics interface, with capabilities
-similar to lattice, and (2) a high-level dynamic graphics interface,
-similar to Ggobi (?).
-
-
-Questions:
-
-  foo$minimumSize <- qsize(200, 200)  ## works
-  
-  Why is there no foo$setMinimumSize()
-
-
+Dynamic bindings to the Qt library for calling Qt
+methods and extending Qt clases from R. Other packages build upon qtbase 
+to provide special-purpose high-level interfaces to specific parts of Qt.
