@@ -59,6 +59,11 @@ SmokeDataFile::SmokeDataFile()
             usedTypes << meth->type();
             foreach (const Parameter& param, meth->parameters()) {
                 usedTypes << param.type();
+                if (meth->isSlot() || meth->isSignal() ||
+                    meth->isQPropertyAccessor())
+                  {
+                      usedTypes << Util::normalizeType(param.type());
+                  }
             }
             declaredVirtualMethods[meth->getClass()] << meth;
         }
