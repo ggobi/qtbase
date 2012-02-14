@@ -21,4 +21,4 @@ clean:
 	rm -rf ../kdebindings-build
 	rm -rf ../src-build
 	rm -rf ../inst/local
-        rm src/qtbase.dll
+	rm src/qtbase.dll
