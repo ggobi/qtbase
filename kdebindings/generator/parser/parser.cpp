@@ -369,9 +369,8 @@ void Parser::reportError(const QString& msg)
       Problem *p = new Problem;
       p->file = session->url().str();
       p->position = position;
-      p->description = msg;
+      p->description = msg + " : " + QString::fromUtf8(lineFromContents(session->size(), session->contents(), p->position.line));
       p->source = Problem::Source_Parser;
-
       control->reportProblem(p);
     }
   else if (_M_hold_errors)
