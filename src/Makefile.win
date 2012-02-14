@@ -1,10 +1,7 @@
-##CMAKE_C_COMPILER=gcc
-##CMAKE_CXX_COMPILER=g++
-LIBR = "-L$(R_HOME)/bin/i386 -lR"
-##/$(IMPDIR) 
+LIBR := "-L$(R_HOME)/bin/i386 -lR"
+PATH := ${PATH};${QTBASE_QT_PATH}
 
 all:
-        set PATH=%PATH%;%QTBASE_QT_PATH%
 	mkdir -p ../kdebindings-build;
 	cd ../kdebindings-build; \
 	${CMAKE} -G "Unix Makefiles" ../kdebindings \
