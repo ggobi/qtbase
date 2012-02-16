@@ -7,7 +7,7 @@ all:
 	cmake -G "Unix Makefiles" ../kdebindings \
               -DCMAKE_RC_COMPILER=${RC_COMPILER} \
               -DCMAKE_INSTALL_PREFIX=../inst/local; \
-	LD_LIBRARY_PATH=../../generator/bin make install
+	make install
 	mkdir -p ../src-build;
 	cd ../src-build; \
 	cmake -G "Unix Makefiles" ../src \
