@@ -57,7 +57,7 @@ QVariant DataFrameModel::headerData(int section, Qt::Orientation orientation,
       return value;
     }
     if (role >= length(_colHeader)) {
-      qCritical("Column header role %d out of bounds", role);
+      //qCritical("Column header role %d out of bounds", role);
       return value;
     }
     SEXP roleVector = VECTOR_ELT(_colHeader, role);
@@ -69,7 +69,7 @@ QVariant DataFrameModel::headerData(int section, Qt::Orientation orientation,
       return value;
     }
     if (role >= length(_rowHeader)) {
-      qCritical("Row header role %d out of bounds", role);
+      //qCritical("Row header role %d out of bounds", role);
       return value;
     }
     SEXP roleVector = VECTOR_ELT(_rowHeader, role);
