@@ -74,6 +74,7 @@ public:
 private:
 
   void orphanTable(SEXP sexp) const;
+  void orphanSexp();
   SEXP internalTable();
   void maybeDestroy();
   void castSexp(SEXP sexp);

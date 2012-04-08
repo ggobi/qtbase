@@ -38,7 +38,7 @@ QVariant DataFrameModel::data(const QModelIndex &index, int role) const
     if (role == Qt::DisplayRole)
       value = data(index, Qt::EditRole);
   } else value = qvariant_from_sexp(VECTOR_ELT(_dataframe, dfIndex), row);
-
+  
   return value;
 }
 

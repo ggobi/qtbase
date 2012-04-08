@@ -419,6 +419,18 @@ void SmokeObject::orphanTable(SEXP sexp) const {
   table->setInstance(NULL);
 }
 
+void SmokeObject::orphanSexp() {
+  SEXP old_classes = getAttrib(_sexp, R_ClassSymbol);
+  SEXP new_classes;
+  PROTECT(new_classes = allocVector(STRSXP, length(old_classes) + 1));
+  SET_STRING_ELT(new_classes, 0, mkChar("RQtInvalid"));
+  for (int i = 0; i < length(old_classes); i++)
+    SET_STRING_ELT(new_classes, i + 1, STRING_ELT(old_classes, i));
+  setAttrib(_sexp, R_ClassSymbol, new_classes);
+  UNPROTECT(1);
+  orphanTable(HASHTAB(_sexp));
+}
+
 SmokeObject *SmokeObject::convertImplicitly(const SmokeType &type) const {
   const Class *cl = Class::fromSmokeId(type.smoke(), type.classId());
   Method *meth = cl->findImplicitConverter(this);
@@ -442,7 +454,7 @@ SmokeObject::~SmokeObject() {
 #ifdef MEM_DEBUG
     qDebug("%p: orphaned sexp %p", this, _sexp);
 #endif
-    orphanTable(HASHTAB(_sexp));
+    orphanSexp();
   }
   if (_internalTable) {
 #ifdef MEM_DEBUG
