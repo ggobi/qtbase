@@ -3,6 +3,7 @@
 \alias{qcol2rgb}
 \alias{\%>>\%}
 \alias{\%<<\%}
+\alias{RQtObject-class}
 
 \title{Instance of a Class}
 \description{

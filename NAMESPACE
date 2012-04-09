@@ -30,6 +30,7 @@ S3method(print, QWidget) ## calls $show()
 S3method(Ops, RQtObject)
 S3method("[", RQtObject)
 export("%<<%", "%>>%")
+exportClasses(RQtObject)
 
 # enums
 S3method("|", QtEnum)
