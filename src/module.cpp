@@ -31,9 +31,13 @@ resolve_classname_qt(const SmokeObject * o)
   const char *className = smoke->classes[classId].className;
   if (smoke->isDerivedFrom(className, "QObject")) {
     QObject *obj = (QObject *)o->castPtr("QObject");
-    int smokeClassId = smoke->idClass(obj->metaObject()->className()).index;
-    if (smokeClassId) // could be a private subclass
-      classId = smokeClassId;
+    int smokeClassId = 0;
+    const QMetaObject *meta = obj->metaObject();
+    while (!smokeClassId) {  // could be a private subclass
+      smokeClassId = smoke->idClass(meta->className()).index;
+      meta = meta->superClass();
+    }
+    classId = smokeClassId;
   } else if (smoke->isDerivedFrom(className, "QEvent")) {
     QEvent * qevent = (QEvent *)
       smoke->cast(o->ptr(), classId, smoke->idClass("QEvent").index);
