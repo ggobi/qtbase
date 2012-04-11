@@ -286,7 +286,7 @@ bool qvariant_into_vector(QVariant variant, SEXP v, int index) {
       break;
     }
   case STRSXP:
-    SET_STRING_ELT(v, index, qstring2sexp(variant.value<QString>()));
+    SET_STRING_ELT(v, index, asChar(qstring2sexp(variant.value<QString>())));
     break;
   case VECSXP:
     SET_VECTOR_ELT(v, index, to_sexp(variant));
