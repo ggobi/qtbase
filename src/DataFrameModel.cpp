@@ -8,9 +8,19 @@
 
 QVariant DataFrameModel::data(const QModelIndex &index, int role) const
 {
+  return qvariant_from_sexp(dataFrameColumn(index, role), index.row());
+}
+
+/* Provides access to the SEXP vector backing the column + role. This
+   allows RTextFormattingDelegate to inspect the actual R object when
+   determining the appropriate editing widget. We thought about using
+   a custom role for the type or something, but that is not much
+   cleaner than this, and this has more potential. */
+SEXP DataFrameModel::dataFrameColumn(const QModelIndex &index, int role) const
+{
   int col = index.column();
   int row = index.row();
-  QVariant value;
+  SEXP value = R_NilValue;
   QModelIndex dummy;
 
   if (!index.isValid()) {
@@ -34,10 +44,10 @@ QVariant DataFrameModel::data(const QModelIndex &index, int role) const
   int dfIndex;
   if (roleVector == R_NilValue || (dfIndex = INTEGER(roleVector)[col]) == -1) {
     if (role == Qt::ToolTipRole)
-      value = data(index, Qt::DisplayRole);
+      value = dataFrameColumn(index, Qt::DisplayRole);
     if (role == Qt::DisplayRole)
-      value = data(index, Qt::EditRole);
-  } else value = qvariant_from_sexp(VECTOR_ELT(_dataframe, dfIndex), row);
+      value = dataFrameColumn(index, Qt::EditRole);
+  } else value = VECTOR_ELT(_dataframe, dfIndex);
   
   return value;
 }
