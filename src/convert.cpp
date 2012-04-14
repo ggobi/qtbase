@@ -257,44 +257,71 @@ SEXP to_sexp(QVariant variant) {
   return ans;
 }
 
+/* The main complication here, besides NA values, is that QVariant
+   will happily convert things like non-numeric strings to 0. */
+template <typename T> inline bool
+qvariant_num_into_vector(QVariant variant, T *val, T NA) {
+  bool success;
+  if (success = variant.canConvert<T>()) {
+    T tmp_val = variant.value<QString>() == "NA" ? NA : variant.value<T>();
+    if (success = (tmp_val != 0 || variant.value<QString>() == "0"))
+      *val = tmp_val;
+  }
+  return success;
+}
+
 bool qvariant_into_vector(QVariant variant, SEXP v, int index) {
   if (!isVector(v))
     error("Setting vector element from QVariant: not a vector");
+  bool success = false;
   switch(TYPEOF(v)) {
   case RAWSXP:
-    RAW(v)[index] = variant.value<unsigned char>();
+    success = qvariant_num_into_vector(variant, RAW(v) + index, (Rbyte) 0);
     break;
   case LGLSXP:
-    LOGICAL(v)[index] = variant.value<bool>();
+    success = qvariant_num_into_vector(variant, LOGICAL(v) + index, NA_LOGICAL);
     break;
   case REALSXP:
-    REAL(v)[index] = variant.value<double>();
+    success = qvariant_num_into_vector(variant, REAL(v) + index, NA_REAL);
+    if (!success && (success = variant.value<QString>() == "NaN"))
+      REAL(v)[index] = R_NaN;
     break;
   case INTSXP:
     {
-      SEXP levels;
-      if ((levels = getAttrib(v, R_LevelsSymbol)) != R_NilValue) {
-        QString qstr = variant.value<QString>();
-        int level = 0;
-        for (int i = 0; i < length(levels); i++)
-          if (qstr == CHAR(STRING_ELT(levels, i)))
-            level = i + 1;
-        if (level == 0)
-          return(false);
-        INTEGER(v)[index] = level;
-      } else INTEGER(v)[index] = variant.value<int>();
+      if (isFactor(v)) {
+        SEXP levels = getAttrib(v, R_LevelsSymbol);
+        int level = -1;
+        if (variant.type() == QVariant::Int) {
+          level = variant.value<int>();
+        } else {
+          QString qstr = variant.value<QString>();
+          for (int i = 0; i < length(levels); i++) {
+            if (qstr == CHAR(STRING_ELT(levels, i)))
+              level = i;
+          }
+          level++;
+          if (level == 0 && qstr == "<NA>")
+            level = NA_INTEGER;
+        }
+        if (success = (level == NA_INTEGER ||
+                       (level > 0 && level <= length(levels))))
+          INTEGER(v)[index] = level;
+      } else qvariant_num_into_vector(variant, INTEGER(v) + index, NA_INTEGER);
       break;
     }
   case STRSXP:
-    SET_STRING_ELT(v, index, asChar(qstring2sexp(variant.value<QString>())));
+    if (success = variant.canConvert<QString>())
+      SET_STRING_ELT(v, index, variant.value<QString>() == "NA" ? NA_STRING :
+                     asChar(qstring2sexp(variant.value<QString>())));
     break;
   case VECSXP:
     SET_VECTOR_ELT(v, index, to_sexp(variant));
+    success = true;
     break;
   default:
     error("Setting vector element from QVariant: unhandled vector type");
   }
-  return(true);
+  return(success);
 }
 
 QVariant qvariant_from_sexp(SEXP rvalue, int index) {
@@ -321,8 +348,9 @@ QVariant qvariant_from_sexp(SEXP rvalue, int index) {
     break;
   case LGLSXP:
     // Rprintf("Logical\n");
-    // FIXME: by converting to 'bool' all NA become TRUE
-    variant = QVariant((bool)LOGICAL(rvalue)[index]);
+    if (LOGICAL(rvalue)[index] == NA_LOGICAL)
+      variant = QVariant("NA"); // otherwise, becomes TRUE (bad)
+    else variant = QVariant((bool)LOGICAL(rvalue)[index]);
     break;
   case REALSXP:
     // Rprintf("Real\n");
