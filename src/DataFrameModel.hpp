@@ -4,6 +4,8 @@
 #include <Rinternals.h>
 
 class DataFrameModel : public QAbstractTableModel {
+  Q_OBJECT
+
 public:
 
   DataFrameModel(QObject *parent, SEXP useRoles, SEXP editable)
@@ -43,6 +45,8 @@ public:
 
   SEXP useRoles() { return _useRoles; }
   SEXP editable() { return _editable; }
+
+  SEXP dataFrameColumn(const QModelIndex &index, int role) const;
   
 private:
 

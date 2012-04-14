@@ -41,7 +41,7 @@ set(qtbase_LIB_SRCS init.cpp EventLoop.cpp convert.cpp
    InstanceObjectTable.cpp smoke.cpp DataFrameModel.cpp
    RTextFormattingDelegate.cpp)
    
-QT4_WRAP_CPP ( qtbase_MOC_FILES EventLoop.hpp )
+QT4_WRAP_CPP ( qtbase_MOC_FILES EventLoop.hpp DataFrameModel.hpp )
 
 if(WIN32) # Toughest Win32 part: generating the defs file for the DLL
 foreach(qtbase_lib_src ${qtbase_LIB_SRCS})
