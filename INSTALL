@@ -25,12 +25,15 @@ Mac OS X instructions
 Windows instructions
 --------------------
 
-1. Install Qt from http://qt.nokia.com/;
-   The LPGL'd SDK (complete developer environment).
+1. Download the 64 bit MinGW Qt binaries and headers from ...
 2. Install cmake >= 2.8.1 from http://www.cmake.org/.
-3. Make sure that the machine is properly configured to build binary packages.
-4. Make sure that PATH contains the directories with qmake.exe and cmake.exe.
-5. Using MSYS, run R CMD INSTALL qtbase.
+3. Set CMAKE_PATH environment variable to path containing cmake.exe.
+4. Set QTBASE_QT_PATH to the directory containing qmake.exe.
+5. Set RC_COMPILER to point to windres.exe in R Tools. This path must use the
+   '/' file separator, instead of '\'.
+6. Make sure that PATH includes perl.exe.
+7. Make sure that the machine is properly configured to build binary packages.
+8. Using command.exe, run R CMD INSTALL qtbase.
 
 Linux instructions
 ------------------
