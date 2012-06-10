@@ -68,4 +68,6 @@ else(NOT WIN32)
 install(TARGETS qtbase RUNTIME DESTINATION . )
 endif(NOT WIN32)
 
+INCLUDE(CMakeForceCompiler)
+CMAKE_FORCE_CXX_COMPILER(${R_CXX} R_CXX)
 

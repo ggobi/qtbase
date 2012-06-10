@@ -34,3 +34,6 @@ install(TARGETS smokegen DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 install(FILES generatorenvironment.h  generator_export.h  generatorpreprocessor.h  generatorvisitor.h  name_compiler.h  options.h  type_compiler.h  type.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include/smokegen)
 
 add_subdirectory(generators)
+
+INCLUDE(CMakeForceCompiler)
+CMAKE_FORCE_CXX_COMPILER(${R_CXX} R_CXX)

@@ -11,3 +11,6 @@ target_link_libraries(generator_smoke ${QT_QTCORE_LIBRARY} ${QT_QTXML_LIBRARY} s
 set_target_properties(generator_smoke PROPERTIES PREFIX "")
 
 install(TARGETS generator_smoke LIBRARY DESTINATION ${LIB_INSTALL_DIR}/smokegen/)
+
+INCLUDE(CMakeForceCompiler)
+CMAKE_FORCE_CXX_COMPILER(${R_CXX} R_CXX)

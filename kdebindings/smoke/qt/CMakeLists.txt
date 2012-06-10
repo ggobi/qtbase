@@ -86,6 +86,9 @@ target_link_libraries(smokeqt ${QT_LIBRARIES})
 
 set_target_properties(smokeqt PROPERTIES VERSION 3.0.0 SOVERSION 3 )
 
+INCLUDE(CMakeForceCompiler)
+CMAKE_FORCE_CXX_COMPILER(${R_CXX} R_CXX)
+
 # Don't use the KDE ${LIB_INSTALL_DIR} macro here as this file is
 # for Qt only installs
 # install(TARGETS smokeqt DESTINATION lib${LIB_SUFFIX} )
