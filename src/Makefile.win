@@ -1,17 +1,22 @@
 LIBR := "-L$(R_HOME)/bin/i386 -lR"
 PATH := ${PATH};${QTBASE_QT_PATH}
 
+RBIN := "R"
+CXX := $(shell ${RBIN} CMD config CXX)
+
 all:
 	mkdir -p ../kdebindings-build;
 	echo ${PATH}
 	cd ../kdebindings-build; \
 	${CMAKE} -G "Unix Makefiles" ../kdebindings \
+              -DR_CXX="${CXX}" \
               -DCMAKE_RC_COMPILER=${RC_COMPILER} \
               -DCMAKE_INSTALL_PREFIX=../inst/local; \
 	make install
 	mkdir -p ../src-build;
 	cd ../src-build; \
 	${CMAKE} -G "Unix Makefiles" ../src \
+              -DR_CXX="${CXX}" \
               -DCMAKE_RC_COMPILER=${RC_COMPILER} \
 	      -DR_LIBRARIES=${LIBR} \
 	      -DR_INCLUDES=${R_INCLUDE_DIR} \
