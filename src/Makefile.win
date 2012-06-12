@@ -6,7 +6,6 @@ CXX := $(shell ${RBIN} CMD config CXX)
 
 all:
 	mkdir -p ../kdebindings-build;
-	echo ${PATH}
 	cd ../kdebindings-build; \
 	${CMAKE} -G "Unix Makefiles" ../kdebindings \
               -DR_CXX="${CXX}" \
