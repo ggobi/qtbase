@@ -1,5 +1,5 @@
 LIBR := "-L$(R_HOME)/bin/i386 -lR"
-PATH := ${PATH};${QTBASE_QT_PATH}
+PATH := ${PATH}:${QTBASE_QT_PATH}
 
 all:
 	mkdir -p ../kdebindings-build;
