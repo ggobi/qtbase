@@ -65,6 +65,7 @@ if(NOT WIN32) # Need to force .so on Mac, but Windows needs to be .dll
 set_target_properties(qtbase PROPERTIES SUFFIX ".so")
 install(TARGETS qtbase LIBRARY DESTINATION . )
 else(NOT WIN32)
+set_target_properties(qtbase PROPERTIES COMPILE_FLAGS "-m64")
 install(TARGETS qtbase RUNTIME DESTINATION . )
 endif(NOT WIN32)
 
