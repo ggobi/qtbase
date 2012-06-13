@@ -86,6 +86,10 @@ target_link_libraries(smokeqt ${QT_LIBRARIES})
 
 set_target_properties(smokeqt PROPERTIES VERSION 3.0.0 SOVERSION 3 )
 
+if( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
+  set_target_properties(smokeqt PROPERTIES COMPILE_FLAGS "-fPIC")
+endif( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
+
 INCLUDE(CMakeForceCompiler)
 CMAKE_FORCE_CXX_COMPILER(${R_CXX} R_CXX)
 
