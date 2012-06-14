@@ -20,7 +20,7 @@ all:
 	cd ../src-build; \
 	${CMAKE} ../src $(CMAKE_ARGS) \
 	      -DR_INCLUDES=${R_INCLUDE_DIR}; \
-	make installs
+	make install
 
 clean:
 	rm -rf ../kdebindings-build
