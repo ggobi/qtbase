@@ -1,5 +1,5 @@
 LIBR = "-L$(R_HOME)/bin/$(R_ARCH) -lR"
-PATH := ${PATH}:${QTBASE_QT_PATH}
+PATH := ${QTBASE_QT_PATH}:${PATH}
 CMAKE_ARGS = -G "Unix Makefiles" \
              -DCMAKE_RC_COMPILER=${RC_COMPILER} \
              -DR_LIBRARIES=${LIBR}
