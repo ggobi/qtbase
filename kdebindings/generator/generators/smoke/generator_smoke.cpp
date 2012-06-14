@@ -223,7 +223,8 @@ int generate()
 
     if (sizeof(unsigned int) == sizeof(size_t)) {
         Util::typeMap["size_t"] = "uint";
-    } else if (sizeof(unsigned long) == sizeof(size_t)) {
+    } else if (sizeof(unsigned long) == sizeof(size_t) ||
+               sizeof(unsigned long long) == sizeof(size_t)) {
         Util::typeMap["size_t"] = "ulong";
     }
 
