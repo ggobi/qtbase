@@ -28,7 +28,3 @@ include(${QT_USE_FILE})
 
 add_subdirectory(generator)
 add_subdirectory(smoke)
-
-if(WIN32)
-  set(CMAKE_CXX_FLAGS "-m64 ${CMAKE_CXX_FLAGS}")
-endif(WIN32)
