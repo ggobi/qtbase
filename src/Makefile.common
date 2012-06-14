@@ -19,8 +19,8 @@ all:
 	mkdir -p ../src-build;
 	cd ../src-build; \
 	${CMAKE} ../src $(CMAKE_ARGS) \
-	      -DR_INCLUDES=${R_INCLUDE_DIR} \
-	make install
+	      -DR_INCLUDES=${R_INCLUDE_DIR}; \
+	make installs
 
 clean:
 	rm -rf ../kdebindings-build
