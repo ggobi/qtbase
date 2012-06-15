@@ -2,8 +2,8 @@ LIBR = "-L$(R_HOME)/bin/$(R_ARCH) -lR"
 CYGWIN_QTBASE_QT_PATH := /cygdrive/$(subst :,,$(subst \,/,$(QTBASE_QT_PATH)))
 PATH := $(CYGWIN_QTBASE_QT_PATH):${PATH}
 CMAKE_ARGS = -G "Unix Makefiles" \
-             -DCMAKE_RC_COMPILER=$(subst \,/,$(RC_COMPILER)) \
+             -DCMAKE_RC_COMPILER="$(subst \,/,$(RC_COMPILER))" \
              -DR_LIBRARIES=${LIBR}
-CMAKE := /cygdrive/$(subst :,,$(subst \,/,$(CMAKE)))
+CMAKE := "/cygdrive/$(subst :,,$(subst \,/,$(CMAKE)))"
 
 include Makefile.common
