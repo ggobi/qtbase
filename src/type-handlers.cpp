@@ -637,9 +637,11 @@ DEF_COLLECTION_CONVERTERS(QList, QUndoStack*, ptr)
 #if QT_VERSION >= 0x40300
 DEF_COLLECTION_CONVERTERS(QList, QMdiSubWindow*, ptr)
 #ifdef QT_NETWORK_LIB
+#ifndef QT_NO_OPENSSL
 DEF_COLLECTION_CONVERTERS(QList, QSslCertificate, class)
 DEF_COLLECTION_CONVERTERS(QList, QSslCipher, class)
 DEF_COLLECTION_CONVERTERS(QList, QSslError, class)
+#endif
 #endif
 #if defined(QT_XML_LIB) || QT_VERSION >= 0x40400
 DEF_COLLECTION_CONVERTERS(QVector, QXmlStreamEntityDeclaration, class)
@@ -810,9 +812,11 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
 #if QT_VERSION >= 0x40300
   TYPE_HANDLER_ENTRY_CLASS(QList<QMdiSubWindow*>),
 #ifdef QT_NETWORK_LIB
+#ifndef QT_NO_OPENSSL
   TYPE_HANDLER_ENTRY_CLASS(QList<QSslCertificate>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QSslCipher>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QSslError>),
+#endif
 #endif
 #endif
 #if QT_VERSION >= 0x040400
