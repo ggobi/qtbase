@@ -20,11 +20,6 @@ if(OPENGL_FOUND)
 include_directories(${OPENGL_INCLUDE_DIR})
 endif(OPENGL_FOUND)
 
-## QtUiTools not installed as a framework on OS X
-if(APPLE)
-set(QT_USE_QTUITOOLS FALSE)
-endif(APPLE)
-
 ## QtUiTools not linked correctly on Windows (_personality_v0 missing symbol)
 if(WIN32)
 set(QT_USE_QTUITOOLS FALSE)
