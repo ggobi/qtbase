@@ -2,11 +2,17 @@ cmake_minimum_required(VERSION 2.8.1)
 
 project(qtbase)
 
-find_package(Qt4 4.0.0 COMPONENTS QtCore QtGui REQUIRED)
+find_package(Qt4 4.0.0 REQUIRED COMPONENTS QtCore QtGui)
 
-find_package(Qt4 4.0.0 COMPONENTS QtCore QtGui QtXml QtXmlPatterns
-  QtNetwork QtOpenGL QtSql QtSvg QtDBus QtScript QtWebkit
-  QtTest QtHelp QtMultimedia QtDeclarative QtUiTools)
+if(APPLE) # No QtDBus in Mac binaries
+find_package(Qt4 4.0.0 COMPONENTS QtXml QtXmlPatterns QtNetwork
+             QtOpenGL QtSql QtSvg QtScript QtWebkit QtTest
+             QtHelp QtMultimedia QtDeclarative QtUiTools)
+else(APPLE)
+find_package(Qt4 4.0.0 COMPONENTS QtXml QtXmlPatterns QtNetwork
+             QtOpenGL QtSql QtSvg QtDBus QtScript QtWebkit QtTest
+             QtHelp QtMultimedia QtDeclarative QtUiTools)
+endif(APPLE)
 
 ## FindQt4 does not add the include directory for OpenGL
 find_package(OpenGL)
