@@ -56,10 +56,7 @@
 
 saveLocale <- function() {
   categories <- c("LC_COLLATE", "LC_CTYPE", "LC_MONETARY", "LC_NUMERIC",
-                  "LC_TIME", "LC_MESSAGES", "LC_PAPER", "LC_MEASUREMENT",
-                  ## extra stuff from ISO 14652
-                  "LC_NAME", "LC_IDENTIFICATION", "LC_ADDRESS", "LC_TELEPHONE",
-                  "LC_XLITERATE")
+                  "LC_TIME", "LC_MESSAGES", "LC_PAPER", "LC_MEASUREMENT")
   Filter(Negate(is.null), sapply(categories, Sys.getlocale, simplify = FALSE))
 }
 
