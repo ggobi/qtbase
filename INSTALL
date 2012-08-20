@@ -9,7 +9,7 @@ desire a custom build. Or if you are a Bioconductor maintainer.
 
 Requirements
 ------------
-1. Qt >= 4.0.0 SDK (>= 4.7.0 recommended to be on the safe side)
+1. Qt >= 4.0.0 SDK (>= 4.8.0 recommended for optimal performance)
 2. cmake >= 2.8.1
 
 Mac OS X instructions
@@ -40,3 +40,40 @@ Linux instructions
 
 1. Install the Qt SDK (i.e., devel) >= 4.0 and cmake >= 2.8.1 packages.
 2. R CMD INSTALL qtbase.
+
+===================
+Building on Windows
+===================
+
+Building qtbase
+-----------------------
+
+1. Install Rtools.
+2. Install cmake.
+3. Download and install the Qt libraries:
+   32 bit: http://qt.nokia.com/downloads/windows-cpp
+   64 bit: follow the instructions below to build it.
+3. Set the CMAKE environment variable to point to your cmake.exe.
+4. Set QTBASE_QT_PATH environment variable to point to the directory
+   containing qmake.exe.
+5. Make sure perl.exe is on your PATH.
+6. Set RC_COMPILER environment variable to point to windres.exe from Rtools.
+7. Start the command shell.
+9. Run "R CMD INSTALL --build qtbase" with "--arch 32" or "--arch 64".
+
+Building Qt for 64 bit
+------------------------------
+
+1. Download the latest Qt source code and extract it somewhere.
+   URL: (http://releases.qt-project.org/qt4/source/qt-everywhere-opensource-src-4.8.2.zip)
+2. The complicated part is getting Qt to build with the compiler from
+   Rtools. Open somewhere/mkspecs/win32-g++/qmake.conf and set
+   QMAKE_CFLAGS and QMAKE_LFLAGS to "-m64". Also, add "-F pe-x86-64"
+   to QMAKE_RC.  In qmake/Makefile.win32-g++-sh, add "-m64" to CFLAGS
+   and change LFLAGS in that file to "-s -m64".
+3. Start the command shell.
+5. Switch to the qt source directory.
+6. Run
+ "configure -release -opensource -nomake examples -nomake demos -no-qt3support"
+7. Run mingw32-make, as instructed.
+8. Wait a long time.
