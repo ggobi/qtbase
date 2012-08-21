@@ -1,6 +1,6 @@
 LIBR = "-L$(R_HOME)/bin/$(R_ARCH) -lR"
 CMAKE_ARGS = -G "Unix Makefiles" \
-             -DQT_QMAKE_EXECUTABLE=${QMAKE} \
+             -DQT_QMAKE_EXECUTABLE="${QMAKE}" \
              -DCMAKE_RC_COMPILER="$(subst \,/,$(RC_COMPILER))" \
              -DR_LIBRARIES=${LIBR} \
              -DSYMPAT=${SYMPAT}
