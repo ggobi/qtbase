@@ -1,20 +1,29 @@
 RBIN := "${R_HOME}/bin/R"
-CXX := $(shell ${RBIN} CMD config CXX)
 
+CXX := $(shell ${RBIN} CMD config CXX)
 CXX_BIN := $(firstword ${CXX})
 CXX_ARGS := $(filter-out $(CXX_BIN), $(CXX)) 
 
+SHLIB_CXXLD := $(shell ${RBIN} CMD config SHLIB_CXXLD)
+SHLIB_CXXLD_BIN := $(firstword ${SHLIB_CXXLD})
+SHLIB_CXXLD_ARGS := $(filter-out $(SHLIB_CXXLD_BIN), $(SHLIB_CXXLD)) 
+LDFLAGS := $(shell ${RBIN} CMD config LDFLAGS)
+SHLIB_CXXLDFLAGS := $(shell ${RBIN} CMD config SHLIB_CXXLDFLAGS)
+
+SHARED_LINKER_FLAGS = ${SHLIB_CXXLD_ARGS} ${LDFLAGS} ${SHLIB_CXXLDFLAGS}
+EXE_LINKER_FLAGS = ${SHLIB_CXXLD_ARGS} ${LDFLAGS}
+
 CMAKE_ARGS += -DR_CXX="${CXX_BIN}" \
 	      -DCMAKE_CXX_FLAGS="${CXX_ARGS}" \
-	      -DCMAKE_SHARED_LINKER_FLAGS="${CXX_ARGS}"
+	      -DCMAKE_SHARED_LINKER_FLAGS="${SHARED_LINKER_FLAGS}"
 
 all:
 	mkdir -p ../kdebindings-build;
 	cd ../kdebindings-build; \
 	${CMAKE} ../kdebindings $(CMAKE_ARGS) \
 	      -DCMAKE_INSTALL_PREFIX=../inst/local \
-	      -DCMAKE_EXE_LINKER_FLAGS="${CXX_ARGS}" \
-	      -DCMAKE_MODULE_LINKER_FLAGS="${CXX_ARGS}"; \
+	      -DCMAKE_EXE_LINKER_FLAGS="${EXE_LINKER_FLAGS}" \
+	      -DCMAKE_MODULE_LINKER_FLAGS="${SHARED_LINKER_FLAGS}"; \
 	LD_LIBRARY_PATH=../../generator/bin make install
 	mkdir -p ../src-build;
 	cd ../src-build; \
