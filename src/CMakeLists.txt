@@ -49,7 +49,8 @@ foreach(qtbase_lib_src ${qtbase_LIB_SRCS})
   list(APPEND qtbase_LIB_OBJS "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/qtbase.dir/${qtbase_lib_src}${CMAKE_CXX_OUTPUT_EXTENSION}")
 endforeach(qtbase_lib_src ${qtbase_LIB_SRCS})
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/qtbase.def 
-                   COMMAND sh ARGS ${CMAKE_CURRENT_SOURCE_DIR}/mkdef.sh
+                   COMMAND sh
+                   ARGS ${CMAKE_CURRENT_SOURCE_DIR}/mkdef.sh ${SYMPAT}
                    DEPENDS ${qtbase_LIB_OBJS}) 
 SET(CMAKE_LINK_DEF_FILE_FLAG "qtbase.def ") # space needs to be there
 add_library(qtbase SHARED qtbase.def ${qtbase_LIB_SRCS} ${qtbase_MOC_FILES})
