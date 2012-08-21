@@ -83,6 +83,8 @@
         <signature>.*short.*QXmlName::prefix().*</signature>
         <signature>.*short.*QXmlName::localName().*</signature>
 
+        <signature>.*QMetaObject::cast.*</signature>
+        
         <!-- QtTest excludes -->
         <signature>QTest::QTouchEventSequence QTest::touchEvent.*</signature>
 
