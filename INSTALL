@@ -54,8 +54,7 @@ Building qtbase
    32 bit: http://qt.nokia.com/downloads/windows-cpp
    64 bit: follow the instructions below to build it.
 3. Set the CMAKE environment variable to point to your cmake.exe.
-4. Set QTBASE_QT_PATH environment variable to point to the directory
-   containing qmake.exe.
+4. Set QMAKE environment variable to point to qmake.exe.
 5. Make sure perl.exe is on your PATH.
 6. Set RC_COMPILER environment variable to point to windres.exe from Rtools.
 7. Start the command shell.
