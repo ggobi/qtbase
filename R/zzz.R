@@ -57,7 +57,10 @@
 saveLocale <- function() {
   categories <- c("LC_COLLATE", "LC_CTYPE", "LC_MONETARY", "LC_NUMERIC",
                   "LC_TIME", "LC_MESSAGES", "LC_PAPER", "LC_MEASUREMENT")
-  Filter(Negate(is.null), sapply(categories, Sys.getlocale, simplify = FALSE))
+  nonEmptyString <- function(x) {
+    is.character(x) && nzchar(x)
+  }
+  Filter(nonEmptyString, sapply(categories, Sys.getlocale, simplify = FALSE))
 }
 
 restoreLocale <- function(locale) {
