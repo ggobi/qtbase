@@ -29,6 +29,7 @@ public:
   inline Smoke::Index typeId() const { return _id; }
   inline const Smoke::Type &type() const { return *_t; }
   inline unsigned short flags() const { return _t->flags; }
+  /* 'elem' is anything that is not a void pointer (voidp) */
   inline unsigned short elem() const { return _t->flags & Smoke::tf_elem; }
   inline const char *name() const { return _t->name; }
   inline Smoke::Index classId() const { return _t->classId; }
@@ -57,7 +58,7 @@ public:
     return elem() && !isClass();
   }
   inline bool fitsStack() const {
-    return isPrimitive() || !isStack();
+    return isPrimitive() || isPtr() || isRef();
   }
   
   bool operator ==(const SmokeType &b) const {
