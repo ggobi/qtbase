@@ -2,10 +2,8 @@
 Installation notes for the qtbase package
 -----------------------------------------
 
-The qtbase package should work on Linux, Windows and Mac. Binary
-packages for Windows and Mac are available from the Bioconductor
-project. Only follow these instructions if you are using Linux or
-desire a custom build. Or if you are a Bioconductor maintainer.
+The qtbase package should work on Linux and Mac. Windows support is
+still in progress.
 
 Requirements
 ------------
