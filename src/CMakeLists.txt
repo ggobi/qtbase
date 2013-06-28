@@ -48,6 +48,11 @@ if(WIN32) # Toughest Win32 part: generating the defs file for the DLL
 foreach(qtbase_lib_src ${qtbase_LIB_SRCS})
   list(APPEND qtbase_LIB_OBJS "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/qtbase.dir/${qtbase_lib_src}${CMAKE_CXX_OUTPUT_EXTENSION}")
 endforeach(qtbase_lib_src ${qtbase_LIB_SRCS})
+if (CMAKE_SIZEOF_VOID_P EQUAL 4)
+  set(SYMPAT "'s/^.* [BCDRT] _/ /p'")
+else ()
+  set(SYMPAT "/^[^ ]* [T|C|B] /s/^[^ ]* [T|C|B] / /p")
+endif()
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/qtbase.def 
                    COMMAND sh
                    ARGS ${CMAKE_CURRENT_SOURCE_DIR}/mkdef.sh ${SYMPAT}
