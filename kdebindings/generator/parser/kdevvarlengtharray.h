@@ -117,7 +117,7 @@ public:
                 i->~T();
         }
         if (ptr != reinterpret_cast<T *>(array))
-            qFree(ptr);
+            free(ptr);
     }
     inline KDevVarLengthArray<T, Prealloc> &operator=(const KDevVarLengthArray<T, Prealloc> &other)
     {
@@ -246,7 +246,7 @@ template <class T, int Prealloc>
 Q_INLINE_TEMPLATE KDevVarLengthArray<T, Prealloc>::KDevVarLengthArray(int asize)
     : s(asize) {
     if (s > Prealloc) {
-        ptr = reinterpret_cast<T *>(qMalloc(s * sizeof(T)));
+        ptr = reinterpret_cast<T *>(malloc(s * sizeof(T)));
         a = s;
     } else {
         ptr = reinterpret_cast<T *>(array);
@@ -287,7 +287,7 @@ Q_OUTOFLINE_TEMPLATE void KDevVarLengthArray<T, Prealloc>::append(const T *abuf,
         while (i < j)
             new (i++) T(*abuf++);
     } else {
-        qMemCopy(&ptr[idx], abuf, asize * sizeof(T));
+        memcpy(&ptr[idx], abuf, asize * sizeof(T));
     }
 }
 
@@ -300,7 +300,7 @@ Q_OUTOFLINE_TEMPLATE void KDevVarLengthArray<T, Prealloc>::realloc(int asize, in
     s = asize;
 
     if (aalloc != a) {
-        ptr = reinterpret_cast<T *>(qMalloc(aalloc * sizeof(T)));
+        ptr = reinterpret_cast<T *>(malloc(aalloc * sizeof(T)));
         if (ptr) {
             a = aalloc;
 
@@ -312,7 +312,7 @@ Q_OUTOFLINE_TEMPLATE void KDevVarLengthArray<T, Prealloc>::realloc(int asize, in
                     j->~T();
                 }
             } else {
-                qMemCopy(ptr, oldPtr, osize * sizeof(T));
+              memcpy(ptr, oldPtr, osize * sizeof(T));
             }
         } else {
             ptr = oldPtr;
@@ -336,7 +336,7 @@ Q_OUTOFLINE_TEMPLATE void KDevVarLengthArray<T, Prealloc>::realloc(int asize, in
     }
 
     if (oldPtr != reinterpret_cast<T *>(array) && oldPtr != ptr)
-        qFree(oldPtr);
+        free(oldPtr);
 }
 #endif
 QT_END_NAMESPACE

@@ -24,7 +24,6 @@
 #include "rpp/pp-scanner.h"
 
 #include <cctype>
-#include "kdevvarlengtharray.h"
 
 /**
  * Returns the character BEHIND the found comment
@@ -118,8 +117,8 @@ uint Token::symbolLength() const {
 
 const uint index_size = 200;
 
-KDevVarLengthArray<KDevVarLengthArray<QPair<uint, TOKEN_KIND>, 10 >, index_size > createIndicesForTokens() {
-  KDevVarLengthArray<KDevVarLengthArray<QPair<uint, TOKEN_KIND>, 10 >, index_size > ret;
+QVector<QVector<QPair<uint, TOKEN_KIND> > > createIndicesForTokens() {
+  QVector<QVector<QPair<uint, TOKEN_KIND> > > ret;
   ret.resize(index_size);
   #define ADD_TOKEN(string) ret[IndexedString(#string).index() % index_size].append(qMakePair(IndexedString(#string).index(), Token_ ## string));
   #define ADD_MAPPED_TOKEN(string, token) ret[IndexedString(#string).index() % index_size].append(qMakePair(IndexedString(#string).index(), token));
@@ -215,7 +214,7 @@ KDevVarLengthArray<KDevVarLengthArray<QPair<uint, TOKEN_KIND>, 10 >, index_size 
 }
 
 //A very simple lookup table: First level contains all pairs grouped by with (index % index_size), then there is a simple list
-KDevVarLengthArray<KDevVarLengthArray<QPair<uint, TOKEN_KIND>, 10 >, index_size > indicesForTokens = createIndicesForTokens();
+QVector<QVector<QPair<uint, TOKEN_KIND> > > indicesForTokens = createIndicesForTokens();
 
 scan_fun_ptr Lexer::s_scan_table[256];
 bool Lexer::s_initialized = false;

@@ -1,6 +1,8 @@
 #ifndef PROBLEM_H
 #define PROBLEM_H
 
+#include <QString>
+
 #include "cppparser_export.h"
 #include "simplecursor.h"
 
