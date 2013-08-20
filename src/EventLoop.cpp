@@ -45,6 +45,17 @@ EventLoopWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 #ifndef HWND_MESSAGE
 #define HWND_MESSAGE ((HWND)-3) /* NOTE: this is supported by W2k/XP and up only! */
 #endif
+
+static int in_process = 0;
+
+QMutex mutex;
+
+/* --- flag determining whether one-time initialization is yet to be performed --- */
+static int needs_init = 1;
+
+static void callback_input_handler();
+static void QEventLoop_exec();
+
 #endif/* WIN32 */
 
 
@@ -56,17 +67,8 @@ static int qapp_argc = 2;
 static char *qapp_argv[] = { "qtbase", "-nograb" };
 
 static int processingEvent = 0;
-static int in_process = 0;
 static int fired = 0, active = 1;
-
-QMutex mutex;
-
 static QtMsgHandler prevMsgHandler;
-/* --- flag determining whether one-time initialization is yet to be performed --- */
-static int needs_init = 1;
-
-static void callback_input_handler();
-static void QEventLoop_exec();
 
 #ifndef WIN32
 InputHandler *eventLoopInputHandler = NULL;
@@ -119,7 +121,6 @@ void EventLoop::run() {
 	//Will never reach here
     return;
 }
-#endif
 
 static void QEventLoop_exec()
 {				 
@@ -135,6 +136,7 @@ static void QEventLoop_exec()
 	}
 	mutex.unlock();
 }
+#endif
 
 static EventLoop* eventLoop = NULL;//
 
@@ -172,7 +174,6 @@ static void run_callback()
 	//PostMessage(message_window, WM_EVENTLOOP_CALLBACK, 0, (LPARAM) 0);
 }
 #define run_callback run_callback_main_thread
-#endif
 
 /* wrap the actual call with ToplevelExec since we need to have a guaranteed
    return so we can track the presence of a worker code inside R to prevent
@@ -191,13 +192,10 @@ static void run_callback()
 	}	
 }
 
-#ifdef WIN32
 #undef run_callback
-#endif
 
 static void first_init()
 {
-#ifdef WIN32
     /* create a dummy message-only window for synchronization with the
      * main event loop */
     HINSTANCE instance = GetModuleHandle(NULL);
@@ -207,9 +205,9 @@ static void first_init()
     RegisterClass(&wndclass);
     message_window = CreateWindow(str_class, "EventLoop", 0, 1, 1, 1, 1,
 				  HWND_MESSAGE, NULL, instance, NULL);
-#endif/* WIN32 */
     needs_init = 0;
 }									
+#endif/* WIN32 */
 
 static void 
 R_Qt_init()
@@ -218,9 +216,11 @@ R_Qt_init()
   app = new QApplication(qapp_argc, qapp_argv);
   //following call starts a thread and will run the Qt event loop there, which may never return -- Kaiser
   //app->exec();
+#ifdef WIN32
   /* WIN32 */
   if (needs_init) /* initialization may need to be performed on first use */
 	first_init();  
+#endif/* WIN32 */
 }
 								
 static void 
@@ -253,13 +253,13 @@ static LRESULT CALLBACK EventLoopWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
     }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
-#endif
 
 /* this is really superfluous - we could just cast run_callback accordingly .. - Simon */
 static void callback_input_handler()
 {
 	run_callback();
 }
+#endif
 
 void EventLoop::begin() {
   if (!qApp) {
