@@ -69,29 +69,31 @@ void EventLoop::run() {
 
 #endif
 
-void R_Qt_msgHandler(QtMsgType type, const char *msg)
+void R_Qt_msgHandler(QtMsgType type, const QMessageLogContext &context,
+                     const QString &msg)
 {
+  const char *charMsg = msg.toLocal8Bit().constData();
   switch (type) {
   case QtDebugMsg:
-    Rprintf("Debug: %s\n", msg);
+    Rprintf("Debug: %s\n", charMsg);
     break;
   case QtWarningMsg:
-    warning(msg);
+    warning(charMsg);
     break;
   case QtCriticalMsg:
-    error(msg);
+    error(charMsg);
     break;
   case QtFatalMsg:
-    error("FATAL: %s", msg);
+    error("FATAL: %s\n", charMsg);
   }
 }
 
-static QtMsgHandler prevMsgHandler;
+static QtMessageHandler prevMsgHandler;
 
 static void 
 R_Qt_init()
 {
-  prevMsgHandler = qInstallMsgHandler(R_Qt_msgHandler);
+  prevMsgHandler = qInstallMessageHandler(R_Qt_msgHandler);
   app = new QApplication(qapp_argc, qapp_argv);
   // app->exec();
 }
@@ -108,7 +110,7 @@ R_Qt_cleanup()
   close(ofd); 
 #endif
   app->quit();
-  qInstallMsgHandler(prevMsgHandler);
+  qInstallMessageHandler(prevMsgHandler);
   delete app;
 }
 

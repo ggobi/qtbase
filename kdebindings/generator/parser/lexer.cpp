@@ -17,6 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include <QVarLengthArray>
+
 #include "lexer.h"
 #include "tokens.h"
 #include "control.h"
@@ -117,8 +119,8 @@ uint Token::symbolLength() const {
 
 const uint index_size = 200;
 
-QVector<QVector<QPair<uint, TOKEN_KIND> > > createIndicesForTokens() {
-  QVector<QVector<QPair<uint, TOKEN_KIND> > > ret;
+QVarLengthArray<QVarLengthArray<QPair<uint, TOKEN_KIND>, 10 >, index_size > createIndicesForTokens() {
+  QVarLengthArray<QVarLengthArray<QPair<uint, TOKEN_KIND>, 10 >, index_size > ret;
   ret.resize(index_size);
   #define ADD_TOKEN(string) ret[IndexedString(#string).index() % index_size].append(qMakePair(IndexedString(#string).index(), Token_ ## string));
   #define ADD_MAPPED_TOKEN(string, token) ret[IndexedString(#string).index() % index_size].append(qMakePair(IndexedString(#string).index(), token));
@@ -214,7 +216,7 @@ QVector<QVector<QPair<uint, TOKEN_KIND> > > createIndicesForTokens() {
 }
 
 //A very simple lookup table: First level contains all pairs grouped by with (index % index_size), then there is a simple list
-QVector<QVector<QPair<uint, TOKEN_KIND> > > indicesForTokens = createIndicesForTokens();
+QVarLengthArray<QVarLengthArray<QPair<uint, TOKEN_KIND>, 10 >, index_size > indicesForTokens = createIndicesForTokens();
 
 scan_fun_ptr Lexer::s_scan_table[256];
 bool Lexer::s_initialized = false;

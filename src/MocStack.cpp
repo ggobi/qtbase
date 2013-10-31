@@ -84,7 +84,7 @@ void MocStack::setFromSmoke(Smoke::Stack stack, QVector<SmokeType> types)
   if (!types[0].fitsStack()) {
     // allocate memory for return value; marshalling code should free
     stack[0].s_voidp =
-      QMetaType::construct(QMetaType::type(types[0].className()));
+      QMetaType::create(QMetaType::type(types[0].className()));
   }
   for (int i = 0; i < _size; i++) {
     Smoke::StackItem *si = stack + i;

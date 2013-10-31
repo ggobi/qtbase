@@ -1,31 +1,20 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.9)
 
 project(kdebindings)
 
-find_package(Qt4 4.0.0 REQUIRED COMPONENTS QtCore QtGui)
+find_package(Qt5Core)
 
-if(APPLE) # No QtDBus in Mac binaries
-find_package(Qt4 4.0.0 COMPONENTS QtXml QtXmlPatterns QtNetwork
-             QtOpenGL QtSql QtSvg QtScript QtWebkit QtTest
-             QtHelp QtMultimedia QtDeclarative QtUiTools)
-else(APPLE)
-find_package(Qt4 4.0.0 COMPONENTS QtXml QtXmlPatterns QtNetwork
-             QtOpenGL QtSql QtSvg QtDBus QtScript QtWebkit QtTest
-             QtHelp QtMultimedia QtDeclarative QtUiTools)
-endif(APPLE)
+macro(qt5_optional_use_modules _target)
+  foreach(_module ${ARGN})
+    find_package(Qt5${_module} QUIET)
+    if(Qt5${_module}_FOUND)
+      qt5_use_modules(${_target} ${_module})
+      message(STATUS "Found Qt module: ${_module}")
+    endif()
+  endforeach()
+endmacro()
 
-## FindQt4 does not add the include directory for OpenGL
-find_package(OpenGL)
-if(OPENGL_FOUND)
-include_directories(${OPENGL_INCLUDE_DIR})
-endif(OPENGL_FOUND)
-
-## QtUiTools not linked correctly on Windows (_personality_v0 missing symbol)
-if(WIN32)
-set(QT_USE_QTUITOOLS FALSE)
-endif(WIN32)
-
-include(${QT_USE_FILE})
+set(CMAKE_CXX_FLAGS "-fPIC")
 
 add_subdirectory(generator)
 add_subdirectory(smoke)

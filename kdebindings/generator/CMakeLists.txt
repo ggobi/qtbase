@@ -1,5 +1,10 @@
 project(smokegenerator)
 
+set(SMOKE_VERSION_MAJOR 3)
+set(SMOKE_VERSION_MINOR 0)
+set(SMOKE_VERSION_PATCH 0)
+set(SMOKE_VERSION ${SMOKE_VERSION_MAJOR}.${SMOKE_VERSION_MINOR}.${SMOKE_VERSION_PATCH})
+
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
@@ -30,9 +35,13 @@ add_executable(smokegen ${generator_SRC})
 target_link_libraries(smokegen ${QT_QTCORE_LIBRARY} ${QT_QTXML_LIBRARY} cppparser)
 set_target_properties(smokegen PROPERTIES COMPILE_DEFINITIONS __GENERATOR_BUILDING ENABLE_EXPORTS TRUE)
 
+qt5_use_modules(smokegen Core Xml)
+
 install(TARGETS smokegen DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 install(FILES generatorenvironment.h  generator_export.h  generatorpreprocessor.h  generatorvisitor.h  name_compiler.h  options.h  type_compiler.h  type.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include/smokegen)
+install( FILES smokegen_string.h DESTINATION ${CMAKE_INSTALL_PREFIX}/share/smokegen RENAME string.h )
 
+add_subdirectory(smokebase)
 add_subdirectory(generators)
 
 INCLUDE(CMakeForceCompiler)

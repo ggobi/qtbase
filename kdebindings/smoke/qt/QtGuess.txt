@@ -106,17 +106,19 @@ foreach(test_entry ${define_tests})
   endif(${${test_entry}} GREATER ${qt_test_threshold})
 endforeach(test_entry ${define_tests})
 
+LIST(GET Qt5Core_INCLUDE_DIRS 1 Qt5Core_INCLUDE_DIR)
+
 if(WIN32)
-file(STRINGS "${QT_QTCORE_INCLUDE_DIR}/../../src/corelib/global/qglobal.h"
+file(STRINGS "${Qt5Core_INCLUDE_DIR}/../../src/corelib/global/qglobal.h"
      qglobal_h NEWLINE_CONSUME)
-file(STRINGS "${QT_QTCORE_INCLUDE_DIR}/../../src/corelib/global/qconfig.h"
+file(STRINGS "${Qt5Core_INCLUDE_DIR}/../../src/corelib/global/qconfig.h"
      qconfig_h NEWLINE_CONSUME)
-file(STRINGS "${QT_QTCORE_INCLUDE_DIR}/../../src/corelib/global/qfeatures.h"
+file(STRINGS "${Qt5Core_INCLUDE_DIR}/../../src/corelib/global/qfeatures.h"
      qfeatures_h NEWLINE_CONSUME)
 else(WIN32)
-file(STRINGS "${QT_QTCORE_INCLUDE_DIR}/qglobal.h" qglobal_h NEWLINE_CONSUME)
-file(STRINGS "${QT_QTCORE_INCLUDE_DIR}/qconfig.h" qconfig_h NEWLINE_CONSUME)
-file(STRINGS "${QT_QTCORE_INCLUDE_DIR}/qfeatures.h" qfeatures_h NEWLINE_CONSUME)
+file(STRINGS "${Qt5Core_INCLUDE_DIR}/qglobal.h" qglobal_h NEWLINE_CONSUME)
+file(STRINGS "${Qt5Core_INCLUDE_DIR}/qconfig.h" qconfig_h NEWLINE_CONSUME)
+file(STRINGS "${Qt5Core_INCLUDE_DIR}/qfeatures.h" qfeatures_h NEWLINE_CONSUME)
 endif(WIN32)
 set(qtheaders "${qglobal_h}\n${qconfig_h}\n${qfeatures}")
 string(REGEX REPLACE "\n" ";" qtheaders "${qtheaders}")
@@ -131,11 +133,15 @@ foreach( line ${qtheaders} )
 endforeach(line)
 file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/qtdefines.cpp "return 0;\n}\n")
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+    
 try_run(qtdefines_run qtdefines_compile ${CMAKE_CURRENT_BINARY_DIR}/qtdefines
   ${CMAKE_CURRENT_BINARY_DIR}/qtdefines.cpp
-  CMAKE_FLAGS "-DINCLUDE_DIRECTORIES:STRING=${QT_INCLUDE_DIR};${QT_QTCORE_INCLUDE_DIR};${CMAKE_SYSTEM_INCLUDE_PATH}"
+  CMAKE_FLAGS
+  "-DINCLUDE_DIRECTORIES:STRING=${Qt5Core_INCLUDE_DIRS};${CMAKE_SYSTEM_INCLUDE_PATH}"
   COMPILE_OUTPUT_VARIABLE qtdefines_compile_output
   RUN_OUTPUT_VARIABLE qtdefines_output)
+
 if(${qtdefines_run} EQUAL 0)
   list(REMOVE_DUPLICATES qtdefines_output)
   list(REMOVE_ITEM qtdefines_output "QT_DEBUG")
@@ -146,13 +152,24 @@ endif(${qtdefines_run} EQUAL 0)
 
 message(STATUS "Checking how Qt was built...")
 message(STATUS "Threshold is set to ${qt_test_threshold}")
+
+get_target_property(Qt5Core_LOCATION Qt5::Core LOCATION)
+get_target_property(Qt5Widgets_LOCATION Qt5::Widgets LOCATION)
+if(Qt5PrintSupport_FOUND)
+  get_target_property(Qt5PrintSupport_LOCATION Qt5::PrintSupport LOCATION)
+else(Qt5PrintSupport_FOUND)
+  set(Qt5PrintSupport_LOCATION "")
+endif(Qt5PrintSupport_FOUND)
+ 
 foreach(test_target ${test_targets})
   file(REMOVE_RECURSE ${CMAKE_CURRENT_BINARY_DIR}/test-${test_target})
   try_compile(test_result "${CMAKE_CURRENT_BINARY_DIR}/test-${test_target}"
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/test.cpp
     COMPILE_DEFINITIONS -DTEST_${test_target}
-    CMAKE_FLAGS "-DINCLUDE_DIRECTORIES:STRING=${QT_INCLUDES}"
-    "-DLINK_LIBRARIES:STRING=${QT_LIBRARIES}")
+    CMAKE_FLAGS "-DINCLUDE_DIRECTORIES:STRING=${Qt5Core_INCLUDE_DIRS}"
+    "-DLINK_LIBRARIES:STRING=${Qt5Core_LOCATION};${Qt5Widgets_LOCATION};${Qt5PrintSupport_LOCATION}"
+    OUTPUT_VARIABLE test_compile_output)
+  #message(STATUS "Got run output ${test_compile_output}")
   if(test_result)
     message(STATUS "${test_target} *Undefined*")
   else(test_result)

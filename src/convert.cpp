@@ -34,26 +34,30 @@
 #include <QLocale>
 #include <QBitmap>
 #include <QMatrix>
-#if QT_VERSION >= 0x40300
 #include <QTransform>
-#endif
-#if QT_VERSION >= 0x40600
 #include <QMatrix4x4>
 #include <QVector2D>
 #include <QVector3D>
 #include <QVector4D>
 #include <QQuaternion>
-#endif
+#include <QEasingCurve>
+#include <QQuaternion>
+#include <QJsonValue>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QUuid>
 /* End QVariant includes */
 
 /* Explicit coercion */
 #include <QItemSelection>
-#ifdef QT_TEST_LIB
+#ifdef QT_TESTLIB_LIB
 #include <QTestEventList>
 #include <QSignalSpy>
 #endif
 
 #include "SmokeObject.hpp"
+#include "Class.hpp"
 #include "convert.hpp"
 
 #undef isNull
@@ -65,9 +69,7 @@
   class_to_sexp(variant.value<type>(), SmokeType(qt_Smoke, #type))
 
 DEF_STRING_MAP_CONVERTERS(QMap, QVariant)
-#if QT_VERSION >= 0x40500
 DEF_STRING_MAP_CONVERTERS(QHash, QVariant)
-#endif
 
 SEXP to_sexp(QVariant variant) {
   SEXP ans = NULL;
@@ -110,10 +112,6 @@ SEXP to_sexp(QVariant variant) {
     ans = ptr_to_sexp(variant.value<QObject *>(),
                       SmokeType(qt_Smoke, "QObject"));
     break;
-  case QMetaType::QWidgetStar:
-    ans = ptr_to_sexp(variant.value<QWidget *>(),
-                      SmokeType(qt_Smoke, "QWidget"));
-    break;
   case QMetaType::QCursor:
     ans = QVARIANT_TO_SEXP(variant, QCursor);
     break;
@@ -129,8 +127,7 @@ SEXP to_sexp(QVariant variant) {
     ans = QVARIANT_TO_SEXP(variant, QTime);
     break;
   case QMetaType::QVariantList:
-    ans = to_sexp(variant.value<QVariantList>(),
-                  SmokeType(qt_Smoke, "QList<QVariant>"));
+    ans = to_sexp(variant.value<QVariantList>());
     break;
   case QMetaType::QPolygon:
     ans = QVARIANT_TO_SEXP(variant, QPolygon);
@@ -155,8 +152,7 @@ SEXP to_sexp(QVariant variant) {
                   SmokeType(qt_Smoke, "QStringList"));
     break;
   case QMetaType::QVariantMap:
-    ans = to_sexp(variant.value<QVariantMap>(),
-                  SmokeType(qt_Smoke, "QMap<QString,QVariant>"));
+    ans = to_sexp(variant.value<QVariantMap>());
     break;
   case QMetaType::QVariantHash:
     ans = to_sexp(variant.value<QVariantHash>(),
@@ -225,12 +221,9 @@ SEXP to_sexp(QVariant variant) {
   case QMetaType::QMatrix: /* obsolete */
     ans = QVARIANT_TO_SEXP(variant, QMatrix);
     break;
-#if QT_VERSION >= 0x40300
   case QMetaType::QTransform:
     ans = QVARIANT_TO_SEXP(variant, QTransform);
     break;
-#endif
-#if QT_VERSION >= 0x40600
   case QMetaType::QMatrix4x4:
     ans = QVARIANT_TO_SEXP(variant, QMatrix4x4);
     break;
@@ -246,11 +239,38 @@ SEXP to_sexp(QVariant variant) {
   case QMetaType::QQuaternion:
     ans = QVARIANT_TO_SEXP(variant, QQuaternion);
     break;
-#endif
-  case QMetaType::User:
+  case QMetaType::QEasingCurve:
+    ans = QVARIANT_TO_SEXP(variant, QEasingCurve);
+    break;
+  case QMetaType::QJsonValue:
+    ans = to_sexp(variant.value<QJsonValue>());
+    break;
+  case QMetaType::QJsonObject:
+    ans = to_sexp(variant.value<QJsonObject>());
+    break;
+  case QMetaType::QJsonArray:
+    ans = to_sexp(variant.value<QJsonArray>());
+    break;
+  case QMetaType::QJsonDocument:
+    ans = QVARIANT_TO_SEXP(variant, QJsonDocument);
+    break;
+  case QMetaType::QModelIndex:
+    ans = QVARIANT_TO_SEXP(variant, QModelIndex);
+    break;
+  case QMetaType::QUuid:
+    ans = QVARIANT_TO_SEXP(variant, QUuid);
     break;
   default:
-    error("Converting from QVariant: unhandled Qt type");
+    {
+      const QMetaObject *meta = QMetaType::metaObjectForType(variant.type());
+      if (meta) {
+        ans = SmokeObject::sexpFromPtr(variant.value<QObject *>(),
+                                       Class::fromMetaObject(meta),
+                                       false, false);
+      } else {
+        error("Converting from QVariant: unhandled Qt type");
+      }
+    }
   }
   if (!ans)
     error("Converting from QVariant: Qt type not yet implemented");
@@ -383,10 +403,7 @@ QVariant qvariant_from_sexp(SEXP rvalue, int index) {
     break;
   case ENVSXP: {
     SmokeObject *so = SmokeObject::fromSexp(rvalue);
-    if (so->instanceOf("QWidget"))
-      variant =
-        qVariantFromValue(reinterpret_cast<QWidget *>(so->castPtr("QWidget")));
-    else if (so->instanceOf("QObject"))
+    if (so->instanceOf("QObject"))
       variant =
         qVariantFromValue(reinterpret_cast<QObject *>(so->castPtr("QObject")));
     else {
@@ -423,12 +440,6 @@ QVariant asQVariantOfType(SEXP rvalue, QMetaType::Type type, bool tryDirect)
     {
       SmokeType type(qt_Smoke, "QObject*");
       ans = qVariantFromValue(ptr_from_sexp<QObject *>(rvalue, type));
-    }
-    break;
-  case QMetaType::QWidgetStar:
-    {
-      SmokeType type(qt_Smoke, "QWidget*");
-      ans = qVariantFromValue(ptr_from_sexp<QWidget *>(rvalue, type));
     }
     break;
   case QMetaType::QCursor:
@@ -482,14 +493,12 @@ QVariant asQVariantOfType(SEXP rvalue, QMetaType::Type type, bool tryDirect)
       ans = QVariant(from_sexp<QMap<QString,QVariant> >(rvalue, type));
     }
     break;
-#if QT_VERSION >= 0x40500
   case QMetaType::QVariantHash:
     {
       SmokeType type(qt_Smoke, "QHash<QString,QVariant>");
       ans = QVariant(from_sexp<QHash<QString,QVariant> >(rvalue, type));
     }
     break;
-#endif
   case QMetaType::QIcon:
     ans = QVARIANT_FROM_SEXP(rvalue, QIcon);
     break;
@@ -510,11 +519,9 @@ QVariant asQVariantOfType(SEXP rvalue, QMetaType::Type type, bool tryDirect)
   case QMetaType::QUrl:
     ans = QVARIANT_FROM_SEXP(rvalue, QUrl);
     break;
-#if QT_VERSION >= 0x40100
   case QMetaType::QRegExp:
     ans = QVARIANT_FROM_SEXP(rvalue, QRegExp);
     break;
-#endif
   case QMetaType::QDateTime:
     ans = QVARIANT_FROM_SEXP(rvalue, QDateTime);
     break;
@@ -554,12 +561,9 @@ QVariant asQVariantOfType(SEXP rvalue, QMetaType::Type type, bool tryDirect)
   case QMetaType::QMatrix:
     ans = QVARIANT_FROM_SEXP(rvalue, QMatrix);
     break;
-#if QT_VERSION >= 0x40300
   case QMetaType::QTransform:
     ans = QVARIANT_FROM_SEXP(rvalue, QTransform);
     break;
-#endif
-#if QT_VERSION >= 0x40600
   case QMetaType::QMatrix4x4:
     ans = QVARIANT_FROM_SEXP(rvalue, QMatrix4x4);
     break;
@@ -575,10 +579,43 @@ QVariant asQVariantOfType(SEXP rvalue, QMetaType::Type type, bool tryDirect)
   case QMetaType::QQuaternion:
     ans = QVARIANT_FROM_SEXP(rvalue, QQuaternion);
     break;
-#endif
-  case QMetaType::User:
+  case QMetaType::QEasingCurve:
+    ans = QVARIANT_FROM_SEXP(rvalue, QEasingCurve);
+    break;
+  case QMetaType::QJsonValue:
+    ans = QVariant(from_sexp<QJsonValue>(rvalue));
+    break;
+  case QMetaType::QJsonObject:
+    ans = QVariant(from_sexp<QJsonObject>(rvalue));
+    break;
+  case QMetaType::QJsonArray:
+    ans = QVariant(from_sexp<QJsonArray>(rvalue));
+    break;
+  case QMetaType::QJsonDocument:
+    ans = QVARIANT_FROM_SEXP(rvalue, QJsonDocument);
+    break;
+  case QMetaType::QModelIndex:
+    ans = QVARIANT_FROM_SEXP(rvalue, QModelIndex);
+    break;
+  case QMetaType::QUuid:
+    ans = QVARIANT_FROM_SEXP(rvalue, QUuid);
     break;
   default:
+    {
+      const QMetaObject *meta = QMetaType::metaObjectForType(type);
+      if (meta) {
+        QObject *obj = NULL;
+        if (rvalue != R_NilValue) {
+          SmokeObject *smokeObj = SmokeObject::fromSexp(rvalue);
+          const Class *metaClass = Class::fromMetaObject(meta);
+          if (!smokeObj->klass()->ancestors().contains(metaClass))
+            error("Converting to QVariant: not derived from required class");
+        }
+        ans = QVariant();
+        ans.setValue(obj);
+        ans.convert(type);
+      }
+    }
     error("Converting to QVariant: unhandled Qt type");
   }
   if (!ans.isValid())
@@ -762,7 +799,17 @@ SEXP to_sexp(QItemSelection selection) {
                  SmokeType(qt_Smoke, "QItemSelection"));
 }
 
-#ifdef QT_TEST_LIB
+SEXP to_sexp(QMargins margins) {
+  SEXP rmargins = allocVector(INTSXP, 4);
+  int *rptr = INTEGER(rmargins);
+  rptr[0] = margins.bottom();
+  rptr[1] = margins.left();
+  rptr[2] = margins.top();
+  rptr[3] = margins.right();
+  return rmargins;
+}
+
+#ifdef QT_TESTLIB_LIB
 DEF_COLLECTION_CONVERTERS(QList, QTestEvent*, ptr)
 SEXP to_sexp(QTestEventList eventList) {
   return to_sexp(static_cast<QList<QTestEvent*> >(eventList),
@@ -774,6 +821,43 @@ SEXP to_sexp(QSignalSpy *signalSpy) {
                  SmokeType(qt_Smoke, "QSignalSpy"));
 }
 #endif
+
+template<> QVariantList from_sexp<QVariantList>(SEXP s) {
+  SmokeType type(qt_Smoke, "QList<QVariant>>");
+  return from_sexp<QList<QVariant> >(s, type);
+}
+SEXP to_sexp(QVariantList list) {
+  return to_sexp(list, SmokeType(qt_Smoke, "QList<QVariant>"));
+}
+
+template<> QVariantMap from_sexp<QVariantMap>(SEXP s) {
+  SmokeType type(qt_Smoke, "QMap<QString,QVariant>");
+  return from_sexp<QMap<QString,QVariant> >(s, type);
+}
+SEXP to_sexp(QVariantMap map) {
+  return to_sexp(map, SmokeType(qt_Smoke, "QMap<QString,QVariant>"));
+}
+
+template<> QJsonValue from_sexp<QJsonValue>(SEXP value) {
+  return QJsonValue::fromVariant(qvariant_from_sexp(value));
+}
+SEXP to_sexp(QJsonValue value) {
+  return to_sexp(value.toVariant());
+}
+
+template<> QJsonArray from_sexp<QJsonArray>(SEXP value) {
+  return QJsonArray::fromVariantList(from_sexp<QVariantList>(value));
+}
+SEXP to_sexp(QJsonArray array) {
+  return to_sexp(array.toVariantList());
+}
+
+template<> QJsonObject from_sexp<QJsonObject>(SEXP value) {
+  return QJsonObject::fromVariantMap(from_sexp<QVariantMap>(value));
+}
+SEXP to_sexp(QJsonObject object) {
+  return to_sexp(object.toVariantMap());
+}
 
 /* Helper function */
 /* Sometimes, an element only exists in a collection (as a value). But
@@ -810,8 +894,9 @@ DEF_COERCE_ENTRY_POINT(QSize)
 DEF_COERCE_ENTRY_POINT(QColor)
 DEF_COERCE_ENTRY_POINT(QChar)
 DEF_COERCE_ENTRY_POINT(QItemSelection)
+DEF_COERCE_ENTRY_POINT(QMargins)
 
-#ifdef QT_TEST_LIB
+#ifdef QT_TESTLIB_LIB
 SEXP qt_coerce_QSignalSpy(SEXP sexp) {
   return to_sexp(unwrapSmoke(sexp, QSignalSpy));
 }

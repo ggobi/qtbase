@@ -15,3 +15,7 @@ Class *ClassFactory::createClass(Smoke *smoke, int classId) {
   }
   return klass;
 }
+
+Class *ClassFactory::createClass(const QMetaObject *meta) {
+  return new MocClass(meta);
+}

@@ -8,10 +8,9 @@
 #include "Class.hpp"
 
 MocMethod::MocMethod(Smoke *smoke, const QMetaObject *meta, int id)
-  : _method(meta->method(id)), _meta(meta), _id(id), _smoke(smoke)
+  : _method(meta->method(id)), _meta(meta), _id(id), _smoke(smoke),
+    _name(_method.name())
 {
-  QByteArray signature(_method.signature());
-  _name = signature.mid(0, signature.indexOf('('));
 }
 
 void MocMethod::invoke(SmokeObject *o, Smoke::Stack stack) {
@@ -41,7 +40,7 @@ QVector<SmokeType> MocMethod::types() const {
   foreach (QByteArray name, methodTypes) {
     Smoke *smoke = _smoke;
     SmokeType type(smoke, (Smoke::Index)0);
-    if (!name.isEmpty()) { // should only be empty for void (return)
+    if (name != "void") {
       type = SmokeType(smoke, name, className);
       // Yes, slot arguments can come from different smoke modules
       if (type.isVoid()) {

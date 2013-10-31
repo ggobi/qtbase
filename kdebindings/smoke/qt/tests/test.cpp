@@ -1,5 +1,5 @@
 #ifdef TEST_QT_NO_DEBUG
-#include "QtGui/qgraphicslinearlayout.h"
+#include "QtWidgets/qgraphicslinearlayout.h"
 
 int main(int argc, char ** argv)
 {
@@ -14,14 +14,14 @@ int main(int argc, char ** argv)
 
 int main(int argc, char ** argv)
 {
-  QAccessibleEvent event(QEvent::AccessibilityHelp, 0);
+  QAccessibleEvent event(NULL, QAccessible::SoundPlayed);
   const QMetaObject& mo = QAccessibleBridgePlugin::staticMetaObject;
 }
 
 #endif
 
 #ifdef TEST_QT_NO_ACTION
-#include "QtGui/qaction.h"
+#include "QtWidgets/qaction.h"
 
 int main(int argc, char ** argv)
 {
@@ -31,7 +31,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_BUTTONGROUP
-#include "QtGui/qbuttongroup.h"
+#include "QtWidgets/qbuttongroup.h"
 
 int main(int argc, char ** argv)
 {
@@ -41,7 +41,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_CHECKBOX
-#include "QtGui/qcheckbox.h"
+#include "QtWidgets/qcheckbox.h"
 
 int main(int argc, char ** argv)
 {
@@ -51,8 +51,8 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_CLIPBOARD
-#include "QtGui/qapplication.h"
-#include "QtGui/qclipboard.h"
+#include "QtWidgets/qapplication.h"
+#include "QtWidgets/qclipboard.h"
 
 int main(int argc, char ** argv)
 {
@@ -63,7 +63,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_COLORDIALOG
-#include "QtGui/qcolordialog.h"
+#include "QtWidgets/qcolordialog.h"
 
 int main(int argc, char ** argv)
 {
@@ -73,7 +73,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_COMBOBOX
-#include "QtGui/qcombobox.h"
+#include "QtWidgets/qcombobox.h"
 
 int main(int argc, char ** argv)
 {
@@ -83,7 +83,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_COMPAT
-#include "QtGui/qfontmetrics.h"
+#include "QtWidgets/qfontmetrics.h"
 
 int main(int argc, char ** argv)
 {
@@ -94,7 +94,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_COMPONENT
-#include "QtGui/qapplication.h"
+#include "QtWidgets/qapplication.h"
 
 int main(int argc, char ** argv)
 {
@@ -105,7 +105,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_CURSOR
-#include "QtGui/qcursor.h"
+#include "QtWidgets/qcursor.h"
 
 int main(int argc, char ** argv)
 {
@@ -125,7 +125,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_DATETIMEEDIT
-#include "QtGui/qdatetimeedit.h"
+#include "QtWidgets/qdatetimeedit.h"
 
 int main(int argc, char ** argv)
 {
@@ -135,7 +135,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_DIAL
-#include "QtGui/qdial.h"
+#include "QtWidgets/qdial.h"
 
 int main(int argc, char ** argv)
 {
@@ -145,7 +145,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_DIALOG
-#include "QtGui/qdialog.h"
+#include "QtWidgets/qdialog.h"
 
 int main(int argc, char ** argv)
 {
@@ -175,7 +175,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_DRAGANDDROP
-#include "QtGui/qevent.h"
+#include "QtWidgets/qevent.h"
 
 int main(int argc, char ** argv)
 {
@@ -185,8 +185,8 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_DRAWUTIL
-#include "QtGui/qdrawutil.h"
-#include "QtGui/qcolor.h"
+#include "QtWidgets/qdrawutil.h"
+#include "QtWidgets/qcolor.h"
 
 int main(int argc, char ** argv)
 {
@@ -196,7 +196,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_ERRORMESSAGE
-#include "QtGui/qerrormessage.h"
+#include "QtWidgets/qerrormessage.h"
 
 int main(int argc, char ** argv)
 {
@@ -206,7 +206,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_FILEDIALOG
-#include "QtGui/qfiledialog.h"
+#include "QtWidgets/qfiledialog.h"
 
 int main(int argc, char ** argv)
 {
@@ -217,7 +217,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_FONTDATABASE
-#include "QtGui/qfontdatabase.h"
+#include "QtWidgets/qfontdatabase.h"
 
 int main(int argc, char ** argv)
 {
@@ -227,7 +227,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_FONTDIALOG
-#include "QtGui/qfontdialog.h"
+#include "QtWidgets/qfontdialog.h"
 
 int main(int argc, char ** argv)
 {
@@ -237,7 +237,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_FRAME
-#include "QtGui/qframe.h"
+#include "QtWidgets/qframe.h"
 
 int main(int argc, char ** argv)
 {
@@ -257,7 +257,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_GROUPBOX
-#include "QtGui/qgroupbox.h"
+#include "QtWidgets/qgroupbox.h"
 
 int main(int argc, char ** argv)
 {
@@ -267,7 +267,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_IMAGE_HEURISTIC_MASK
-#include "QtGui/qimage.h"
+#include "QtWidgets/qimage.h"
 
 int main(int argc, char ** argv)
 {
@@ -278,7 +278,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_IMAGEIO
-#include "QtGui/qbitmap.h"
+#include "QtWidgets/qbitmap.h"
 #include "QtCore/qstring.h"
 
 int main(int argc, char ** argv)
@@ -289,7 +289,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_LABEL
-#include "QtGui/qlabel.h"
+#include "QtWidgets/qlabel.h"
 
 int main(int argc, char ** argv)
 {
@@ -299,7 +299,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_LAYOUT
-#include "QtGui/qlayout.h"
+#include "QtWidgets/qlayout.h"
 
 class QFoo: public QLayout
 {
@@ -323,7 +323,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_LCDNUMBER
-#include "QtGui/qlcdnumber.h"
+#include "QtWidgets/qlcdnumber.h"
 
 int main(int argc, char ** argv)
 {
@@ -333,7 +333,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_LINEEDIT
-#include "QtGui/qlineedit.h"
+#include "QtWidgets/qlineedit.h"
 
 int main(int argc, char ** argv)
 {
@@ -343,7 +343,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_LISTVIEW
-#include "QtGui/qlistview.h"
+#include "QtWidgets/qlistview.h"
 
 int main(int argc, char ** argv)
 {
@@ -353,7 +353,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_MAINWINDOW
-#include "QtGui/qmainwindow.h"
+#include "QtWidgets/qmainwindow.h"
 
 int main(int argc, char ** argv)
 {
@@ -363,7 +363,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_MATRIX
-#include "QtGui/qmatrix.h"
+#include "QtWidgets/qmatrix.h"
 
 int main(int argc, char ** argv)
 {
@@ -373,7 +373,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_MENUBAR
-#include "QtGui/qmenubar.h"
+#include "QtWidgets/qmenubar.h"
 
 int main(int argc, char ** argv)
 {
@@ -383,7 +383,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_MESSAGEBOX
-#include "QtGui/qmessagebox.h"
+#include "QtWidgets/qmessagebox.h"
 
 int main(int argc, char ** argv)
 {
@@ -393,7 +393,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_MOVIE
-#include "QtGui/qmovie.h"
+#include "QtWidgets/qmovie.h"
 
 int main(int argc, char ** argv)
 {
@@ -413,7 +413,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_PALETTE
-#include "QtGui/qpalette.h"
+#include "QtWidgets/qpalette.h"
 
 int main(int argc, char ** argv)
 {
@@ -423,7 +423,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_PICTURE
-#include "QtGui/qpicture.h"
+#include "QtWidgets/qpicture.h"
 
 int main(int argc, char ** argv)
 {
@@ -433,7 +433,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_PRINTER
-#include "QtGui/qprinter.h"
+#include "QtPrintSupport/qprinter.h"
 
 int main(int argc, char ** argv)
 {
@@ -443,7 +443,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_PRINTDIALOG
-#include "QtGui/qprintdialog.h"
+#include "QtPrintSupport/qprintdialog.h"
 
 int main(int argc, char ** argv)
 {
@@ -463,7 +463,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_PROGRESSBAR
-#include "QtGui/qprogressbar.h"
+#include "QtWidgets/qprogressbar.h"
 
 int main(int argc, char ** argv)
 {
@@ -473,7 +473,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_PROGRESSDIALOG
-#include "QtGui/qprogressdialog.h"
+#include "QtWidgets/qprogressdialog.h"
 
 int main(int argc, char ** argv)
 {
@@ -493,7 +493,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_PUSHBUTTON
-#include "QtGui/qpushbutton.h"
+#include "QtWidgets/qpushbutton.h"
 
 int main(int argc, char ** argv)
 {
@@ -513,7 +513,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_RADIOBUTTON
-#include "QtGui/qradiobutton.h"
+#include "QtWidgets/qradiobutton.h"
 
 int main(int argc, char ** argv)
 {
@@ -523,7 +523,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_SCROLLBAR
-#include "QtGui/qscrollbar.h"
+#include "QtWidgets/qscrollbar.h"
 
 int main(int argc, char ** argv)
 {
@@ -533,7 +533,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_SESSIONMANAGER
-#include "QtGui/qapplication.h"
+#include "QtWidgets/qapplication.h"
 
 int main(int argc, char ** argv)
 {
@@ -564,7 +564,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_SIZEGRIP
-#include "QtGui/qsizegrip.h"
+#include "QtWidgets/qsizegrip.h"
 
 int main(int argc, char ** argv)
 {
@@ -574,7 +574,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_SLIDER
-#include "QtGui/qslider.h"
+#include "QtWidgets/qslider.h"
 
 int main(int argc, char ** argv)
 {
@@ -584,7 +584,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_SOUND
-#include "QtGui/qsound.h"
+#include "QtWidgets/qsound.h"
 
 int main(int argc, char ** argv)
 {
@@ -604,7 +604,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_STYLE_PLASTIQUE
-#include "QtGui/qplastiquestyle.h"
+#include "QtWidgets/qplastiquestyle.h"
 
 int main(int argc, char ** argv)
 {
@@ -614,7 +614,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_STYLE_WINDOWSXP
-#include "QtGui/qwindowsxpstyle.h"
+#include "QtWidgets/qwindowsxpstyle.h"
 
 int main(int argc, char ** argv)
 {
@@ -624,7 +624,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_STYLE_WINDOWS
-#include "QtGui/qwindowsstyle.h"
+#include "QtWidgets/qwindowsstyle.h"
 
 int main(int argc, char ** argv)
 {
@@ -634,7 +634,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_STYLE_MAC
-#include "QtGui/macstyle.h"
+#include "QtWidgets/macstyle.h"
 
 int main(int argc, char ** argv)
 {
@@ -644,7 +644,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_STYLE_CLEANLOOKS
-#include "QtGui/qcleanlooksstyle.h"
+#include "QtWidgets/qcleanlooksstyle.h"
 
 int main(int argc, char ** argv)
 {
@@ -654,7 +654,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_TABBAR
-#include "QtGui/qtabbar.h"
+#include "QtWidgets/qtabbar.h"
 
 int main(int argc, char ** argv)
 {
@@ -664,7 +664,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_TABLEVIEW
-#include "QtGui/qtableview.h"
+#include "QtWidgets/qtableview.h"
 
 int main(int argc, char ** argv)
 {
@@ -674,7 +674,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_TABWIDGET
-#include "QtGui/qtabwidget.h"
+#include "QtWidgets/qtabwidget.h"
 
 int main(int argc, char ** argv)
 {
@@ -684,7 +684,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_TEXTBROWSER
-#include "QtGui/qtextbrowser.h"
+#include "QtWidgets/qtextbrowser.h"
 
 int main(int argc, char ** argv)
 {
@@ -730,7 +730,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_TEXTEDIT
-#include "QtGui/qtextedit.h"
+#include "QtWidgets/qtextedit.h"
 
 int main(int argc, char ** argv)
 {
@@ -768,7 +768,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_TOOLBAR
-#include "QtGui/qtoolbar.h"
+#include "QtWidgets/qtoolbar.h"
 
 int main(int argc, char ** argv)
 {
@@ -778,7 +778,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_TOOLBUTTON
-#include "QtGui/qtoolbutton.h"
+#include "QtWidgets/qtoolbutton.h"
 
 int main(int argc, char ** argv)
 {
@@ -788,7 +788,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_TOOLTIP
-#include "QtGui/qtooltip.h"
+#include "QtWidgets/qtooltip.h"
 
 int main(int argc, char ** argv)
 {
@@ -808,7 +808,7 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_WHATSTHIS
-#include "QtGui/qwhatsthis.h"
+#include "QtWidgets/qwhatsthis.h"
 
 int main(int argc, char ** argv)
 {
@@ -818,21 +818,11 @@ int main(int argc, char ** argv)
 #endif
 
 #ifdef TEST_QT_NO_WHEELEVENT
-#include "QtGui/qevent.h"
+#include "QtWidgets/qevent.h"
 
 int main(int argc, char ** argv)
 {
   QWheelEvent foo( QPoint(1,1), 1, (Qt::MouseButtons)1, 0 );
-}
-
-#endif
-
-#ifdef TEST_QT_NO_XML
-#include "QtXml/qxml.h"
-
-int main(int argc, char ** argv)
-{
-  QXmlNamespaceSupport foo;
 }
 
 #endif

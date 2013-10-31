@@ -28,6 +28,7 @@
      QString <-> character (obvious)
      QByteArray <- raw (other direction is explicit, for performance, features)
      QGenericMatrix <-> R matrix (is a voidp, no other choice really)
+     QJsonValue/Array/Object <-> via QVariant
      
    Converters that we have:
      QRect(F) -> 2x2 matrix [as.matrix()],
@@ -90,94 +91,103 @@
 #include <QtCore/qstring.h>
 #include <QtCore/qtextcodec.h>
 #include <QtCore/qurl.h>
+#include <QtCore/qabstracteventdispatcher.h>
+#include <QtCore/QAbstractTransition>
+#include <QtCore/QAbstractState>
 #include <QDate>
-#include <QtGui/qabstractbutton.h>
+#include <QtWidgets/qabstractbutton.h>
 #include <QtGui/qabstracttextdocumentlayout.h>
 #include <QtGui/qaccessible.h>
-#include <QtGui/qaction.h>
-#include <QtGui/qapplication.h>
-#include <QtGui/qdockwidget.h>
+#include <QtWidgets/qaction.h>
+#include <QtWidgets/qapplication.h>
+#include <QtWidgets/qdockwidget.h>
 #include <QtGui/qevent.h>
 #include <QtGui/qfontdatabase.h>
-#include <QtGui/qlayout.h>
-#include <QtGui/qlistwidget.h>
+#include <QtWidgets/qlayout.h>
+#include <QtWidgets/qlistwidget.h>
 #include <QtGui/qpainter.h>
 #include <QtGui/qpalette.h>
 #include <QtGui/qpixmap.h>
 #include <QtGui/qpolygon.h>
-#include <QtGui/qtabbar.h>
-#include <QtGui/qtablewidget.h>
-#include <QtGui/qtextedit.h>
+#include <QtWidgets/qtabbar.h>
+#include <QtWidgets/qtablewidget.h>
+#include <QtWidgets/qtextedit.h>
 #include <QtGui/qtextlayout.h>
 #include <QtGui/qtextobject.h>
-#include <QtGui/qtoolbar.h>
-#include <QtGui/qtreewidget.h>
-#include <QtGui/qwidget.h>
+#include <QtWidgets/qtoolbar.h>
+#include <QtWidgets/qtreewidget.h>
+#include <QtWidgets/qwidget.h>
+#include <QtGui/QOpenGLContext>
+#include <QtGui/QOpenGLDebugMessage>
+#include <QtGui/QOpenGLShader>
 
 #ifdef QT_NETWORK_LIB
 #include <QtNetwork/qhostaddress.h>
 #include <QtNetwork/qnetworkinterface.h>
-#include <QtNetwork/qurlinfo.h>
 #endif
 
-#if QT_VERSION >= 0x40100
 #ifdef QT_NETWORK_LIB
 #include <QtNetwork/qnetworkproxy.h>
 #endif
-#endif
 
-#if QT_VERSION >= 0x40200
-#include <QtGui/qgraphicsitem.h>
-#include <QtGui/qgraphicslayout.h>
-#include <QtGui/qgraphicsscene.h>
-#include <QtGui/qgraphicswidget.h>
+#include <QtWidgets/qgraphicsitem.h>
+#include <QtWidgets/qgraphicslayout.h>
+#include <QtWidgets/qgraphicsscene.h>
+#include <QtWidgets/qgraphicswidget.h>
 #include <QtGui/qstandarditemmodel.h>
-#include <QtGui/qundostack.h>
-#endif
+#include <QtWidgets/qundostack.h>
 
-#if QT_VERSION >= 0x40300
-#include <QtGui/qmdisubwindow.h>
-#include <QtGui/qwizard.h>
+#include <QtWidgets/qmdisubwindow.h>
+#include <QtWidgets/qwizard.h>
 #ifdef QT_NETWORK_LIB
 #include <QtNetwork/qsslcertificate.h>
 #include <QtNetwork/qsslcipher.h>
 #include <QtNetwork/qsslerror.h>
 #endif
-#ifdef QT_XML_LIB
-#include <QtXml/qxmlstream.h>
-#endif
-#endif
+#include <QtCore/qxmlstream.h>
 
-#if QT_VERSION >= 0x040400
-#include <QtGui/qprinterinfo.h>
+#ifdef QT_PRINTSUPPORT_LIB
+#include <QtPrintSupport/qprinterinfo.h>
+#include <QtPrintSupport/qprinter.h>
+#endif
 #ifdef QT_NETWORK_LIB
 #include <QtNetwork/qnetworkcookie.h>
 #include <QtNetwork/qnetworkrequest.h>
+#include <QDnsDomainNameRecord>
+#include <QDnsHostAddressRecord>
+#include <QDnsMailExchangeRecord>
+#include <QDnsServiceRecord>
+#include <QDnsTextRecord>
 #endif
 #ifdef QT_WEBKIT_LIB
 #include <QWebFrame>
 #include <QWebPluginFactory>
 #include <QWebHistoryItem>
 #endif
-#endif
 
-#if QT_VERSION >= 0x040500
 #ifdef QT_WEBKIT_LIB
 #include <QWebDatabase>
 #include <QWebSecurityOrigin>
 #endif
-#endif
 
-#if QT_VERSION >= 0x040600
 #include <QAbstractAnimation>
 #include <QAbstractState>
 #include <QGenericMatrix>
-#ifdef QT_OPENGL_LIB
-#include <QGLShader>
-#endif
 #ifdef QT_WEBKIT_LIB
 #include <QWebElement>
 #endif
+
+#ifdef QT_XMLPATTERNS_LIB
+#include <QXmlName>
+#include <QXmlNodeModelIndex>
+#endif
+
+#ifdef QT_MULTIMEDIA_LIB
+#include <QAudioDeviceInfo>
+#include <QAudioFormat>
+#include <QCameraFocusZone>
+#include <QMediaResource>
+#include <QMediaTimeInterval>
 #endif
 
 #include <smoke.h>
@@ -555,7 +565,6 @@ DEF_COLLECTION_CONVERTERS(QList, QByteArray, value)
 DEF_COLLECTION_CONVERTERS(QVector, QColor, class)
 DEF_COLLECTION_CONVERTERS(QList, QColor, class)
 DEF_COLLECTION_CONVERTERS(QList, QFileInfo, class)
-DEF_COLLECTION_CONVERTERS(QList, QImageTextKeyLang, class)
 DEF_COLLECTION_CONVERTERS(QList, QKeySequence, class)
 DEF_COLLECTION_CONVERTERS(QVector, QLineF, class)
 DEF_COLLECTION_CONVERTERS(QVector, QLine, class)
@@ -584,6 +593,15 @@ DEF_COLLECTION_CONVERTERS(QList, QTextOption::Tab, class)
 DEF_COLLECTION_CONVERTERS(QList, QAbstractTextDocumentLayout::Selection, class)
 DEF_COLLECTION_CONVERTERS(QVector, QAbstractTextDocumentLayout::Selection,
                           class)
+DEF_COLLECTION_CONVERTERS(QList, QAbstractEventDispatcher::TimerInfo, class)
+#ifdef QT_MULTIMEDIA_LIB
+DEF_COLLECTION_CONVERTERS(QList, QAudioDeviceInfo, class)
+DEF_COLLECTION_CONVERTERS(QList, QAudioFormat::Endian, enum)
+DEF_COLLECTION_CONVERTERS(QList, QAudioFormat::SampleType, enum)
+DEF_COLLECTION_CONVERTERS(QList, QCameraFocusZone, class)
+DEF_COLLECTION_CONVERTERS(QList, QMediaResource, class)
+DEF_COLLECTION_CONVERTERS(QList, QMediaTimeInterval, class)
+#endif
 
 DEF_COLLECTION_CONVERTERS_PAIR(QList, double, QColor, value)
 DEF_COLLECTION_CONVERTERS_PAIR(QList, QString, QString, value)
@@ -606,8 +624,9 @@ DEF_PRIM_COLLECTION_CONVERTERS(QVector, double, NUMERIC)
 DEF_COLLECTION_CONVERTERS(QList, QWizard::WizardButton, enum)
 DEF_COLLECTION_CONVERTERS(QList, QFontDatabase::WritingSystem, enum)
 DEF_COLLECTION_CONVERTERS(QList, QLocale::Country, enum)
+#ifdef QT_PRINTSUPPORT_LIB
 DEF_COLLECTION_CONVERTERS(QList, QPrinter::PageSize, enum)
-DEF_COLLECTION_CONVERTERS(QSet, QAccessible::Method, enum)
+#endif
 
 DEF_MAP_CONVERTERS(QMap, int, QVariant)
 DEF_MAP_CONVERTERS(QMap, QDate, QTextCharFormat)
@@ -619,23 +638,29 @@ DEF_COLLECTION_CONVERTERS(QList, QHostAddress, class)
 DEF_COLLECTION_CONVERTERS(QList, QNetworkAddressEntry, class)
 DEF_COLLECTION_CONVERTERS(QList, QNetworkInterface, class)
 DEF_PAIR_CONVERTERS(QHostAddress, int, class, value)
+DEF_COLLECTION_CONVERTERS(QList, QDnsDomainNameRecord, class)
+DEF_COLLECTION_CONVERTERS(QList, QDnsHostAddressRecord, class)
+DEF_COLLECTION_CONVERTERS(QList, QDnsMailExchangeRecord, class)
+DEF_COLLECTION_CONVERTERS(QList, QDnsServiceRecord, class)
+DEF_COLLECTION_CONVERTERS(QList, QDnsTextRecord, class)
 #endif
 
-#if QT_VERSION >= 0x40100
 #ifdef QT_NETWORK_LIB
 DEF_COLLECTION_CONVERTERS(QList, QNetworkProxy, class)
 #endif
-#endif
 
-#if QT_VERSION >= 0x40200
 DEF_COLLECTION_CONVERTERS(QList, QGraphicsItem*, ptr)
 DEF_COLLECTION_CONVERTERS(QList, QGraphicsView*, ptr)
 DEF_COLLECTION_CONVERTERS(QList, QStandardItem*, ptr)
 DEF_COLLECTION_CONVERTERS(QList, QUndoStack*, ptr)
-#endif
-
-#if QT_VERSION >= 0x40300
 DEF_COLLECTION_CONVERTERS(QList, QMdiSubWindow*, ptr)
+DEF_COLLECTION_CONVERTERS(QList, QGesture*, ptr)
+DEF_COLLECTION_CONVERTERS(QList, QGlyphRun, class)
+
+DEF_COLLECTION_CONVERTERS(QList, QOpenGLContext*, ptr)
+DEF_COLLECTION_CONVERTERS(QList, QOpenGLDebugMessage, class)
+DEF_COLLECTION_CONVERTERS(QList, QOpenGLShader*, ptr)
+
 #ifdef QT_NETWORK_LIB
 #ifndef QT_NO_OPENSSL
 DEF_COLLECTION_CONVERTERS(QList, QSslCertificate, class)
@@ -643,38 +668,33 @@ DEF_COLLECTION_CONVERTERS(QList, QSslCipher, class)
 DEF_COLLECTION_CONVERTERS(QList, QSslError, class)
 #endif
 #endif
-#if defined(QT_XML_LIB) || QT_VERSION >= 0x40400
 DEF_COLLECTION_CONVERTERS(QVector, QXmlStreamEntityDeclaration, class)
 DEF_COLLECTION_CONVERTERS(QVector, QXmlStreamNamespaceDeclaration, class)
 DEF_COLLECTION_CONVERTERS(QVector, QXmlStreamNotationDeclaration, class)
-#endif
-#endif
 
-#if QT_VERSION >= 0x40400
 DEF_COLLECTION_CONVERTERS(QList, QGraphicsWidget*, ptr)
 #ifdef QT_NETWORK_LIB
 DEF_COLLECTION_CONVERTERS(QList, QNetworkCookie, class)
 DEF_COLLECTION_CONVERTERS(QList, QNetworkRequest::Attribute, enum)
 DEF_MAP_CONVERTERS(QHash, QNetworkRequest::Attribute, QVariant)
 #endif
+#ifdef QT_PRINTSUPPORT_LIB
 DEF_COLLECTION_CONVERTERS(QList, QPrinterInfo, class)
+#endif
 #ifdef QT_WEBKIT_LIB
 DEF_COLLECTION_CONVERTERS(QList, QWebPluginFactory::Plugin, class)
 DEF_COLLECTION_CONVERTERS(QList, QWebPluginFactory::MimeType, class)
 DEF_COLLECTION_CONVERTERS(QList, QWebFrame*, ptr)
 DEF_COLLECTION_CONVERTERS(QList, QWebHistoryItem, class)
 #endif
-#endif
 
-#if QT_VERSION >= 0x40500
 #ifdef QT_WEBKIT_LIB
 DEF_COLLECTION_CONVERTERS(QList, QWebDatabase, class)
 DEF_COLLECTION_CONVERTERS(QList, QWebSecurityOrigin, class)
 #endif
-#endif
 
-#if QT_VERSION >= 0x40600
 DEF_COLLECTION_CONVERTERS(QList, QAbstractAnimation*, ptr)
+DEF_COLLECTION_CONVERTERS(QList, QAbstractTransition*, ptr)
 DEF_COLLECTION_CONVERTERS(QList, QAbstractState*, ptr)
 DEF_COLLECTION_CONVERTERS(QSet, QAbstractState*, ptr)
 DEF_COLLECTION_CONVERTERS(QList, QGraphicsTransform*, ptr)
@@ -686,12 +706,13 @@ DEF_MATRIX_CONVERTERS(3, 3)
 DEF_MATRIX_CONVERTERS(3, 4)
 DEF_MATRIX_CONVERTERS(4, 2)
 DEF_MATRIX_CONVERTERS(4, 3)
-#ifdef QT_OPENGL_LIB
-DEF_COLLECTION_CONVERTERS(QList, QGLShader*, ptr)
-#endif
 #ifdef QT_WEBKIT_LIB
 DEF_COLLECTION_CONVERTERS(QList, QWebElement, class)
 #endif
+
+#ifdef QT_XMLPATTERNS_LIB
+DEF_COLLECTION_CONVERTERS(QVector, QXmlName, class)
+DEF_COLLECTION_CONVERTERS(QVector, QXmlNodeModelIndex, class)
 #endif
 
 Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
@@ -724,11 +745,12 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   TYPE_HANDLER_ENTRY_CLASS(QVector<int>),
   TYPE_HANDLER_ENTRY_CLASS(QList<double>),
   TYPE_HANDLER_ENTRY_CLASS(QStringList),
-  TYPE_HANDLER_ENTRY_CLASS(QSet<QAccessible::Method>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QWizard::WizardButton>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QFontDatabase::WritingSystem>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QLocale::Country>),
+#ifdef QT_PRINTSUPPORT_LIB
   TYPE_HANDLER_ENTRY_CLASS(QList<QPrinter::PageSize>),
+#endif
   TYPE_HANDLER_ENTRY_CLASS(QList<QAbstractButton*>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QAction*>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QDockWidget*>),
@@ -742,7 +764,6 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   TYPE_HANDLER_ENTRY_CLASS(QList<QByteArray>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QFileInfo>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QFileInfo>),
-  TYPE_HANDLER_ENTRY_CLASS(QList<QImageTextKeyLang>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QKeySequence>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QModelIndex>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QPolygonF>),
@@ -760,6 +781,20 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   TYPE_HANDLER_ENTRY_CLASS(QList<QAbstractTextDocumentLayout::Selection>),
   TYPE_HANDLER_ENTRY_CLASS(QVector<QAbstractTextDocumentLayout::Selection>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QTextOption::Tab>),
+  TYPE_HANDLER_ENTRY_CLASS(QList<QAbstractEventDispatcher::TimerInfo>),
+  TYPE_HANDLER_ENTRY_CLASS(QList<QGesture*>),
+  TYPE_HANDLER_ENTRY_CLASS(QList<QGlyphRun>),
+  TYPE_HANDLER_ENTRY_CLASS(QList<QOpenGLContext*>),
+  TYPE_HANDLER_ENTRY_CLASS(QList<QOpenGLDebugMessage>),
+  TYPE_HANDLER_ENTRY_CLASS(QList<QOpenGLShader*>),
+  #ifdef QT_MULTIMEDIA_LIB
+  TYPE_HANDLER_ENTRY_CLASS(QList<QAudioDeviceInfo>),
+  TYPE_HANDLER_ENTRY_CLASS(QList<QAudioFormat::Endian>),
+  TYPE_HANDLER_ENTRY_CLASS(QList<QAudioFormat::SampleType>),
+  TYPE_HANDLER_ENTRY_CLASS(QList<QCameraFocusZone>),
+  TYPE_HANDLER_ENTRY_CLASS(QList<QMediaResource>),
+  TYPE_HANDLER_ENTRY_CLASS(QList<QMediaTimeInterval>),
+  #endif
   TYPE_HANDLER_ENTRY_CLASS(QVector<QLine>),
   TYPE_HANDLER_ENTRY_CLASS(QVector<QLineF>),
   TYPE_HANDLER_ENTRY_CLASS(QVector<QPointF>),
@@ -784,11 +819,6 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   TYPE_HANDLER_ENTRY_CLASS2(QMap<QString,QUrl>),
   TYPE_HANDLER_ENTRY_CLASS2(QMap<QString,QVariant>),
   TYPE_HANDLER_ENTRY_CLASS2(QPair<int,int>),
-#ifdef QT_OPENGL_LIB
-#if QT_VERSION >= 0x40600
-  TYPE_HANDLER_ENTRY_CLASS(QList<QGLShader*>),
-#endif    
-#endif    
 #ifdef QT_NETWORK_LIB
   TYPE_HANDLER_ENTRY_CLASS(QList<QHostAddress>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QNetworkAddressEntry>),
@@ -797,19 +827,19 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   TYPE_HANDLER_ENTRY_CLASS(QList<QNetworkProxy>),
   TYPE_HANDLER_ENTRY_CLASS2(QPair<QHostAddress,int>),
   TYPE_HANDLER_ENTRY_CLASS2(QHash<QNetworkRequest::Attribute,QVariant>),
+  TYPE_HANDLER_ENTRY_CLASS(QList<QDnsDomainNameRecord>),
+  TYPE_HANDLER_ENTRY_CLASS(QList<QDnsHostAddressRecord>),
+  TYPE_HANDLER_ENTRY_CLASS(QList<QDnsMailExchangeRecord>),
+  TYPE_HANDLER_ENTRY_CLASS(QList<QDnsServiceRecord>),
+  TYPE_HANDLER_ENTRY_CLASS(QList<QDnsTextRecord>),
 #endif
-#if defined(QT_XML_LIB) || QT_VERSION >= 0x40400
   TYPE_HANDLER_ENTRY_CLASS(QVector<QXmlStreamEntityDeclaration>),
   TYPE_HANDLER_ENTRY_CLASS(QVector<QXmlStreamNamespaceDeclaration>),
   TYPE_HANDLER_ENTRY_CLASS(QVector<QXmlStreamNotationDeclaration>),
-#endif
-#if QT_VERSION >= 0x40200
   TYPE_HANDLER_ENTRY_CLASS(QList<QGraphicsItem*>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QGraphicsView*>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QGraphicsWidget*>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QStandardItem*>),
-#endif
-#if QT_VERSION >= 0x40300
   TYPE_HANDLER_ENTRY_CLASS(QList<QMdiSubWindow*>),
 #ifdef QT_NETWORK_LIB
 #ifndef QT_NO_OPENSSL
@@ -818,9 +848,9 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   TYPE_HANDLER_ENTRY_CLASS(QList<QSslError>),
 #endif
 #endif
-#endif
-#if QT_VERSION >= 0x040400
+#ifdef QT_PRINTSUPPORT_LIB
   TYPE_HANDLER_ENTRY_CLASS(QList<QPrinterInfo>),
+#endif
 #ifdef QT_NETWORK_LIB
   TYPE_HANDLER_ENTRY_CLASS(QList<QNetworkCookie>),
 #endif
@@ -830,16 +860,13 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
   TYPE_HANDLER_ENTRY_CLASS(QList<QWebFrame*>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QWebHistoryItem>),
 #endif
-#endif
-#if QT_VERSION >= 0x040500
 #ifdef QT_WEBKIT_LIB
   TYPE_HANDLER_ENTRY_CLASS(QList<QWebDatabase>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QWebSecurityOrigin>),
 #endif
-#endif
-#if QT_VERSION >= 0x40600
   TYPE_HANDLER_ENTRY_CLASS(QList<QGraphicsTransform*>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QAbstractAnimation*>),
+  TYPE_HANDLER_ENTRY_CLASS(QList<QAbstractTransition*>),
   TYPE_HANDLER_ENTRY_CLASS(QList<QAbstractState*>),
   TYPE_HANDLER_ENTRY_CLASS(QSet<QAbstractState*>),
   /* matrices */
@@ -855,6 +882,9 @@ Q_DECL_EXPORT TypeHandler Qt_handlers[] = {
 #if QT_WEBKIT_LIB
   TYPE_HANDLER_ENTRY_CLASS(QList<QWebElement>),
 #endif
+#ifdef QT_XMLPATTERNS_LIB
+  TYPE_HANDLER_ENTRY_CLASS(QVector<QXmlName>),
+  TYPE_HANDLER_ENTRY_CLASS(QVector<QXmlNodeModelIndex>),
 #endif
   /*************** Special cases ***************/
   /* long long */

@@ -8,6 +8,7 @@
 #include <QTableWidgetItem>
 #include <QTreeWidgetItem>
 #include <QWidget>
+#include <QAccessible>
 
 #include "SmokeModule.hpp"
 #include "SmokeObject.hpp"
@@ -154,9 +155,6 @@ resolve_classname_qt(const SmokeObject * o)
     case QEvent::InputMethod:
       classId = smoke->idClass("QInputMethodEvent").index;
       break;
-    case QEvent::AccessibilityPrepare:
-      classId = smoke->idClass("QEvent").index;
-      break;
     case QEvent::TabletMove:
     case QEvent::TabletPress:
     case QEvent::TabletRelease:
@@ -224,10 +222,6 @@ resolve_classname_qt(const SmokeObject * o)
     case QEvent::HoverMove:
       classId = smoke->idClass("QHoverEvent").index;
       break;
-    case QEvent::AccessibilityHelp:
-    case QEvent::AccessibilityDescription:
-      classId = smoke->idClass("QEvent").index;
-#if QT_VERSION >= 0x40200
     case QEvent::GraphicsSceneMouseMove:
     case QEvent::GraphicsSceneMousePress:
     case QEvent::GraphicsSceneMouseRelease:
@@ -257,7 +251,56 @@ resolve_classname_qt(const SmokeObject * o)
     case QEvent::KeyboardLayoutChange:
       classId = smoke->idClass("QEvent").index;
       break;
-#endif
+    case QEvent::TouchEnd:
+    case QEvent::TouchCancel:
+    case QEvent::TouchBegin:
+    case QEvent::TouchUpdate:
+      classId = smoke->idClass("QTouchEvent").index;
+      break;
+    case QEvent::Gesture:
+    case QEvent::GestureOverride:
+      classId = smoke->idClass("QGestureEvent").index;
+      break;
+    case QEvent::InputMethodQuery:
+      classId = smoke->idClass("QInputMethodQueryEvent").index;
+      break;
+    case QEvent::ScrollPrepare:
+      classId = smoke->idClass("QScrollPrepareEvent").index;
+      break;
+    case QEvent::Scroll:
+      classId = smoke->idClass("QScrollEvent").index;
+      break;
+    default:
+      break;
+    }
+  } else if (smoke->isDerivedFrom(className, "QAccessibleEvent")) {
+    QAccessibleEvent * aevent = (QAccessibleEvent *)
+      smoke->cast(o->ptr(), classId, smoke->idClass("QAccessibleEvent").index);
+    switch (aevent->type()) {
+    case QAccessible::ValueChanged:
+      classId = smoke->idClass("QAccessibleValueChangeEvent").index;
+      break;
+    case QAccessible::StateChanged:
+      classId = smoke->idClass("QAccessibleStateChangeEvent").index;
+      break;
+    case QAccessible::TextCaretMoved:
+      classId = smoke->idClass("QAccessibleTextCursorEvent").index;
+      break;
+    case QAccessible::TextSelectionChanged:
+      classId = smoke->idClass("QAccessibleTextSelectionEvent").index;
+      break;
+    case QAccessible::TextInserted:
+      classId = smoke->idClass("QAccessibleTextInsertEvent").index;
+      break;
+    case QAccessible::TextRemoved:
+      classId = smoke->idClass("QAccessibleTextRemoveEvent").index;
+      break;
+    case QAccessible::TextUpdated:
+      classId = smoke->idClass("QAccessibleTextUpdateEvent").index;
+      break;
+    case QAccessible::TableModelChanged:
+      classId = smoke->idClass("QAccessibleTableModelChangeEvent").index;
+      break;
     default:
       break;
     }

@@ -1,3 +1,5 @@
+#include <QByteArray>
+
 #include "SmokeObject.hpp"
 #include "Class.hpp"
 #include "wrap.hpp"
@@ -26,7 +28,7 @@ SEXP _wrapSmoke(void *ptr, const char *className, bool allocated)
 }
 
 SEXP wrapPointer(void *ptr, QList<QByteArray> classNames,
-                   R_CFinalizer_t finalizer)
+                 R_CFinalizer_t finalizer)
 {
   SEXP ans;
   PROTECT(ans = R_MakeExternalPtr(ptr, R_NilValue, R_NilValue));

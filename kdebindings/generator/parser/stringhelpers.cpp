@@ -143,7 +143,7 @@ QString reverse( const QString& str ) {
   QString ret;
   int len = str.length();
   for( int a = len-1; a >= 0; --a ) {
-    switch(str[a].unicode()) {
+    switch(str[a].toLatin1()) {
     case '(':
       ret += ')';
       continue;

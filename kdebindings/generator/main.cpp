@@ -72,6 +72,8 @@ int main(int argc, char **argv)
     bool hasCommandLineGenerator = false;
     QStringList classes;
 
+    ParserOptions::notToBeResolved << "FILE";
+    
     for (int i = 1; i < args.count(); i++) {
         if ((args[i] == "-I" || args[i] == "-d" || args[i] == "-dm" ||
              args[i] == "-g" || args[i] == "-config") && i + 1 >= args.count())

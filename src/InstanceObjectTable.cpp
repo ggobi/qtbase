@@ -1,4 +1,5 @@
 #include <QSet>
+#include <QByteArray>
 
 #include "InstanceObjectTable.hpp"
 #include "SmokeObject.hpp"

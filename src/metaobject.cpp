@@ -32,7 +32,8 @@ extern "C" SEXP qt_qmocMethods(SEXP x) {
   for (int i = 0; i < n; i++) {
     QMetaMethod metaMethod = meta->method(i);
     INTEGER(ans_type)[i] = metaMethod.methodType();
-    SET_STRING_ELT(ans_signature, i, mkChar(metaMethod.signature()));
+    SET_STRING_ELT(ans_signature, i,
+                   mkChar(metaMethod.methodSignature().constData()));
     SET_STRING_ELT(ans_return, i, mkChar(metaMethod.typeName()));
     INTEGER(ans_nargs)[i] = metaMethod.parameterNames().size();
   }
@@ -159,13 +160,22 @@ extern "C" SEXP qt_qmetacall(SEXP x, SEXP s_call, SEXP s_id, SEXP s_args)
    metaObject() virtual method is invoked, we retrieve the reference.
 */
 extern "C" SEXP
-qt_qnewMetaObject(SEXP x, SEXP rstringdata, SEXP rdata)
+qt_qnewMetaObject(SEXP x, SEXP rstringdata, SEXP roffsets, SEXP rdata)
 {
   const Class *cl = Class::fromSexp(x);
   const QMetaObject *superdata = MocClass(cl->parents()[0]).metaObject();
-  
+
   char *stringdata = new char[length(rstringdata)];
   memcpy((void *) stringdata, RAW(rstringdata), length(rstringdata));
+
+  QByteArrayData *bytearraydata = new QByteArrayData[length(roffsets)];
+  for (long i = 0; i < length(roffsets); i++) {
+    char *str = stringdata + INTEGER(roffsets)[i]; 
+    int len = qstrlen(str);
+    qptrdiff offset = (qptrdiff)str - (qptrdiff)(bytearraydata + i);
+    bytearraydata[i] =
+      Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, offset);
+  }
   
   int count = length(rdata);
   uint * data = new uint[count];
@@ -174,7 +184,7 @@ qt_qnewMetaObject(SEXP x, SEXP rstringdata, SEXP rdata)
   }
   
   QMetaObject ob = { 
-    { superdata, stringdata, data, 0 }
+    { superdata, bytearraydata, data, 0 }
   } ;
 
   QMetaObject * meta = new QMetaObject;

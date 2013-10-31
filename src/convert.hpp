@@ -345,8 +345,6 @@ class_from_sexp(SEXP sexp,  const SmokeType &type) {
 inline SEXP ptr_to_sexp(void *value, const SmokeType &type,
                         bool hasBinding = false)
 {
-  if (!value)
-    return(R_NilValue);
   return SmokeObject::sexpFromPtr(value, type, hasBinding || type.isStack(),
                                   type.isConst() && type.isRef());
 }
@@ -419,6 +417,18 @@ SEXP to_sexp(QColor color);
 template<> QMap<QString,QVariant>
 from_sexp<QMap<QString,QVariant> >(SEXP sexp, const SmokeType &type);
 
+template<> QVariantList from_sexp<QVariantList>(SEXP s);
+SEXP to_sexp(QVariantList list);
+template<> QVariantMap from_sexp<QVariantMap>(SEXP s);
+SEXP to_sexp(QVariantMap map);
+
+template<> QJsonValue from_sexp<QJsonValue>(SEXP value);
+SEXP to_sexp(QJsonValue value);
+template<> QJsonArray from_sexp<QJsonArray>(SEXP value);
+SEXP to_sexp(QJsonArray array);
+template<> QJsonObject from_sexp<QJsonObject>(SEXP value);
+SEXP to_sexp(QJsonObject object);
+
 /* .Call entry points for explicit coercion */
 
 #define DECL_COERCE_ENTRY_POINT(type)            \
@@ -437,7 +447,7 @@ DECL_COERCE_ENTRY_POINT(QColor);
 DECL_COERCE_ENTRY_POINT(QChar);
 DECL_COERCE_ENTRY_POINT(QItemSelection);
 
-#ifdef QT_TEST_LIB
+#ifdef QT_TESTLIB_LIB
 DECL_COERCE_ENTRY_POINT(QSignalSpy);
 DECL_COERCE_ENTRY_POINT(QTestEventList);
 #endif

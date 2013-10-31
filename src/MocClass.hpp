@@ -23,6 +23,10 @@ public:
     : _delegate(delegate), _meta(meta)
   {
   }
+  MocClass(const QMetaObject *meta)
+    : _meta(meta), _delegate(findDelegateClass())
+  {
+  }
   
   virtual const char* name() const;
   virtual const SmokeClass *smokeBase() const {
@@ -48,6 +52,7 @@ private:
   int findMethodId(Smoke *smoke, const QMetaObject *meta, const char *name,
                    SEXP args) const;
   const QMetaObject *findMetaObject() const;
+  const Class *findDelegateClass() const;
 
   const Class *_delegate;
   const QMetaObject *_meta;

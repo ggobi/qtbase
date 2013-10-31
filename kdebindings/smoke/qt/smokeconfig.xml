@@ -24,6 +24,7 @@
         <signature>.*\(.*Private.*\).*</signature>
         <signature>.*QLocale::p</signature>
         <signature>.*QLocale::v</signature>
+        <signature>.*QMimeType::d</signature>
         <signature>.*QByteArrayMatcher::dummy</signature>
         <signature>.*QByteArrayMatcher::p</signature>
         <signature>.*QResource::QResource\(const QResource&amp;\).*</signature>
@@ -88,17 +89,21 @@
         <!-- QtTest excludes -->
         <signature>QTest::QTouchEventSequence QTest::touchEvent.*</signature>
 
-        <!-- Phonon excludes -->
-        <signature>.*Phonon::.*::k_ptr</signature>
-
         <!-- QtDeclarative excludes -->
         <signature>.*qmlRegisterTypeNotAvailable.*</signature>
-
+        
         <!-- OS X internal stuff -->
         <signature>.*qt_mac_set_cursor.*</signature>
         <signature>.*QMenu::macMenu\(.*</signature>
         <signature>*drawPixmaps*</signature>
-        
+
+        <!-- Stuff that showed up in 5.x -->
+        <signature>.*const Null.*</signature>
+        <signature>.*iterator.*</signature>
+        <signature>.*registerNormalizedType.*</signature>
+        <signature>.*QAbstractMessageHandler\(.*</signature>
+        <signature>.*QSGMaterialShader\(const QSGMaterialShader&amp;\).*</signature>
+        <signature>.*QSG.*Node\(const QSG.*Node&amp;\).*</signature>
     </exclude>
     <functions>
         <!-- include functions starting with 'q' -->
@@ -109,222 +114,416 @@
         <name>^QTest::.*</name>
     </functions>
     <classList>
+      <!-- QtCore -->
         <class>QAbstractAnimation</class>
-        <class>QAbstractAudioDeviceInfo</class>
-        <class>QAbstractAudioInput</class>
-        <class>QAbstractAudioOutput</class>
-        <class>QAbstractButton</class>
         <class>QAbstractEventDispatcher</class>
-        <class>QAbstractFileEngine</class>
-        <class>QAbstractFileEngine::ExtensionOption</class>
-        <class>QAbstractFileEngine::ExtensionReturn</class>
-        <class>QAbstractFileEngine::MapExtensionOption</class>
-        <class>QAbstractFileEngine::MapExtensionReturn</class>
-        <class>QAbstractFileEngine::UnMapExtensionOption</class>
-        <class>QAbstractFileEngineHandler</class>
-        <class>QAbstractFileEngineIterator</class>
-        <class>QAbstractGraphicsShapeItem</class>
-        <class>QAbstractItemDelegate</class>
         <class>QAbstractItemModel</class>
-        <class>QAbstractItemView</class>
         <class>QAbstractListModel</class>
-        <class>QAbstractNetworkCache</class>
-        <class>QAbstractPageSetupDialog</class>
-        <class>QAbstractPrintDialog</class>
+        <class>QAbstractNativeEventFilter</class>
         <class>QAbstractProxyModel</class>
-        <class>QAbstractScrollArea</class>
-        <class>QAbstractSlider</class>
-        <class>QAbstractSocket</class>
-        <class>QAbstractSpinBox</class>
         <class>QAbstractState</class>
-        <class>QAbstractTransition</class>
         <class>QAbstractTableModel</class>
-        <class>QAbstractTextDocumentLayout</class>
-        <class>QAbstractTextDocumentLayout::PaintContext</class>
-        <class>QAbstractTextDocumentLayout::Selection</class>
-        <class>QAbstractUndoItem</class>
-        <class>QAccessible</class>
-        <class>QAccessible2Interface</class>
-        <class>QAccessibleApplication</class>
-        <class>QAccessibleBridge</class>
-        <class>QAccessibleEditableTextInterface</class>
-        <class>QAccessibleEvent</class>
-        <class>QAccessibleFactoryInterface</class>
-        <class>QAccessibleInterface</class>
-        <class>QAccessibleInterfaceEx</class>
-        <class>QAccessibleObject</class>
-        <class>QAccessibleObjectEx</class>
-        <class>QAccessiblePlugin</class>
-        <class>QAccessibleSimpleEditableTextInterface</class>
-        <class>QAccessibleTableInterface</class>
-        <class>QAccessibleTextInterface</class>
-        <class>QAccessibleValueInterface</class>
-        <class>QAccessibleWidget</class>
-        <class>QAccessibleWidgetEx</class>
-        <class>QAction</class>
-        <class>QActionEvent</class>
-        <class>QActionGroup</class>
+        <class>QAbstractTransition</class>
         <class>QAnimationGroup</class>
-        <class>QApplication</class>
         <class>QAtomicInt</class>
-        <class>QAuthenticator</class>
-        <class>QBasicAtomicInt</class>
+        <class>QAtomicPointer</class>
         <class>QBasicTimer</class>
         <class>QBitArray</class>
-        <class>QBitRef</class>
-        <class>QBitmap</class>
-        <class>QBool</class>
-        <class>QBoxLayout</class>
-        <class>QBrush</class>
         <class>QBuffer</class>
-        <class>QButtonGroup</class>
         <class>QByteArray</class>
         <class>QByteArrayMatcher</class>
-        <class>QByteRef</class>
-        <class>QCalendarWidget</class>
+        <class>QCache</class>
         <class>QChar</class>
-        <class>QCharRef</class>
-        <class>QCheckBox</class>
         <class>QChildEvent</class>
+        <class>QContiguousCache</class>
+        <class>QCoreApplication</class>
+        <class>QCryptographicHash</class>
+        <class>QDataStream</class>
+        <class>QDate</class>
+        <class>QDateTime</class>
+        <class>QDebug</class>
+        <class>QDir</class>
+        <class>QDirIterator</class>
+        <class>QDynamicPropertyChangeEvent</class>
+        <class>QEasingCurve</class>
+        <class>QElapsedTimer</class>
+        <class>QEvent</class>
+        <class>QEventLoop</class>
+        <class>QEventLoopLocker</class>
+        <class>QEventTransition</class>
+        <class>QException</class>
+        <class>QExplicitlySharedDataPointer</class>
+        <class>QFile</class>
+        <class>QFileDevice</class>
+        <class>QFileInfo</class>
+        <class>QFileSystemWatcher</class>
+        <class>QFinalState</class>
+        <class>QFlag</class>
+        <class>QFlags</class>
+        <class>QFuture</class>
+        <class>QFutureIterator</class>
+        <class>QFutureSynchronizer</class>
+        <class>QFutureWatcher</class>
+        <class>QGenericArgument</class>
+        <class>QGenericReturnArgument</class>
+        <class>QHash</class>
+        <class>QHashIterator</class>
+        <class>QHistoryState</class>
+        <class>QIODevice</class>
+        <class>QIdentityProxyModel</class>
+        <class>QItemSelection</class>
+        <class>QItemSelectionModel</class>
+        <class>QItemSelectionRange</class>
+        <class>QJsonArray</class>
+        <class>QJsonDocument</class>
+        <class>QJsonObject</class>
+        <class>QJsonParseError</class>
+        <class>QJsonValue</class>
+        <class>QLatin1Char</class>
+        <class>QLatin1String</class>
+        <class>QLibrary</class>
+        <class>QLibraryInfo</class>
+        <class>QLine</class>
+        <class>QLineF</class>
+        <class>QLinkedList</class>
+        <class>QLinkedListIterator</class>
+        <class>QList</class>
+        <class>QListIterator</class>
+        <class>QLocale</class>
+        <class>QMap</class>
+        <class>QMapIterator</class>
+        <class>QMargins</class>
+        <class>QMessageLogger</class>
+        <class>QMetaClassInfo</class>
+        <class>QMetaEnum</class>
+        <class>QMetaMethod</class>
+        <class>QMetaObject</class>
+        <class>QMetaProperty</class>
+        <class>QMetaType</class>
+        <class>QMimeData</class>
+        <class>QMimeDatabase</class>
+        <class>QMimeType</class>
+        <class>QModelIndex</class>
+        <class>QMultiHash</class>
+        <class>QMultiMap</class>
+        <class>QMutableHashIterator</class>
+        <class>QMutableLinkedListIterator</class>
+        <class>QMutableListIterator</class>
+        <class>QMutableMapIterator</class>
+        <class>QMutableSetIterator</class>
+        <class>QMutableVectorIterator</class>
+        <class>QMutex</class>
+        <class>QMutexLocker</class>
+        <class>QObject</class>
+        <class>QObjectCleanupHandler</class>
+        <class>QPair</class>
+        <class>QParallelAnimationGroup</class>
+        <class>QPauseAnimation</class>
+        <class>QPersistentModelIndex</class>
+        <class>QPluginLoader</class>
+        <class>QPoint</class>
+        <class>QPointF</class>
+        <class>QPointer</class>
+        <class>QProcess</class>
+        <class>QProcessEnvironment</class>
+        <class>QPropertyAnimation</class>
+        <class>QQueue</class>
+        <class>QReadLocker</class>
+        <class>QReadWriteLock</class>
+        <class>QRect</class>
+        <class>QRectF</class>
+        <class>QRegExp</class>
+        <class>QRegularExpression</class>
+        <class>QRegularExpressionMatch</class>
+        <class>QRegularExpressionMatchIterator</class>
+        <class>QResource</class>
+        <class>QRunnable</class>
+        <class>QScopedArrayPointer</class>
+        <class>QScopedPointer</class>
+        <class>QScopedValueRollback</class>
+        <class>QSemaphore</class>
+        <class>QSequentialAnimationGroup</class>
+        <class>QSet</class>
+        <class>QSetIterator</class>
+        <class>QSettings</class>
+        <class>QSharedData</class>
+        <class>QSharedDataPointer</class>
+        <class>QSharedMemory</class>
+        <class>QSharedPointer</class>
+        <class>QSignalMapper</class>
+        <class>QSignalTransition</class>
+        <class>QSize</class>
+        <class>QSizeF</class>
+        <class>QSocketNotifier</class>
+        <class>QSortFilterProxyModel</class>
+        <class>QStack</class>
+        <class>QStandardPaths</class>
+        <class>QState</class>
+        <class>QStateMachine</class>
+        <class>QString</class>
+        <class>QStringList</class>
+        <class>QStringListModel</class>
+        <class>QStringMatcher</class>
+        <class>QStringRef</class>
+        <class>QSysInfo</class>
+        <class>QSystemSemaphore</class>
+        <class>QTemporaryDir</class>
+        <class>QTemporaryFile</class>
+        <class>QTextBoundaryFinder</class>
+        <class>QTextCodec</class>
+        <class>QTextDecoder</class>
+        <class>QTextEncoder</class>
+        <class>QTextStream</class>
+        <class>QThread</class>
+        <class>QThreadPool</class>
+        <class>QThreadStorage</class>
+        <class>QTime</class>
+        <class>QTimeLine</class>
+        <class>QTimer</class>
+        <class>QTimerEvent</class>
+        <class>QTranslator</class>
+        <class>QUnhandledException</class>
+        <class>QUrl</class>
+        <class>QUrlQuery</class>
+        <class>QUuid</class>
+        <class>QVarLengthArray</class>
+        <class>QVariant</class>
+        <class>QVariantAnimation</class>
+        <class>QVector</class>
+        <class>QVectorIterator</class>
+        <class>QWaitCondition</class>
+        <class>QWeakPointer</class>
+        <class>QWinEventNotifier</class>
+        <class>QWriteLocker</class>
+        <class>QXmlStreamAttribute</class>
+        <class>QXmlStreamAttributes</class>
+        <class>QXmlStreamEntityDeclaration</class>
+        <class>QXmlStreamEntityResolver</class>
+        <class>QXmlStreamNamespaceDeclaration</class>
+        <class>QXmlStreamNotationDeclaration</class>
+        <class>QXmlStreamReader</class>
+        <class>QXmlStreamWriter</class>
+        <class>QStateMachine::SignalEvent</class>
+        <class>QAbstractEventDispatcher::TimerInfo</class>
+        <class>QStateMachine::WrappedEvent</class>
+        <class>QSet::const_iterator</class>
+        <class>QSet::iterator</class>
+        <class>QMessageAuthenticationCode</class>
+        <class>QLockFile</class>
+        <class>QSaveFile</class>
+        
+        <!-- QtGui -->
+        <class>QInputMethodEvent::Attribute</class>
+        <class>QIconEngine::AvailableSizesArgument</class>
+        <class>QPainterPath::Element</class>
+        <class>QTextLayout::FormatRange</class>
+        <class>QPixmapCache::Key</class>
+        <class>QAbstractTextDocumentLayout::PaintContext</class>
+        <class>QPainter::PixmapFragment</class>
+        <class>QAbstractTextDocumentLayout</class>
+        <class>QActionEvent</class>
+        <!-- <class>QBackingStore</class> -->
+        <class>QBitmap</class>
+        <class>QBrush</class>
         <class>QClipboard</class>
-        <class>QClipboardEvent</class>
         <class>QCloseEvent</class>
         <class>QColor</class>
+        <class>QConicalGradient</class>
+        <class>QContextMenuEvent</class>
+        <class>QCursor</class>
+        <class>QDesktopServices</class>
+        <class>QDoubleValidator</class>
+        <class>QDrag</class>
+        <class>QDragEnterEvent</class>
+        <class>QDragLeaveEvent</class>
+        <class>QDragMoveEvent</class>
+        <class>QDropEvent</class>
+        <class>QEnterEvent</class>
+        <class>QExposeEvent</class>
+        <class>QFileOpenEvent</class>
+        <class>QFocusEvent</class>
+        <class>QFont</class>
+        <class>QFontDatabase</class>
+        <class>QFontInfo</class>
+        <class>QFontMetrics</class>
+        <class>QFontMetricsF</class>
+        <class>QGenericMatrix</class>
+        <class>QGenericPlugin</class>
+        <class>QGenericPluginFactory</class>
+        <class>QGlyphRun</class>
+        <class>QGradient</class>
+        <class>QGuiApplication</class>
+        <class>QHelpEvent</class>
+        <class>QHideEvent</class>
+        <class>QHoverEvent</class>
+        <class>QIcon</class>
+        <class>QIconDragEvent</class>
+        <class>QIconEngine</class>
+        <class>QIconEnginePlugin</class>
+        <!-- <class>QImage</class> -->
+        <class>QImageIOHandler</class>
+        <class>QImageIOPlugin</class>
+        <class>QImageReader</class>
+        <class>QImageWriter</class>
+        <class>QInputEvent</class>
+        <class>QInputMethod</class>
+        <class>QInputMethodEvent</class>
+        <class>QInputMethodQueryEvent</class>
+        <class>QIntValidator</class>
+        <class>QKeyEvent</class>
+        <class>QKeySequence</class>
+        <class>QLinearGradient</class>
+        <class>QMatrix4x4</class>
+        <class>QMouseEvent</class>
+        <class>QMoveEvent</class>
+        <class>QMovie</class>
+        <class>QOpenGLBuffer</class>
+        <class>QOpenGLContext</class>
+        <class>QOpenGLContextGroup</class>
+        <class>QOpenGLFramebufferObject</class>
+        <class>QOpenGLFramebufferObjectFormat</class>
+        <!-- <class>QOpenGLFunctions</class> -->
+        <!-- <class>QOpenGLPaintDevice</class> -->
+        <class>QOpenGLShader</class>
+        <class>QOpenGLShaderProgram</class>
+        <class>QPagedPaintDevice</class>
+        <class>QPaintDevice</class>
+        <class>QPaintEngine</class>
+        <class>QPaintEngineState</class>
+        <class>QPaintEvent</class>
+        <class>QPainter</class>
+        <class>QPainterPath</class>
+        <class>QPainterPathStroker</class>
+        <class>QPalette</class>
+        <class>QPdfWriter</class>
+        <class>QPen</class>
+        <class>QPicture</class>
+        <class>QPixmap</class>
+        <class>QPixmapCache</class>
+        <class>QPlatformSystemTrayIcon</class>
+        <class>QPolygon</class>
+        <class>QPolygonF</class>
+        <class>QQuaternion</class>
+        <class>QRadialGradient</class>
+        <class>QRasterPaintEngine</class>
+        <class>QRawFont</class>
+        <class>QRegExpValidator</class>
+        <class>QRegion</class>
+        <class>QResizeEvent</class>
+        <class>QScreen</class>
+        <class>QScrollEvent</class>
+        <class>QScrollPrepareEvent</class>
+        <class>QShortcutEvent</class>
+        <class>QShowEvent</class>
+        <class>QStandardItem</class>
+        <class>QStandardItemModel</class>
+        <class>QStaticText</class>
+        <class>QStatusTipEvent</class>
+        <class>QStyleHints</class>
+        <class>QSupportedWritingSystems</class>
+        <class>QSurface</class>
+        <class>QSurfaceFormat</class>
+        <class>QSyntaxHighlighter</class>
+        <class>QTabletEvent</class>
+        <class>QTextBlock</class>
+        <class>QTextBlockFormat</class>
+        <class>QTextBlockGroup</class>
+        <class>QTextBlockUserData</class>
+        <class>QTextCharFormat</class>
+        <class>QTextCursor</class>
+        <class>QTextDocument</class>
+        <class>QTextDocumentFragment</class>
+        <class>QTextDocumentWriter</class>
+        <class>QTextFormat</class>
+        <class>QTextFragment</class>
+        <class>QTextFrame</class>
+        <class>QTextFrameFormat</class>
+        <class>QTextImageFormat</class>
+        <class>QTextInlineObject</class>
+        <class>QTextItem</class>
+        <class>QTextLayout</class>
+        <class>QTextLength</class>
+        <class>QTextLine</class>
+        <class>QTextList</class>
+        <class>QTextListFormat</class>
+        <class>QTextObject</class>
+        <class>QTextObjectInterface</class>
+        <class>QTextOption</class>
+        <class>QTextTable</class>
+        <class>QTextTableCell</class>
+        <class>QTextTableCellFormat</class>
+        <class>QTextTableFormat</class>
+        <class>QTouchDevice</class>
+        <class>QTouchEvent</class>
+        <class>QTransform</class>
+        <class>QValidator</class>
+        <class>QVector2D</class>
+        <class>QVector3D</class>
+        <class>QVector4D</class>
+        <class>QWhatsThisClickedEvent</class>
+        <class>QWheelEvent</class>
+        <class>QWindow</class>
+        <class>QWindowStateChangeEvent</class>
+        <class>QAbstractTextDocumentLayout::Selection</class>
+        <class>QTextOption::Tab</class>
+        <class>QTouchEvent::TouchPoint</class>
+        <class>QTextBlock::iterator</class>
+        <class>QOpenGLTimerQuery</class>
+        <class>QOpenGLTimeMonitor</class>
+        <class>QOpenGLDebugLogger</class>
+        <class>QOpenVertexArrayObject</class>
+        
+        <!-- QtWidgets -->
+        <class>QTextEdit::ExtraSelection</class>
+        <class>QAbstractButton</class>
+        <class>QAbstractGraphicsShapeItem</class>
+        <class>QAbstractItemDelegate</class>
+        <class>QAbstractItemView</class>
+        <class>QAbstractScrollArea</class>
+        <class>QAbstractSlider</class>
+        <class>QAbstractSpinBox</class>
+        <class>QAction</class>
+        <class>QActionGroup</class>
+        <class>QApplication</class>
+        <class>QBoxLayout</class>
+        <class>QButtonGroup</class>
+        <class>QCalendarWidget</class>
+        <class>QCheckBox</class>
         <class>QColorDialog</class>
-        <class>QColorGroup</class>
         <class>QColormap</class>
         <class>QColumnView</class>
         <class>QComboBox</class>
         <class>QCommandLinkButton</class>
         <class>QCommonStyle</class>
         <class>QCompleter</class>
-        <class>QConicalGradient</class>
-        <class>QContextMenuEvent</class>
-        <class>QCoreApplication</class>
-        <class>QCryptographicHash</class>
-        <class>QCursor</class>
-        <class>QDBusAbstractAdaptor</class>
-        <class>QDBusAbstractInterface</class>
-        <class>QDBusArgument</class>
-        <class>QDBusConnection</class>
-        <class>QDBusConnectionInterface</class>
-        <class>QDBusContext</class>
-        <class>QDBusDemarshaller</class>
-        <class>QDBusError</class>
-        <class>QDBusInterface</class>
-        <class>QDBusMarshaller</class>
-        <class>QDBusMessage</class>
-        <class>QDBusMetaType</class>
-        <class>QDBusPendingCall</class>
-        <class>QDBusPendingCallWatcher</class>
-        <class>QDBusServer</class>
-        <class>QDataStream</class>
         <class>QDataWidgetMapper</class>
-        <class>QDate</class>
         <class>QDateEdit</class>
-        <class>QDateTime</class>
         <class>QDateTimeEdit</class>
-        <class>QDesktopServices</class>
         <class>QDesktopWidget</class>
         <class>QDial</class>
         <class>QDialog</class>
         <class>QDialogButtonBox</class>
-        <class>QDir</class>
-        <class>QDirIterator</class>
-        <class>QDirModel</class>
-        <class>QDockAreaLayout</class>
         <class>QDockWidget</class>
-        <class>QDomAttr</class>
-        <class>QDomCDATASection</class>
-        <class>QDomCharacterData</class>
-        <class>QDomComment</class>
-        <class>QDomDocument</class>
-        <class>QDomDocumentFragment</class>
-        <class>QDomDocumentType</class>
-        <class>QDomElement</class>
-        <class>QDomEntity</class>
-        <class>QDomEntityReference</class>
-        <class>QDomImplementation</class>
-        <class>QDomNamedNodeMap</class>
-        <class>QDomNode</class>
-        <class>QDomNodeList</class>
-        <class>QDomNotation</class>
-        <class>QDomProcessingInstruction</class>
-        <class>QDomText</class>
         <class>QDoubleSpinBox</class>
-        <class>QDoubleValidator</class>
-        <class>QDrag</class>
-        <class>QDragEnterEvent</class>
-        <class>QDragLeaveEvent</class>
-        <class>QDragManager</class>
-        <class>QDragMoveEvent</class>
-        <class>QDragResponseEvent</class>
-        <class>QDropEvent</class>
-        <class>QDynamicPropertyChangeEvent</class>
-        <class>QEasingCurve</class>
-        <class>QElapsedTimer</class>
         <class>QErrorMessage</class>
-        <class>QEvent</class>
-        <class>QEventLoop</class>
-        <class>QEventTransition</class>
-        <class>QFSFileEngine</class>
-        <class>QFactoryInterface</class>
-        <class>QFile</class>
         <class>QFileDialog</class>
-        <class>QFileDialogArgs</class>
-        <class>QFileExtension</class>
-        <class>QFileExtensionResult</class>
         <class>QFileIconProvider</class>
-        <class>QFileInfo</class>
-        <class>QFileOpenEvent</class>
         <class>QFileSystemModel</class>
-        <class>QFileSystemWatcher</class>
-        <class>QFinalState</class>
-        <class>QFlag</class>
-        <class>QFocusEvent</class>
         <class>QFocusFrame</class>
-        <class>QFont</class>
         <class>QFontComboBox</class>
-        <class>QFontDatabase</class>
-        <class>QFontDef</class>
         <class>QFontDialog</class>
-        <class>QFontEngine</class>
-        <class>QFontInfo</class>
-        <class>QFontMetrics</class>
-        <class>QFontMetricsF</class>
         <class>QFormLayout</class>
         <class>QFrame</class>
-        <class>QFtp</class>
-        <class>QFutureInterfaceBase</class>
-        <class>QFutureWatcherBase</class>
         <class>QGesture</class>
-        <class>QGLColormap</class>
-        <class>QGLContext</class>
-        <class>QGLBuffer</class>
-        <class>QGLFormat</class>
-        <class>QGLFramebufferObject</class>
-        <class>QGLFramebufferObjectFormat</class>
-        <class>QGLOverlayWidget</class>
-        <class>QGLPixelBuffer</class>
-        <class>QGLScreen</class>
-        <class>QGLScreenSurfaceFunctions</class>
-        <class>QGLShader</class>
-        <class>QGLShaderProgram</class>
-        <class>QGLWidget</class>
-        <class>QGenericArgument</class>
-        <class>QGenericReturnArgument</class>
-        <class>QGlyphLayout</class>
-        <class>QGradient</class>
+        <class>QGestureEvent</class>
+        <class>QGestureRecognizer</class>
         <class>QGraphicsAnchor</class>
         <class>QGraphicsAnchorLayout</class>
-        <class>QGraphicsBloomEffect</class>
         <class>QGraphicsBlurEffect</class>
         <class>QGraphicsColorizeEffect</class>
         <class>QGraphicsDropShadowEffect</class>
         <class>QGraphicsEffect</class>
-        <class>QGraphicsEffectSource</class>
         <class>QGraphicsEllipseItem</class>
-        <class>QGraphicsGrayscaleEffect</class>
         <class>QGraphicsGridLayout</class>
         <class>QGraphicsItem</class>
         <class>QGraphicsItemAnimation</class>
@@ -336,7 +535,6 @@
         <class>QGraphicsObject</class>
         <class>QGraphicsOpacityEffect</class>
         <class>QGraphicsPathItem</class>
-        <class>QGraphicsPixelizeEffect</class>
         <class>QGraphicsPixmapItem</class>
         <class>QGraphicsPolygonItem</class>
         <class>QGraphicsProxyWidget</class>
@@ -354,7 +552,6 @@
         <class>QGraphicsSceneResizeEvent</class>
         <class>QGraphicsSceneWheelEvent</class>
         <class>QGraphicsSimpleTextItem</class>
-        <class>QGraphicsSvgItem</class>
         <class>QGraphicsTextItem</class>
         <class>QGraphicsTransform</class>
         <class>QGraphicsView</class>
@@ -363,233 +560,56 @@
         <class>QGroupBox</class>
         <class>QHBoxLayout</class>
         <class>QHeaderView</class>
-        <class>QHelpEvent</class>
-        <class>QHideEvent</class>
-        <class>QHistoryState</class>
-        <class>QHostAddress</class>
-        <class>QHostInfo</class>
-        <class>QHoverEvent</class>
-        <class>QHttp</class>
-        <class>QHttpHeader</class>
-        <class>QHttpRequestHeader</class>
-        <class>QHttpResponseHeader</class>
-        <class>QIODevice</class>
-        <class>QIPv6Address</class>
-        <class>QIcon</class>
-        <class>QIconDragEvent</class>
-        <class>QIconEngine</class>
-        <class>QIconEngineFactoryInterface</class>
-        <class>QIconEngineFactoryInterfaceV2</class>
-        <class>QIconEnginePlugin</class>
-        <class>QIconEnginePluginV2</class>
-        <class>QIconEngineV2</class>
-        <class>QIconEngineV2::AvailableSizesArgument</class>
-        <class>QImage</class>
-        <class>QImageDataMisc</class>
-        <class>QImageIOHandler</class>
-        <class>QImageIOHandlerFactoryInterface</class>
-        <class>QImageIOPlugin</class>
-        <class>QImageReader</class>
-        <class>QImageTextKeyLang</class>
-        <class>QImageWriter</class>
-        <class>QIncompatibleFlag</class>
-        <class>QInputContext</class>
-        <class>QInputContextFactory</class>
-        <class>QInputContextFactoryInterface</class>
-        <class>QInputContextPlugin</class>
         <class>QInputDialog</class>
-        <class>QInputEvent</class>
-        <class>QInputMethodEvent</class>
-        <class>QInputMethodEvent::Attribute</class>
-        <class>QIntValidator</class>
-        <class>QInternal</class>
         <class>QItemDelegate</class>
+        <class>QItemEditorCreator</class>
         <class>QItemEditorCreatorBase</class>
         <class>QItemEditorFactory</class>
-        <class>QItemSelection</class>
-        <class>QItemSelectionModel</class>
-        <class>QItemSelectionRange</class>
-        <class>QKeyEvent</class>
-        <class>QKeySequence</class>
+        <class>QKeyEventTransition</class>
         <class>QLCDNumber</class>
         <class>QLabel</class>
-        <class>QLatin1Char</class>
-        <class>QLatin1String</class>
         <class>QLayout</class>
         <class>QLayoutItem</class>
-        <class>QLibrary</class>
-        <class>QLibraryInfo</class>
-        <class>QLine</class>
         <class>QLineEdit</class>
-        <class>QLineF</class>
-        <class>QLinearGradient</class>
-        <class>QListModel</class>
         <class>QListView</class>
         <class>QListWidget</class>
         <class>QListWidgetItem</class>
-        <class>QLocalServer</class>
-        <class>QLocalSocket</class>
-        <class>QLocale</class>
         <class>QMainWindow</class>
-        <class>QMargins</class>
-        <class>QMatrix</class>
-        <class>QMatrix4x4</class>
-        <class>QMdi::ControlContainer</class>
         <class>QMdiArea</class>
         <class>QMdiSubWindow</class>
         <class>QMenu</class>
         <class>QMenuBar</class>
         <class>QMessageBox</class>
-        <class>QMetaClassInfo</class>
-        <class>QMetaEnum</class>
-        <class>QMetaMethod</class>
-        <class>QMetaObject</class>
-        <class>QMetaProperty</class>
-        <class>QMetaType</class>
-        <class>QMimeData</class>
-        <class>QMimeSource</class>
-        <class>QModelIndex</class>
-        <class>QMouseEvent</class>
-        <class>QMoveEvent</class>
-        <class>QMovie</class>
-        <class>QNetworkAccessManager</class>
-        <class>QNetworkAddressEntry</class>
-        <class>QNetworkCacheMetaData</class>
-        <class>QNetworkCookie</class>
-        <class>QNetworkCookieJar</class>
-        <class>QNetworkConfiguration</class>
-        <class>QNetworkConfigurationManager</class>
-        <class>QNetworkDiskCache</class>
-        <class>QNetworkInterface</class>
-        <class>QNetworkProxy</class>
-        <class>QNetworkProxyFactory</class>
-        <class>QNetworkProxyQuery</class>
-        <class>QNetworkReply</class>
-        <class>QNetworkRequest</class>
-        <class>QNetworkSession</class>
-        <class>QNoDebug</class>
-        <class>QObject</class>
-        <class>QObjectCleanupHandler</class>
-        <class>QPageSetupDialog</class>
-        <class>QPaintDevice</class>
-        <class>QPaintEngine</class>
-        <class>QPaintEngineState</class>
-        <class>QPaintEvent</class>
-        <class>QPainter</class>
-        <class>QPainterPath</class>
-        <class>QPainterPath::Element</class>
-        <class>QPainterPathStroker</class>
-        <class>QPalette</class>
+        <class>QMouseEventTransition</class>
         <class>QPanGesture</class>
-        <class>QParallelAnimationGroup</class>
-        <class>QPauseAnimation</class>
-        <class>QPen</class>
-        <class>QPersistentModelIndex</class>
-        <class>QPicture</class>
-        <class>QPictureFormatInterface</class>
-        <class>QPictureFormatPlugin</class>
-        <class>QPictureIO</class>
-        <class>QPixmap</class>
-        <class>QPixmapCache</class>
+        <class>QPinchGesture</class>
         <class>QPlainTextDocumentLayout</class>
         <class>QPlainTextEdit</class>
-        <class>QPluginLoader</class>
-        <class>QPoint</class>
-        <class>QPointF</class>
-        <class>QPolygon</class>
-        <class>QPolygonF</class>
-        <class>QPopupMenu</class>
-        <class>QPostEventList</class>
-        <class>QPrintDialog</class>
-        <class>QPrintEngine</class>
-        <class>QPrintPreviewDialog</class>
-        <class>QPrintPreviewWidget</class>
-        <class>QPrinter</class>
-        <class>QPrinterInfo</class>
-        <class>QProcess</class>
         <class>QProgressBar</class>
         <class>QProgressDialog</class>
-        <class>QPropertyAnimation</class>
-        <class>QProxyModel</class>
+        <class>QProxyStyle</class>
         <class>QPushButton</class>
-        <class>QQuaternion</class>
-        <class>QRadialGradient</class>
         <class>QRadioButton</class>
-        <class>QReadLocker</class>
-        <class>QReadWriteLock</class>
-        <class>QRect</class>
-        <class>QRectF</class>
-        <class>QRegExp</class>
-        <class>QRegExpValidator</class>
-        <class>QRegion</class>
-        <class>QResizeEvent</class>
-        <class>QResource</class>
         <class>QRubberBand</class>
-        <class>QRunnable</class>
         <class>QScrollArea</class>
         <class>QScrollBar</class>
-        <class>QSequentialAnimationGroup</class>
-        <class>QSemaphore</class>
-        <class>QSessionManager</class>
-        <class>QSettings</class>
-        <class>QSharedData</class>
-        <class>QSharedMemory</class>
+        <class>QScroller</class>
+        <class>QScrollerProperties</class>
         <class>QShortcut</class>
-        <class>QShortcutEvent</class>
-        <class>QShowEvent</class>
-        <class>QSignalMapper</class>
-        <class>QSignalTransition</class>
-        <class>QSize</class>
-        <class>QSizeF</class>
         <class>QSizeGrip</class>
         <class>QSizePolicy</class>
         <class>QSlider</class>
-        <class>QSocketNotifier</class>
-        <class>QSortFilterProxyModel</class>
-        <class>QSortFilterProxyModelGreaterThan</class>
-        <class>QSortFilterProxyModelLessThan</class>
-        <class>QSound</class>
         <class>QSpacerItem</class>
         <class>QSpinBox</class>
         <class>QSplashScreen</class>
         <class>QSplitter</class>
         <class>QSplitterHandle</class>
-        <class>QSqlDatabase</class>
-        <class>QSqlDriver</class>
-        <class>QSqlDriverCreatorBase</class>
-        <class>QSqlDriverFactoryInterface</class>
-        <class>QSqlDriverPlugin</class>
-        <class>QSqlError</class>
-        <class>QSqlField</class>
-        <class>QSqlIndex</class>
-        <class>QSqlQuery</class>
-        <class>QSqlQueryModel</class>
-        <class>QSqlRecord</class>
-        <class>QSqlRelation</class>
-        <class>QSqlRelationalDelegate</class>
-        <class>QSqlRelationalTableModel</class>
-        <class>QSqlResult</class>
-        <class>QSqlTableModel</class>
-        <class>QSslCertificate</class>
-        <class>QSslCipher</class>
-        <class>QSslConfiguration</class>
-        <class>QSslError</class>
-        <class>QSslKey</class>
-        <class>QSslSocket</class>
         <class>QStackedLayout</class>
         <class>QStackedWidget</class>
-        <class>QStandardItem</class>
-        <class>QStandardItemModel</class>
-        <class>QState</class>
-        <class>QStateMachine</class>
+        <class>QStandardItemEditorCreator</class>
         <class>QStatusBar</class>
-        <class>QStatusTipEvent</class>
-        <class>QStringListModel</class>
-        <class>QStringMatcher</class>
-        <class>QStringRef</class>
         <class>QStyle</class>
         <class>QStyleFactory</class>
-        <class>QStyleFactoryInterface</class>
         <class>QStyleHintReturn</class>
         <class>QStyleHintReturnMask</class>
         <class>QStyleHintReturnVariant</class>
@@ -598,158 +618,80 @@
         <class>QStyleOptionComboBox</class>
         <class>QStyleOptionComplex</class>
         <class>QStyleOptionDockWidget</class>
-        <class>QStyleOptionDockWidgetV2</class>
         <class>QStyleOptionFocusRect</class>
         <class>QStyleOptionFrame</class>
-        <class>QStyleOptionFrameV2</class>
-        <class>QStyleOptionFrameV3</class>
         <class>QStyleOptionGraphicsItem</class>
         <class>QStyleOptionGroupBox</class>
         <class>QStyleOptionHeader</class>
         <class>QStyleOptionMenuItem</class>
         <class>QStyleOptionProgressBar</class>
-        <class>QStyleOptionProgressBarV2</class>
         <class>QStyleOptionRubberBand</class>
         <class>QStyleOptionSizeGrip</class>
         <class>QStyleOptionSlider</class>
         <class>QStyleOptionSpinBox</class>
         <class>QStyleOptionTab</class>
         <class>QStyleOptionTabBarBase</class>
-        <class>QStyleOptionTabBarBaseV2</class>
-        <class>QStyleOptionTabV2</class>
-        <class>QStyleOptionTabV3</class>
         <class>QStyleOptionTabWidgetFrame</class>
         <class>QStyleOptionTitleBar</class>
         <class>QStyleOptionToolBar</class>
         <class>QStyleOptionToolBox</class>
-        <class>QStyleOptionToolBoxV2</class>
         <class>QStyleOptionToolButton</class>
         <class>QStyleOptionViewItem</class>
-        <class>QStyleOptionViewItemV2</class>
-        <class>QStyleOptionViewItemV3</class>
-        <class>QStyleOptionViewItemV4</class>
         <class>QStylePainter</class>
         <class>QStylePlugin</class>
-        <class>QStyleSheet</class>
         <class>QStyledItemDelegate</class>
-        <class>QSvgGenerator</class>
-        <class>QSvgRenderer</class>
-        <class>QSvgWidget</class>
-        <class>QSyntaxHighlighter</class>
-        <class>QSysInfo</class>
-        <class>QSystemLocale</class>
-        <class>QSystemSemaphore</class>
+        <class>QSwipeGesture</class>
         <class>QSystemTrayIcon</class>
-        <class>QTab</class>
         <class>QTabBar</class>
         <class>QTabWidget</class>
-        <class>QTableModel</class>
         <class>QTableView</class>
         <class>QTableWidget</class>
         <class>QTableWidgetItem</class>
         <class>QTableWidgetSelectionRange</class>
-        <class>QTabletEvent</class>
-        <class>QTcpServer</class>
-        <class>QTcpSocket</class>
-        <class>QTemporaryFile</class>
-        <class>QTextBlock</class>
-        <class>QTextBlock::iterator</class>
-        <class>QTextBlockFormat</class>
-        <class>QTextBlockGroup</class>
-        <class>QTextBlockUserData</class>
-        <class>QTextBoundaryFinder</class>
+        <class>QTapAndHoldGesture</class>
+        <class>QTapGesture</class>
         <class>QTextBrowser</class>
-        <class>QTextCharFormat</class>
-        <class>QTextCodec</class>
-        <class>QTextCodecFactoryInterface</class>
-        <class>QTextCodecPlugin</class>
-        <class>QTextCursor</class>
-        <class>QTextDecoder</class>
-        <class>QTextDocument</class>
-        <class>QTextDocumentFragment</class>
-        <class>QTextDocumentWriter</class>
         <class>QTextEdit</class>
-        <class>QTextEdit::ExtraSelection</class>
-        <class>QTextEncoder</class>
-        <class>QTextEngine</class>
-        <class>QTextFormat</class>
-        <class>QTextFormatCollection</class>
-        <class>QTextFragment</class>
-        <class>QTextFrame</class>
-        <class>QTextFrame::iterator</class>
-        <class>QTextFrameFormat</class>
-        <class>QTextImageFormat</class>
-        <class>QTextInlineObject</class>
-        <class>QTextItem</class>
-        <class>QTextItemInt</class>
-        <class>QTextLayout</class>
-        <class>QTextLayout::FormatRange</class>
-        <class>QTextLength</class>
-        <class>QTextLine</class>
-        <class>QTextList</class>
-        <class>QTextListFormat</class>
-        <class>QTextObject</class>
-        <class>QTextObjectInterface</class>
-        <class>QTextOption</class>
-        <class>QTextOption::Tab</class>
-        <class>QTextStream</class>
-        <class>QTextTable</class>
-        <class>QTextTableCell</class>
-        <class>QTextTableCellFormat</class>
-        <class>QTextTableFormat</class>
-        <class>QTime</class>
+        <class>QTileRules</class>
         <class>QTimeEdit</class>
-        <class>QTimeLine</class>
-        <class>QTimer</class>
-        <class>QTimerEvent</class>
         <class>QToolBar</class>
-        <class>QToolBarChangeEvent</class>
         <class>QToolBox</class>
         <class>QToolButton</class>
         <class>QToolTip</class>
-        <class>QTransform</class>
-        <class>QTranslator</class>
-        <class>QTreeModel</class>
         <class>QTreeView</class>
         <class>QTreeWidget</class>
         <class>QTreeWidgetItem</class>
         <class>QTreeWidgetItemIterator</class>
-        <class>QUdpSocket</class>
         <class>QUndoCommand</class>
         <class>QUndoGroup</class>
         <class>QUndoStack</class>
         <class>QUndoView</class>
-        <class>QUnixPrintWidget</class>
-        <class>QUrl</class>
-        <class>QUrlInfo</class>
-        <class>QUuid</class>
         <class>QVBoxLayout</class>
-        <class>QValidator</class>
-        <class>QVariant</class>
-        <class>QVariantAnimation</class>
-        <class>QVariantComparisonHelper</class>
-        <class>QVector2D</class>
-        <class>QVector3D</class>
-        <class>QVector4D</class>
-        <class>QVectorPath</class>
-        <class>QWSRegionManager</class>
         <class>QWhatsThis</class>
-        <class>QWhatsThisClickedEvent</class>
-        <class>QWheelEvent</class>
         <class>QWidget</class>
         <class>QWidgetAction</class>
         <class>QWidgetItem</class>
-        <class>QWidgetItemV2</class>
-        <class>QWindowStateChangeEvent</class>
-        <class>QWindowSurface</class>
         <class>QWizard</class>
         <class>QWizardPage</class>
-        <class>QWorkspace</class>
-        <class>QWorkspaceChild</class>
-        <class>QWriteLocker</class>
-        <class>QX11Info</class>
-        <class>QX11EmbedContainer</class>
-        <class>QX11EmbedWidget</class>
+
+        <!-- QtXml -->
+        <class>QDomAttr</class>
+        <class>QDomCDATASection</class>
+        <class>QDomCharacterData</class>
+        <class>QDomComment</class>
+        <class>QDomDocument</class>
+        <class>QDomDocumentFragment</class>
+        <class>QDomDocumentType</class>
+        <class>QDomElement</class>
+        <class>QDomEntity</class>
+        <class>QDomEntityReference</class>
+        <class>QDomImplementation</class>
+        <class>QDomNamedNodeMap</class>
+        <class>QDomNode</class>
+        <class>QDomNodeList</class>
+        <class>QDomNotation</class>
+        <class>QDomProcessingInstruction</class>
+        <class>QDomText</class>
         <class>QXmlAttributes</class>
         <class>QXmlContentHandler</class>
         <class>QXmlDTDHandler</class>
@@ -764,15 +706,6 @@
         <class>QXmlParseException</class>
         <class>QXmlReader</class>
         <class>QXmlSimpleReader</class>
-        <class>QXmlStreamAttribute</class>
-        <class>QXmlStreamAttributes</class>
-        <class>QXmlStreamEntityDeclaration</class>
-        <class>QXmlStreamEntityResolver</class>
-        <class>QXmlStreamNamespaceDeclaration</class>
-        <class>QXmlStreamNotationDeclaration</class>
-        <class>QXmlStreamReader</class>
-        <class>QXmlStreamStringRef</class>
-        <class>QXmlStreamWriter</class>
 
         <!-- QtXmlPatterns -->
         <class>QAbstractMessageHandler</class>
@@ -792,24 +725,35 @@
         <class>QXmlSchemaValidator</class>
         <class>QXmlSerializer</class>
 
-        <!-- QtScript -->
-        <class>QScriptable</class>
-        <class>QScriptClass</class>
-        <class>QScriptClassPropertyIterator</class>
-        <class>QScriptContext</class>
-        <class>QScriptContextInfo</class>
-        <class>QScriptEngineAgent</class>
-        <class>QScriptEngine</class>
-        <class>QScriptEngineDebugger</class>
-        <class>QScriptExtensionInterface</class>
-        <class>QScriptExtensionPlugin</class>
-        <class>QScriptString</class>
-        <class>QScriptValue</class>
-        <class>QScriptValueIterator</class>
-        <class>QScriptSyntaxCheckResult</class>
-
         <!-- QtUiTools -->
         <class>QUiLoader</class>
+
+        <!-- QtSvg -->
+        <class>QGraphicsSvgItem</class>
+        <class>QSvgGenerator</class>
+        <class>QSvgRenderer</class>
+        <class>QSvgWidget</class>
+
+        <!-- QtDBus -->
+        <class>QDBusAbstractAdaptor</class>
+        <class>QDBusAbstractInterface</class>
+        <class>QDBusAbstractInterfaceBase</class>
+        <class>QDBusArgument</class>
+        <class>QDBusConnection</class>
+        <class>QDBusConnectionInterface</class>
+        <class>QDBusContext</class>
+        <class>QDBusDemarshaller</class>
+        <class>QDBusError</class>
+        <class>QDBusInterface</class>
+        <class>QDBusMarshaller</class>
+        <class>QDBusMessage</class>
+        <class>QDBusMetaType</class>
+        <class>QDBusPendingCall</class>
+        <class>QDBusPendingCallWatcher</class>
+        <class>QDBusServer</class>
+        <class>QDBusServiceWatcher</class>
+        <class>QDBusUnixFileDescriptor</class>
+        <class>QDBusVirtualObject</class>
 
         <!-- QtTest -->
         <class>QSignalSpy</class>
@@ -825,12 +769,18 @@
         <class>QTestKeyEvent</class>
         <class>QTestMouseEvent</class>
 
-        <!-- QtWebkit -->
+        <!-- QtWebkitWidgets -->
+        <class>QGraphicsWebView</class>
+        <class>QWebPage::ChooseMultipleFilesExtensionOption</class>
+        <class>QWebPage::ChooseMultipleFilesExtensionReturn</class>
+        <class>QWebPage::ErrorPageExtensionOption</class>
+        <class>QWebPage::ErrorPageExtensionReturn</class>
+        <class>QWebPage::ExtensionOption</class>
+        <class>QWebPage::ExtensionReturn</class>
+        <class>QWebPluginFactory::MimeType</class>
+        <class>QWebPluginFactory::Plugin</class>
         <class>QWebDatabase</class>
         <class>QWebElement</class>
-        <class>QWebElementCollection</class>
-        <class>QWebElementCollection::iterator</class>
-        <class>QWebElementCollection::const_iterator</class>
         <class>QWebFrame</class>
         <class>QWebHistory</class>
         <class>QWebHistoryInterface</class>
@@ -838,27 +788,218 @@
         <class>QWebHitTestResult</class>
         <class>QWebInspector</class>
         <class>QWebPage</class>
-        <class>QWebPage::ExtensionOption</class>
-        <class>QWebPage::ExtensionReturn</class>
         <class>QWebPluginFactory</class>
-        <class>QWebPluginFactory::Plugin</class>
-        <class>QWebPluginFactory::ExtensionOption</class>
-        <class>QWebPluginFactory::ExtensionReturn</class>
-        <class>QWebPluginFactory::MimeType</class>
         <class>QWebSecurityOrigin</class>
         <class>QWebSettings</class>
         <class>QWebView</class>
+        <class>QWebPage::ViewportAttributes</class>
 
         <!-- QtMultimedia -->
         <class>QAbstractVideoBuffer</class>
         <class>QAbstractVideoSurface</class>
+        <class>QAudioBuffer</class>
+        <class>QAudioDecoder</class>
+        <class>QAudioDecoderControl</class>
         <class>QAudioDeviceInfo</class>
+        <class>QAudioEncoderSettings</class>
+        <class>QAudioEncoderSettingsControl</class>
         <class>QAudioFormat</class>
         <class>QAudioInput</class>
+        <class>QAudioInputSelectorControl</class>
         <class>QAudioOutput</class>
+        <class>QAudioOutputSelectorControl</class>
+        <class>QAudioProbe</class>
+        <class>QAudioRecorder</class>
+        <class>QCamera</class>
+        <class>QCameraCaptureBufferFormatControl</class>
+        <class>QCameraCaptureDestinationControl</class>
+        <class>QCameraControl</class>
+        <class>QCameraExposure</class>
+        <class>QCameraExposureControl</class>
+        <class>QCameraFeedbackControl</class>
+        <class>QCameraFlashControl</class>
+        <class>QCameraFocus</class>
+        <class>QCameraFocusControl</class>
+        <class>QCameraFocusZone</class>
+        <class>QCameraImageCapture</class>
+        <class>QCameraImageCaptureControl</class>
+        <class>QCameraImageProcessing</class>
+        <class>QCameraImageProcessingControl</class>
+        <class>QCameraLocksControl</class>
+        <class>QCameraViewfinderSettingsControl</class>
+        <class>QCameraZoomControl</class>
+        <class>QImageEncoderControl</class>
+        <class>QImageEncoderSettings</class>
+        <class>QMediaAudioProbeControl</class>
+        <class>QMediaAvailabilityControl</class>
+        <class>QMediaBindableInterface</class>
+        <class>QMediaContainerControl</class>
+        <class>QMediaContent</class>
+        <class>QMediaControl</class>
+        <class>QMediaGaplessPlaybackControl</class>
+        <class>QMediaNetworkAccessControl</class>
+        <class>QMediaObject</class>
+        <class>QMediaPlayer</class>
+        <class>QMediaPlayerControl</class>
+        <class>QMediaPlaylist</class>
+        <class>QMediaRecorder</class>
+        <class>QMediaRecorderControl</class>
+        <class>QMediaResource</class>
+        <class>QMediaService</class>
+        <class>QMediaServiceFeaturesInterface</class>
+        <class>QMediaServiceProviderPlugin</class>
+        <class>QMediaServiceSupportedDevicesInterface</class>
+        <class>QMediaServiceSupportedFormatsInterface</class>
+        <class>QMediaStreamsControl</class>
+        <class>QMediaTimeInterval</class>
+        <class>QMediaTimeRange</class>
+        <class>QMediaVideoProbeControl</class>
+        <class>QMetaDataReaderControl</class>
+        <class>QMetaDataWriterControl</class>
+        <class>QRadioData</class>
+        <class>QRadioDataControl</class>
+        <class>QRadioTuner</class>
+        <class>QRadioTunerControl</class>
+        <class>QSound</class>
+        <class>QSoundEffect</class>
+        <class>QVideoDeviceSelectorControl</class>
+        <class>QVideoEncoderSettings</class>
+        <class>QVideoEncoderSettingsControl</class>
         <class>QVideoFrame</class>
+        <class>QVideoProbe</class>
+        <class>QVideoRendererControl</class>
         <class>QVideoSurfaceFormat</class>
+        <class>QVideoWindowControl</class>
+        <class>QAudioBuffer::StereoFrame</class>
+
+        <!-- QtNetwork -->
+        <class>QAbstractNetworkCache</class>
+        <class>QAbstractSocket</class>
+        <class>QAuthenticator</class>
+        <class>QDnsDomainNameRecord</class>
+        <class>QDnsHostAddressRecord</class>
+        <class>QDnsLookup</class>
+        <class>QDnsMailExchangeRecord</class>
+        <class>QDnsServiceRecord</class>
+        <class>QDnsTextRecord</class>
+        <class>QHostAddress</class>
+        <class>QHostInfo</class>
+        <class>QHttpMultiPart</class>
+        <class>QHttpPart</class>
+        <class>QLocalServer</class>
+        <class>QLocalSocket</class>
+        <class>QNetworkAccessManager</class>
+        <class>QNetworkAddressEntry</class>
+        <class>QNetworkCacheMetaData</class>
+        <class>QNetworkConfiguration</class>
+        <class>QNetworkConfigurationManager</class>
+        <class>QNetworkCookie</class>
+        <class>QNetworkCookieJar</class>
+        <class>QNetworkDiskCache</class>
+        <class>QNetworkInterface</class>
+        <class>QNetworkProxy</class>
+        <class>QNetworkProxyFactory</class>
+        <class>QNetworkProxyQuery</class>
+        <class>QNetworkReply</class>
+        <class>QNetworkRequest</class>
+        <class>QNetworkSession</class>
+        <class>QSslCertificate</class>
+        <class>QSslCertificateExtension</class>
+        <class>QSslCipher</class>
+        <class>QSslConfiguration</class>
+        <class>QSslError</class>
+        <class>QSslKey</class>
+        <class>QSslSocket</class>
+        <class>QTcpServer</class>
+        <class>QTcpSocket</class>
+        <class>QUdpSocket</class>
+
+        <!-- QtOpenGL -->
+        <class>QGLContext</class>
+        <class>QGLFormat</class>
+        <class>QGLWidget</class>
+
+        <!-- QtPrintSupport -->
+        <class>QAbstractPrintDialog</class>
+        <class>QPageSetupDialog</class>
+        <class>QPrintDialog</class>
+        <class>QPrintEngine</class>
+        <class>QPrintPreviewDialog</class>
+        <class>QPrintPreviewWidget</class>
+        <class>QPrinter</class>
+        <class>QPrinterInfo</class>
+
+        <!-- QtQml -->
+        <class>QJSEngine</class>
+        <class>QJSValue</class>
+        <class>QJSValueIterator</class>
+        <class>QQmlComponent</class>
+        <class>QQmlContext</class>
+        <class>QQmlEngine</class>
+        <class>QQmlError</class>
+        <class>QQmlExpression</class>
+        <class>QQmlExtensionPlugin</class>
+        <class>QQmlImageProviderBase</class>
+        <class>QQmlIncubationController</class>
+        <class>QQmlIncubator</class>
+        <class>QQmlListProperty</class>
+        <class>QQmlListReference</class>
+        <class>QQmlNetworkAccessManagerFactory</class>
+        <class>QQmlParserStatus</class>
+        <class>QQmlProperty</class>
+        <class>QQmlPropertyMap</class>
+        <class>QQmlPropertyValueSource</class>
+        <class>QQmlScriptString</class>
+        <class>QQmlApplicationEngine</class>
         
+        <!-- QtQuick -->
+        <class>QSGGeometry::Attribute</class>
+        <class>QSGGeometry::AttributeSet</class>
+        <class>QSGGeometry::ColoredPoint2D</class>
+        <class>QQuickItem::ItemChangeData</class>
+        <class>QSGGeometry::Point2D</class>
+        <class>QQuickImageProvider</class>
+        <class>QQuickItem</class>
+        <class>QQuickPaintedItem</class>
+        <class>QQuickTextureFactory</class>
+        <class>QQuickView</class>
+        <class>QQuickWindow</class>
+        <class>QSGBasicGeometryNode</class>
+        <class>QSGClipNode</class>
+        <class>QSGDynamicTexture</class>
+        <class>QSGFlatColorMaterial</class>
+        <class>QSGGeometry</class>
+        <class>QSGGeometryNode</class>
+        <class>QSGMaterial</class>
+        <class>QSGMaterialShader</class>
+        <class>QSGMaterialType</class>
+        <class>QSGNode</class>
+        <class>QSGOpacityNode</class>
+        <class>QSGOpaqueTextureMaterial</class>
+        <class>QSGSimpleMaterial</class>
+        <class>QSGSimpleMaterialShader</class>
+        <class>QSGSimpleTextureNode</class>
+        <class>QSGTexture</class>
+        <class>QSGTextureMaterial</class>
+        <class>QSGTransformNode</class>
+        <class>QSGVertexColorMaterial</class>
+        <class>QSGGeometry::TexturedPoint2D</class>
+
+        <!-- QtScript -->
+        <class>QScriptEngineDebugger</class>
+        <class>QScriptable</class>
+        <class>QScriptClass</class>
+        <class>QScriptClassPropertyIterator</class>
+        <class>QScriptContext</class>
+        <class>QScriptContextInfo</class>
+        <class>QScriptEngine</class>
+        <class>QScriptSyntaxCheckResult</class>
+        <class>QScriptEngineAgent</class>
+        <class>QScriptProgram</class>
+        <class>QScriptString</class>
+        <class>QScriptValue</class>
+        <class>QScriptValueIterator</class>
+
         <!-- QtHelp -->
         <class>QHelpContentItem</class>
         <class>QHelpContentModel</class>
@@ -890,6 +1031,119 @@
         <class>QDeclarativeScriptString</class>
         <class>QDeclarativeView</class>
 
+        <!-- QtSql -->
+        <class>QSqlDatabase</class>
+        <class>QSqlDriver</class>
+        <class>QSqlDriverCreator</class>
+        <class>QSqlDriverCreatorBase</class>
+        <class>QSqlDriverPlugin</class>
+        <class>QSqlError</class>
+        <class>QSqlField</class>
+        <class>QSqlIndex</class>
+        <class>QSqlQuery</class>
+        <class>QSqlQueryModel</class>
+        <class>QSqlRecord</class>
+        <class>QSqlRelation</class>
+        <class>QSqlRelationalDelegate</class>
+        <class>QSqlRelationalTableModel</class>
+        <class>QSqlResult</class>
+        <class>QSqlTableModel</class>
+
+        <!-- QtWebKit -->
+        <class>WebView</class>
+        <class>WebLoadRequest</class>
+
+        <!-- QtWebKitWidgets -->
+        <class>QGraphicsWebView</class>
+        <class>QWebPage::ChooseMultipleFilesExtensionOption</class>
+        <class>QWebPage::ChooseMultipleFilesExtensionReturn</class>
+        <class>QWebPage::ErrorPageExtensionOption</class>
+        <class>QWebPage::ErrorPageExtensionReturn</class>
+        <class>QWebPage::ExtensionOption</class>
+        <class>QWebPage::ExtensionReturn</class>
+        <class>QWebPluginFactory::MimeType</class>
+        <class>QWebPluginFactory::Plugin</class>
+        <class>QWebDatabase</class>
+        <class>QWebElement</class>
+        <class>QWebFrame</class>
+        <class>QWebHistory</class>
+        <class>QWebHistoryInterface</class>
+        <class>QWebHistoryItem</class>
+        <class>QWebHitTestResult</class>
+        <class>QWebInspector</class>
+        <class>QWebPage</class>
+        <class>QWebPluginFactory</class>
+        <class>QWebSecurityOrigin</class>
+        <class>QWebSettings</class>
+        <class>QWebView</class>
+        <class>QWebPage::ViewportAttributes</class>
+
+        <!-- QtSensors -->
+        <class>QAccelerometer</class>
+        <class>QAccelerometerFilter</class>
+        <class>QAccelerometerReading</class>
+        <class>QAltimeter</class>
+        <class>QAltimeterFilter</class>
+        <class>QAltimeterReading</class>
+        <class>QAmbientLightFilter</class>
+        <class>QAmbientLightReading</class>
+        <class>QAmbientLightSensor</class>
+        <class>QAmbientTemperatureFilter</class>
+        <class>QAmbientTemperatureReading</class>
+        <class>QAmbientTemperatureSensor</class>
+        <class>QCompass</class>
+        <class>QCompassFilter</class>
+        <class>QCompassReading</class>
+        <class>QGyroscope</class>
+        <class>QGyroscopeFilter</class>
+        <class>QGyroscopeReading</class>
+        <class>QHolsterFilter</class>
+        <class>QHolsterReading</class>
+        <class>QHolsterSensor</class>
+        <class>QIRProximityFilter</class>
+        <class>QIRProximityReading</class>
+        <class>QIRProximitySensor</class>
+        <class>QLightFilter</class>
+        <class>QLightReading</class>
+        <class>QLightSensor</class>
+        <class>QMagnetometer</class>
+        <class>QMagnetometerFilter</class>
+        <class>QMagnetometerReading</class>
+        <class>QOrientationFilter</class>
+        <class>QOrientationReading</class>
+        <class>QOrientationSensor</class>
+        <class>QPressureFilter</class>
+	<class>QPressureReading</class>
+        <class>QPressureSensor</class>
+        <class>QProximityFilter</class>
+	<class>QProximityReading</class>
+        <class>QProximitySensor</class>
+        <class>QRotationFilter</class>
+        <class>QRotationReading</class>
+        <class>QRotationSensor</class>
+        <class>QSensor</class>
+        <class>QSensorBackend</class>
+        <class>QSensorBackendFactory</class>
+        <class>QSensorChangesInterface</class>
+        <class>QSensorFilter</class>
+        <class>QSensorGesture</class>
+        <class>QSensorGestureManager</class>
+        <class>QSensorGesturePluginInterface</class>
+        <class>QSensorGestureRecognizer</class>
+        <class>QSensorManager</class>
+        <class>QSensorPluginInterface</class>
+        <class>QSensorReading</class>
+        <class>QTapFilter</class>
+        <class>QTapReading</class>
+        <class>QTapSensor</class>
+        <class>QTiltFilter</class>
+	<class>QTiltReading</class>
+        <class>QTiltSensor</class>
+
+        <!-- QtSerialPort -->
+        <class>QSerialPort</class>
+        <class>QSerialPortInfo</class>
+        
         <!-- namespaces -->
         <class>Qt</class>
         <class>QDBus</class>

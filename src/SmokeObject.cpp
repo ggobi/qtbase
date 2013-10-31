@@ -4,6 +4,7 @@
 #include "InstanceObjectTable.hpp"
 
 #include <Rinternals.h>
+#undef warning
 
 //#define MEM_DEBUG
 
@@ -92,10 +93,9 @@ SEXP
 SmokeObject::sexpFromPtr(void *ptr, const Class *klass,
                          bool allocated, bool copy)
 {
-  SmokeObject *so = fromPtr(ptr, klass, allocated, copy);
-  if (!so)
+  if (!ptr)
     return R_NilValue;
-  else return so->sexp();
+  return fromPtr(ptr, klass, allocated, copy)->sexp();
 }
 
 SEXP

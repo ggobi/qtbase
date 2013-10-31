@@ -23,6 +23,7 @@
 
 #include <QString>
 #include <QVector>
+#include <QVarLengthArray>
 
 QByteArray stringFromContents(const PreprocessedContents& contents, int offset, int count) {
   QByteArray ret;
@@ -101,7 +102,7 @@ PreprocessedContents tokenizeFromByteArray(const QByteArray& array) {
   const char* dataEnd = data + array.size();
   //unsigned int* target = to.data();
   
-  QVector<char> identifier;
+  QVarLengthArray<char, 100> identifier;
   
   IndexedString::RunningHash hash;
 

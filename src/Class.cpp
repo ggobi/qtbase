@@ -1,4 +1,5 @@
 #include <smoke.h>
+#include <QMetaObject>
 
 #include "RClass.hpp"
 #include "ClassFactory.hpp"
@@ -12,6 +13,11 @@
 ClassFactory *Class::_classFactory = NULL;
 QHash<QByteArray, const Class *> Class::_classMap;
 
+ClassFactory *Class::classFactory() {
+  if (!_classFactory) _classFactory = new ClassFactory;
+  return _classFactory;
+}
+
 const Class* Class::fromSmokeId(Smoke *smoke, int classId) {
   const char *name = smoke->classes[classId].className;
   const Class *klass = _classMap[name];
@@ -23,8 +29,7 @@ const Class* Class::fromSmokeId(Smoke *smoke, int classId) {
         classId = mi.index;
       } // else we have a ghost class; we have done the best we could
     }
-    if (!_classFactory) _classFactory = new ClassFactory;
-    klass = _classFactory->createClass(smoke, classId);
+    klass = classFactory()->createClass(smoke, classId);
     _classMap[name] = klass;
   }
   return klass;
@@ -46,6 +51,14 @@ const Class* Class::fromName(const char *name) {
   const Class *klass = _classMap[name];
   if (!klass)
     klass = fromSmokeName(NULL, name);
+  return klass;
+}
+const Class* Class::fromMetaObject(const QMetaObject *meta) {
+  const Class *klass = _classMap[meta->className()];
+  if (!klass) {
+    klass = classFactory()->createClass(meta);
+    _classMap[meta->className()] = klass;
+  }
   return klass;
 }
 
@@ -93,4 +106,14 @@ Method *Class::findImplicitConverter(const SmokeObject *source) const {
     else delete meth;
   }
   return coercer;
+}
+
+bool Class::operator==(const Class &b) const {
+  const Class &a = *this;
+  const char *aname = a.name();
+  const char *bname = b.name();
+  if(aname == bname) return true;
+  if(aname && bname && qstrcmp(aname, bname) == 0)
+    return true;
+  return false;
 }

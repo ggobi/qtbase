@@ -1,31 +1,10 @@
-cmake_minimum_required(VERSION 2.8.1)
+cmake_minimum_required(VERSION 2.8.8)
 
 project(qtbase)
 
-find_package(Qt4 4.0.0 REQUIRED COMPONENTS QtCore QtGui)
+find_package(Qt5Core)
 
-if(APPLE) # No QtDBus in Mac binaries
-find_package(Qt4 4.0.0 COMPONENTS QtXml QtXmlPatterns QtNetwork
-             QtOpenGL QtSql QtSvg QtScript QtWebkit QtTest
-             QtHelp QtMultimedia QtDeclarative QtUiTools)
-else(APPLE)
-find_package(Qt4 4.0.0 COMPONENTS QtXml QtXmlPatterns QtNetwork
-             QtOpenGL QtSql QtSvg QtDBus QtScript QtWebkit QtTest
-             QtHelp QtMultimedia QtDeclarative QtUiTools)
-endif(APPLE)
-
-## FindQt4 does not add the include directory for OpenGL
-find_package(OpenGL)
-if(OPENGL_FOUND)
-include_directories(${OPENGL_INCLUDE_DIR})
-endif(OPENGL_FOUND)
-
-## QtUiTools not linked correctly on Windows (_personality_v0 missing symbol)
-if(WIN32)
-set(QT_USE_QTUITOOLS FALSE)
-endif(WIN32)
-
-include(${QT_USE_FILE})
+set(CMAKE_AUTOMOC ON)
 
 include_directories( ../inst/local/include ${R_INCLUDES} )
 
@@ -41,8 +20,6 @@ set(qtbase_LIB_SRCS init.cpp EventLoop.cpp convert.cpp
    SmokeList.cpp SmokeObject.cpp ObjectTable.cpp
    InstanceObjectTable.cpp smoke.cpp DataFrameModel.cpp
    RTextFormattingDelegate.cpp)
-   
-QT4_WRAP_CPP ( qtbase_MOC_FILES EventLoop.hpp DataFrameModel.hpp )
 
 if(WIN32) # Toughest Win32 part: generating the defs file for the DLL
 foreach(qtbase_lib_src ${qtbase_LIB_SRCS})
@@ -63,9 +40,38 @@ else(WIN32)
 add_library(qtbase SHARED ${qtbase_LIB_SRCS} ${qtbase_MOC_FILES})
 endif(WIN32)
 
-set_target_properties(qtbase PROPERTIES COMPILE_FLAGS "-ggdb")
+qt5_use_modules(qtbase Widgets)
 
-target_link_libraries(qtbase smokeqt ${QT_LIBRARIES} ${R_LIBRARIES})
+macro(qt5_optional_use_modules _target)
+  foreach(_module ${ARGN})
+    find_package(Qt5${_module} QUIET)
+    if(Qt5${_module}_FOUND)
+      qt5_use_modules(${_target} ${_module})
+      message(STATUS "Found Qt module: ${_module}")
+    endif()
+  endforeach()
+endmacro()
+
+## new in 5.2
+qt5_optional_use_modules(qtbase Multimedia MultimediaWidgets Network Qml Quick
+                         Sql Test Webkit WebKitWidgets DBus Svg XmlPatterns
+                         PrintSupport Help UiTools SerialPort Sensors
+                         Bluetooth Positioning)
+
+## QtUiTools not linked correctly on Windows (_personality_v0 missing symbol)
+if(WIN32)
+set(QT_USE_QTUITOOLS FALSE)
+endif(WIN32)
+
+##set_target_properties(qtbase PROPERTIES COMPILE_FLAGS "-ggdb")
+
+target_link_libraries(qtbase smokeqt ${R_LIBRARIES})
+
+## Seems GCC does not consider the dependencies of smokeqt.a, so it
+## skips linkages that are not required by the object files.
+## Thus, we disable the skipping.
+string(REPLACE "-Wl,--as-needed" ""
+       CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS})
 
 set_target_properties(qtbase PROPERTIES PREFIX "")
 if(NOT WIN32) # Need to force .so on Mac, but Windows needs to be .dll

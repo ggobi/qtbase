@@ -364,6 +364,19 @@ void SmokeClassFiles::writeClass(QTextStream& out, const Class* klass, const QSt
     QString switchCode;
     QTextStream switchOut(&switchCode);
 
+    if (klass->kind() == Class::Kind_Union) {
+      // xcall_class function
+      out << "void xcall_" << underscoreName << "(Smoke::Index xi, void *obj, Smoke::Stack args) {\n";
+      out << "    " << className << " *xself = (" << className << "*)obj;\n";
+      out << "    switch(xi) {\n";
+      out << switchCode;
+      if (Util::hasClassPublicDestructor(klass))
+        out << "        case " << 1 << ": delete (" << className << "*)xself;\tbreak;\n";
+      out << "    }\n";
+      out << "}\n";
+      return;
+    }
+    
     out << QString("class %1").arg(smokeClassName);
     if (!klass->isNameSpace()) {
         out << QString(" : public %1").arg(className);

@@ -32,3 +32,7 @@ as.list.QItemSelection <- function(x, ...) .Call("qt_coerce_QItemSelection", x, 
 
 as.list.QTestEventList <- function(x, ...) .Call("qt_coerce_QTestEventList", x, PACKAGE="qtbase")
 as.list.QSignalSpy <- function(x, ...) .Call("qt_coerce_QSignalSpy", x, PACKAGE="qtbase")
+
+as.vector.QMargins <- function(x, mode) as.vector(as.integer(x), mode)
+as.integer.QMargins <- function(x, ...) .Call("qt_coerce_QMargins", x, PACKAGE="qtbase")
+

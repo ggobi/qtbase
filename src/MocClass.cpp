@@ -20,8 +20,7 @@ MocClass::findMethodId(Smoke *smoke, const QMetaObject *meta, const char *name,
     for (int id = meta->methodCount()-1; id >= 0; id--) {
       QMetaMethod meth = meta->method(id);
       if (meth.access() != QMetaMethod::Private) {
-        QByteArray signature(meta->method(id).signature());
-        QByteArray methodName = signature.mid(0, signature.indexOf('('));
+        QByteArray methodName = meth.name();
         // Don't check that the types of the R args match
         // the c++ ones for now,
         // only that the name and arg count is the same.
@@ -64,6 +63,25 @@ const QMetaObject *MocClass::findMetaObject() const {
   binding.invoke(NULL, items);
   meta = reinterpret_cast<const QMetaObject*>(items[0].s_voidp);
   return meta;
+}
+
+const Class *MocClass::findDelegateClass() const {
+  const QMetaObject *meta = _meta;
+  const Class *delegate = NULL;
+  do {
+    Smoke::ClassMap::iterator i = Smoke::classMap.find(meta->className());
+    if (i != Smoke::classMap.end()) {
+      Smoke *smoke = i->second.smoke;
+      delegate = Class::fromSmokeId(smoke,
+                                    smoke->idClass(meta->className()).index);
+    } else {
+      meta = meta->superClass();
+    }
+  } while(meta);
+  if (!delegate)
+    qCritical("Failed to find Smoke delegate for meta class '%s'\n",
+              _meta->className());
+  return delegate;
 }
 
 QList<Method *> MocClass::methods(Method::Qualifiers qualifiers) const {

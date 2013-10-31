@@ -120,3 +120,13 @@ as.QImage.default <- function(x, ...) {
             if (nrow(rgb) == 3) Qt$QImage$Format_RGB888
             else Qt$QImage$Format_ARGB32)
 }
+
+qmargins <- function(bottom, left, top, right) {
+  if (length(bottom) == 4L) {
+    bottom <- bottom[1L]
+    left <- bottom[2L]
+    top <- bottom[3L]
+    right <- bottom[4L]
+  }
+  Qt$QMargins(left, top, right, bottom)
+}

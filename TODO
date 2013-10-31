@@ -2,20 +2,15 @@
 TODO
 ===================================================
 
-- Fix the bug Deepayan reported with QPen(QColor).
-- Get rid of createProject.sh/qmake and replace with cmake. It is a
-  much more functional build system. For example, we can detect the Qt
-  modules present on the system and only build against those.
-- Support SEXPs inside of QVariant
-- Add an as.raster() to qtpaint, for convenience download of pixels.
-- Make return-by-ref params work.
-    Calling Smoke: Many of the marshallers set the sexp in
-      such cases. We just have to detect this and form a result list.
-    Virtual callbacks: Need special object for bundling multiple return values.
-      MethodCall detects this and sets SEXPs appropriately.
-- Figure out why the generator is missing QtDBus
-- Documentation, probably by hacking into the 2.10 web server so that
-  everything is dynamic.
+For Qt 5.x:
+- Install qtprintsupport mobility(sensors) declarative
+emerge -p qtmultimedia qtnetwork qtprintsupport qtxmlpatterns qttest qtdeclarative qt-mobility
+
+- Find new t_voidp types and add conversions
+- Find new t_class|t_stack types and add explicit coercions if applicable
+
+General:
+- Documentation, via QtAssistant.
 - Eventually split off the Qt-specific bits, so that there is a
   general "rsmoke" package. It will still depend on Qt, but will not
   do any binding by itself.

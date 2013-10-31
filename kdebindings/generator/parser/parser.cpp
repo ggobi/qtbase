@@ -30,6 +30,8 @@
 #include <iostream>
 #include "rpp/chartools.h"
 
+#include <QDebug>
+
 #define ADVANCE(tk, descr) \
 { \
   if (session->token_stream->lookAhead() != tk) { \
@@ -697,7 +699,6 @@ bool Parser::parseDeclaration(DeclarationAST *&node)
             ast->init_declarators = declarators;
             UPDATE_POS(ast, start, _M_last_valid_token+1);
             node = ast;
-
             if( mcomment )
               addComment(ast, mcomment);
 

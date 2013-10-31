@@ -306,10 +306,14 @@ qsetRefClass <- function(Class, where = topenv(parent.frame()), ...) {
   })
   methods <- c(methods,
                initialize = eval(substitute(function(...) {
-                 Class(...)
+                 .self$.ref <- Class(...)
                }, list(Class = Class))))
-  
-  setRefClass(className, fields = c(fields, .ref = "RQtObject"),
+  ### FIXME: the .ref field is type ANY, because if we used RQtObject,
+  ### there would be a conflict between the S4 inheritance (being
+  ### defined here) and the S3 inheritance defined on the .ref
+  ### object. Maybe it is a bad idea to use the same class names. For
+  ### now, this works.
+  setRefClass(className, fields = c(fields, .ref = "ANY"),
               methods = methods, contains = sapply(parents, attr, "name"),
               where = where, ...)
 }

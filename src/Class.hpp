@@ -11,6 +11,7 @@ class Smoke;
 class ClassFactory;
 class InstanceObjectTable;
 class Property;
+class QMetaObject;
 
 typedef struct SEXPREC* SEXP;
 
@@ -58,15 +59,7 @@ public:
   Method *findImplicitConverter(const SmokeObject *source) const;
   
   /* Whether the Class objects represent the same class. */
-  bool operator ==(const Class &b) const {
-    const Class &a = *this;
-    const char *aname = a.name();
-    const char *bname = b.name();
-    if(aname == bname) return true;
-    if(aname && bname && qstrcmp(aname, bname) == 0)
-      return true;
-    return false;
-  }
+  bool operator ==(const Class &b) const;
   bool operator !=(const Class &b) const {
     const Class &a = *this;
     return !(a == b);
@@ -85,8 +78,9 @@ public:
   static const Class* fromSmokeName(Smoke *smoke, const char *name);
   static const Class* fromName(const char *name);
   static const Class* fromSexp(SEXP sexp, bool forceNew = false);
+  static const Class* fromMetaObject(const QMetaObject *meta);
   
-  static ClassFactory *classFactory() { return _classFactory; }
+  static ClassFactory *classFactory();
   static void setClassFactory(ClassFactory *factory) {
     if (factory) _classFactory = factory;
   }

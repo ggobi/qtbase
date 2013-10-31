@@ -295,5 +295,5 @@ compileMetaObject <- function(x, metadata) {
   notify_ids[is.na(notify_ids)] <- 0
   data <- c(data, notify_ids)
   
-  .Call("qt_qnewMetaObject", x, stringdata, data, PACKAGE="qtbase")
+  .Call("qt_qnewMetaObject", x, stringdata, offsets, data, PACKAGE="qtbase")
 }
