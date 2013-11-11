@@ -3,11 +3,10 @@ TODO
 ===================================================
 
 For Qt 5.x:
-- Install qtprintsupport mobility(sensors) declarative
-emerge -p qtmultimedia qtnetwork qtprintsupport qtxmlpatterns qttest qtdeclarative qt-mobility
-
+- Fix custom property support
 - Find new t_voidp types and add conversions
 - Find new t_class|t_stack types and add explicit coercions if applicable
+
 
 General:
 - Documentation, via QtAssistant.
