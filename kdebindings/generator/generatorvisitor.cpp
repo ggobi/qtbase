@@ -650,7 +650,7 @@ void GeneratorVisitor::visitParameterDeclaration(ParameterDeclarationAST* node)
     QString name;
     if (node->declarator) {
         tc->run(node->declarator);
-        if (currentType.isFunctionPointer() && node->declarator->sub_declarator)
+        if (tc->type().isFunctionPointer() && node->declarator->sub_declarator)
             nc->run(node->declarator->sub_declarator->id);
         else
             nc->run(node->declarator->id);

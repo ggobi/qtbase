@@ -360,7 +360,7 @@
         <class>QIconDragEvent</class>
         <class>QIconEngine</class>
         <class>QIconEnginePlugin</class>
-        <!-- <class>QImage</class> -->
+        <class>QImage</class>
         <class>QImageIOHandler</class>
         <class>QImageIOPlugin</class>
         <class>QImageReader</class>
