@@ -104,7 +104,7 @@ qsetMethod("paintEvent", CharacterWidget, function(event) {
 qsetMethod("mousePressEvent", CharacterWidget, function(event) {
   if (event$button() == Qt$Qt$LeftButton) {
     this$lastKey <- (event$y()%/%squareSize)*columns + event$x()%/%squareSize
-    if (Qt$QChar(lastKey)$category() != Qt$QChar$NoCategory)
+    if (Qt$QChar(lastKey)$category() != Qt$QChar$Other_NotAssigned)
       characterSelected(as.character(Qt$QChar(lastKey)))
     update()
   }
