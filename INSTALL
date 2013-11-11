@@ -7,7 +7,7 @@ still in progress.
 
 Requirements
 ------------
-1. Qt >= 4.0.0 SDK (>= 4.8.0 recommended for optimal performance)
+1. Qt >= 5.2.0 beta 1 SDK
 2. cmake >= 2.8.1
 
 Mac OS X instructions
@@ -23,7 +23,7 @@ Mac OS X instructions
 Linux instructions
 ------------------
 
-1. Install the Qt SDK (i.e., devel) >= 4.0 and cmake >= 2.8.1 packages.
+1. Install the Qt SDK (i.e., devel) >= 5.2 and cmake >= 2.8.1 packages.
 2. Run R CMD INSTALL qtbase.
 
 Windows instructions
@@ -50,8 +50,10 @@ Building qtbase
 1. Install Rtools.
 2. Install cmake.
 3. Download and install the Qt libraries:
-   32 bit: http://download.qt-project.org/official_releases/qt/4.8/4.8.4/qt-win-opensource-4.8.4-mingw.exe
+   32 bit: http://download.qt-project.org/development_releases/qt/5.2/5.2.0-beta1/qt-windows-opensource-5.2.0-beta1-mingw48_opengl-x86-offline.exe
    64 bit: follow the instructions below to build it.
+   Or maybe the binaries are available here:
+   http://sourceforge.net/projects/mingwbuilds/files/external-binary-packages/Qt-Builds/
 3. Set the CMAKE environment variable to point to your cmake.exe.
 4. Set QMAKE environment variable to point to qmake.exe.
 5. Set QTBASE_QT_PATH to the directory containing qmake.exe.
