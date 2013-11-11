@@ -1,6 +1,4 @@
 ## Adapted from Qt's AddressBook tutorial
-library(qtbase)
-
 qsetClass("AddressBook", Qt$QWidget, function(parent = NULL) {
   super(parent)
   
