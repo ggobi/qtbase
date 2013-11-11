@@ -64,6 +64,7 @@ set(QT_USE_QTUITOOLS FALSE)
 endif(WIN32)
 
 ##set_target_properties(qtbase PROPERTIES COMPILE_FLAGS "-ggdb")
+set_target_properties(qtbase PROPERTIES COMPILE_FLAGS "-std=c++11")
 
 target_link_libraries(qtbase smokeqt ${R_LIBRARIES})
 

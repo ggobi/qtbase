@@ -255,8 +255,14 @@ qsetProperty <- function(name, class, type = NULL,
         !missing(user))
       stop("Arguments 'constant', 'final', 'stored', and 'user' are",
            " ignored if 'type' is NULL")
-  } else if (!is.character(type))
+    typeId <- NULL
+  } else if (is.character(type)) {
+    typeId <- Qt$QMetaType$type(type)
+    if (typeId == 0L)
+      stop("type '", type, "' not resolvable to a QMetaType")
+  } else {
     stop("'type' should be NULL or a character vector")
+  }
   if (!is.null(notify)) {
     notify <- qresolveSignature(class, notify, "signal")
     writeArg <- formals(write)
@@ -267,7 +273,7 @@ qsetProperty <- function(name, class, type = NULL,
     write <- as.function(c(writeArg, writeBody), environment(write))
   }
   .name <- paste(".", name, sep = "")
-  prop <- list(name = name, type = type, read = read,
+  prop <- list(name = name, type = typeId, read = read,
                write = write, notify = notify, constant = constant,
                final = final, stored = stored, user = user)
   qmetadata(class)$properties[[name]] <- prop

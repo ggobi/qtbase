@@ -32,7 +32,7 @@ extern "C" {
   SEXP qt_qnormalizedSignature(SEXP x);
   SEXP qt_qmocMethods(SEXP x);
   SEXP qt_qmetacall(SEXP x, SEXP s_call, SEXP s_id, SEXP s_args);
-  SEXP qt_qnewMetaObject(SEXP x, SEXP rstringdata, SEXP roffsets, SEXP rdata);
+  SEXP qt_qnewMetaObject(SEXP x, SEXP rstringdata, SEXP rdata);
   SEXP qt_qmetaInvoke(SEXP x, SEXP s_id, SEXP s_args);
   
   // dynamic invocation
@@ -79,7 +79,7 @@ static R_CallMethodDef CallEntries[] = {
     CALLDEF(qt_qmocMethods, 1),
     CALLDEF(qt_qnormalizedSignature, 1),
     CALLDEF(qt_qmetacall, 4),
-    CALLDEF(qt_qnewMetaObject, 4),
+    CALLDEF(qt_qnewMetaObject, 3),
     CALLDEF(qt_qmetaInvoke, 3),
 
     // General metadata

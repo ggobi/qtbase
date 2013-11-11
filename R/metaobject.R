@@ -147,11 +147,13 @@ qmetaMethod <- function(signature, access = c("public", "protected", "private"),
   lhs <- strsplit(sub("\\(.*", "", signature), " ", fixed=TRUE)[[1]]
   name <- tail(lhs, 1)
   returnType <- paste(head(lhs, -1), collapse = " ")
-  if (!length(returnType))
-    returnType <- ""
+  if (length(returnType) == 0L || nchar(returnType) == 0L)
+    returnType <- "void"
   signature <- paste(name, "(", paste(argTypes, collapse=","), ")", sep="")
-  list(signature = signature, args = argNames, type = returnType,
-       access = access, name = name)
+  argMetaTypes <- as.integer(sapply(argTypes, Qt$QMetaType$type))
+  type <- Qt$QMetaType$type(returnType)
+  list(signature = signature, args = setNames(argMetaTypes, argNames),
+       type = type, access = access, name = name)
 }
 
 ### Some stuff derived from QtRuby for creating a MetaData blob
@@ -163,10 +165,7 @@ qmetaMethod <- function(signature, access = c("public", "protected", "private"),
 ### - Slots: useful for providing dbus services, and easy
 ### - Signals: very useful
 ### - Class info: useful for describing dbus services
-
-### TODO:
-### - Properties: Encapsulated fields are nice, but do we want to be bound
-###   by QValue? Could just implement our own custom properties.
+### - Properties: encapsulated fields, introspectable by third parties
 
 compileMetaObject <- function(x, metadata) {
   metalist <- as.list(metadata)
@@ -177,16 +176,17 @@ compileMetaObject <- function(x, metadata) {
   props <- as.list(metadata$properties)
   ## we only export to metadata if a type is provided
   props <- Filter(function(p) !is.null(p$type), props)
-  metalist$properties <- lapply(props, `[`, c("name", "type"))
+  metalist$properties <- lapply(props, `[`, "name")
+  extractMethodStrings <- function(x) {
+    c(x["name"], names(x$args))
+  }
+  metalist$signals <- lapply(signals, extractMethodStrings)
+  metalist$slots <- lapply(slots, extractMethodStrings)
   
   ## generate 'stringdata' table
-  allNames <- unique(c(attr(x, "name"), unlist(metalist), ""))
-  offsets <- cumsum(c(0, head(nchar(allNames), -1) + 1))
-  names(offsets) <- allNames
+  stringdata <- unique(c(attr(x, "name"), unlist(metalist), ""))
+  offsets <- setNames(seq_along(stringdata) - 1L, stringdata)
   
-  stringdata <- charToRaw(paste(allNames, collapse=";"))
-  stringdata[stringdata == charToRaw(";")] <- as.raw(0)
-
   ## generate 'data' table
 
   ##
@@ -229,26 +229,37 @@ compileMetaObject <- function(x, metadata) {
   nmethods <- length(signals) + length(slots)
   ninfos <- length(infos)
   nprops <- length(props)
-  headerLen <- 10L
+  headerLen <- 14L
   data <-
-    c(1, # revision
-      offsets[attr(x, "name")], 	# classname
-      length(infos), headerLen, # class info
-      nmethods, headerLen + 2*ninfos, # methods
+    c(7,                                         # revision
+      offsets[attr(x, "name")], 	         # classname
+      length(infos), headerLen,                  # class info
+      nmethods, headerLen + 2*ninfos,            # methods
       nprops, headerLen + 2*ninfos + 5*nmethods, # properties
-      0, 0) # enums
+      0, 0,                                      # enums
+      0, 0,                                      # constructors
+      0,                                         # flags
+      length(signals))
 
   ## the class info
   data <- c(data, offsets[rbind(names(infos), infos)])
 
+  ## METHOD LAYOUT (uints)
+  ## name_offset: offset into the string data
+  ## parameter_count: count as a simple integer
+  ## type_data_index: index in main data array to type information
+  ## tag_offset: offset into the string data for the tag (we set this to '')
+  ## attributes: methods flags 
+
+  typeinfoOffset <- headerLen + 2L*ninfos + 5L*nmethods + 4L*nprops
+
   methodData <- function(methods, flag) {
     do.call("c", lapply(methods, function(method) {
-      ## cannot use character extraction due to empty strings
-      if (!length(method$args))
-        method$args <- ""
-      offm <- match(c(method$signature, method$args, method$type, ""),
-                    names(offsets))
-      c(offsets[offm], access[method$access] + flag + MethodScriptable)
+      d <- c(offsets[method$name], length(method$args), typeinfoOffset,
+             offsets[match("", names(offsets))], # zero-length not allowed
+             access[method$access] + flag + MethodScriptable)
+      typeinfoOffset <<- typeinfoOffset + 2L * length(method$args) + 1L
+      d
     }))
   }
   
@@ -282,7 +293,7 @@ compileMetaObject <- function(x, metadata) {
         flags <- flags + User
       flags
     })
-    c(offsets[c(prop$name, prop$type)], flags)
+    c(offsets[prop$name], prop$type, flags)
   })))
 
   notifies <- sapply(props, function(p) {
@@ -291,9 +302,20 @@ compileMetaObject <- function(x, metadata) {
     else p$notify
   })
   signalNames <- sapply(signals, `[[`, "signature")
-  notify_ids <- match(notifies, signalNames) - 1L 
-  notify_ids[is.na(notify_ids)] <- 0
+  notify_ids <- 5L * (match(notifies, signalNames) - 1L)
+  notify_ids[is.na(notify_ids)] <- 0L
   data <- c(data, notify_ids)
-  
-  .Call("qt_qnewMetaObject", x, stringdata, offsets, data, PACKAGE="qtbase")
+
+  ## TYPEINFO LAYOUT (uints): return_type, [parameter_type]*
+  ## These index into the string data for the type name, except MSB
+  ## is set to 1 if the type is unresolved (do we have this situation?)
+  typeinfoData <- function(methods) {
+    do.call("c", unname(lapply(methods, function(method) {
+      unname(c(method$type, method$args, offsets[names(method$args)]))
+    })))
+  }
+  data <- c(data, typeinfoData(signals))
+  data <- c(data, typeinfoData(slots))
+
+  .Call("qt_qnewMetaObject", x, stringdata, data, PACKAGE="qtbase")
 }

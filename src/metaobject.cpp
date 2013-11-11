@@ -155,26 +155,26 @@ extern "C" SEXP qt_qmetacall(SEXP x, SEXP s_call, SEXP s_id, SEXP s_args)
   return ScalarInteger(id - count);
 }
 
+#define DEBUG
+
 /* Presumably R will pass the metadata blob at class definition time,
    and store QMetaObject reference. When the
    metaObject() virtual method is invoked, we retrieve the reference.
 */
 extern "C" SEXP
-qt_qnewMetaObject(SEXP x, SEXP rstringdata, SEXP roffsets, SEXP rdata)
+qt_qnewMetaObject(SEXP x, SEXP rstringdata, SEXP rdata)
 {
   const Class *cl = Class::fromSexp(x);
   const QMetaObject *superdata = MocClass(cl->parents()[0]).metaObject();
 
-  char *stringdata = new char[length(rstringdata)];
-  memcpy((void *) stringdata, RAW(rstringdata), length(rstringdata));
-
-  QByteArrayData *bytearraydata = new QByteArrayData[length(roffsets)];
-  for (long i = 0; i < length(roffsets); i++) {
-    char *str = stringdata + INTEGER(roffsets)[i]; 
+  QByteArrayData *bytearraydata = new QByteArrayData[length(rstringdata)];
+  for (long i = 0; i < length(rstringdata); i++) {
+    const char *str = qstrdup(CHAR(STRING_ELT(rstringdata, i)));
     int len = qstrlen(str);
     qptrdiff offset = (qptrdiff)str - (qptrdiff)(bytearraydata + i);
-    bytearraydata[i] =
+    const QByteArrayData &bd =
       Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, offset);
+    memcpy(bytearraydata + i, &bd, sizeof(QByteArrayData));
   }
   
   int count = length(rdata);
@@ -200,9 +200,13 @@ qt_qnewMetaObject(SEXP x, SEXP rstringdata, SEXP roffsets, SEXP rdata)
          "       %d,   %d, // classinfo\n"
          "       %d,   %d, // methods\n"
          "       %d,   %d, // properties\n"
-         "       %d,   %d, // enums/sets\n",
+         "       %d,   %d, // enums/sets\n"
+         "       %d,   %d, // constructors\n"
+         "       %d,       // flags\n"
+         "       %d,       // signal count\n",
          data[0], data[1], data[2], data[3], 
-         data[4], data[5], data[6], data[7], data[8], data[9]);
+         data[4], data[5], data[6], data[7], data[8], data[9],
+         data[10], data[11], data[12], data[13]);
 
   int s = data[3];
 
@@ -219,12 +223,12 @@ qt_qnewMetaObject(SEXP x, SEXP rstringdata, SEXP roffsets, SEXP rdata)
 
   for (uint j = 0; j < data[4]; j++) {
     if (signal_headings && (data[s + (j * 5) + 4] & 0x04) != 0) {
-      printf("\n // signals: signature, parameters, type, tag, flags\n");
+      printf("\n // signals: name, param-count, typeinfo-offset, tag, flags\n");
       signal_headings = false;
     } 
 
     if (slot_headings && (data[s + (j * 5) + 4] & 0x08) != 0) {
-      printf("\n // slots: signature, parameters, type, tag, flags\n");
+      printf("\n // slots: : name, param-count, typeinfo-offset, tag, flags\n");
       slot_headings = false;
     }
 
@@ -234,33 +238,30 @@ qt_qnewMetaObject(SEXP x, SEXP rstringdata, SEXP roffsets, SEXP rdata)
   }
 
   s += (data[4] * 5);
+  printf("\n // properties: name, type, flags\n");
   for (uint j = 0; j < data[6]; j++) {
-    printf("\n // properties: name, type, flags\n");
     printf("      %d,   %d,   0x%8.8x\n", 
            data[s + (j * 3)], data[s + (j * 3) + 1], data[s + (j * 3) + 2]);
   }
 
   s += (data[6] * 3);
-  for (int i = s; i < count; i++) {
-    printf("\n       %d        // eod\n", data[i]);
+  printf("\n // notifies: signal\n");
+  for (uint i = 0; i < data[6]; i++) {
+    printf("\n    %d\n", data[s + i]);
   }
 
-  printf("\nqt_meta_stringdata:\n    \"");
-
-  int strlength = 0;
-  for (int j = 0; j < length(rstringdata); j++) {
-    strlength++;
-    if (meta->d.stringdata[j] == 0) {
-      printf("\\0");
-      if (strlength > 40) {
-        printf("\"\n    \"");
-        strlength = 0;
-      }
-    } else {
-      printf("%c", meta->d.stringdata[j]);
-    }
+  s += data[6];
+  printf("\n // typeinfo: name, [param_type]*, [param_name]* \n    ");
+  for (uint i = s; i < count; i++) {
+    printf("%d, ", data[i]);
   }
-  printf("\"\n\n");
+  
+  printf("\n\nqt_meta_stringdata:\n");
+
+  for (int i = 0; i < length(rstringdata); i++) {
+    printf("     \"%s\"\n", (const char *) meta->d.stringdata[i].data());
+  }
+  printf("\n");
 
 #endif
   return SmokeObject::sexpFromPtr(meta, qt_Smoke, "QMetaObject", true);
