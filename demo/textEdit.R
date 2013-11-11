@@ -1,7 +1,4 @@
 ## Simple validating text entry
-
-library(qtbase)
-
 qsetClass("PositiveValidator", Qt$QValidator)
 
 qsetMethod("validate", positiveValidator, function(input, pos) {

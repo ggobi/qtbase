@@ -106,7 +106,7 @@ qsetMethod("echoChanged", Window, function(index) {
 }, "private")
 
 qsetMethod("validatorChanged", Window, function(index) {
-  validator <- switch(index + 1L, 0, Qt$QIntValidator(validatorLineEdit),
+  validator <- switch(index + 1L, NULL, Qt$QIntValidator(validatorLineEdit),
                       Qt$QDoubleValidator(-999.0, 999.0, 2, validatorLineEdit))
   validatorLineEdit$setValidator(validator)
   validatorLineEdit$clear()
