@@ -1030,9 +1030,8 @@ bool Parser::parseAsmDefinition(DeclarationAST *&node)
 
   const ListNode<std::size_t> *cv = 0;
   parseCvQualify(cv);
-
 #if defined(__GNUC__)
-#warning "implement me"
+  /* FIXME: unimplemented */
 #endif
   skip('(', ')');
   advance();
@@ -2600,7 +2599,7 @@ bool Parser::parseInitializerClause(InitializerClauseAST *&node)
 bool Parser::parsePtrToMember(PtrToMemberAST *&node)
 {
 #if defined(__GNUC__)
-#warning "implemente me (AST)"
+  /* FIXME: unimplemented */
 #endif
 
   std::size_t start = session->token_stream->cursor();
@@ -3486,7 +3485,7 @@ bool Parser::parseDeclarationInternal(DeclarationAST *&node)
       ADVANCE(';', ";");
 
 #if defined(__GNUC__)
-#warning "mark the ast as constant"
+      /* FIXME: mark the ast as const */
 #endif
       SimpleDeclarationAST *ast = CreateNode<SimpleDeclarationAST>(session->mempool);
       ast->init_declarators = declarators;
