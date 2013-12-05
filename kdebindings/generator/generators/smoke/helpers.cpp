@@ -759,11 +759,8 @@ void Util::addAccessorMethods(const Field& field, QSet<Type*> *usedTypes)
     fieldAccessors[&klass->methods().last()] = &field;
     
     // constant field? (i.e. no setter method)
-    // FIXME: no way? to distinguish between 'const' and 'const * const',
-    //        we take the conservative approach.
-    if (field.type()->isConst()) {
+    if (field.type()->isConst() && field.type()->pointerDepth() == 0)
         return;
-    }
     
     // foo => setFoo
     QString newName = field.name();
