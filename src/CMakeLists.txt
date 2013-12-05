@@ -52,11 +52,10 @@ macro(qt5_optional_use_modules _target)
   endforeach()
 endmacro()
 
-## new in 5.2
 qt5_optional_use_modules(qtbase Multimedia MultimediaWidgets Network Qml Quick
                          Sql Test Webkit WebKitWidgets DBus Svg XmlPatterns
                          PrintSupport Help UiTools SerialPort Sensors
-                         Bluetooth Positioning)
+                         Bluetooth Positioning NFC)
 
 ## QtUiTools not linked correctly on Windows (_personality_v0 missing symbol)
 if(WIN32)

@@ -55,6 +55,15 @@
 #ifdef QT_SERIALPORT_LIB // untested
 #include <QtSerialPort/QtSerialPort>
 #endif
+#ifdef QT_BLUETOOTH_LIB // untested
+#include <QtBluetooth/QtBluetooth>
+#endif
+#ifdef QT_POSITIONING_LIB // untested
+#include <QtPositioning/QtPositioning>
+#endif
+#ifdef QT_NFC_LIB // untested
+#include <QtNfc/QtNfc>
+#endif
 
 // some MS headers do
 // #define interface struct

@@ -1143,7 +1143,50 @@
         <!-- QtSerialPort -->
         <class>QSerialPort</class>
         <class>QSerialPortInfo</class>
+
+        <!-- QtBluetooth -->        
+        <class>QBluetoothServiceInfo::Alternative</class>
+        <class>QBluetoothAddress</class>
+        <class>QBluetoothDeviceDiscoveryAgent</class>
+        <class>QBluetoothDeviceInfo</class>
+        <class>QBluetoothHostInfo</class>
+        <class>QBluetoothLocalDevice</class>
+        <class>QBluetoothServer</class>
+        <class>QBluetoothServiceDiscoveryAgent</class>
+        <class>QBluetoothServiceInfo</class>
+        <class>QBluetoothSocket</class>
+        <class>QBluetoothTransferManager</class>
+        <class>QBluetoothTransferReply</class>
+        <class>QBluetoothTransferRequest</class>
+        <class>QBluetoothUuid</class>
+        <class>QBluetoothServiceInfo::Sequence</class>
         
+        <!-- QtPositioning -->
+        <class>QGeoAddress</class>
+        <class>QGeoAreaMonitorSource</class>
+	<class>QGeoCircle</class>
+        <class>QGeoCoordinate</class>
+        <class>QGeoLocation</class>
+        <class>QGeoPositionInfo</class>
+        <class>QGeoPositionInfoSource</class>
+        <class>QGeoPositionInfoSourceFactory</class>
+        <class>QGeoRectangle</class>
+        <class>QGeoSatelliteInfo</class>
+        <class>QGeoSatelliteInfoSource</class>
+        <class>QGeoShape</class>
+        <class>QNmeaPositionInfoSource</class>
+
+        <!-- NFC -->
+        <class>QDeclarativeNdefRecord</class>
+        <class>QNdefFilter</class>
+        <class>QNdefMessage</class>
+        <class>QNdefNfcSmartPosterRecord</class>
+        <class>QNdefNfcTextRecord</class>
+        <class>QNdefNfcUriRecord</class>
+        <class>QNdefRecord</class>
+        <class>QNearFieldManager</class>
+        <class>QNearFieldTarget</class>
+	
         <!-- namespaces -->
         <class>Qt</class>
         <class>QDBus</class>
