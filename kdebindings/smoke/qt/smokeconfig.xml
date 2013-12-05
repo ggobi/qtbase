@@ -104,6 +104,24 @@
         <signature>.*QAbstractMessageHandler\(.*</signature>
         <signature>.*QSGMaterialShader\(const QSGMaterialShader&amp;\).*</signature>
         <signature>.*QSG.*Node\(const QSG.*Node&amp;\).*</signature>
+
+        <!-- QtSensors module has undocumented public static const field -->
+        <signature>.*QAccelerometer::type.*</signature>
+        <signature>.*QAltimeter::type.*</signature>
+        <signature>.*QAmbientLightSensor::type.*</signature>
+        <signature>.*QAmbientTemperatureSensor::type.*</signature>
+        <signature>.*QCompass::type.*</signature>
+        <signature>.*QGyroscope::type.*</signature>
+        <signature>.*QHolsterSensor::type.*</signature>
+        <signature>.*QIRProximitySensor::type.*</signature>
+        <signature>.*QLightSensor::type.*</signature>
+        <signature>.*QMagnetometer::type.*</signature>
+        <signature>.*QOrientationSensor::type.*</signature>
+        <signature>.*QPressureSensor::type.*</signature>
+        <signature>.*QProximitySensor::type.*</signature>
+        <signature>.*QRotationSensor::type.*</signature>
+        <signature>.*QTapSensor::type.*</signature>
+        <signature>.*QTiltSensor::type.*</signature>
     </exclude>
     <functions>
         <!-- include functions starting with 'q' -->
