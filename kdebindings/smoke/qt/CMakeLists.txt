@@ -102,8 +102,6 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/smokedata.cpp
             ${CMAKE_CURRENT_BINARY_DIR}/../qtdefines
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
-macro_add_file_dependencies( ${CMAKE_CURRENT_BINARY_DIR}/smokedata.cpp ${CMAKE_CURRENT_BINARY_DIR}/x_1.cpp )
-
 # Don't use the KDE ${LIB_INSTALL_DIR} macro here as this file is
 # for Qt only installs
 # install(TARGETS smokeqt DESTINATION lib${LIB_SUFFIX} )
