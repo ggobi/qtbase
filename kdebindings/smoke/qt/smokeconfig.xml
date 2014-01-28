@@ -104,6 +104,7 @@
         <signature>.*QAbstractMessageHandler\(.*</signature>
         <signature>.*QSGMaterialShader\(const QSGMaterialShader&amp;\).*</signature>
         <signature>.*QSG.*Node\(const QSG.*Node&amp;\).*</signature>
+        <signature>.*QUiLoader\(const QUiLoader&amp;\).*</signature>
 
         <!-- QtSensors module has undocumented public static const field -->
         <signature>.*QAccelerometer::type.*</signature>
