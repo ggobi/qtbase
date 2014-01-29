@@ -1,18 +1,11 @@
 /*
- *  Inspired by the Rttpd.c file from R library and a discussion with Simon Urbanek  
- *  Written on top of the Linux/Mac EventLoop code of Michael & Deepayan 
- *  Warning: The changes made here for Windows platform made it much more stabler than 
- *  before. However, there are know instances of crashes even after that. And I do not 
- *  claim that whatever changes I have made is the right way to go.		  
- * -- Kaiser Md. Nahiduzzaman
+ *  Inspired by the Rttpd.c file from R library and a discussion with
+ *  Simon Urbanek.  Kaiser Md. Nahiduzzaman added the Windows support,
+ *  which is still unstable, perhaps because Qt is running another
+ *  instance of the event loop in a separate thread. Running ours at
+ *  least catches enough events to ensure that most event handling is
+ *  synchronized with R.
  */
-
-/*  The event loop code synchronizes R with the Qt event loop (which listens for user input). 
- *  On Linux/Mac, when R is idle, we tell Qt to iterate its event loop. On Windows, somehow 
- *  events get propagated to Qt in a separate thread. This file tries to solve the problem 
- *  for Windows and thus is an effort to make event loop code truly cross-platform.
- */
-
 
 #include <QApplication>
 #include <QTimer>
@@ -43,14 +36,15 @@ static HWND message_window;
 static LRESULT CALLBACK
 EventLoopWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 #ifndef HWND_MESSAGE
-#define HWND_MESSAGE ((HWND)-3) /* NOTE: this is supported by W2k/XP and up only! */
+#define HWND_MESSAGE ((HWND)-3) /* NOTE: this is supported by >=W2k/XP only! */
 #endif
 
 static int in_process = 0;
 
 QMutex mutex;
 
-/* --- flag determining whether one-time initialization is yet to be performed --- */
+/* --- flag determining whether one-time initialization is yet to be
+       performed --- */
 static int needs_init = 1;
 
 static void callback_input_handler();
@@ -60,7 +54,8 @@ static void QEventLoop_exec();
 
 
 /* Much of this code inspired by Simon Urbanek's CarbonEL package */
-/* The Windows platform specific code is inspired by Rhttpd.c file in R -- Kaiser */
+/* The Windows platform specific code is inspired by Rhttpd.c file in
+   R -- Kaiser */
 
 QApplication *app;
 static int qapp_argc = 2;
@@ -108,30 +103,31 @@ void EventLoop::run() {
 #else
 /* WIN32 */
 void EventLoop::run() {						   
-    //Do busy polling in Windows too
-    while(active) {
-		if (!fired) {
-			fired=1;
-			callback_input_handler();
-		}	
-    }				  
-	//Will never reach here
-    return;
+  //Do busy polling in Windows too
+  while(active) {
+    if (!fired) {
+      fired=1;
+      callback_input_handler();
+    }	
+  }				  
+  //Will never reach here
+  return;
 }
 
 static void QEventLoop_exec()
 {				 
     //An attempt to make the process thread-safe
-	mutex.lock();
-	try{										  
-	    //300 is an empirical value
-		app->processEvents(QEventLoop::WaitForMoreEvents | QEventLoop::EventLoopExec, 300);
-		app->sendPostedEvents(0, 0);
-	}
-	catch(...){
-		Rprintf("Exception from processEvents | sendPostedEvents\n");
-	}
-	mutex.unlock();
+  mutex.lock();
+  try {
+    //300 is an empirical value
+    app->processEvents(QEventLoop::WaitForMoreEvents |
+                       QEventLoop::EventLoopExec, 300);
+    app->sendPostedEvents(0, 0);
+  }
+  catch(...) {
+    Rprintf("Exception from processEvents | sendPostedEvents\n");
+  }
+  mutex.unlock();
 }
 #endif
 
@@ -164,12 +160,12 @@ static void run_callback_main_thread();
 
 static void run_callback()
 {
-    /* SendMessage is synchronous, so it will wait until the message
-       is processed */
-	SendMessage(message_window, WM_EVENTLOOP_CALLBACK, 0, 0);
-	// Alternative
-	/* PostMessage is asynchronous, so it will return immediately */
-	//PostMessage(message_window, WM_EVENTLOOP_CALLBACK, 0, (LPARAM) 0);
+  /* SendMessage is synchronous, so it will wait until the message
+     is processed */
+  SendMessage(message_window, WM_EVENTLOOP_CALLBACK, 0, 0);
+  // Alternative
+  /* PostMessage is asynchronous, so it will return immediately */
+  //PostMessage(message_window, WM_EVENTLOOP_CALLBACK, 0, (LPARAM) 0);
 }
 #define run_callback run_callback_main_thread
 
@@ -178,32 +174,32 @@ static void run_callback()
    re-entrance from other clients */
 static void run_callback()
 {
-	if (!in_process){
-		in_process = 1;	
-		if (!processingEvent) {
-			processingEvent = 1;
-			QEventLoop_exec();
-			processingEvent = 0;
-		}
-		in_process = 0;
-		fired=0;
-	}	
+  if (!in_process){
+    in_process = 1;	
+    if (!processingEvent) {
+      processingEvent = 1;
+      QEventLoop_exec();
+      processingEvent = 0;
+    }
+    in_process = 0;
+    fired=0;
+  }	
 }
 
 #undef run_callback
 
 static void first_init()
 {
-    /* create a dummy message-only window for synchronization with the
-     * main event loop */
-    HINSTANCE instance = GetModuleHandle(NULL);
-    LPCTSTR str_class = "EventLoop";
-    WNDCLASS wndclass = { 0, EventLoopWindowProc, 0, 0, instance, NULL, 0, 0,
-			  NULL, str_class };
-    RegisterClass(&wndclass);
-    message_window = CreateWindow(str_class, "EventLoop", 0, 1, 1, 1, 1,
-				  HWND_MESSAGE, NULL, instance, NULL);
-    needs_init = 0;
+  /* create a dummy message-only window for synchronization with the
+   * main event loop */
+  HINSTANCE instance = GetModuleHandle(NULL);
+  LPCTSTR str_class = "EventLoop";
+  WNDCLASS wndclass = { 0, EventLoopWindowProc, 0, 0, instance, NULL, 0, 0,
+                        NULL, str_class };
+  RegisterClass(&wndclass);
+  message_window = CreateWindow(str_class, "EventLoop", 0, 1, 1, 1, 1,
+                                HWND_MESSAGE, NULL, instance, NULL);
+  needs_init = 0;
 }									
 #endif/* WIN32 */
 
@@ -212,8 +208,8 @@ R_Qt_init()
 {
   prevMsgHandler = qInstallMessageHandler(R_Qt_msgHandler);
   app = new QApplication(qapp_argc, qapp_argv);
-  //following call starts a thread and will run the Qt event loop there, which may never return -- Kaiser
-  //app->exec();
+  //following call starts a thread and will run the Qt event loop
+  //there, which may never return -- Kaiser app->exec();
 #ifdef WIN32
   /* WIN32 */
   if (needs_init) /* initialization may need to be performed on first use */
@@ -240,10 +236,11 @@ R_Qt_cleanup()
 
 
 #ifdef WIN32
-/* Windows implementation uses threads to do the same as watching the FD and the main event
-   loop to synchronize with R through a message-only window which is created
-   on the R thread */
-static LRESULT CALLBACK EventLoopWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+/* Windows implementation uses threads to do the same as watching the
+   FD and the main event loop to synchronize with R through a
+   message-only window which is created on the R thread */
+static LRESULT CALLBACK EventLoopWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
+                                            LPARAM lParam)
 {
     if (hwnd == message_window && uMsg == WM_EVENTLOOP_CALLBACK) {
 		run_callback_main_thread();
@@ -252,7 +249,8 @@ static LRESULT CALLBACK EventLoopWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
-/* this is really superfluous - we could just cast run_callback accordingly .. - Simon */
+/* this is really superfluous - we could just cast run_callback
+   accordingly .. - Simon */
 static void callback_input_handler()
 {
 	run_callback();
@@ -280,13 +278,13 @@ void EventLoop::begin() {
 #else
     /* WIN32 */
     /* do the desired Windows synchronization */
-	/* disable stack checking, because threads will thow it off */
+    /* disable stack checking, because threads will thow it off */
     R_CStackLimit = (uintptr_t) -1;
 
-	//Rprintf("Entering eventloop thread...");
+    //Rprintf("Entering eventloop thread...");
     eventLoop = new EventLoop();
     eventLoop->start();
-	//Rprintf("Outside eventloop thread...");	
+    //Rprintf("Outside eventloop thread...");	
 #endif
   }
 }							
@@ -296,7 +294,7 @@ extern "C" {
   SEXP 
   addQtEventHandler()
   {
-	//This is the function that gets called from R
+    //This is the function that gets called from R
     EventLoop::begin();
     return R_NilValue;
   }
