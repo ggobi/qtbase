@@ -242,18 +242,18 @@ R_Qt_cleanup()
 static LRESULT CALLBACK EventLoopWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
                                             LPARAM lParam)
 {
-    if (hwnd == message_window && uMsg == WM_EVENTLOOP_CALLBACK) {
-		run_callback_main_thread();
-		return 0;
-    }
-    return DefWindowProc(hwnd, uMsg, wParam, lParam);
+  if (hwnd == message_window && uMsg == WM_EVENTLOOP_CALLBACK) {
+    run_callback_main_thread();
+    return 0;
+  }
+  return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
 /* this is really superfluous - we could just cast run_callback
    accordingly .. - Simon */
 static void callback_input_handler()
 {
-	run_callback();
+  run_callback();
 }
 #endif
 
