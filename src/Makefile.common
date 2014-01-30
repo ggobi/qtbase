@@ -31,7 +31,7 @@ all:
 	${CMAKE} ../src $(CMAKE_ARGS) \
 	      -DCMAKE_INSTALL_PREFIX=../src \
 	      -DR_INCLUDES=${R_INCLUDE_DIR}; \
-	VERBOSE=1 make install
+	make install
 
 clean:
 	rm -rf ../kdebindings-build
