@@ -203,10 +203,6 @@ PreprocessedContents Preprocessor::preprocess()
 
 rpp::Stream* Preprocessor::sourceNeeded(QString& fileName, rpp::Preprocessor::IncludeType type, int sourceLine, bool skipCurrentPath)
 {
-#ifdef Q_WS_MAC
-    static QRegExp frameworkExpr("([^/]+)/(.*)");
-#endif
-
     if (m_fileStack.top().fileName() == fileName && type == rpp::Preprocessor::IncludeGlobal) {
 #ifdef DEBUG
         qDebug("prevented possible endless loop because of #include <%s>", qPrintable(fileName));
@@ -231,41 +227,36 @@ rpp::Stream* Preprocessor::sourceNeeded(QString& fileName, rpp::Preprocessor::In
     } else if (info.isAbsolute()) {
         path = fileName;
     } else if (type == rpp::Preprocessor::IncludeLocal) {
-        info.setFile(m_fileStack.last().dir(), fileName);
-        if (info.isFile())
-            path = info.absoluteFilePath();
+        if (m_fileStack.last().absoluteDir().exists(fileName))
+            path = m_fileStack.last().absoluteDir().filePath(fileName);
     }
     if (path.isEmpty()) {
-#ifdef Q_WS_MAC
-        QString framework;
-        QString header;
-        if (frameworkExpr.exactMatch(fileName)) {
-            framework = frameworkExpr.cap(1);
-            header = frameworkExpr.cap(2);
-        }
-#endif
-
-        Q_FOREACH (const QDir& dir, m_includeDirs) {
-            info.setFile(dir, fileName);
-            if (info.isFile()) {
-                path = info.absoluteFilePath();
+        foreach (QDir dir, m_includeDirs) {
+            if (dir.exists(fileName)) {
+                path = dir.absoluteFilePath(fileName);
                 break;
             }
-
-#ifdef Q_WS_MAC
-            QDir parentDir = dir;
-            parentDir.cdUp();
-            if (parentDir.dirName() == framework + ".framework" && dir.dirName() == "Headers") {
-                info.setFile(dir, header);
-                if (info.isFile()) {
-                    path = info.absoluteFilePath();
-                    break;
-                }
-            }
-#endif
         }
     }
-    
+
+#if defined(__APPLE__) & defined(__MACH__)
+    if (path.isEmpty() && type == rpp::Preprocessor::IncludeGlobal &&
+        !info.dir().cdUp())
+      {
+        QList<QDir> m_frameworkDirs; // FIXME: should be configurable
+        m_frameworkDirs.append(QDir("/System/Library/Frameworks"));
+        m_frameworkDirs.append(QDir("/Library/Frameworks"));
+        QString fw_fileName = info.dir().dirName() + ".framework/Headers/" +
+          info.fileName();
+        foreach (QDir dir, m_frameworkDirs) {
+          if (dir.exists(fw_fileName)) {
+            path = dir.absoluteFilePath(fw_fileName);
+            break;
+          }
+        }
+      }
+#endif
+
     if (path.isEmpty()) {
 #ifdef DEBUG
         qDebug("PP: File not found: %s", qPrintable(fileName));
