@@ -203,7 +203,7 @@ PreprocessedContents Preprocessor::preprocess()
 
 rpp::Stream* Preprocessor::sourceNeeded(QString& fileName, rpp::Preprocessor::IncludeType type, int sourceLine, bool skipCurrentPath)
 {
-#ifdef Q_WS_MAC
+#ifdef Q_OS_DARWIN
     static QRegExp frameworkExpr("([^/]+)/(.*)");
 #endif
 
@@ -236,7 +236,7 @@ rpp::Stream* Preprocessor::sourceNeeded(QString& fileName, rpp::Preprocessor::In
             path = info.absoluteFilePath();
     }
     if (path.isEmpty()) {
-#ifdef Q_WS_MAC
+#ifdef Q_OS_DARWIN
         QString framework;
         QString header;
         if (frameworkExpr.exactMatch(fileName)) {
@@ -244,7 +244,6 @@ rpp::Stream* Preprocessor::sourceNeeded(QString& fileName, rpp::Preprocessor::In
             header = frameworkExpr.cap(2);
         }
 #endif
-        qDebug() << fileName + ": ";
         Q_FOREACH (const QDir& dir, m_includeDirs) {
             info.setFile(dir, fileName);
             if (info.isFile()) {
@@ -252,12 +251,10 @@ rpp::Stream* Preprocessor::sourceNeeded(QString& fileName, rpp::Preprocessor::In
                 break;
             }
 
-#ifdef Q_WS_MAC
-            qDebug() << "looking in frameworks...";
+#ifdef Q_OS_DARWIN
             QDir parentDir = dir;
             parentDir.cdUp();
             if (parentDir.dirName() == framework + ".framework" && dir.dirName() == "Headers") {
-                qDebug() << "found in " + dir;
                 info.setFile(dir, header);
                 if (info.isFile()) {
                     path = info.absoluteFilePath();
