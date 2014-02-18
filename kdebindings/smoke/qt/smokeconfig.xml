@@ -103,6 +103,7 @@
         <signature>.*registerNormalizedType.*</signature>
         <signature>.*QAbstractMessageHandler\(.*</signature>
         <signature>.*QSGMaterialShader\(const QSGMaterialShader&amp;\).*</signature>
+        <signature>.*QSGMaterial::attributeNames.*</signature>
         <signature>.*QSG.*Node\(const QSG.*Node&amp;\).*</signature>
         <signature>.*QUiLoader\(const QUiLoader&amp;\).*</signature>
 
