@@ -990,14 +990,10 @@
         <class>QSGFlatColorMaterial</class>
         <class>QSGGeometry</class>
         <class>QSGGeometryNode</class>
-        <class>QSGMaterial</class>
-        <class>QSGMaterialShader</class>
         <class>QSGMaterialType</class>
         <class>QSGNode</class>
         <class>QSGOpacityNode</class>
         <class>QSGOpaqueTextureMaterial</class>
-        <class>QSGSimpleMaterial</class>
-        <class>QSGSimpleMaterialShader</class>
         <class>QSGSimpleTextureNode</class>
         <class>QSGTexture</class>
         <class>QSGTextureMaterial</class>
