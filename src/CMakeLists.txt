@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 2.8.8)
 
 project(qtbase)
 
+if(POLICY CMP0020)
+  cmake_policy(SET CMP0020 OLD)
+endif()
+
 find_package(Qt5Core)
 
 set(CMAKE_AUTOMOC ON)
