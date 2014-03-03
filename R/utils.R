@@ -38,7 +38,8 @@ dim.QGraphicsView <- function(x) dim(x$viewport()$rect)
 
 qfindChild <- function(x, name) {
   ## not exactly sure how to use this one
-  Qt$QGlobalSpace$qt_qFindChild_helper(x, name, x$metaObject())
+  Qt$QGlobalSpace$qt_qFindChild_helper(x, name, x$metaObject(),
+                                       Qt$Qt$FindChildrenRecursively)
 }
 
 mapRTypeToQtType <- function(x) {
