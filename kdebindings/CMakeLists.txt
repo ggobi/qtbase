@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 2.8.9)
 
 project(kdebindings)
 
+if(POLICY CMP0020)
+  cmake_policy(SET CMP0020 OLD)
+endif()
+
 find_package(Qt5Core)
 
 macro(qt5_optional_use_modules _target)
