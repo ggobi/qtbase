@@ -1,7 +1,6 @@
 LIBR = "-L$(R_HOME)/bin/$(R_ARCH) -lR"
 CMAKE_ARGS = -G "Unix Makefiles" \
              -DQT_QMAKE_EXECUTABLE="${QMAKE}" \
-             -DPATH="${QTBASE_QT_PATH}" \
              -DCMAKE_PREFIX_PATH="${QTBASE_QT_PATH}/../lib/cmake" \
              -DCMAKE_RC_COMPILER="$(subst \,/,$(RC_COMPILER))" \
              -DR_LIBRARIES=${LIBR}
