@@ -42,8 +42,9 @@ qparents.RQtUserClass <- function(x) {
 }
 
 print.RQtClass <- function(x, ...) {
-  methods <- subset(qmethods(x), !protected)
-  cat("Class '", attr(x, "name"), "' with ", nrow(methods), " public methods\n",
+  methods <- qmethods(x)
+  public <- methods[!methods$protected,]
+  cat("Class '", attr(x, "name"), "' with ", nrow(public), " public methods\n",
       sep = "")
 }
 
@@ -68,7 +69,8 @@ qsmokeClass <- function(x, name, internals = character()) {
   constructorEnv$cl <- cl
   attr(cl, "parents") <- qclassForName(qparentClasses(cl))
   methods <- qmethods(cl)
-  methods <- subset(methods, !duplicated(name) & static & !protected)
+  methods <- methods[!duplicated(methods$name) & methods$static &
+                     !methods$protected,]
   lapply(methods$name, function(name) {
     fun <- structure(function(...) qinvokeStatic(cl, name, ...), static = TRUE)
     environment(fun) <- list2env(list(cl = cl, name = name),
@@ -301,7 +303,7 @@ qsetRefClass <- function(Class, where = topenv(parent.frame()), ...) {
   className <- attr(Class, "name")
   getMethodNames <- function(x) {
     methodInfo <- qmethods(x)
-    subset(methodInfo, !static & !constructor)$name
+    methodInfo$name[!methodInfo$static & !methodInfo$constructor]
   }
   methodNames <- getMethodNames(Class)
   methodNames <- setdiff(methodNames, unlist(lapply(parents, getMethodNames)))

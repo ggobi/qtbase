@@ -10,13 +10,14 @@ qmocMethods <- function(x) {
 }
 
 qsignals <- function(x) {
-  s <- subset(qmocMethods(x), type == "signal", select = c("name", "signature"))
+  m <- qmocMethods(x)
+  s <- m[m$type == "signal", c("name", "signature")]
   rownames(s) <- NULL
   s
 }
 qslots <- function(x) {
-  s <- subset(qmocMethods(x), type == "slot",
-              select = c("name", "signature", "return"))
+  m <- qmocMethods(x)
+  s <- m[m$type == "slot", c("name", "signature", "return")]
   rownames(s) <- NULL
   s
 }
