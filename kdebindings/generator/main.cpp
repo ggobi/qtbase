@@ -164,6 +164,7 @@ int main(int argc, char **argv)
 
     // first try to load plugins from the executable's directory
     QLibrary lib(app.applicationDirPath() + "/generator_" + generator);
+    qDebug() << "attempting to load generator" << lib.fileName();
     lib.load();
     if (!lib.isLoaded()) {
         lib.unload();
