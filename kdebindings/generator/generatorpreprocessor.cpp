@@ -274,6 +274,7 @@ rpp::Stream* Preprocessor::sourceNeeded(QString& fileName, rpp::Preprocessor::In
     
     QFile file(path);
     file.open(QFile::ReadOnly);
+    qDebug() << "parsing " << path;
     QByteArray array = file.readAll();
     file.close();
     
