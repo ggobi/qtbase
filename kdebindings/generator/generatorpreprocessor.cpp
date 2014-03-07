@@ -224,11 +224,7 @@ rpp::Stream* Preprocessor::sourceNeeded(QString& fileName, rpp::Preprocessor::In
     QString path;
     QFileInfo info(fileName);
 
-    // smokegen chokes on gcc's string.h, so use our simplified version here
-    if (type == rpp::Preprocessor::IncludeGlobal && fileName == "string.h") {
-        static QString customStringHPath = qApp->applicationDirPath() + "/../share/smokegen/string.h";
-        path = customStringHPath;
-    } else if (info.isAbsolute()) {
+    if (info.isAbsolute()) {
         path = fileName;
     } else if (type == rpp::Preprocessor::IncludeLocal) {
         info.setFile(m_fileStack.last().dir(), fileName);
@@ -274,7 +270,6 @@ rpp::Stream* Preprocessor::sourceNeeded(QString& fileName, rpp::Preprocessor::In
     
     QFile file(path);
     file.open(QFile::ReadOnly);
-    qDebug() << "parsing " << path;
     QByteArray array = file.readAll();
     file.close();
     
