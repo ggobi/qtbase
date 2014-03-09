@@ -59,7 +59,7 @@ endmacro()
 qt5_optional_use_modules(qtbase Multimedia MultimediaWidgets Network Qml Quick
                          Sql Test Webkit WebKitWidgets DBus Svg XmlPatterns
                          PrintSupport Help UiTools SerialPort Sensors
-                         Bluetooth Positioning NFC)
+                         Bluetooth Positioning Nfc)
 
 ## QtUiTools not linked correctly on Windows (_personality_v0 missing symbol)
 if(WIN32)
