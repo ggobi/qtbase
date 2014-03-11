@@ -6,11 +6,11 @@ if(POLICY CMP0020)
   cmake_policy(SET CMP0020 OLD)
 endif()
 
-find_package(Qt5Core)
+find_package(Qt5Core, 5.2.0)
 
 macro(qt5_optional_use_modules _target)
   foreach(_module ${ARGN})
-    find_package(Qt5${_module} QUIET)
+    find_package(Qt5${_module} 5.2.0 QUIET)
     if(Qt5${_module}_FOUND)
       qt5_use_modules(${_target} ${_module})
       message(STATUS "Found Qt module: ${_module}")

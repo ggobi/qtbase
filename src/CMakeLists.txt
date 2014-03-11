@@ -6,7 +6,7 @@ if(POLICY CMP0020)
   cmake_policy(SET CMP0020 OLD)
 endif()
 
-find_package(Qt5Core)
+find_package(Qt5Core 5.2.0)
 
 set(CMAKE_AUTOMOC ON)
 
