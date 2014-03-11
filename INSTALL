@@ -29,53 +29,16 @@ Linux instructions
 Windows instructions
 --------------------
 
-1. Download the 64 bit MinGW Qt binaries and headers from ...
-2. Install cmake >= 2.8.1 from http://www.cmake.org/.
-3. Set CMAKE environment variable to path containing cmake.exe.
-4. Set QMAKE environment variable to point to qmake.exe.
-5. Set QTBASE_QT_PATH to the directory containing qmake.exe.
-6. Set RC_COMPILER to point to windres.exe in R Tools. This path must use the
-   '/' file separator, instead of '\'.
-7. Make sure that PATH includes perl.exe.
-8. Make sure that the machine is properly configured to build binary packages.
-9. Using command.exe, run R CMD INSTALL qtbase.
-
-===================
-Building on Windows
-===================
-
-Building qtbase
------------------------
-
 1. Install Rtools.
 2. Install cmake.
-3. Download and install the Qt libraries:
-   32 bit: http://download.qt-project.org/development_releases/qt/5.2/5.2.0-beta1/qt-windows-opensource-5.2.0-beta1-mingw48_opengl-x86-offline.exe
-   64 bit: follow the instructions below to build it.
-   Or maybe the binaries are available here:
+3. Download and install the Qt libraries from:
    http://sourceforge.net/projects/mingwbuilds/files/external-binary-packages/Qt-Builds/
 3. Set the CMAKE environment variable to point to your cmake.exe.
 4. Set QMAKE environment variable to point to qmake.exe.
-5. Set QTBASE_QT_PATH to the directory containing qmake.exe.
+5. Set QTBASE_QT_PATH to the directory containing qmake.exe, and
+   add that same directory to the PATH.
 6. Set RC_COMPILER environment variable to point to windres.exe from Rtools.
+   This path must use the '/' file separator, instead of '\'.
 7. Make sure perl.exe is on your PATH.
 8. Start the command shell.
 9. Run "R CMD INSTALL --build qtbase" with "--arch 32" or "--arch 64".
-
-Building Qt for 64 bit
-------------------------------
-
-0. Download MinGW and add it to your PATH.
-1. Download the latest Qt source code and extract it somewhere.
-   URL: (http://releases.qt-project.org/qt4/source/qt-everywhere-opensource-src-4.8.2.zip)
-2. The complicated part is getting Qt to build with the compiler from
-   Rtools. Open somewhere/mkspecs/win32-g++/qmake.conf and set
-   QMAKE_CFLAGS and QMAKE_LFLAGS to "-m64". Also, add "-F pe-x86-64"
-   to QMAKE_RC.  In qmake/Makefile.win32-g++-sh, add "-m64" to CFLAGS
-   and change LFLAGS in that file to "-s -m64".
-3. Start the command shell.
-5. Switch to the qt source directory.
-6. Run
- "configure -release -opensource -nomake examples -nomake demos -no-qt3support"
-7. Run mingw32-make, as instructed.
-8. Wait a long time. (about 3-4 hours)
