@@ -70,8 +70,10 @@ endif(WIN32)
 set_target_properties(qtbase PROPERTIES COMPILE_FLAGS "-std=c++11")
 
 ## Force QtUiTools to come after smokeqt, so all needed symbols are linked
-get_target_property(QtUiTools_location Qt5::UiTools LOCATION)
-target_link_libraries(qtbase smokeqt ${R_LIBRARIES} ${QtUiTools_location})
+if(Qt5UiTools_FOUND)
+  get_target_property(QtUiTools_location Qt5::UiTools LOCATION)
+  target_link_libraries(qtbase smokeqt ${R_LIBRARIES} ${QtUiTools_location})
+endif(Qt5UiTools_FOUND)
 
 ## Seems GCC does not consider the dependencies of smokeqt.a, so it
 ## skips linkages that are not required by the object files.
