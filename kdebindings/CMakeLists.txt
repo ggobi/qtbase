@@ -6,7 +6,7 @@ if(POLICY CMP0020)
   cmake_policy(SET CMP0020 OLD)
 endif()
 
-find_package(Qt5Core, 5.2.0)
+find_package(Qt5Core 5.2.0)
 
 macro(qt5_optional_use_modules _target)
   foreach(_module ${ARGN})
