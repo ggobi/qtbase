@@ -16,13 +16,12 @@
 /* Type conversion routines.
    
    Templates are picky about the type, so we need a lot of wrappers
-   here to handle rare primitive types like 'short'. We avoid using
-   the as<>()/wrap() functions from Rcpp, because the ones in R are
-   better in some ways (they handle NA's, overflow, etc).
+   here to handle rare primitive types like 'short'.
 
    The overloaded to_sexp() function is more forgiving.
  */
 
+// this exists so that the compiler throws a warning when we miss something
 template <typename T> inline T from_sexp(SEXP v) {
 }
 
@@ -368,7 +367,7 @@ template<> QList<QVariant> from_sexp<QList<QVariant> >(SEXP s,
                                                        const SmokeType &type);
 
 /* QByteArray <-> raw or character vector */
-template<> QByteArray from_sexp<QByteArray>(SEXP sexp, const SmokeType &type);
+template<> QByteArray from_sexp<QByteArray>(SEXP sexp);
 SEXP to_sexp(QByteArray s);
 
 /* QString <-> character vector */
