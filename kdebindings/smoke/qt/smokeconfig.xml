@@ -106,7 +106,10 @@
         <signature>.*QSGMaterialShader::attributeNames.*</signature>
         <signature>.*QSG.*Node\(const QSG.*Node&amp;\).*</signature>
         <signature>.*QUiLoader\(const QUiLoader&amp;\).*</signature>
-
+        <signature>.*QSslConfiguration::NextProtocolSpdy3_0.*</signature>
+        <signature>.*QSslConfiguration::NextProtocolHttp1_1.*</signature>
+        <signature>.*QDnsLookup::QDnsLookup\(QDnsLookup::Type, QString const&amp;, QHostAddress const&amp;, QObject\*\).*</signature>
+        
         <!-- QtSensors module has undocumented public static const field -->
         <signature>.*QAccelerometer::type.*</signature>
         <signature>.*QAltimeter::type.*</signature>
