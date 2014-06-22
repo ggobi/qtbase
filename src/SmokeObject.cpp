@@ -133,7 +133,7 @@ SmokeObject * SmokeObject::fromSexp(SEXP sexp)
 
 SmokeObject::SmokeObject(void *ptr, const Class *klass, bool allocated)
   : _ptr(ptr), _klass(klass), _allocated(allocated), _sexp(NULL),
-    _internalTable(NULL), _fieldEnv(NULL)
+    _fieldEnv(NULL)
 {
 }
 
@@ -177,12 +177,14 @@ void SmokeObject::invalidateSexp() {
   maybeDestroy();
 }
 
-void SmokeObject::invalidateInternalTable() {
+void SmokeObject::invalidateInternalTable(SEXP sexp) {
 #ifdef MEM_DEBUG
-  qDebug("%p: invalidating internal table %p", this, _internalTable);
+  qDebug("%p: invalidating internal table %p", this, sexp);
 #endif
-  _internalTable = NULL;
-  maybeDestroy();
+  _internalTables.removeOne(sexp);
+  if (_internalTables.isEmpty()) {
+    maybeDestroy();
+  }
 }
 
 void SmokeObject::castSexp(SEXP sexp) {
@@ -240,7 +242,7 @@ SmokeModule *SmokeObject::module() const {
 bool SmokeObject::memoryIsOwned() const {
   // NOTE: calling the module's memoryIsOwned() might resurrect sexps;
   // if so, they become orphans
-  bool owned = _sexp || _internalTable;
+  bool owned = _sexp || !_internalTables.isEmpty();
   if (!owned) {
     owned = module()->memoryIsOwned(this);
 #ifdef MEM_DEBUG
@@ -249,8 +251,8 @@ bool SmokeObject::memoryIsOwned() const {
 #endif
   }
 #ifdef MEM_DEBUG
-  else qDebug("%p: memory is owned by R, sexp: %p, table: %p", this, _sexp,
-                _internalTable);
+  else qDebug("%p: memory is owned by R, sexp: %p, %d tables (the first %p)", this, _sexp,
+                _internalTables.count(), _internalTables.isEmpty() ? NULL : _internalTables[0]);
 #endif
   return owned;
 }
@@ -394,14 +396,14 @@ SEXP SmokeObject::internalSexp(SEXP env) {
 }
 
 SEXP SmokeObject::internalTable() {
-  if (!_internalTable) {
-    InstanceObjectTable *table = _klass->createObjectTable(this);
-    table->setInternal(true);
-    _internalTable = table->sexp();
+  SEXP _internalTable;
+  InstanceObjectTable *table = _klass->createObjectTable(this);
+  table->setInternal(true);
+  _internalTable = table->sexp();
+  _internalTables.append(_internalTable);
 #ifdef MEM_DEBUG
     qDebug("%p: creating internal table %p", this, _internalTable);
 #endif
-  }
   return _internalTable;
 }
 
@@ -456,11 +458,11 @@ SmokeObject::~SmokeObject() {
 #endif
     orphanSexp();
   }
-  if (_internalTable) {
+  for (int i = 0; i < _internalTables.count(); i++) {
 #ifdef MEM_DEBUG
-    qDebug("%p: orphaned internal table %p", this, _internalTable);
+    qDebug("%p: orphaned internal table %p", this, _internalTables[i]);
 #endif
-    orphanTable(_internalTable);
+    orphanTable(_internalTables[i]);
   }
   if (_fieldEnv)
     R_ReleaseObject(_fieldEnv);

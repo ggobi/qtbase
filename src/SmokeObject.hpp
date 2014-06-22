@@ -2,6 +2,7 @@
 #define SMOKE_OBJECT_H
 
 #include <QHash>
+#include <QList>
 #include <smoke.h>
 
 class SmokeModule;
@@ -49,7 +50,7 @@ public:
   SEXP sexp();
   SEXP internalSexp(SEXP env);
   void invalidateSexp();
-  void invalidateInternalTable();
+  void invalidateInternalTable(SEXP sexp);
   SEXP fieldEnv() const;
   
   inline const Class *klass() const { return _klass; }
@@ -85,7 +86,7 @@ private:
   const Class *_klass;
   bool _allocated;
   SEXP _sexp;  
-  SEXP _internalTable;
+  QList<SEXP> _internalTables;
   mutable SEXP _fieldEnv;
   
   static QHash<void *, SmokeObject *> instances;
