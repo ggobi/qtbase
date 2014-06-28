@@ -2,7 +2,7 @@
 #define SMOKE_OBJECT_H
 
 #include <QHash>
-#include <QList>
+#include <QSet>
 #include <smoke.h>
 
 class SmokeModule;
@@ -86,7 +86,7 @@ private:
   const Class *_klass;
   bool _allocated;
   SEXP _sexp;  
-  QList<SEXP> _internalTables;
+  QSet<SEXP> _internalTables;
   mutable SEXP _fieldEnv;
   
   static QHash<void *, SmokeObject *> instances;
