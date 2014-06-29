@@ -205,7 +205,7 @@ void InstanceObjectTable::checkInstance() const {
 InstanceObjectTable::~InstanceObjectTable() {
   if (_instance) { // might have been orphaned
     if (_internal)
-      _instance->invalidateInternalTable();
+      _instance->invalidateInternalTable(sexp());
     else _instance->invalidateSexp();
   }
 }
