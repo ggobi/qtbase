@@ -44,7 +44,7 @@ CMAKE_FORCE_CXX_COMPILER(${R_CXX} R_CXX)
 qt5_use_modules(smokeqt Widgets)
 
 set(QT_MODULES Multimedia MultimediaWidgets Network Qml Quick Sql Test
-               Webkit WebKitWidgets DBus Svg XmlPatterns
+               WebKit WebKitWidgets DBus Svg XmlPatterns
                PrintSupport Help UiTools SerialPort Sensors
                Bluetooth Nfc Positioning)
 
