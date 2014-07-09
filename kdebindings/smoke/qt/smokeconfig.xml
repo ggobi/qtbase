@@ -793,7 +793,7 @@
         <class>QTestKeyEvent</class>
         <class>QTestMouseEvent</class>
 
-        <!-- QtWebkitWidgets -->
+        <!-- QtWebKitWidgets -->
         <class>QGraphicsWebView</class>
         <class>QWebPage::ChooseMultipleFilesExtensionOption</class>
         <class>QWebPage::ChooseMultipleFilesExtensionReturn</class>

@@ -57,7 +57,7 @@ macro(qt5_optional_use_modules _target)
 endmacro()
 
 qt5_optional_use_modules(qtbase Multimedia MultimediaWidgets Network Qml Quick
-                         Sql Test Webkit WebKitWidgets DBus Svg XmlPatterns
+                         Sql Test WebKit WebKitWidgets DBus Svg XmlPatterns
                          PrintSupport Help UiTools SerialPort Sensors
                          Bluetooth Positioning Nfc)
 
@@ -99,10 +99,10 @@ if(Qt5Test_FOUND)
   get_target_property(QtTest_location Qt5::Test LOCATION)
   set(LIB_LOC ${LIB_LOC} ${QtTest_location})
 endif(Qt5Test_FOUND)
-if(Qt5Webkit_FOUND)
-  get_target_property(QtWebkit_location Qt5::Webkit LOCATION)
-  set(LIB_LOC ${LIB_LOC} ${QtWebkit_location})
-endif(Qt5Webkit_FOUND)
+if(Qt5WebKit_FOUND)
+  get_target_property(QtWebKit_location Qt5::WebKit LOCATION)
+  set(LIB_LOC ${LIB_LOC} ${QtWebKit_location})
+endif(Qt5WebKit_FOUND)
 if(Qt5WebKitWidgets_FOUND)
   get_target_property(QtWebKitWidgets_location Qt5::WebKitWidgets LOCATION)
   set(LIB_LOC ${LIB_LOC} ${QtWebKitWidgets_location})
