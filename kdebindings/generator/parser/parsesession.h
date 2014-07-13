@@ -29,6 +29,7 @@
 #include "cppparser_export.h"
 #include "indexedstring.h"
 #include "rpp/anchor.h"
+#include "rpp/pp-environment.h"
 
 namespace Cpp {
   class EnvironmentFile;
@@ -39,8 +40,6 @@ class TokenStream;
 class Token;
 
 typedef QVector<unsigned int> PreprocessedContents;
-
-namespace rpp { class MacroBlock; class LocationTable; }
 
 /// Contains everything needed to keep an AST useful once the rest of the parser
 /// has gone away.
