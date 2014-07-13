@@ -79,7 +79,7 @@ Preprocessor::Preprocessor(const QList<QDir>& includeDirs, const QStringList& de
     exportMacro->variadics = false;
     m_topBlock->setMacro(exportMacro);
 
-#if defined(Q_OS_DARWIN64)
+#ifdef __LP64__
     exportMacro = new rpp::pp_macro;
     exportMacro->name = IndexedString("__LP64__");
     exportMacro->function_like = false;

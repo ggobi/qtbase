@@ -217,6 +217,7 @@
         <class>QMap</class>
         <class>QMapIterator</class>
         <class>QMargins</class>
+        <class>QMarginsF</class>
         <class>QMessageLogger</class>
         <class>QMetaClassInfo</class>
         <class>QMetaEnum</class>
@@ -411,6 +412,8 @@
         <class>QOpenGLShader</class>
         <class>QOpenGLShaderProgram</class>
         <class>QPagedPaintDevice</class>
+        <class>QPageSize</class>
+        <class>QPageLayout</class>
         <class>QPaintDevice</class>
         <class>QPaintEngine</class>
         <class>QPaintEngineState</class>
@@ -849,6 +852,8 @@
         <class>QCameraImageCaptureControl</class>
         <class>QCameraImageProcessing</class>
         <class>QCameraImageProcessingControl</class>
+        <class>QCameraInfo</class>
+        <class>QCameraInfoControl</class>
         <class>QCameraLocksControl</class>
         <class>QCameraViewfinderSettingsControl</class>
         <class>QCameraZoomControl</class>
@@ -857,6 +862,7 @@
         <class>QMediaAudioProbeControl</class>
         <class>QMediaAvailabilityControl</class>
         <class>QMediaBindableInterface</class>
+        <class>QMediaServiceCameraInfoInterface</class>
         <class>QMediaContainerControl</class>
         <class>QMediaContent</class>
         <class>QMediaControl</class>
@@ -946,6 +952,7 @@
         <!-- QtPrintSupport -->
         <class>QAbstractPrintDialog</class>
         <class>QPageSetupDialog</class>
+        <class>QPlatformPrintDevice</class>
         <class>QPrintDialog</class>
         <class>QPrintEngine</class>
         <class>QPrintPreviewDialog</class>
@@ -987,6 +994,7 @@
         <class>QQuickPaintedItem</class>
         <class>QQuickTextureFactory</class>
         <class>QQuickView</class>
+        <class>QQuickWidget</class>
         <class>QQuickWindow</class>
         <class>QSGBasicGeometryNode</class>
         <class>QSGClipNode</class>
@@ -1204,9 +1212,17 @@
         <class>QNdefNfcTextRecord</class>
         <class>QNdefNfcUriRecord</class>
         <class>QNdefRecord</class>
+        <class>QNearFieldShareManager</class>
+        <class>QNearFieldShareTarget</class>
         <class>QNearFieldManager</class>
         <class>QNearFieldTarget</class>
-	
+        
+	<!-- WebSockets -->
+        <class>QMaskGenerator</class>
+	<class>QWebSocket</class>
+        <class>QWebSocketCorsAuthenticator</class>
+        <class>QWebSocketServer</class>
+        
         <!-- namespaces -->
         <class>Qt</class>
         <class>QDBus</class>

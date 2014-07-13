@@ -64,6 +64,10 @@
 #ifdef QT_NFC_LIB // untested
 #include <QtNfc/QtNfc>
 #endif
+#ifdef QT_WEBSOCKETS_LIB // untested
+#include <QtWebSockets/QtWebSockets>
+#endif
+
 
 // some MS headers do
 // #define interface struct

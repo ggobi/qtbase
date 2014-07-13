@@ -46,7 +46,7 @@ qt5_use_modules(smokeqt Widgets)
 set(QT_MODULES Multimedia MultimediaWidgets Network Qml Quick Sql Test
                WebKit WebKitWidgets DBus Svg XmlPatterns
                PrintSupport Help UiTools SerialPort Sensors
-               Bluetooth Nfc Positioning)
+               Bluetooth Nfc Positioning WebSockets)
 
 qt5_optional_use_modules(smokeqt ${QT_MODULES})
 
