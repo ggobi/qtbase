@@ -809,6 +809,18 @@ SEXP to_sexp(QMargins margins) {
   return rmargins;
 }
 
+#if QT_VERSION >= 0x50300
+SEXP to_sexp(QMarginsF margins) {
+  SEXP rmargins = allocVector(REALSXP, 4);
+  double *rptr = REAL(rmargins);
+  rptr[0] = margins.bottom();
+  rptr[1] = margins.left();
+  rptr[2] = margins.top();
+  rptr[3] = margins.right();
+  return rmargins;
+}
+#endif
+
 #ifdef QT_TESTLIB_LIB
 DEF_COLLECTION_CONVERTERS(QList, QTestEvent*, ptr)
 SEXP to_sexp(QTestEventList eventList) {
@@ -895,6 +907,9 @@ DEF_COERCE_ENTRY_POINT(QColor)
 DEF_COERCE_ENTRY_POINT(QChar)
 DEF_COERCE_ENTRY_POINT(QItemSelection)
 DEF_COERCE_ENTRY_POINT(QMargins)
+#if QT_VERSION >= 0x50300
+DEF_COERCE_ENTRY_POINT(QMarginsF)
+#endif
 
 #ifdef QT_TESTLIB_LIB
 SEXP qt_coerce_QSignalSpy(SEXP sexp) {

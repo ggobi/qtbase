@@ -36,3 +36,6 @@ as.list.QSignalSpy <- function(x, ...) .Call("qt_coerce_QSignalSpy", x, PACKAGE=
 as.vector.QMargins <- function(x, mode) as.vector(as.integer(x), mode)
 as.integer.QMargins <- function(x, ...) .Call("qt_coerce_QMargins", x, PACKAGE="qtbase")
 
+as.vector.QMarginsF <- function(x, mode) as.vector(as.integer(x), mode)
+as.integer.QMarginsF <- function(x, ...) .Call("qt_coerce_QMarginsF", x, PACKAGE="qtbase")
+

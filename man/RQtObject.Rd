@@ -39,6 +39,7 @@
     \item{\code{QPolygon(F)}}{=> \code{matrix}}
     \item{\code{QTransform}}{=> \code{matrix}}
     \item{\code{QColor}}{=> \code{matrix}}
+    \item{\code{QMargins(F)}}{=> \code{vector}, \code{integer} (\code{double})}
   }
 }
 \seealso{
