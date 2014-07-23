@@ -151,6 +151,10 @@ if(Qt5Nfc_FOUND)
   get_target_property(QtNfc_location Qt5::Nfc LOCATION)
   set(LIB_LOC ${LIB_LOC} ${QtNfc_location})
 endif(Qt5Nfc_FOUND)
+if(Qt5WebSockets_FOUND)
+  get_target_property(QtWebSockets_location Qt5::WebSockets LOCATION)
+  set(LIB_LOC ${LIB_LOC} ${QtWebSockets_location})
+endif(Qt5WebSockets_FOUND)
 target_link_libraries(qtbase smokeqt ${R_LIBRARIES} ${LIB_LOC})
 
 ## Seems GCC does not consider the dependencies of smokeqt.a, so it
