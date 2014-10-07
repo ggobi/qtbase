@@ -58,7 +58,7 @@ QPair<rpp::Anchor, uint> ParseSession::positionAndSpaceAt(std::size_t offset, bo
 
 std::size_t ParseSession::size() const
 {
-  return m_contents.size() + 1;
+  return m_contents.size();
 }
 
  uint* ParseSession::contents()
