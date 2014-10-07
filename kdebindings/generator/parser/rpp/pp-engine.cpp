@@ -222,8 +222,14 @@ void pp::operator () (Stream& input, Stream& output)
     } else if (input == '#') {
       skip_blanks(++input, devnull());
 
+      const int preIdentifierOffset = input.offset();
       uint directive = skip_identifier(input);
 
+      // If we have not advanced it means there was no directive, so we can
+      // just move on. It happens in lines such as "#\n" or "# // comment".
+      if (input.offset() == preIdentifierOffset)
+        continue;
+      
       skip_blanks(input, devnull());
 
       Anchor inputPosition = input.inputPosition();
