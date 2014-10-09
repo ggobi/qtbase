@@ -13,7 +13,7 @@
 
 #include <Rinternals.h>
 
-#ifndef WIN32
+#ifndef Q_OS_WIN
 /* We need these symbols, but <Rinterface.h> declares them using C99
    uintptr_t, which no longer works with gcc 4.4. It seems like
    quintptr is more or less an alias. Could probably check something
@@ -50,7 +50,7 @@ static int needs_init = 1;
 static void callback_input_handler();
 static void QEventLoop_exec();
 
-#endif/* WIN32 */
+#endif/* Q_OS_WIN */
 
 
 /* Much of this code inspired by Simon Urbanek's CarbonEL package */
@@ -65,7 +65,7 @@ static int processingEvent = 0;
 static int fired = 0, active = 1;
 static QtMessageHandler prevMsgHandler;
 
-#ifndef WIN32
+#ifndef Q_OS_WIN
 InputHandler *eventLoopInputHandler = NULL;
 static int ifd, ofd;
 //static int fired = 0, active = 1;//moved outside of ifndef WIN32
@@ -101,7 +101,7 @@ void EventLoop::run() {
 }
 
 #else
-/* WIN32 */
+/* Q_OS_WIN */
 void EventLoop::run() {						   
   //Do busy polling in Windows too
   while(active) {
@@ -152,7 +152,7 @@ void R_Qt_msgHandler(QtMsgType type, const QMessageLogContext &context,
   }
 }
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 /* on Windows we have to guarantee that run_callback is performed
    on the main thread, so we have to dispatch it through a message */
 //static void run_callback_main_thread(bg_conn_t *c);
@@ -201,7 +201,7 @@ static void first_init()
                                 HWND_MESSAGE, NULL, instance, NULL);
   needs_init = 0;
 }									
-#endif/* WIN32 */
+#endif/* Q_OS_WIN */
 
 static void 
 R_Qt_init()
@@ -210,17 +210,17 @@ R_Qt_init()
   app = new QApplication(qapp_argc, qapp_argv);
   //following call starts a thread and will run the Qt event loop
   //there, which may never return -- Kaiser app->exec();
-#ifdef WIN32
-  /* WIN32 */
+#ifdef Q_OS_WIN
+  /* Q_OS_WIN */
   if (needs_init) /* initialization may need to be performed on first use */
 	first_init();  
-#endif/* WIN32 */
+#endif/* Q_OS_WIN */
 }
 								
 static void 
 R_Qt_cleanup()
 {
-#ifndef WIN32
+#ifndef Q_OS_WIN
   active = FALSE;
   eventLoop->wait();
   delete eventLoop;
@@ -235,7 +235,7 @@ R_Qt_cleanup()
 }
 
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 /* Windows implementation uses threads to do the same as watching the
    FD and the main event loop to synchronize with R through a
    message-only window which is created on the R thread */
@@ -261,7 +261,7 @@ void EventLoop::begin() {
   if (!qApp) {
     R_Qt_init();
 
-#ifndef WIN32
+#ifndef Q_OS_WIN
     int fds[2];
     
     /* Experimental timer-based piping to a file descriptor */
@@ -276,7 +276,7 @@ void EventLoop::begin() {
       eventLoop->start();
     } else error("Failed to establish pipe for event handling");
 #else
-    /* WIN32 */
+    /* Q_OS_WIN */
     /* do the desired Windows synchronization */
     /* disable stack checking, because threads will thow it off */
     R_CStackLimit = (uintptr_t) -1;
