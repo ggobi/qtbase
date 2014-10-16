@@ -8,6 +8,7 @@
 #include <QTime>
 #include <QPolygon>
 #include <QColor>
+#include <QMargins>
 #include <QRectF>
 #include <QRect>
 #include <QLine>
