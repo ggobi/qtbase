@@ -155,7 +155,7 @@ extern "C" SEXP qt_qmetacall(SEXP x, SEXP s_call, SEXP s_id, SEXP s_args)
   return ScalarInteger(id - count);
 }
 
-#define DEBUG
+#undef DEBUG
 
 /* Presumably R will pass the metadata blob at class definition time,
    and store QMetaObject reference. When the
