@@ -822,7 +822,6 @@
         <class>QWebPage::ViewportAttributes</class>
 
         <!-- QtMultimedia -->
-        <class>QAbstractVideoBuffer</class>
         <class>QAbstractVideoSurface</class>
         <class>QAudioBuffer</class>
         <class>QAudioDecoder</class>
