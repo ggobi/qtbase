@@ -18,7 +18,9 @@ macro(qt5_optional_use_modules _target)
   endforeach()
 endmacro()
 
+if(NOT WIN32)
 set(CMAKE_CXX_FLAGS "-fPIC")
+endif(NOT WIN32)
 
 add_subdirectory(generator)
 add_subdirectory(smoke)
