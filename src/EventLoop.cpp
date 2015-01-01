@@ -59,7 +59,7 @@ static void QEventLoop_exec();
 
 QApplication *app;
 static int qapp_argc = 2;
-static char *qapp_argv[] = { "qtbase", "-nograb" };
+static const char *qapp_argv[] = { "qtbase", "-nograb" };
 
 static int processingEvent = 0;
 static int fired = 0, active = 1;
@@ -207,7 +207,7 @@ static void
 R_Qt_init()
 {
   prevMsgHandler = qInstallMessageHandler(R_Qt_msgHandler);
-  app = new QApplication(qapp_argc, qapp_argv);
+  app = new QApplication(qapp_argc, (char **)qapp_argv);
   //following call starts a thread and will run the Qt event loop
   //there, which may never return -- Kaiser app->exec();
 #ifdef Q_OS_WIN
