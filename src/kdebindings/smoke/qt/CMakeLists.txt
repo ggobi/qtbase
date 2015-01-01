@@ -29,7 +29,6 @@ ENDIF(CMAKE_CXX_FLAGS MATCHES "-fvisibility")
 
 add_definitions(-DBASE_SMOKE_BUILDING)
 
-# kde4_add_library(smokeqt SHARED ${smokeqt_LIB_SRCS})
 add_library(smokeqt STATIC ${smokeqt_LIB_SRCS})
 
 set_target_properties(smokeqt PROPERTIES VERSION 3.0.0 SOVERSION 3 )
@@ -38,15 +37,7 @@ if( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
   set_target_properties(smokeqt PROPERTIES COMPILE_FLAGS "-fPIC")
 endif( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
 
-INCLUDE(CMakeForceCompiler)
-CMAKE_FORCE_CXX_COMPILER(${R_CXX} R_CXX)
-
 qt5_use_modules(smokeqt Widgets)
-
-set(QT_MODULES Multimedia MultimediaWidgets Network Qml Quick Sql Test
-               WebKit WebKitWidgets DBus Svg XmlPatterns
-               PrintSupport Help UiTools SerialPort Sensors
-               Bluetooth Nfc Positioning WebSockets)
 
 qt5_optional_use_modules(smokeqt ${QT_MODULES})
 
@@ -102,9 +93,6 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/smokedata.cpp
             ${CMAKE_CURRENT_BINARY_DIR}/../qtdefines
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
-# Don't use the KDE ${LIB_INSTALL_DIR} macro here as this file is
-# for Qt only installs
-# install(TARGETS smokeqt DESTINATION lib${LIB_SUFFIX} )
-
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/../qtdefines
-  ${CMAKE_CURRENT_BINARY_DIR}/config.xml DESTINATION share/kdebindings )
+  ${CMAKE_CURRENT_BINARY_DIR}/config.xml
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/share/kdebindings )

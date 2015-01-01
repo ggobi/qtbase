@@ -1,0 +1,4 @@
+SMOKE stands for "Scripting Meta Object Kompiler Engine" - for instance ;)
+
+This directory compiles a smokeqt library, which
+contain interfaces to (almost) all Qt classes.

@@ -14,6 +14,3 @@ set_target_properties(generator_smoke PROPERTIES PREFIX "")
 qt5_use_modules(generator_smoke Core Xml)
 
 install(TARGETS generator_smoke LIBRARY DESTINATION ${LIB_INSTALL_DIR}/smokegen/)
-
-INCLUDE(CMakeForceCompiler)
-CMAKE_FORCE_CXX_COMPILER(${R_CXX} R_CXX)

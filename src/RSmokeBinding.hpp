@@ -2,7 +2,7 @@
 #define R_SMOKE_BINDING_H
 
 #include <smoke.h>
-#include <smoke/qt_smoke.h>
+#include <qt_smoke.h>
 
 /*
  * This class will intercept all virtual method calls and will get

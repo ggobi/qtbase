@@ -42,6 +42,3 @@ install(FILES generatorenvironment.h  generator_export.h  generatorpreprocessor.
 
 add_subdirectory(smokebase)
 add_subdirectory(generators)
-
-INCLUDE(CMakeForceCompiler)
-CMAKE_FORCE_CXX_COMPILER(${R_CXX} R_CXX)

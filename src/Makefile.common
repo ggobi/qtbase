@@ -1,8 +1,9 @@
 RBIN := "${R_HOME}/bin/R"
 
 CXX := $(shell ${RBIN} CMD config CXX)
-CXX_BIN := $(firstword ${CXX})
-CXX_ARGS := $(filter-out $(CXX_BIN), $(CXX)) 
+CXX_NAME := $(firstword ${CXX})
+CXX_BIN := $(shell which ${CXX_NAME})
+CXX_ARGS := $(filter-out ${CXX_NAME}, $(CXX))
 
 SHLIB_CXXLD := $(shell ${RBIN} CMD config SHLIB_CXXLD)
 SHLIB_CXXLD_BIN := $(firstword ${SHLIB_CXXLD})
@@ -14,27 +15,20 @@ SHARED_LINKER_FLAGS = ${SHLIB_CXXLD_ARGS} ${LDFLAGS} ${SHLIB_CXXLDFLAGS}
 EXE_LINKER_FLAGS = ${SHLIB_CXXLD_ARGS} ${LDFLAGS}
 MODULE_LINKER_FLAGS = ${SHLIB_CXXLD_ARGS} ${LDFLAGS}
 
-CMAKE_ARGS += -DR_CXX="${CXX_BIN}" \
+CMAKE_ARGS += -DR_INCLUDES=${R_INCLUDE_DIR} \
 	      -DCMAKE_CXX_FLAGS="${CXX_ARGS}" \
-	      -DCMAKE_SHARED_LINKER_FLAGS="${SHARED_LINKER_FLAGS}"
+              -DCMAKE_CXX_COMPILER="${CXX_BIN}" \
+	      -DCMAKE_SHARED_LINKER_FLAGS="${SHARED_LINKER_FLAGS}" \
+	      -DCMAKE_EXE_LINKER_FLAGS="${EXE_LINKER_FLAGS}" \
+	      -DCMAKE_MODULE_LINKER_FLAGS="${MODULE_LINKER_FLAGS}"
 
 all:
-	mkdir -p ../kdebindings-build;
-	cd ../kdebindings-build; \
-	${CMAKE} ../kdebindings $(CMAKE_ARGS) \
-	      -DCMAKE_INSTALL_PREFIX=../inst/local \
-	      -DCMAKE_EXE_LINKER_FLAGS="${EXE_LINKER_FLAGS}" \
-	      -DCMAKE_MODULE_LINKER_FLAGS="${MODULE_LINKER_FLAGS}"; \
-	LD_LIBRARY_PATH=../../generator/bin make install 
 	mkdir -p ../src-build;
 	cd ../src-build; \
-	${CMAKE} ../src $(CMAKE_ARGS) \
-	      -DCMAKE_INSTALL_PREFIX=../src \
-	      -DR_INCLUDES=${R_INCLUDE_DIR}; \
-	make install
+	${CMAKE} ../src $(CMAKE_ARGS); \
+	LD_LIBRARY_PATH=../../generator/bin make install
 
 clean:
-	rm -rf ../kdebindings-build
 	rm -rf ../src-build
 	rm -rf ../inst/local
 	rm -rf qtbase.so qtbase.dll

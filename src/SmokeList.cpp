@@ -1,5 +1,5 @@
 #include <QByteArray>
-#include <smoke/qt_smoke.h>
+#include <qt_smoke.h>
 
 #include "SmokeList.hpp"
 

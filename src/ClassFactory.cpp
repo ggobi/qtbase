@@ -1,4 +1,4 @@
-#include <smoke/qt_smoke.h>
+#include <qt_smoke.h>
 
 #include "ClassFactory.hpp"
 #include "SmokeClass.hpp"

@@ -1,4 +1,4 @@
-#include <smoke/qt_smoke.h>
+#include <qt_smoke.h>
 
 /* For QVariant conversion */
 #include <QCursor>

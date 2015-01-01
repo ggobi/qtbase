@@ -12,7 +12,7 @@
 #include "Property.hpp"
 #include "convert.hpp"
 
-#include <smoke/qt_smoke.h>
+#include <qt_smoke.h>
 
 extern "C" SEXP qt_qmocMethods(SEXP x) {
   const QMetaObject *meta = unwrapSmoke(x, QMetaObject);

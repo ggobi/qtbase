@@ -41,6 +41,3 @@ target_link_libraries(cppparser ${QT_QTCORE_LIBRARY})
 qt5_use_modules(cppparser Core)
 
 install(TARGETS cppparser DESTINATION ${LIB_INSTALL_DIR})
-
-INCLUDE(CMakeForceCompiler)
-CMAKE_FORCE_CXX_COMPILER(${R_CXX} R_CXX)
