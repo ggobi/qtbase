@@ -1,10 +1,14 @@
 cmake_minimum_required(VERSION 2.8.8)
 
+find_program(CMAKE_CXX_COMPILER ${R_CXX})
+
 project(qtbase)
 
 if(POLICY CMP0020)
   cmake_policy(SET CMP0020 OLD)
 endif()
+
+# message("CXX compiler: ${CMAKE_CXX_COMPILER}")
 
 find_package(Qt5Core 5.2.0)
 
