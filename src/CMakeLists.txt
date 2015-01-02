@@ -29,6 +29,11 @@ set(QT_MODULES Multimedia MultimediaWidgets Network Qml Quick Sql Test
                PrintSupport Help UiTools SerialPort Sensors
                Bluetooth Nfc Positioning WebSockets)
 
+## QtUiTools not linked correctly on Windows (_personality_v0 missing symbol)
+if(WIN32)
+list(REMOVE_ITEM QT_MODULES UiTools)
+endif(WIN32)
+
 add_subdirectory(kdebindings)
 
 set(CMAKE_INSTALL_PREFIX ../src)
@@ -68,11 +73,6 @@ endif(WIN32)
 qt5_use_modules(qtbase Widgets)
 
 qt5_optional_use_modules(qtbase ${QT_MODULES})
-
-## QtUiTools not linked correctly on Windows (_personality_v0 missing symbol)
-if(WIN32)
-set(QT_USE_QTUITOOLS FALSE)
-endif(WIN32)
 
 ##set_target_properties(qtbase PROPERTIES COMPILE_FLAGS "-ggdb")
 set_target_properties(qtbase PROPERTIES COMPILE_FLAGS "-std=c++11")
