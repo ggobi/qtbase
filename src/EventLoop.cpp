@@ -136,7 +136,8 @@ static EventLoop* eventLoop = NULL;
 void R_Qt_msgHandler(QtMsgType type, const QMessageLogContext &context,
                      const QString &msg)
 {
-  const char *charMsg = msg.toLocal8Bit().constData();
+  QByteArray bytes = msg.toLocal8Bit();
+  const char *charMsg = bytes.constData();
   switch (type) {
   case QtDebugMsg:
     Rprintf("Debug: %s\n", charMsg);
