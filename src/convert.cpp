@@ -655,8 +655,10 @@ SEXP to_sexp(QByteArray s) {
 SEXP to_sexp(QList<QString> list) {
   SEXP vector;
   PROTECT(vector = allocVector(STRSXP, list.size()));
-  for(int i = 0; i < length(vector); ++i )
-    SET_STRING_ELT(vector, i, mkChar(list.at(i).toLocal8Bit().data()));
+  for(int i = 0; i < length(vector); ++i ) {
+    QByteArray bytes = list.at(i).toLocal8Bit();
+    SET_STRING_ELT(vector, i, mkChar(bytes.constData()));
+  }
   UNPROTECT(1);
   return vector;
 }

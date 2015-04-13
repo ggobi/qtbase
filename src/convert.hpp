@@ -218,7 +218,8 @@ template<> inline QString from_sexp<QString>(SEXP s) {
 inline SEXP to_sexp(QString s) {
   if (s.isNull())
     return R_NilValue;
-  return ScalarString(mkChar(s.toLocal8Bit().data()));
+  QByteArray bytes = s.toLocal8Bit();
+  return ScalarString(mkChar(bytes.constData()));
 }
 
 // const char*
