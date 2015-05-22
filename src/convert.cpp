@@ -333,7 +333,8 @@ QVariant qvariant_from_sexp(SEXP rvalue, int index) {
     */
     if (TYPEOF(rvalue) == RAWSXP)
       return QVariant(from_sexp<QByteArray>(rvalue));
-    else if (TYPEOF(rvalue) == VECSXP || length(rvalue) > 1) {
+    else if (TYPEOF(rvalue) == VECSXP ||
+	     (isVector(rvalue) && length(rvalue) > 1)) {
       SEXP rlist = coerceVector(rvalue, VECSXP);
       if (getAttrib(rvalue, R_NamesSymbol) != R_NilValue)
         variant = asQVariantOfType(rlist, QMetaType::QVariantMap);
