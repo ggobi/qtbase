@@ -1,6 +1,8 @@
 
 .noGenerics <- TRUE
 
+globalVariables("this")
+
 .onUnload <- function(libpath) {
  .Call("cleanupQtApp", PACKAGE="qtbase")
  library.dynam.unload("qtbase", libpath)
