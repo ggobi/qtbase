@@ -1,5 +1,5 @@
 Package: qtbase
-Version: 1.0.6
+Version: 1.0.8
 Title: Interface Between R and Qt 
 Author: Michael Lawrence, Deepayan Sarkar
 Depends: R (>= 2.10.0), methods, utils
