@@ -26,7 +26,7 @@ QVariant MocProperty::stackItemToQVariant(const Smoke::StackItem &item,
   QVector<SmokeType> types;
   types += SmokeType(s, _property.typeName());
   MocStack mocStack(SmokeStack(const_cast<Smoke::Stack>(&item), 1), types);
-  QVariant(_property.type(), mocStack.items()[0]);
+  return QVariant(_property.type(), mocStack.items()[0]);
 }
 
 /* We could either call QObject::property and convert between QVariant
