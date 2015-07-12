@@ -370,7 +370,7 @@ template<> QList<QVariant> from_sexp<QList<QVariant> >(SEXP s,
                                                        const SmokeType &type);
 
 /* QByteArray <-> raw or character vector */
-template<> QByteArray from_sexp<QByteArray>(SEXP sexp, const SmokeType &type);
+template<> QByteArray from_sexp<QByteArray>(SEXP sexp);
 SEXP to_sexp(QByteArray s);
 
 /* QString <-> character vector */

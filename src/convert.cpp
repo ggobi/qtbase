@@ -588,7 +588,7 @@ QVariant asQVariantOfType(SEXP rvalue, QMetaType::Type type, bool tryDirect)
 }
 
 template<> QByteArray
-from_sexp<QByteArray>(SEXP sexp, const SmokeType &type) {
+from_sexp<QByteArray>(SEXP sexp) {
   if (sexp == R_NilValue)
     return QByteArray(0);
   int len = 0;
