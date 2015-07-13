@@ -29,3 +29,6 @@ include(${QT_USE_FILE})
 
 add_subdirectory(generator)
 add_subdirectory(smoke)
+
+INCLUDE(CMakeForceCompiler)
+CMAKE_FORCE_CXX_COMPILER(${R_CXX} R_CXX)
