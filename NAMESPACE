@@ -1,5 +1,7 @@
 # imports
-importFrom(methods, is)
+importFrom(grDevices, col2rgb, xy.coords)
+importFrom(utils, download.file, head, menu, tail, unzip)
+import(methods)
 
 # metadata
 export(qproperties)
