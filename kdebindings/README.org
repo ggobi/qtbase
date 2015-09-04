@@ -1,0 +1,16 @@
+#+TITLE: Kdebindings
+
+The code under this directory was originally imported from the
+[[https://projects.kde.org/projects/kde/kdebindings][kdebindings]] project. We embedded =kdebindings= within =qtbase= to ease
+distribution by minimizing external system dependencies. There were
+some initial changes to the build configuration so that it would build
+inside of =qtbase=. Since then, all changes have been recorded in the
+git history. As of yet, none of the changes have been appropriate for
+pushing upstream.
+
+Soon after the import, the =kdebindings= project reorganized its code
+base and changed how the bindings are configured. The new layout was
+not very convenient for our design, so we diverged. Thus, we now need
+to maintain the build scripts, XML configuration files, etc. It
+remains fairly easy to port upstream improvements to the Smoke
+generator, and we try to synchronize occasionally.
