@@ -1,7 +1,6 @@
 project(parser)
 
-## because CMakeForceCompiler is using deprecated behavior
-cmake_policy(SET CMP0054 OLD)
+find_program(CMAKE_CXX_COMPILER ${R_CXX})
 
 # add_subdirectory(tests)
 
@@ -42,6 +41,3 @@ add_library(cppparser SHARED ${cppparser_LIB_SRCS})
 target_link_libraries(cppparser ${QT_QTCORE_LIBRARY})
 
 install(TARGETS cppparser DESTINATION ${LIB_INSTALL_DIR})
-
-INCLUDE(CMakeForceCompiler)
-CMAKE_FORCE_CXX_COMPILER(${R_CXX} R_CXX)

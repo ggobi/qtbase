@@ -1,5 +1,4 @@
-## because CMakeForceCompiler is using deprecated behavior
-cmake_policy(SET CMP0054 OLD)
+find_program(CMAKE_CXX_COMPILER ${R_CXX})
 
 configure_file(config.xml.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.xml @ONLY)
 
@@ -92,9 +91,6 @@ set_target_properties(smokeqt PROPERTIES VERSION 3.0.0 SOVERSION 3 )
 if( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
   set_target_properties(smokeqt PROPERTIES COMPILE_FLAGS "-fPIC")
 endif( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
-
-INCLUDE(CMakeForceCompiler)
-CMAKE_FORCE_CXX_COMPILER(${R_CXX} R_CXX)
 
 # Don't use the KDE ${LIB_INSTALL_DIR} macro here as this file is
 # for Qt only installs

@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.8.1)
 
-## because CMakeForceCompiler is using deprecated behavior
-cmake_policy(SET CMP0054 OLD)
+find_program(CMAKE_CXX_COMPILER ${R_CXX})
 
 project(qtbase)
 
@@ -77,7 +76,3 @@ install(TARGETS qtbase LIBRARY DESTINATION . )
 else(NOT WIN32)
 install(TARGETS qtbase RUNTIME DESTINATION . )
 endif(NOT WIN32)
-
-INCLUDE(CMakeForceCompiler)
-CMAKE_FORCE_CXX_COMPILER(${R_CXX} R_CXX)
-
