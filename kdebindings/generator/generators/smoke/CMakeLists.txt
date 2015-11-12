@@ -1,5 +1,8 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../..)
 
+## because CMakeForceCompiler is using deprecated behavior
+cmake_policy(SET CMP0054 OLD)
+
 set(generator_smoke_SRC
     generator_smoke.cpp
     writeClasses.cpp

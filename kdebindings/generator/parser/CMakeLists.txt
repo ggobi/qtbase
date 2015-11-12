@@ -1,5 +1,8 @@
 project(parser)
 
+## because CMakeForceCompiler is using deprecated behavior
+cmake_policy(SET CMP0054 OLD)
+
 # add_subdirectory(tests)
 
 ########### next target ###############

@@ -1,3 +1,6 @@
+## because CMakeForceCompiler is using deprecated behavior
+cmake_policy(SET CMP0054 OLD)
+
 configure_file(config.xml.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.xml @ONLY)
 
 IF(NOT PERL_FOUND)

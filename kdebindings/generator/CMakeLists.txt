@@ -1,5 +1,8 @@
 project(smokegenerator)
 
+## because CMakeForceCompiler is using deprecated behavior
+cmake_policy(SET CMP0054 OLD)
+
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 

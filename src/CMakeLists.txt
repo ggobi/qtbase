@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 2.8.1)
 
+## because CMakeForceCompiler is using deprecated behavior
+cmake_policy(SET CMP0054 OLD)
+
 project(qtbase)
 
 find_package(Qt4 4.0.0 REQUIRED COMPONENTS QtCore QtGui)
