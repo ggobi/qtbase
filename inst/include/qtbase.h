@@ -29,8 +29,6 @@ class Smoke;
 
 #define unwrapSmoke(x, type) reinterpret_cast<type *>(_unwrapSmoke(x, #type))
 
-QT_BEGIN_DECLS
-
 void *_unwrapSmoke(SEXP x, const char *type);
 
 SEXP wrapPointer(void *ptr, QList<QByteArray> classNames = QList<QByteArray>(),
@@ -50,8 +48,5 @@ SEXP qstring2sexp(QString s);
 
 // Smoke module registration
 Smoke *registerSmokeModule(Smoke *smoke);
-
-QT_END_DECLS
-
 
 #endif
