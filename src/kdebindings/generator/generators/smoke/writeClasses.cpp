@@ -486,7 +486,11 @@ void SmokeClassFiles::writeClass(QTextStream& out, const Class* klass, const QSt
     }
     
     // destructor
-    // if the class can't be instanciated, a callback when it's deleted is unnecessary
+    
+    // if the class can't be instanciated, a callback when it's
+    // deleted is unnecessary, but we still generate a private
+    // destructor declaration, because otherwise gcc (under recent
+    // standards) will unsuccessfully attempt to generate a destructor
     if (Util::canClassBeInstanciated(klass)) {
         out << "    ~" << smokeClassName << "() ";
         if (destructor && destructor->hasExceptionSpec()) {
@@ -498,6 +502,8 @@ void SmokeClassFiles::writeClass(QTextStream& out, const Class* klass, const QSt
             out << ") ";
         }
         out << QString("{ this->_binding->deleted(%1, (void*)this); }\n").arg(m_smokeData->classIndex[className]);
+    } else {
+        out << "private:\n    ~" << smokeClassName << "();\n";
     }
     out << "};\n";
     
