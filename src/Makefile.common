@@ -2,7 +2,8 @@ RBIN := "${R_HOME}/bin/R"
 
 CXX := $(shell ${RBIN} CMD config CXX)
 CXX_BIN := $(firstword ${CXX})
-CXX_ARGS := $(filter-out $(CXX_BIN), $(CXX)) 
+CXX_FLAGS := $(shell ${RBIN} CMD config CXXFLAGS)
+CXX_ARGS := $(filter-out $(CXX_BIN), $(CXX)) ${CXX_FLAGS}
 
 SHLIB_CXXLD := $(shell ${RBIN} CMD config SHLIB_CXXLD)
 SHLIB_CXXLD_BIN := $(firstword ${SHLIB_CXXLD})
