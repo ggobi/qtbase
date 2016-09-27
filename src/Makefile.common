@@ -33,6 +33,9 @@ all:
 	      -DCMAKE_INSTALL_PREFIX=../src \
 	      -DR_INCLUDES=${R_INCLUDE_DIR}; \
 	make install
+	cd ../src; \
+	echo "tools:::.shlib_objects_symbol_tables()" | \
+          $(R_HOME)/bin/R --vanilla --slave --args `ls *.o`
 
 clean:
 	rm -rf ../kdebindings-build
