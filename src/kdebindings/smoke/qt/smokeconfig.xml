@@ -110,7 +110,7 @@
         <signature>.*QSslConfiguration::NextProtocolHttp1_1.*</signature>
         <!-- Remove the exclusion below when 5.4 is released -->
         <signature>.*QDnsLookup::QDnsLookup\(QDnsLookup::Type, const QString&amp;, const QHostAddress&amp;, QObject\*\).*</signature>
-        
+	
         <!-- QtSensors module has undocumented public static const field -->
         <signature>.*QAccelerometer::type.*</signature>
         <signature>.*QAltimeter::type.*</signature>
@@ -128,6 +128,9 @@
         <signature>.*QRotationSensor::type.*</signature>
         <signature>.*QTapSensor::type.*</signature>
         <signature>.*QTiltSensor::type.*</signature>
+
+	<!-- cxx11 move constructors look like this -->
+	<signature>.*operator=</signature>
     </exclude>
     <functions>
         <!-- include functions starting with 'q' -->
