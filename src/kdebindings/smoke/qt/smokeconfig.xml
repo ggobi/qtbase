@@ -129,8 +129,12 @@
         <signature>.*QTapSensor::type.*</signature>
         <signature>.*QTiltSensor::type.*</signature>
 
-	<!-- cxx11 move constructors look like this -->
+	<!-- cxx11 move constructors -->
 	<signature>.*operator=</signature>
+
+	<!-- QByteArray would need to be Qt:: qualified, just ignore -->
+	<signature>.*QMetaType::type\(const QByteArray&amp;\).*</signature>
+	
     </exclude>
     <functions>
         <!-- include functions starting with 'q' -->
