@@ -133,7 +133,12 @@
 
 	<!-- cxx11 move constructors -->
 	<signature>.*operator=</signature>
-
+	<signature>.*QRegion</signature>
+	<signature>.*QTransform</signature>
+	<signature>.*QXmlStreamEntityDeclaration</signature>
+	<signature>.*QXmlStreamNamespaceDeclaration</signature>
+	<signature>.*QXmlStreamNotationDeclaration</signature>
+	
 	<!-- QByteArray would need to be Qt:: qualified, just ignore -->
 	<signature>.*QMetaType::type\(const QByteArray&amp;\).*</signature>
 	
