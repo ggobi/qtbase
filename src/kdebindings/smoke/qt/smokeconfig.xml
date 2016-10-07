@@ -32,7 +32,8 @@
         <signature>.*QStringMatcher::q_data</signature>
         <signature>.*QStringMatcher::p</signature>
         <signature>.*QIPv6Address::c</signature>
-        
+	<signature>.*qt_check_for_QGADGET_macro.*</signature>
+	
         <signature>.*QGraphicsLayoutItem::QGraphicsLayoutItem\(const QGraphicsLayoutItem&amp;\).*</signature>
         <signature>.*QGraphicsSceneEvent::QGraphicsSceneEvent\(const QGraphicsSceneEvent&amp;\).*</signature>
         <signature>.*QGraphicsScene.*Event::QGraphicsScene.*Event\(const QGraphicsScene.*Event&amp;\).*</signature>
