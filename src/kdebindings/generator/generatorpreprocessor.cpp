@@ -87,6 +87,14 @@ Preprocessor::Preprocessor(const QList<QDir>& includeDirs, const QStringList& de
     m_topBlock->setMacro(exportMacro);
 #endif
 
+#ifdef __x86_64__
+    exportMacro = new rpp::pp_macro;
+    exportMacro->name = IndexedString("__x86_64__");
+    exportMacro->function_like = false;
+    exportMacro->variadics = false;
+    m_topBlock->setMacro(exportMacro);
+#endif
+    
 #if (defined(QT_ARCH_ARM) || defined (QT_ARCH_ARMV6)) && !defined(QT_NO_ARM_EABI)
     exportMacro = new rpp::pp_macro;
     exportMacro->name = IndexedString("__ARM_EABI__");
