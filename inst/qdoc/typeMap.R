@@ -24,6 +24,7 @@ typeMapBase <- c("QByteArray" = "raw", "const unsigned char \\*" = "raw",
                  size_t = "numeric[1]", GLenum = "integer[1]",
                  GLfloat = "numeric[1]", GLint = "integer[1]",
                  GLuint = "numeric[1]", GLbitfield = "numeric[1]",
+                 GLuint64 = "numeric[1]",
                  qreal = "numeric[1]")
 
 ## Goal: only replace when not part of a symbol
