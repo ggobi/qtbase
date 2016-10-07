@@ -1,5 +1,6 @@
 #include <QStringList>
 #include <QMimeData>
+#include <QDataStream>
 
 #include "DataFrameModel.hpp"
 #include "convert.hpp"
@@ -148,7 +149,7 @@ Qt::ItemFlags DataFrameModel::flags(const QModelIndex &index) const {
 static void OutCharQDS(R_outpstream_t stream, int c)
 {
   QDataStream *qds = reinterpret_cast<QDataStream *>(stream->data);
-  (*qds) << c;
+  (*qds) << (quint8)c;
 }
 
 static void OutBytesQDS(R_outpstream_t stream, void *buf, int length)
