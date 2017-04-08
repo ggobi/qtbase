@@ -44,7 +44,7 @@ const SmokeClass *RClass::smokeBase() const {
 
 QList<Method *> RClass::methods(Method::Qualifiers qualifiers) const {
   SEXP _env = methodEnv();
-  SEXP names = R_lsInternal(_env, (Rboolean)false);
+  SEXP names = PROTECT(R_lsInternal(_env, (Rboolean)false));
   QList<Method *> meths;
   for (int i = 0; i < length(names); i++) {
     const char *name = CHAR(STRING_ELT(names, i));
@@ -52,6 +52,7 @@ QList<Method *> RClass::methods(Method::Qualifiers qualifiers) const {
     if ((RMethod(this, name, fun).qualifiers() & qualifiers) == qualifiers)
       meths << new RMethod(this, name, fun);
   }
+  UNPROTECT(1);
   meths.append(parent()->methods(qualifiers | Method::NotPrivate));
   return meths;
 }

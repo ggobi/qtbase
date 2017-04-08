@@ -172,7 +172,7 @@ QStringList DataFrameModel::mimeTypes() const
 
 QMimeData *DataFrameModel::mimeData(const QModelIndexList &indexes) const
 {
-  SEXP r_list = allocVector(VECSXP, indexes.size());
+  SEXP r_list = PROTECT(allocVector(VECSXP, indexes.size()));
   for (int i = 0; i < indexes.size(); i++) {
     QModelIndex index = indexes[i];
     if (index.isValid()) {
@@ -187,6 +187,7 @@ QMimeData *DataFrameModel::mimeData(const QModelIndexList &indexes) const
   struct R_outpstream_st r_stream;
   InitQDSOutPStream(&r_stream, &stream);
   R_Serialize(r_list, &r_stream);
+  UNPROTECT(1);
   
   mimeData->setData("application/x-rlang-transport", encodedData);
   return mimeData;

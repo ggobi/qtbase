@@ -625,9 +625,10 @@ SEXP to_sexp(QList<QString> list) {
 }
 template<> QList<QString> from_sexp<QList<QString> >(SEXP vector) {
   QList<QString> list;
-  vector = coerceVector(vector, STRSXP);
+  PROTECT(vector = coerceVector(vector, STRSXP));
   for(int i = 0; i < length(vector); i++)
     list.append(from_sexp<QString>(STRING_ELT(vector, i)));
+  UNPROTECT(1);
   return list;
 }
 
