@@ -1,5 +1,5 @@
 Package: qtbase
-Version: 1.0.11
+Version: 1.0.12
 Title: Interface Between R and Qt 
 Author: Michael Lawrence, Deepayan Sarkar
 Depends: R (>= 2.10.0), methods, utils
@@ -13,3 +13,4 @@ SystemRequirements: Qt4 libraries and headers (http://qt.nokia.com),
                     cmake (http://www.cmake.org)
 Acknowledgements: QtRuby and Qyoto projects for head-start on the Smoke-based
                   interface
+OS_type: unix
