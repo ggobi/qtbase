@@ -5,7 +5,11 @@ find_program(CMAKE_CXX_COMPILER ${R_CXX})
 project(qtbase)
 
 if(POLICY CMP0020)
-  cmake_policy(SET CMP0020 OLD)
+  cmake_policy(SET CMP0020 NEW)
+endif()
+
+if(POLICY CMP0071)
+  cmake_policy(SET CMP0071 NEW)
 endif()
 
 # message("CXX compiler: ${CMAKE_CXX_COMPILER}")

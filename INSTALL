@@ -14,9 +14,10 @@ Mac OS X instructions
 ---------------------
 
 1. Make sure that you have a recent version of xcode installed.
-2. Install Qt by downloading and running the installer at
-   http://qt.nokia.com/downloads/sdk-mac-os-cpp.
-3. Install cmake (version 2.8.1 or later); obtain it from cmake.org.
+2. Install Qt using "brew install qt".
+3. Follow the homebrew instructions:
+   echo 'export PATH="/usr/local/opt/qt/bin:$PATH"' >> ~/.bash_profile
+3. Install cmake: "brew install cmake"
 4. Check your PATH, ensuring that both are visible.
 5. Run R CMD INSTALL qtbase.
 
