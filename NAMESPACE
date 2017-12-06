@@ -98,3 +98,7 @@ export(qdataFrameModel, qdataFrame, "qdataFrame<-")
 
 ## RTextFormattingDelegate
 export(qrTextFormattingDelegate)
+
+## connections
+export(qtcon)
+S3method(qtcon, QIODevice)
