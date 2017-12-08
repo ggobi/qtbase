@@ -3,13 +3,13 @@
 #include <QDoubleValidator>
 #include <QIntValidator>
 
-#include <R_ext/PrtUtil.h>
-
 #include "RTextFormattingDelegate.hpp"
 #include "NameOnlyClass.hpp"
 #include "SmokeObject.hpp"
-#include "DataFrameModel.hpp"
 #include "convert.hpp"
+#include "DataFrameModel.hpp"
+
+#include <R_ext/PrtUtil.h>
 
 QString RTextFormattingDelegate::displayText (const QVariant &value,
                                               const QLocale &locale) const
