@@ -142,6 +142,14 @@ void R_Qt_msgHandler(QtMsgType type, const QMessageLogContext &context,
   case QtDebugMsg:
     Rprintf("Debug: %s\n", charMsg);
     break;
+  case QtInfoMsg:
+      {
+	  SEXP messageCall = PROTECT(lang2(PROTECT(install("message")),
+				     PROTECT(mkString(charMsg))));
+	  eval(messageCall, R_GlobalEnv);
+	  UNPROTECT(3);
+      }
+    break;
   case QtWarningMsg:
     warning(charMsg);
     break;

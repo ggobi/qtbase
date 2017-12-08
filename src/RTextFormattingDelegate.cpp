@@ -17,7 +17,7 @@ QString RTextFormattingDelegate::displayText (const QVariant &value,
   int w, d, e;
   QString str;
   
-  switch(value.type()) {
+  switch((QMetaType::Type)value.type()) {
   case QMetaType::Bool:
     {
       int b = value.value<int>();

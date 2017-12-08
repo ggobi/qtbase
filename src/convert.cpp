@@ -74,7 +74,7 @@ DEF_STRING_MAP_CONVERTERS(QHash, QVariant)
 
 SEXP to_sexp(QVariant variant) {
   SEXP ans = NULL;
-  switch(variant.type()) {
+  switch((QMetaType::Type)(variant.type())) {
   case QMetaType::Void:
     ans = R_NilValue;
     break;
@@ -283,9 +283,9 @@ SEXP to_sexp(QVariant variant) {
 template <typename T> inline bool
 qvariant_num_into_vector(QVariant variant, T *val, T NA) {
   bool success;
-  if (success = variant.canConvert<T>()) {
+  if ((success = variant.canConvert<T>())) {
     T tmp_val = variant.value<QString>() == "NA" ? NA : variant.value<T>();
-    if (success = (tmp_val != 0 || variant.value<QString>() == "0"))
+    if ((success = (tmp_val != 0 || variant.value<QString>() == "0")))
       *val = tmp_val;
   }
   return success;
@@ -324,14 +324,14 @@ bool qvariant_into_vector(QVariant variant, SEXP v, int index) {
           if (level == 0 && qstr == "<NA>")
             level = NA_INTEGER;
         }
-        if (success = (level == NA_INTEGER ||
-                       (level > 0 && level <= length(levels))))
+        if ((success = (level == NA_INTEGER ||
+			(level > 0 && level <= length(levels)))))
           INTEGER(v)[index] = level;
       } else qvariant_num_into_vector(variant, INTEGER(v) + index, NA_INTEGER);
       break;
     }
   case STRSXP:
-    if (success = variant.canConvert<QString>())
+    if ((success = variant.canConvert<QString>()))
       SET_STRING_ELT(v, index, variant.value<QString>() == "NA" ? NA_STRING :
                      asChar(qstring2sexp(variant.value<QString>())));
     break;
