@@ -19,6 +19,9 @@
 #ifdef QT_QUICK_LIB
 #include <QtQuick/QtQuick>
 #endif
+#ifdef QT_QUICK_WIDGETS_LIB
+#include <QtQuickWidgets/QtQuickWidgets>
+#endif
 #ifdef QT_SQL_LIB
 #include <QtSql/QtSql>
 #endif
@@ -67,7 +70,60 @@
 #ifdef QT_WEBSOCKETS_LIB // untested
 #include <QtWebSockets/QtWebSockets>
 #endif
-
+#ifdef QT_WEBENGINE_LIB // untested
+#include <QtWebEngine/QtWebEngine>
+#endif
+#ifdef QT_WEBCHANNEL_LIB // untested
+#include <QtWebChannel/QtWebChannel>
+#endif
+#ifdef QT_WEBENGINECORE_LIB // untested
+#include <QtWebEngineCore/QtWebEngineCore>
+#endif
+#ifdef QT_WEBENGINEWIDGETS_LIB // untested
+#include <QtWebEngineWidgets/QtWebEngineWidgets>
+#endif
+#ifdef QT_3DANIMATION_LIB // untested
+#include <Qt3DAnimation/Qt3DAnimation>
+#endif
+#ifdef QT_3DCORE_LIB // untested
+#include <Qt3DCore/Qt3DCore>
+#endif
+#ifdef QT_3DEXTRAS_LIB // untested
+#include <Qt3DExtras/Qt3DExtras>
+#endif
+#ifdef QT_3DINPUT_LIB // untested
+#include <Qt3DInput/Qt3DInput>
+#endif
+#ifdef QT_3DLOGICL_LIB // untested
+#include <Qt3DLogic/Qt3DLogic>
+#endif
+#ifdef QT_3DRENDER_LIB // untested
+#include <Qt3DRender/Qt3DRender>
+#endif
+#ifdef QT_CHARTS_LIB // untested
+#include <QtCharts/QtCharts>
+#endif
+#ifdef QT_DATAVISUALIZATION_LIB // untested
+#include <QtDataVisualization/QtDataVisualization>
+#endif
+#ifdef QT_LOCATION_LIB // untested
+#include <QtLocation/QtLocation>
+#endif
+#ifdef QT_SCXML_LIB // untested
+#include <QtScxml/QtScxml>
+#endif
+#ifdef QT_SERIALBUS_LIB // untested
+#include <QtSerialBus/QtSerialBus>
+#endif
+#ifdef QT_GAMEPAD_LIB // untested
+#include <QtGamepad/QtGamepad>
+#endif
+#ifdef QT_NETWORKAUTH_LIB // untested
+#include <QtNetworkAuth/QtNetworkAuth>
+#endif
+#ifdef QT_TEXTOSPEECH_LIB // untested
+#include <QtTextToSpeech/QtTextToSpeech>
+#endif
 
 // some MS headers do
 // #define interface struct

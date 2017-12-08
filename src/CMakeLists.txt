@@ -14,8 +14,6 @@ if(POLICY CMP0071)
   cmake_policy(SET CMP0071 NEW)
 endif()
 
-# message("CXX compiler: ${CMAKE_CXX_COMPILER}")
-
 find_package(Qt5Core 5.2.0)
 
 set(CMAKE_AUTOMOC ON)
@@ -31,9 +29,13 @@ macro(qt5_optional_use_modules _target)
 endmacro()
 
 set(QT_MODULES Multimedia MultimediaWidgets Network Qml Quick Sql Test
-               WebKit WebKitWidgets DBus Svg XmlPatterns
+               WebKit WebKitWidgets DBus Svg XmlPatterns QuickWidgets
                PrintSupport Help UiTools SerialPort Sensors
-               Bluetooth Nfc Positioning WebSockets)
+               Bluetooth Nfc Positioning
+	       WebSockets WebEngine WebChannel WebEngineCore WebEngineWidgets
+	       3DAnimation 3DCore 3DExtras 3DInput 3DLogic 3DRender
+	       Charts DataVisualization
+	       Location Scxml SerialBus Gamepad NetworkAuth TextToSpeech)
 
 ## QtUiTools not linked correctly on Windows (_personality_v0 missing symbol)
 if(WIN32)

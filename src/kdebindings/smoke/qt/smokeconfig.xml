@@ -350,7 +350,16 @@
         <class>QMessageAuthenticationCode</class>
         <class>QLockFile</class>
         <class>QSaveFile</class>
-        
+        <class>QCommandLineParser</class>
+	<class>QTimeZone</class>
+	<class>QCollator</class>
+	<class>QStorageInfo</class>
+	<class>QVersionNumber</class>
+	<class>QOperatingSystemVersion</class>
+	<class>QStringView</class>
+	<class>QRandomGenerator</class>
+	<class>QSemaphoreReleaser</class>
+
         <!-- QtGui -->
         <class>QInputMethodEvent::Attribute</class>
         <class>QIconEngine::AvailableSizesArgument</class>
@@ -513,7 +522,11 @@
         <class>QOpenGLTimeMonitor</class>
         <class>QOpenGLDebugLogger</class>
         <class>QOpenVertexArrayObject</class>
-        
+        <class>QOpenGLTexture</class>
+	<class>QOpenGLWidget</class>
+	<class>QOpenGLWindow</class>
+	<class>QRasterWindow</class>
+	
         <!-- QtWidgets -->
         <class>QTextEdit::ExtraSelection</class>
         <class>QAbstractButton</class>
@@ -714,6 +727,7 @@
         <class>QWidgetItem</class>
         <class>QWizard</class>
         <class>QWizardPage</class>
+	<class>QKeySequenceEdit</class>
 
         <!-- QtXml -->
         <class>QDomAttr</class>
@@ -809,31 +823,6 @@
         <class>QTestKeyClicksEvent</class>
         <class>QTestKeyEvent</class>
         <class>QTestMouseEvent</class>
-
-        <!-- QtWebKitWidgets -->
-        <class>QGraphicsWebView</class>
-        <class>QWebPage::ChooseMultipleFilesExtensionOption</class>
-        <class>QWebPage::ChooseMultipleFilesExtensionReturn</class>
-        <class>QWebPage::ErrorPageExtensionOption</class>
-        <class>QWebPage::ErrorPageExtensionReturn</class>
-        <class>QWebPage::ExtensionOption</class>
-        <class>QWebPage::ExtensionReturn</class>
-        <class>QWebPluginFactory::MimeType</class>
-        <class>QWebPluginFactory::Plugin</class>
-        <class>QWebDatabase</class>
-        <class>QWebElement</class>
-        <class>QWebFrame</class>
-        <class>QWebHistory</class>
-        <class>QWebHistoryInterface</class>
-        <class>QWebHistoryItem</class>
-        <class>QWebHitTestResult</class>
-        <class>QWebInspector</class>
-        <class>QWebPage</class>
-        <class>QWebPluginFactory</class>
-        <class>QWebSecurityOrigin</class>
-        <class>QWebSettings</class>
-        <class>QWebView</class>
-        <class>QWebPage::ViewportAttributes</class>
 
         <!-- QtMultimedia -->
         <class>QAbstractVideoSurface</class>
@@ -1007,7 +996,6 @@
         <class>QQuickPaintedItem</class>
         <class>QQuickTextureFactory</class>
         <class>QQuickView</class>
-        <class>QQuickWidget</class>
         <class>QQuickWindow</class>
         <class>QSGBasicGeometryNode</class>
         <class>QSGClipNode</class>
@@ -1025,6 +1013,9 @@
         <class>QSGTransformNode</class>
         <class>QSGVertexColorMaterial</class>
         <class>QSGGeometry::TexturedPoint2D</class>
+
+	<!-- QtQuickWidgets -->
+	<class>QQuickWidget</class>
 
         <!-- QtScript -->
         <class>QScriptEngineDebugger</class>
@@ -1217,7 +1208,7 @@
         <class>QGeoShape</class>
         <class>QNmeaPositionInfoSource</class>
 
-        <!-- NFC -->
+        <!-- QtNFC -->
         <class>QDeclarativeNdefRecord</class>
         <class>QNdefFilter</class>
         <class>QNdefMessage</class>
@@ -1230,12 +1221,448 @@
         <class>QNearFieldManager</class>
         <class>QNearFieldTarget</class>
         
-	<!-- WebSockets -->
+	<!-- QtWebSockets -->
         <class>QMaskGenerator</class>
 	<class>QWebSocket</class>
         <class>QWebSocketCorsAuthenticator</class>
         <class>QWebSocketServer</class>
-        
+
+	<!-- QtWebEngineCore -->
+	<class>QWebEngineCookieStore</class>
+	<class>QWebEngineHttpRequest</class>
+	<class>QWebEngineUrlRequestInfo</class>
+	<class>QWebEngineUrlRequestInterceptor</class>
+	<class>QWebEngineUrlRequestJob</class>
+	<class>QWebEngineUrlSchemeHandler</class>
+
+	<!-- QtWebEngineWidgets -->
+	<class>QWebEngineCertificateError</class>
+	<class>QWebEngineContextMenuData</class>
+	<class>QWebEngineDownloadItem</class>
+	<class>QWebEngineFullScreenRequest</class>
+	<class>QWebEngineHistory</class>
+	<class>QWebEngineHistoryItem</class>
+	<class>QWebEnginePage</class>
+	<class>QWebEngineProfile</class>
+	<class>QWebEngineScript</class>
+	<class>QWebEngineScriptCollection</class>
+	<class>QWebEngineSettings</class>
+	<class>QWebEngineView</class>
+
+	<!-- QtWebEngine -->
+	<class>QQuickWebEngineProfile</class>
+	<class>QQuickWebEngineScript</class>
+
+	<!-- QtWebChannel -->
+	<class>QWebChannel</class>
+	<class>QWebChannelAbstractTransport</class>
+
+	<!-- Qt3DCore -->
+	<class>Qt3DCore::QAbstractAspect</class>
+	<class>Qt3DCore::QAspectEngine</class>
+	<class>Qt3DCore::QComponentAddedChange</class>
+	<class>Qt3DCore::QComponentRemovedChange</class>
+	<class>Qt3DCore::QDynamicPropertyUpdatedChange</class>
+	<class>Qt3DCore::QNodeCommand</class>
+	<class>Qt3DCore::QNodeCreatedChange</class>
+	<class>Qt3DCore::QNodeCreatedChangeBase</class>
+	<class>Qt3DCore::QNodeDestroyedChange</class>
+	<class>Qt3DCore::QPropertyNodeAddedChange</class>
+	<class>Qt3DCore::QPropertyNodeRemovedChange</class>
+	<class>Qt3DCore::QPropertyUpdatedChange</class>
+	<class>Qt3DCore::QPropertyUpdatedChangeBase</class>
+	<class>Qt3DCore::QPropertyValueAddedChange</class>
+	<class>Qt3DCore::QPropertyValueAddedChangeBase</class>
+	<class>Qt3DCore::QPropertyValueRemovedChange</class>
+	<class>Qt3DCore::QPropertyValueRemovedChangeBase</class>
+	<class>Qt3DCore::QSceneChange</class>
+	<class>Qt3DCore::QStaticPropertyUpdatedChangeBase</class>
+	<class>Qt3DCore::QStaticPropertyValueAddedChangeBase</class>
+	<class>Qt3DCore::QStaticPropertyValueRemovedChangeBase</class>
+	<class>Qt3DCore::QAspectJob</class>
+	<class>Qt3DCore::QBackendNode</class>
+	<class>Qt3DCore::QBackendNodeMapper</class>
+	<class>Qt3DCore::QComponent</class>
+	<class>Qt3DCore::QEntity</class>
+	<class>Qt3DCore::QNode</class>
+	<class>Qt3DCore::QNodeId</class>
+	<class>Qt3DCore::QAbstractSkeleton</class>
+	<class>Qt3DCore::QArmature</class>
+	<class>Qt3DCore::QJoint</class>
+	<class>Qt3DCore::QSkeleton</class>
+	<class>Qt3DCore::QSkeletonLoader</class>
+	<class>Qt3DCore::QTransform</class>
+
+	<!-- Qt3DInput -->
+	<class>Qt3DInput::QAbstractActionInput</class>
+	<class>Qt3DInput::QAbstractAxisInput</class>
+	<class>Qt3DInput::QAbstractPhysicalDevice</class>
+	<class>Qt3DInput::QAction</class>
+	<class>Qt3DInput::QActionInput</class>
+	<class>Qt3DInput::QAnalogAxisInput</class>
+	<class>Qt3DInput::QAxis</class>
+	<class>Qt3DInput::QAxisAccumulator</class>
+	<class>Qt3DInput::QAxisSetting</class>
+	<class>Qt3DInput::QButtonAxisInput</class>
+	<class>Qt3DInput::QInputAspect</class>
+	<class>Qt3DInput::QInputChord</class>
+	<class>Qt3DInput::QInputSequence</class>
+	<class>Qt3DInput::QInputSettings</class>
+	<class>Qt3DInput::QKeyboardDevice</class>
+	<class>Qt3DInput::QKeyboardHandler</class>
+	<class>Qt3DInput::QKeyEvent</class>
+	<class>Qt3DInput::QLogicalDevice</class>
+	<class>Qt3DInput::QMouseDevice</class>
+	<class>Qt3DInput::QMouseEvent</class>
+	<class>Qt3DInput::QWheelEvent</class>
+	<class>Qt3DInput::QMouseHandler</class>
+
+	<!-- Qt3DLogic -->
+	<class>Qt3DLogic::QFrameAction</class>
+	<class>Qt3DLogic::QLogicAspect</class>
+
+	<!-- Qt3DRender -->
+	<class>Qt3DRender::AssimpImporter</class>
+	<class>Qt3DRender::GLTFImporter</class>
+	<class>Qt3DRender::GLTFExporter</class>
+	<class>Qt3DRender::QBufferCapture</class>
+	<class>Qt3DRender::QCameraSelector</class>
+	<class>Qt3DRender::QClearBuffers</class>
+	<class>Qt3DRender::QDispatchCompute</class>
+	<class>Qt3DRender::QFrameGraphNode</class>
+	<class>Qt3DRender::QFrameGraphNodeCreatedChangeBase</class>
+	<class>Qt3DRender::QFrustumCulling</class>
+	<class>Qt3DRender::QLayerFilter</class>
+	<class>Qt3DRender::QMemoryBarrier</class>
+	<class>Qt3DRender::QNoDraw</class>
+	<class>Qt3DRender::QProximityFilter</class>
+	<class>Qt3DRender::QRenderCapture</class>
+	<class>Qt3DRender::QRenderCaptureReply</class>
+	<class>Qt3DRender::QRenderPassFilter</class>
+	<class>Qt3DRender::QRenderStateSet</class>
+	<class>Qt3DRender::QRenderSurfaceSelector</class>
+	<class>Qt3DRender::QRenderTargetSelector</class>
+	<class>Qt3DRender::QSortPolicy</class>
+	<class>Qt3DRender::QTechniqueFilter</class>
+	<class>Qt3DRender::QViewport</class>
+	<class>Qt3DRender::QAbstractFunctor</class>
+	<class>Qt3DRender::QCamera</class>
+	<class>Qt3DRender::QCameraLens</class>
+	<class>Qt3DRender::QComputeCommand</class>
+	<class>Qt3DRender::QLayer</class>
+	<class>Qt3DRender::QLevelOfDetail</class>
+	<class>Qt3DRender::QLevelOfDetailBoundingSphere</class>
+	<class>Qt3DRender::QLevelOfDetailSwitch</class>
+	<class>Qt3DRender::QPickingSettings</class>
+	<class>Qt3DRender::QRenderAspect</class>
+	<class>Qt3DRender::QRenderSettings</class>
+	<class>Qt3DRender::QRenderTarget</class>
+	<class>Qt3DRender::QRenderTargetOutput</class>
+	<class>Qt3DRender::QAttribute</class>
+	<class>Qt3DRender::QBuffer</class>
+	<class>Qt3DRender::QBufferDataGenerator</class>
+	<class>Qt3DRender::QGeometry</class>
+	<class>Qt3DRender::QGeometryRenderer</class>
+	<class>Qt3DRender::QMesh</class>
+	<class>Qt3DRender::QSceneLoader</class>
+	<class>Qt3DRender::QAbstractLight</class>
+	<class>Qt3DRender::QDirectionalLight</class>
+	<class>Qt3DRender::QEnvironmentLight</class>
+	<class>Qt3DRender::QPointLight</class>
+	<class>Qt3DRender::QSpotLight</class>
+	<class>Qt3DRender::QEffect</class>
+	<class>Qt3DRender::QFilterKey</class>
+	<class>Qt3DRender::QGraphicsApiFilter</class>
+	<class>Qt3DRender::QMaterial</class>
+	<class>Qt3DRender::QParameter</class>
+	<class>Qt3DRender::QRenderPass</class>
+	<class>Qt3DRender::QShaderData</class>
+	<class>Qt3DRender::QShaderProgram</class>
+	<class>Qt3DRender::QShaderProgramBuilder</class>
+	<class>Qt3DRender::QTechnique</class>
+	<class>Qt3DRender::QObjectPicker</class>
+	<class>Qt3DRender::QPickEvent</class>
+	<class>Qt3DRender::QPickLineEvent</class>
+	<class>Qt3DRender::QPickPointEvent</class>
+	<class>Qt3DRender::QPickTriangleEvent</class>
+	<class>Qt3DRender::QAlphaCoverage</class>
+	<class>Qt3DRender::QAlphaTest</class>
+	<class>Qt3DRender::QBlendEquation</class>
+	<class>Qt3DRender::QBlendEquationArguments</class>
+	<class>Qt3DRender::QClipPlane</class>
+	<class>Qt3DRender::QColorMask</class>
+	<class>Qt3DRender::QCullFace</class>
+	<class>Qt3DRender::QDepthTest</class>
+	<class>Qt3DRender::QDithering</class>
+	<class>Qt3DRender::QFrontFace</class>
+	<class>Qt3DRender::QLineWidth</class>
+	<class>Qt3DRender::QMultiSampleAntiAliasing</class>
+	<class>Qt3DRender::QNoDepthMask</class>
+	<class>Qt3DRender::QPointSize</class>
+	<class>Qt3DRender::QPolygonOffset</class>
+	<class>Qt3DRender::QRenderState</class>
+	<class>Qt3DRender::QScissorTest</class>
+	<class>Qt3DRender::QSeamlessCubemap</class>
+	<class>Qt3DRender::QStencilMask</class>
+	<class>Qt3DRender::QStencilOperation</class>
+	<class>Qt3DRender::QStencilOperationArguments</class>
+	<class>Qt3DRender::QStencilTest</class>
+	<class>Qt3DRender::QStencilTestArguments</class>
+	<class>Qt3DRender::QAbstractTexture</class>
+	<class>Qt3DRender::QAbstractTextureImage</class>
+	<class>Qt3DRender::QPaintedTextureImage</class>
+	<class>Qt3DRender::QTexture1D</class>
+	<class>Qt3DRender::QTexture1DArray</class>
+	<class>Qt3DRender::QTexture2D</class>
+	<class>Qt3DRender::QTexture2DArray</class>
+	<class>Qt3DRender::QTexture2DMultisample</class>
+	<class>Qt3DRender::QTexture2DMultisampleArray</class>
+	<class>Qt3DRender::QTexture3D</class>
+	<class>Qt3DRender::QTextureBuffer</class>
+	<class>Qt3DRender::QTextureCubeMap</class>
+	<class>Qt3DRender::QTextureCubeMapArray</class>
+	<class>Qt3DRender::QTextureLoader</class>
+	<class>Qt3DRender::QTextureRectangle</class>
+	<class>Qt3DRender::QTextureData</class>
+	<class>Qt3DRender::QTextureImage</class>
+	<class>Qt3DRender::QTextureImageData</class>
+	<class>Qt3DRender::QTextureImageDataGenerator</class>
+	<class>Qt3DRender::QTextureWrapMode</class>
+
+	<!-- Qt3DExtras -->
+	<class>Qt3DExtras::QExtrudedTextGeometry</class>
+	<class>Qt3DExtras::QExtrudedTextMesh</class>
+	<class>Qt3DExtras::QAbstractCameraController</class>
+	<class>Qt3DExtras::QDiffuseSpecularMaterial</class>
+	<class>Qt3DExtras::QFirstPersonCameraController</class>
+	<class>Qt3DExtras::QForwardRenderer</class>
+	<class>Qt3DExtras::QGoochMaterial</class>
+	<class>Qt3DExtras::QMetalRoughMaterial</class>
+	<class>Qt3DExtras::QMorphPhongMaterial</class>
+	<class>Qt3DExtras::QOrbitCameraController</class>
+	<class>Qt3DExtras::QPerVertexColorMaterial</class>
+	<class>Qt3DExtras::QSkyboxEntity</class>
+	<class>Qt3DExtras::QTextureMaterial</class>
+	<class>Qt3DExtras::QConeGeometry</class>
+	<class>Qt3DExtras::QConeMesh</class>
+	<class>Qt3DExtras::QCuboidGeometry</class>
+	<class>Qt3DExtras::QCuboidMesh</class>
+	<class>Qt3DExtras::QCylinderGeometry</class>
+	<class>Qt3DExtras::QCylinderMesh</class>
+	<class>Qt3DExtras::QPlaneGeometry</class>
+	<class>Qt3DExtras::QPlaneMesh</class>
+	<class>Qt3DExtras::QSphereGeometry</class>
+	<class>Qt3DExtras::QSphereMesh</class>
+	<class>Qt3DExtras::QTorusGeometry</class>
+	<class>Qt3DExtras::QTorusMesh</class>
+
+	<!-- Qt3DAnimation -->
+	<class>Qt3DAnimation::QAbstractAnimation</class>
+	<class>Qt3DAnimation::QAbstractAnimationClip</class>
+	<class>Qt3DAnimation::QAbstractClipAnimator</class>
+	<class>Qt3DAnimation::QAbstractClipBlendNode</class>
+	<class>Qt3DAnimation::QAdditiveClipBlend</class>
+	<class>Qt3DAnimation::QAnimationAspect</class>
+	<class>Qt3DAnimation::QAnimationController</class>
+	<class>Qt3DAnimation::QAnimationGroup</class>
+	<class>Qt3DAnimation::QBlendedClipAnimator</class>
+	<class>Qt3DAnimation::QClipAnimator</class>
+	<class>Qt3DAnimation::QKeyframeAnimation</class>
+	<class>Qt3DAnimation::QLerpClipBlend</class>
+	<class>Qt3DAnimation::QMorphingAnimation</class>
+	<class>Qt3DAnimation::QMorphTarget</class>
+	<class>Qt3DAnimation::QVertexBlendAnimation</class>
+
+	<!-- QtCharts -->
+	<class>QAreaSeries</class>
+	<class>QBarCategoryAxis</class>
+	<class>QCategoryAxis</class>
+	<class>QDateTimeAxis</class>
+	<class>QLogValueAxis</class>
+	<class>QAbstractAxis</class>
+	<class>QValueAxis</class>
+	<class>QHorizontalPercentBarSeries</class>
+	<class>QHorizontalStackedBarSeries</class>
+	<class>QAbstractBarSeries</class>
+	<class>QBarSet</class>
+	<class>QHBarModelMapper</class>
+	<class>QVBarModelMapper</class>
+	<class>QBarSeries</class>
+	<class>QPercentBarSeries</class>
+	<class>QStackedBarSeries</class>
+	<class>QBoxPlotSeries</class>
+	<class>QBoxSet</class>
+	<class>QHBoxPlotModelMapper</class>
+	<class>QVBoxPlotModelMapper</class>
+	<class>QCandlestickModelMapper</class>
+	<class>QCandlestickSeries</class>
+	<class>QCandlestickSet</class>
+	<class>QHCandlestickModelMapper</class>
+	<class>QVCandlestickModelMapper</class>
+	<class>QAreaLegendMarker</class>
+	<class>QBarLegendMarker</class>
+	<class>QBoxPlotLegendMarker</class>
+	<class>QCandlestickLegendMarker</class>
+	<class>QLegend</class>
+	<class>QLegendMarker</class>
+	<class>QPieLegendMarker</class>
+	<class>QXYLegendMarker</class>
+	<class>QLineSeries</class>
+	<class>QHPieModelMapper</class>
+	<class>QPieSeries</class>
+	<class>QPieSlice</class>
+	<class>QVPieModelMapper</class>
+	<class>QAbstractSeries</class>
+	<class>QChart</class>
+	<class>QChartView</class>
+	<class>QPolarChart</class>
+	<class>QScatterSeries</class>
+	<class>QSplineSeries</class>
+	<class>QHXYModelMapper</class>
+	<class>QVXYModelMapper</class>
+	<class>QXYSeries</class>
+
+	<!-- QtDataVisualization -->
+	<class>QtDataVisualization::QAbstract3DAxis</class>
+	<class>QtDataVisualization::QCategory3DAxis</class>
+	<class>QtDataVisualization::QLogValue3DAxisFormatter</class>
+	<class>QtDataVisualization::QValue3DAxis</class>
+	<class>QtDataVisualization::QValue3DAxisFormatter</class>
+	<class>QtDataVisualization::QAbstract3DSeries</class>
+	<class>QtDataVisualization::QAbstractDataProxy</class>
+	<class>QtDataVisualization::QBar3DSeries</class>
+	<class>QtDataVisualization::QBarDataItem</class>
+	<class>QtDataVisualization::QBarDataProxy</class>
+	<class>QtDataVisualization::QCustom3DItem</class>
+	<class>QtDataVisualization::QCustom3DLabel</class>
+	<class>QtDataVisualization::QCustom3DVolume</class>
+	<class>QtDataVisualization::QHeightMapSurfaceDataProxy</class>
+	<class>QtDataVisualization::QItemModelBarDataProxy</class>
+	<class>QtDataVisualization::QItemModelScatterDataProxy</class>
+	<class>QtDataVisualization::QItemModelSurfaceDataProxy</class>
+	<class>QtDataVisualization::QScatter3DSeries</class>
+	<class>QtDataVisualization::QScatterDataItem</class>
+	<class>QtDataVisualization::QScatterDataProxy</class>
+	<class>QtDataVisualization::QSurface3DSeries</class>
+	<class>QtDataVisualization::QSurfaceDataItem</class>
+	<class>QtDataVisualization::QSurfaceDataProxy</class>
+	<class>QtDataVisualization::Q3DBars</class>
+	<class>QtDataVisualization::Q3DCamera</class>
+	<class>QtDataVisualization::Q3DLight</class>
+	<class>QtDataVisualization::Q3DObject</class>
+	<class>QtDataVisualization::Q3DScatter</class>
+	<class>QtDataVisualization::Q3DScene</class>
+	<class>QtDataVisualization::Q3DSurface</class>
+	<class>QtDataVisualization::QAbstract3DGraph</class>
+	<class>QtDataVisualization::Q3DInputHandler</class>
+	<class>QtDataVisualization::QAbstract3DInputHandler</class>
+	<class>QtDataVisualization::QTouch3DInputHandler</class>
+	<class>QtDataVisualization::Q3DTheme</class>
+
+	<!-- QtLocation -->
+	<class>QGeoCodeReply</class>
+	<class>QGeoCodingManager</class>
+	<class>QGeoCodingManagerEngine</class>
+	<class>QGeoManeuver</class>
+	<class>QGeoRoute</class>
+	<class>QGeoRouteReply</class>
+	<class>QGeoRouteRequest</class>
+	<class>QGeoRouteSegment</class>
+	<class>QGeoRoutingManager</class>
+	<class>QGeoRoutingManagerEngine</class>
+	<class>QGeoServiceProvider</class>
+	<class>QGeoServiceProviderFactory</class>
+	<class>QPlace</class>
+	<class>QPlaceAttribute</class>
+	<class>QPlaceCategory</class>
+	<class>QPlaceContactDetail</class>
+	<class>QPlaceContent</class>
+	<class>QPlaceContentReply</class>
+	<class>QPlaceContentRequest</class>
+	<class>QPlaceDetailsReply</class>
+	<class>QPlaceEditorial</class>
+	<class>QPlaceIcon</class>
+	<class>QPlaceIdReply</class>
+	<class>QPlaceImage</class>
+	<class>QPlaceManager</class>
+	<class>QPlaceManagerEngine</class>
+	<class>QPlaceMatchReply</class>
+	<class>QPlaceMatchRequest</class>
+	<class>QPlaceProposedSearchResult</class>
+	<class>QPlaceRatings</class>
+	<class>QPlaceReply</class>
+	<class>QPlaceResult</class>
+	<class>QPlaceReview</class>
+	<class>QPlaceSearchReply</class>
+	<class>QPlaceSearchRequest</class>
+	<class>QPlaceSearchResult</class>
+	<class>QPlaceSearchSuggestionReply</class>
+	<class>QPlaceSupplier</class>
+	<class>QPlaceUser</class>
+
+	<!-- QtScxml -->
+	<class>QScxmlCompiler::Loader</class>
+	<class>QScxmlCompiler</class>
+	<class>QScxmlCppDataModel</class>
+	<class>QScxmlDataModel::ForeachLoopBody</class>
+	<class>QScxmlDataModel</class>
+	<class>QScxmlEcmaScriptDataModel</class>
+	<class>QScxmlError</class>
+	<class>QScxmlEvent</class>
+	<class>QScxmlExecutableContent::AssignmentInfo</class>
+	<class>QScxmlExecutableContent::EvaluatorInfo</class>
+	<class>QScxmlExecutableContent::ForeachInfo</class>
+	<class>QScxmlExecutableContent::InvokeInfo</class>
+	<class>QScxmlExecutableContent::ParameterInfo</class>
+	<class>QScxmlDynamicScxmlServiceFactory</class>
+	<class>QScxmlInvokableService</class>
+	<class>QScxmlInvokableServiceFactory</class>
+	<class>QScxmlStaticScxmlServiceFactory</class>
+	<class>QScxmlNullDataModel</class>
+	<class>QScxmlStateMachine</class>
+	<class>QScxmlTableData</class>
+
+	<!-- QtSerialBus -->
+	<class>QCanBus</class>
+	<class>QCanBusDevice::Filter</class>
+	<class>QCanBusDevice</class>
+	<class>QCanBusDeviceInfo</class>
+	<class>QCanBusFactoryV2</class>
+	<class>QCanBusFrame</class>
+	<class>QCanBusFrame::TimeStamp</class>
+	<class>QModbusClient</class>
+	<class>QModbusDataUnit</class>
+	<class>QModbusDevice</class>
+	<class>QModbusDeviceIdentification</class>
+	<class>QModbusExceptionResponse</class>
+	<class>QModbusPdu</class>
+	<class>QModbusRequest</class>
+	<class>QModbusResponse</class>
+	<class>QModbusReply</class>
+	<class>QModbusRtuSerialMaster</class>
+	<class>QModbusRtuSerialSlave</class>
+	<class>QModbusServer</class>
+	<class>QModbusTcpClient</class>
+	<class>QModbusTcpServer</class>
+
+	<!-- QtGamepad -->
+	<class>QGamepad</class>
+	<class>QGamepadKeyNavigation</class>
+	<class>QGamepadManager</class>
+
+	<!-- QtNetworkAuth -->
+	<class>QAbstractOAuth</class>
+	<class>QAbstractOAuth2</class>
+	<class>QAbstractOAuthReplyHandler</class>
+	<class>QOAuth1</class>
+	<class>QOAuth1Signature</class>
+	<class>QOAuth2AuthorizationCodeFlow</class>
+
+	<!-- QtTextToSpech -->
+	<class>QTextToSpeech</class>
+	<class>QTextToSpeechPlugin</class>
+	<class>QVoice</class>
+
         <!-- namespaces -->
         <class>Qt</class>
         <class>QDBus</class>
@@ -1243,5 +1670,23 @@
         <class>QSsl</class>
         <class>QSql</class>
         <class>QAudio</class>
+	<class>QMultimedia</class>
+	<class>QMediaMetaData</class>
+	<class>QBluetooth</class>
+	<class>QtDataVisualization</class>
+	<class>QtWebEngine</class>
+	<class>QtWebView</class>
+	<class>Qt3DAnimation</class>
+	<class>Qt3DCore</class>
+	<class>Qt3DExtras</class>
+	<class>Qt3DRender</class>
+	<class>Qt3DInput</class>
+	<class>Qt3DLogic</class>
+	<class>QLocation</class>
+	<class>QScxmlExecutableContent</class>
+	<class>QValueSpace</class>
+	<class>QService</class>
+	<class>QWebSocketProtocol</class>
+	
     </classList>
 </config>
