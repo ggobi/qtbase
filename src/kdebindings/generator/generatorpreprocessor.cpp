@@ -69,6 +69,12 @@ Preprocessor::Preprocessor(const QList<QDir>& includeDirs, const QStringList& de
     exportMacro->name = IndexedString("WIN64");
 #elif defined(Q_OS_DARWIN)
     exportMacro->name = IndexedString("__APPLE__");
+    exportMacro->function_like = false;
+    exportMacro->variadics = false;
+    m_topBlock->setMacro(exportMacro);
+    exportMacro = new rpp::pp_macro;
+    exportMacro->name = IndexedString("TARGET_OS_MAC");
+    exportMacro->definition.append(IndexedString('1'));
 #elif defined(Q_OS_SOLARIS)
     exportMacro->name = IndexedString("__sun");
 #else
