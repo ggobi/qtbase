@@ -110,8 +110,7 @@
         <signature>.*QUiLoader\(const QUiLoader&amp;\).*</signature>
         <signature>.*QSslConfiguration::NextProtocolSpdy3_0.*</signature>
         <signature>.*QSslConfiguration::NextProtocolHttp1_1.*</signature>
-        <!-- Remove the exclusion below when 5.4 is released -->
-        <signature>.*QDnsLookup::QDnsLookup\(QDnsLookup::Type, const QString&amp;, const QHostAddress&amp;, QObject\*\).*</signature>
+	<signature>.*QSslConfiguration::ALPNProtocolHTTP2.*</signature>
 	
         <!-- QtSensors module has undocumented public static const field -->
         <signature>.*QAccelerometer::type.*</signature>
@@ -138,9 +137,31 @@
 	<signature>.*QXmlStreamEntityDeclaration</signature>
 	<signature>.*QXmlStreamNamespaceDeclaration</signature>
 	<signature>.*QXmlStreamNotationDeclaration</signature>
+	<signature>.*QDateTime</signature>
 	
 	<!-- QByteArray would need to be Qt:: qualified, just ignore -->
 	<signature>.*QMetaType::type\(const QByteArray&amp;\).*</signature>
+
+	<!-- hard to imagine how R would use an assignment operator -->
+	<signature>.*operator=\(.*</signature>
+
+	<!-- all QUrlTwoFlag methods somehow end up global -->
+	<signature>.*QUrlTwoFlags.*</signature>
+	<signature>.*operator QFlags\&lt;E[12]\&gt;.*</signature>
+	<signature>.*operator int\(\).*</signature>
+	<signature>.*operator!.*</signature>
+
+	<!-- platform-specific -->
+	<signature>.*CGPoint.*</signature>
+	<signature>.*CGRect.*</signature>
+	<signature>.*CGSize.*</signature>
+	<signature>.*NSData.*</signature>
+	<signature>.*NSURL.*</signature>
+	<signature>.*NSUUID.*</signature>
+	<signature>.*NSString.*</signature>
+	<signature>.*NSDate.*</signature>
+	<signature>.*NSTimeZone.*</signature>
+	<signature>.*objc_object.*</signature>
 	
     </exclude>
     <functions>
