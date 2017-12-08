@@ -143,6 +143,12 @@ Preprocessor::Preprocessor(const QList<QDir>& includeDirs, const QStringList& de
     exportMacro->variadics = false;
     m_topBlock->setMacro(exportMacro);
 
+    exportMacro = new rpp::pp_macro;
+    exportMacro->name = IndexedString("Q_COMPILER_STATIC_ASSERT");
+    exportMacro->function_like = false;
+    exportMacro->variadics = false;
+    m_topBlock->setMacro(exportMacro);
+    
     foreach (QString define, defines) {
         exportMacro = new rpp::pp_macro;
         exportMacro->name = IndexedString(define);

@@ -584,11 +584,6 @@ void GeneratorVisitor::visitEnumSpecifier(EnumSpecifierAST* node)
 
 void GeneratorVisitor::visitEnumerator(EnumeratorAST* node)
 {
-    // HACK: member q_static_assert_result151: name space empty, not
-    // QtPrivate like all other q_static_assert_result<some_int> the
-    // correct place to fix would be in the parser but I couldn't find where
-    if (currentEnumRef->parent() == 0 && currentEnumRef->nameSpace().isEmpty())
-        currentEnumRef->setNameSpace("QPrivate");
     currentEnumRef->appendMember(EnumMember(currentEnumRef, token(node->id).symbolString(), QString()));
 //     DefaultVisitor::visitEnumerator(node);
 }
