@@ -172,6 +172,12 @@
 	<signature>.*NSDate.*</signature>
 	<signature>.*NSTimeZone.*</signature>
 	<signature>.*objc_object.*</signature>
+
+	<!-- deprecated -->
+	<signature>.*Qt3DRender::QRenderCapture::requestCapture.*</signature>
+	<signature>.*Qt3DRender::QRenderCaptureReply::captureId.*</signature>
+	<signature>.*Qt3DRender::QRenderCaptureReply::saveToFile.*</signature>
+	<signature>.*Qt3DRender::QRenderCaptureReply::completeChanged.*</signature>
 	
     </exclude>
     <functions>
