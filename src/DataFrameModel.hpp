@@ -9,9 +9,9 @@ class DataFrameModel : public QAbstractTableModel {
 public:
 
   DataFrameModel(QObject *parent, SEXP useRoles, SEXP editable)
-    : _dataframe(R_NilValue), _rowHeader(R_NilValue), _colHeader(R_NilValue),
-      _roles(R_NilValue), _useRoles(useRoles), _editable(editable),
-      QAbstractTableModel(parent)
+    : _dataframe(R_NilValue), _rowHeader(R_NilValue),
+      _roles(R_NilValue), _colHeader(R_NilValue), _useRoles(useRoles),
+      QAbstractTableModel(parent), _editable(editable)
   {
     R_PreserveObject(_useRoles);
     R_PreserveObject(_editable);

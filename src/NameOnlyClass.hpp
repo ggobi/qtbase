@@ -9,7 +9,7 @@
 class NameOnlyClass : public Class {
 public:
   NameOnlyClass(const char *name, const Class *parent)
-    : _name(name), _parent(parent)
+      : _parent(parent), _name(name)
   {
   }
   

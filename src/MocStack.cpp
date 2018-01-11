@@ -230,5 +230,5 @@ void MocStack::setSmoke(Smoke::Stack stack, QVector<SmokeType> types)
 
 MocStack::~MocStack() {
   if (_allocated)
-    delete _o;
+    delete[] _o;
 }
