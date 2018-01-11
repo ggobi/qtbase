@@ -33,6 +33,7 @@
         <signature>.*QStringMatcher::p</signature>
         <signature>.*QIPv6Address::c</signature>
 	<signature>.*qt_check_for_QGADGET_macro.*</signature>
+	<signature>.*QWebEngineCallback.*</signature>
 	
         <signature>.*QGraphicsLayoutItem::QGraphicsLayoutItem\(const QGraphicsLayoutItem&amp;\).*</signature>
         <signature>.*QGraphicsSceneEvent::QGraphicsSceneEvent\(const QGraphicsSceneEvent&amp;\).*</signature>
@@ -151,6 +152,13 @@
 	<signature>.*operator int\(\).*</signature>
 	<signature>.*operator!.*</signature>
 
+	<!-- R has cleaner ways of wrapping functions -->
+	<signature>.*QScxmlStateMachine::onEntry.*</signature>
+	<signature>.*QScxmlStateMachine::onExit.*</signature>
+
+	<!-- FIXME: support R functions as std:function<>, and vice versa -->
+	<signature>.*std::function&lt;.*</signature>
+	
 	<!-- platform-specific -->
 	<signature>.*CGPoint.*</signature>
 	<signature>.*CGRect.*</signature>
