@@ -86,7 +86,9 @@
         <signature>.*QXmlName::hasPrefix().*</signature>
         <signature>.*short.*QXmlName::prefix().*</signature>
         <signature>.*short.*QXmlName::localName().*</signature>
-
+	<signature>.*operator==\(const Qt3DRender::QGraphicsApiFilter&amp;, const Qt3DRender::QGraphicsApiFilter&amp;\).*</signature>
+	<signature>.*QSpotLight::attenuation\(.*</signature>
+	
         <signature>.*QMetaObject::cast.*</signature>
         
         <!-- QtTest excludes -->
