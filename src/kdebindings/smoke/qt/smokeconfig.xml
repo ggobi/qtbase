@@ -141,6 +141,7 @@
 	<signature>.*QXmlStreamNamespaceDeclaration</signature>
 	<signature>.*QXmlStreamNotationDeclaration</signature>
 	<signature>.*QDateTime</signature>
+	<signature>.*QOAuth1Signature</signature>
 	
 	<!-- QByteArray would need to be Qt:: qualified, just ignore -->
 	<signature>.*QMetaType::type\(const QByteArray&amp;\).*</signature>
