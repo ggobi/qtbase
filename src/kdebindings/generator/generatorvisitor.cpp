@@ -28,7 +28,7 @@
 
 GeneratorVisitor::GeneratorVisitor(ParseSession *session, const QString& header) 
     : m_session(session), m_header(header), createType(false), createTypedef(false),
-      inClass(0), inTemplate(false), isStatic(false), isVirtual(false), isExplicit(false), hasInitializer(false), currentTypeRef(0), inMethod(false)
+      inClass(0), inTemplate(false), isStatic(false), isVirtual(false), isExplicit(false), hasInitializer(false), isFinal(false), isDeleted(false), currentTypeRef(0), inMethod(false)
 {
     nc = new NameCompiler(m_session, this);
     tc = new TypeCompiler(m_session, this);
@@ -485,10 +485,15 @@ void GeneratorVisitor::visitDeclarator(DeclaratorAST* node)
         // const & volatile modifiers
         currentMethod.setIsConst(cv.first);
         
-        if (isVirtual) currentMethod.setFlag(Method::Virtual);
+        if (isVirtual || isFinal) currentMethod.setFlag(Method::Virtual);
         if (hasInitializer) currentMethod.setFlag(Method::PureVirtual);
         if (isStatic) currentMethod.setFlag(Method::Static);
         if (isExplicit) currentMethod.setFlag(Method::Explicit);
+	if (isFinal) currentMethod.setFlag(Method::Final);
+	if (isDeleted) currentMethod.setFlag(Method::Deleted);
+	if (currentMethod.isCopyConstructor() &&
+	    klass.top()->hasDeletedCopyConstructor())
+	    currentMethod.setFlag(Method::Deleted);
 
         // the class already contains the method (probably imported by a 'using' statement)
         if (klass.top()->methods().contains(currentMethod)) {
@@ -616,7 +621,7 @@ void GeneratorVisitor::visitFunctionDefinition(FunctionDefinitionAST* node)
         } while (end != it);
     }
     visit(node->init_declarator);
-    isStatic = isVirtual = isExplicit = hasInitializer = false;
+    isStatic = isVirtual = isExplicit = hasInitializer = isFinal = isDeleted = false;
 }
 
 void GeneratorVisitor::visitInitializerClause(InitializerClauseAST *)
@@ -776,13 +781,28 @@ void GeneratorVisitor::visitSimpleDeclaration(SimpleDeclarationAST* node)
             it = it->next;
         } while (end != it);
     }
-    // look for initializers - if we find one, the method is pure virtual
+    // look for initializers
     if (node->init_declarators) {
         const ListNode<InitDeclaratorAST*> *it = node->init_declarators->toFront(), *end = it;
         do {
             if (it->element && it->element->initializer) {
-                hasInitializer = true;
-            }
+		if (it->element->initializer->initializer_clause &&
+		    it->element->initializer->initializer_clause->deleted) {
+		    isDeleted = true;
+		}
+		else
+		    hasInitializer = true;
+	    }
+	    if (it->element && it->element->virtspec) {
+		const ListNode<std::size_t> *it2 =
+		    it->element->virtspec->specs->toFront(), *end2 = it2;
+		do {
+		    if (token(it2->element).kind == Token_final) {
+			isFinal = true;
+		    }
+		    it2 = it2->next;
+		} while(end2 != it2);
+	    }
             if (it->element && it->element->declarator && it->element->declarator->parameter_declaration_clause) {
                 if (popKlass) {
                     // This method return type has 'class' or 'struct' prepended to avoid a forward declaration.
@@ -808,7 +828,7 @@ void GeneratorVisitor::visitSimpleDeclaration(SimpleDeclarationAST* node)
                 // we're not interested in who's the friend of whom ;)
                 if (popKlass)
                     klass.pop();
-                isStatic = isVirtual = hasInitializer = false;
+                isStatic = isVirtual = hasInitializer = isFinal = isDeleted = false;
                 return;
             }
             it = it->next;
@@ -817,7 +837,7 @@ void GeneratorVisitor::visitSimpleDeclaration(SimpleDeclarationAST* node)
     DefaultVisitor::visitSimpleDeclaration(node);
     if (popKlass)
         klass.pop();
-    isStatic = isVirtual = hasInitializer = false;
+    isStatic = isVirtual = hasInitializer = isFinal = isDeleted = false;
 }
 
 void GeneratorVisitor::visitSimpleTypeSpecifier(SimpleTypeSpecifierAST* node)

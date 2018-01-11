@@ -77,6 +77,13 @@ QString Parameter::toString() const
     return m_type->toString();
 }
 
+bool Method::isCopyConstructor() const {
+    if (!isConstructor() || parameters().count() != 1)
+	return false;
+    const Type* type = parameters()[0].type();
+    return type->isRef() && type->getClass() == getClass();
+}
+
 QString Method::toString(bool withAccess, bool withClass, bool withInitializer) const
 {
     QString ret = Member::toString(withAccess, withClass);
@@ -201,4 +208,17 @@ QString Type::toString(const QString& fnPtrName) const
     }
     // the compiler would misinterpret ">>" as the operator - replace it with "> >"
     return ret.replace(">>", "> >");
+}
+
+bool Class::hasDeletedCopyConstructor() const {
+    foreach (const Class::BaseClassSpecifier& base, baseClasses()) {
+        if (base.baseClass->hasDeletedCopyConstructor())
+            return true;
+    }
+    foreach (const Method& meth, methods()) {
+        if (meth.isCopyConstructor()) {
+	    return meth.flags() & Method::Deleted;
+	}
+    }
+    return false;
 }

@@ -138,6 +138,7 @@ struct Util
     static QList<const Method*> collectVirtualMethods(const Class* klass);
     static const Method* isVirtualOverriden(const Method& meth, const Class* klass);
     static QList<const Method*> virtualMethodsForClass(const Class* klass);
+    static QList<const Method*> removeFinalVirtualMethods(QList<const Method*> methods, const Class* klass);
 };
 
 #endif

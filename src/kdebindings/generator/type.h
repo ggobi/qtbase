@@ -130,6 +130,8 @@ public:
     
     bool isTemplate() const { return m_isTemplate; }
     void setIsTemplate(bool isTemplate) { m_isTemplate = isTemplate; }
+
+    bool hasDeletedCopyConstructor() const;
     
 private:
     Kind m_kind;
@@ -186,6 +188,8 @@ public:
         Static = 0x4,
         DynamicDispatch = 0x8,
         Explicit = 0x10,
+	Final = 0x20,
+	Deleted = 0x40
     };
     Q_DECLARE_FLAGS(Flags, Flag)
 
@@ -313,6 +317,8 @@ public:
     void appendExceptionType(const Type& type) { m_exceptionTypes.append(type); }
     const QList<Type>& exceptionTypes() const { return m_exceptionTypes; }
 
+    bool isCopyConstructor() const;
+    
     virtual QString toString(bool withAccess = false, bool withClass = false, bool withInitializer = true) const;
 
 protected:

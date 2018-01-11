@@ -158,6 +158,7 @@ QVarLengthArray<QVarLengthArray<QPair<uint, TOKEN_KIND>, 10 >, index_size > crea
   ADD_TOKEN(export);
   ADD_TOKEN(extern);
   ADD_TOKEN(false);
+  ADD_TOKEN(final);
   ADD_TOKEN(float);
   ADD_TOKEN(for);
   ADD_TOKEN(friend);
@@ -177,6 +178,7 @@ QVarLengthArray<QVarLengthArray<QPair<uint, TOKEN_KIND>, 10 >, index_size > crea
   ADD_TOKEN(operator);
   ADD_TOKEN(or);
   ADD_TOKEN(or_eq);
+  ADD_TOKEN(override);
   ADD_TOKEN(private);
   ADD_TOKEN(protected);
   ADD_TOKEN(public);

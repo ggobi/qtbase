@@ -90,6 +90,8 @@ private:
     bool isVirtual;
     bool isExplicit;
     bool hasInitializer;
+    bool isFinal;
+    bool isDeleted;
     
     Type currentType;
     Type* currentTypeRef;

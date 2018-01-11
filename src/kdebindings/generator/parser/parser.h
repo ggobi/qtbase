@@ -207,6 +207,7 @@ public:
 			    bool parseTemplateId = true);
   bool parseUsing(DeclarationAST *&node);
   bool parseUsingDirective(DeclarationAST *&node);
+  bool parseVirtualSpecifier(VirtualSpecifierAST *&node);
   bool parseWhileStatement(StatementAST *&node);
   bool parseWinDeclSpec(WinDeclSpecAST *&node);
 

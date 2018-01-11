@@ -155,7 +155,7 @@ QString SmokeClassFiles::generateMethodBody(const QString& indent, const QString
             out << '*';
         }
         // casting to a reference doesn't make sense in this case
-        if (param.type()->isRef() && !param.type()->isFunctionPointer()) typeName.replace('&', "");
+        if (param.type()->isRef() && !param.type()->isFunctionPointer()) typeName.remove(typeName.lastIndexOf('&'), 1);
         out << "(" << typeName << ")" << "x[" << j + 1 << "]." << field;
     }
 
@@ -411,6 +411,8 @@ void SmokeClassFiles::writeClass(QTextStream& out, const Class* klass, const QSt
             destructor = &meth;
             continue;
         }
+	if (meth.isConstructor() && meth.flags() & Method::Deleted)
+	    continue;
         switchOut << "        case " << xcall_index << ": "
                   << (((meth.flags() & Method::Static) || meth.isConstructor()) ? smokeClassName + "::" : "xself->")
                   << "x_" << xcall_index << "(args);\tbreak;\n";
@@ -440,10 +442,12 @@ void SmokeClassFiles::writeClass(QTextStream& out, const Class* klass, const QSt
         
         foreach (const EnumMember& member, e->members()) {
             switchOut << "        case " << xcall_index << ": " << smokeClassName <<  "::x_" << xcall_index << "(args);\tbreak;\n";
-            if (e->parent())
-                generateEnumMemberCall(out, className, member.name(), xcall_index++);
-            else
-                generateEnumMemberCall(out, e->nameSpace(), member.name(), xcall_index++);
+	    QString scope = e->name();
+	    if (scope.isEmpty())
+		scope = e->nameSpace();
+	    else if (!e->nameSpace().isEmpty() && e->parent() == NULL)
+		scope = e->nameSpace() + "::" + scope;
+	    generateEnumMemberCall(out, scope, member.name(), xcall_index++);
         }
         
         // only generate the xenum_call if the enum has a valid name

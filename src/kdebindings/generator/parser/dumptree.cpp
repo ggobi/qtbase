@@ -100,6 +100,7 @@ char const * const names[] = {
   "UnqualifiedName",
   "Using",
   "UsingDirective",
+  "VirtualSpecifier",
   "WhileStatement",
   "WinDeclSpec",
   "Kind_Comment",

@@ -368,7 +368,7 @@ bool Util::canClassBeInstanciated(const Class* klass)
     foreach (const Method& meth, klass->methods()) {
         if (meth.isConstructor()) {
             ctorFound = true;
-            if (meth.access() != Access_private) {
+            if (meth.access() != Access_private && !(meth.flags() & Method::Deleted)) {
                 // this class can be instanstiated
                 publicCtorFound = true;
             }
@@ -393,7 +393,8 @@ bool Util::canClassBeCopied(const Class* klass)
 
     bool privateCopyCtorFound = false;
     foreach (const Method& meth, klass->methods()) {
-        if (meth.access() != Access_private)
+	if (!(meth.access() == Access_private ||
+	      meth.flags() & Method::Deleted))
             continue;
         if (meth.isConstructor() && meth.parameters().count() == 1) {
             const Type* type = meth.parameters()[0].type();
@@ -528,11 +529,8 @@ void Util::addDefaultConstructor(Class* klass)
 void Util::addCopyConstructor(Class* klass)
 {
     foreach (const Method& meth, klass->methods()) {
-        if (meth.isConstructor() && meth.parameters().count() == 1) {
-            const Type* type = meth.parameters()[0].type();
-            // found a copy c'tor? then there's nothing to do
-            if (type->isRef() && type->getClass() == klass)
-                return;
+        if (meth.isCopyConstructor()) {
+	    return;
         } else if (meth.isDestructor() && meth.access() == Access_private) {
             // private destructor, so we can't create instances of that class
             return;
@@ -696,7 +694,7 @@ QString Util::assignmentString(const Type* type, const QString& var)
     } else if (type->isIntegral() && !Options::voidpTypes.contains(type->name())) {
         return var;
     } else if (type->getEnum()) {
-        return var;
+        return "static_cast<long>(" + var + ")";
     } else if (Options::qtMode && type->getClass() && type->getClass()->isTemplate() && type->getClass()->name() == "QFlags")
     {
         return "(uint)" + var;
@@ -708,12 +706,38 @@ QString Util::assignmentString(const Type* type, const QString& var)
     return QString();
 }
 
+QList<const Method*>
+Util::removeFinalVirtualMethods(QList<const Method*> methods,
+				const Class* klass)
+{
+    QSet<QString> finalMethods;
+
+    foreach (const Method& meth, klass->methods()) {
+	if (meth.flags() & Method::Final) {
+	    finalMethods << meth.toString(false, false, false);
+	}
+    }
+    if (finalMethods.size() == 0)
+	return methods;
+    
+    QMutableListIterator<const Method*> it(methods);
+    while (it.hasNext()) {
+	if (finalMethods.contains(it.next()->toString(false, false, false))) {
+	    it.remove();
+	}
+	
+    }
+    return methods;
+}
+
 QList<const Method*> Util::collectVirtualMethods(const Class* klass)
 {
     QList<const Method*> methods;
     foreach (const Method& meth, klass->methods()) {
-        if ((meth.flags() & Method::Virtual || meth.flags() & Method::PureVirtual)
-            && !meth.isDestructor() && meth.access() != Access_private)
+        if ((meth.flags() & Method::Virtual ||
+	     meth.flags() & Method::PureVirtual)
+            && !meth.isDestructor()
+	    && meth.access() != Access_private)
         {
             methods << &meth;
         }
@@ -868,7 +892,7 @@ static bool qListContainsMethodPointer(const QList<const Method*> list, const Me
 QList<const Method*> Util::virtualMethodsForClass(const Class* klass)
 {
     static QHash<const Class*, QList<const Method*> > cache;
-    
+
     // virtual method callbacks for classes that can't be instanstiated aren't useful
     if (!Util::canClassBeInstanciated(klass))
         return QList<const Method*>();
@@ -877,8 +901,11 @@ QList<const Method*> Util::virtualMethodsForClass(const Class* klass)
         return cache[klass];
     
     QList<const Method*> ret;
-
-    foreach (const Method* meth, Util::collectVirtualMethods(klass)) {
+    
+    QList<const Method *> virtualMethods =
+	Util::removeFinalVirtualMethods(Util::collectVirtualMethods(klass), klass);
+    
+    foreach (const Method* meth, virtualMethods) {
         // this is a synthesized overload, skip it.
         if (!meth->remainingDefaultValues().isEmpty())
             continue;

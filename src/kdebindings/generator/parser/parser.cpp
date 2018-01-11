@@ -1630,9 +1630,17 @@ bool Parser::parseEnumSpecifier(TypeSpecifierAST *&node)
 
   CHECK(Token_enum);
 
+  if (session->token_stream->lookAhead() == Token_class)
+      advance();
+  
   NameAST *name = 0;
   parseName(name);
 
+  if (session->token_stream->lookAhead() == ':') {
+      advance();
+      advance();
+  }
+  
   if (session->token_stream->lookAhead() != '{')
     {
       rewind(start);
@@ -2348,11 +2356,15 @@ bool Parser::parseInitDeclarator(InitDeclaratorAST *&node)
       advance();
     }
 
+  VirtualSpecifierAST *virtspec = 0;
+  parseVirtualSpecifier(virtspec);
+  
   InitializerAST *init = 0;
   parseInitializer(init);
 
   InitDeclaratorAST *ast = CreateNode<InitDeclaratorAST>(session->mempool);
   ast->declarator = decl;
+  ast->virtspec = virtspec;
   ast->initializer = init;
 
   UPDATE_POS(ast, start, _M_last_valid_token+1);
@@ -2390,6 +2402,30 @@ bool Parser::parseBaseClause(BaseClauseAST *&node)
   node = ast;
 
   return true;
+}
+
+bool Parser::parseVirtualSpecifier(VirtualSpecifierAST *&node)
+{
+    std::size_t start = session->token_stream->cursor();
+    int tk = session->token_stream->lookAhead();
+    const ListNode<std::size_t> *specs = 0;
+    
+    while (tk == Token_final || tk == Token_override) {
+	specs = snoc(specs, session->token_stream->cursor(),
+		     session->mempool);
+	advance();
+	tk = session->token_stream->lookAhead();
+    }
+
+    if (!specs)
+	return false;
+
+    VirtualSpecifierAST *ast =
+	CreateNode<VirtualSpecifierAST>(session->mempool);
+    ast->specs = specs;
+    UPDATE_POS(ast, start, _M_last_valid_token+1);
+    node = ast;
+    return true;
 }
 
 bool Parser::parseInitializer(InitializerAST *&node)
@@ -2582,6 +2618,11 @@ bool Parser::parseInitializerClause(InitializerClauseAST *&node)
 
       ast->initializer_list = initializer_list;
     }
+  else if (session->token_stream->lookAhead() == Token_delete)
+      {
+	  ast->deleted = true;
+	  advance();
+      }
   else
     {
       if (!parseAssignmentExpression(ast->expression))

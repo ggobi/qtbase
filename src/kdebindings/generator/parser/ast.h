@@ -102,6 +102,7 @@ struct UnaryExpressionAST;
 struct UnqualifiedNameAST;
 struct UsingAST;
 struct UsingDirectiveAST;
+struct VirtualSpecifierAST;
 struct WhileStatementAST;
 struct WinDeclSpecAST;
 
@@ -183,11 +184,12 @@ struct AST
       Kind_UnqualifiedName,                     // 70
       Kind_Using,                               // 71
       Kind_UsingDirective,                      // 72
-      Kind_WhileStatement,                      // 73
-      Kind_WinDeclSpec,                         // 74
-      Kind_Comment,                             // 75
-      Kind_JumpStatement,                       // 76
-      Kind_SignalSlotExpression,                     // 77
+      Kind_VirtualSpecifier,                    // 73
+      Kind_WhileStatement,                      // 74
+      Kind_WinDeclSpec,                         // 75
+      Kind_Comment,                             // 76
+      Kind_JumpStatement,                       // 77
+      Kind_SignalSlotExpression,                     // 78
       NODE_KIND_COUNT
     };
 
@@ -483,6 +485,7 @@ struct InitDeclaratorAST: public AST
   DECLARE_AST_NODE(InitDeclarator)
 
   DeclaratorAST *declarator;
+  VirtualSpecifierAST *virtspec;
   InitializerAST *initializer;
 };
 
@@ -504,6 +507,7 @@ struct InitializerClauseAST: public AST
   // assignment expression
   ExpressionAST *expression;
   const ListNode<InitializerClauseAST*> *initializer_list;
+  bool deleted;
 };
 
 struct LabeledStatementAST: public StatementAST
@@ -884,6 +888,13 @@ struct UsingDirectiveAST: public DeclarationAST
   DECLARE_AST_NODE(UsingDirective)
 
   NameAST *name;
+};
+
+struct VirtualSpecifierAST: public DeclarationAST
+{
+    DECLARE_AST_NODE(VirtualSpecifier)
+
+    const ListNode<std::size_t> *specs;
 };
 
 struct WhileStatementAST: public StatementAST
