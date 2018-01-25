@@ -118,8 +118,11 @@ Smoke::ModuleIndex SmokeClass::findIndex(const MethodCall& call) const
         curMatch += MethodCall::scoreArg(VECTOR_ELT(rargs, j), smoke, args[j]);
         //qDebug("curMatch: %d", curMatch);
       }
-      ambiguous = (curMatch == bestMatch) || ambiguous; 
-      if (curMatch > bestMatch) {
+      ambiguous = (curMatch == bestMatch) || ambiguous;
+      bool constVsNonConst = curMatch == bestMatch &&
+	  smoke->methods[methId].flags & Smoke::mf_const &&
+	  !(smoke->methods[bestMethod].flags & Smoke::mf_const);
+      if (curMatch > bestMatch || constVsNonConst) {
         //qDebug("new best match: %d, old: %d", curMatch, bestMatch);
         bestMatch = curMatch;
         bestMethod = methId;
