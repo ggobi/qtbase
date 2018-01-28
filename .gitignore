@@ -1,5 +1,5 @@
 /inst/local
-/kdebindings-build
+/tools/kdebindings-build
 /src-build
 /src/qtbase.so
 /inst/qdoc/images
@@ -15,3 +15,4 @@
 /inst/doc/.Rhistory
 /man/.Rhistory
 /inst/doc/qtbase.tex
+/src/symbols.rds

@@ -31,7 +31,7 @@ include(${QT_USE_FILE})
 
 include_directories( ../inst/local/include ${R_INCLUDES} )
 
-link_directories( ../kdebindings-build/smoke/qt )
+link_directories( ../tools/kdebindings-build/smoke/qt )
 
 set(qtbase_LIB_SRCS init.cpp EventLoop.cpp convert.cpp
    wrap.cpp metaobject.cpp connect.cpp invoke.cpp dynamicqobject.cpp
