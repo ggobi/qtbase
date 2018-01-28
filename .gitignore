@@ -16,3 +16,5 @@
 /man/.Rhistory
 /inst/doc/qtbase.tex
 .Rproj.user
+/src/symbols.rds
+/tools
