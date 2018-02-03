@@ -144,6 +144,7 @@ void SmokeObject::maybeDestroy() {
 #endif
     const char *cname = _klass->smokeBase()->name();
     const char *colon = strrchr(cname, ':');
+    void *this_ptr = _ptr;
     if (colon)
       cname = colon + 1;
     char *destructor = new char[strlen(cname) + 2];
@@ -151,7 +152,7 @@ void SmokeObject::maybeDestroy() {
     strcpy(destructor + 1, cname);
     invokeMethod(destructor); // might cause 'this' to be destructed
     delete[] destructor;
-    if (instances.contains(_ptr)) // we are still around
+    if (instances.contains(this_ptr)) // we are still around
       delete this;
   } else if (!_allocated) {
 #ifdef MEM_DEBUG
