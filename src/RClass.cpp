@@ -110,7 +110,7 @@ Property *RClass::property(const char *name) const {
     SmokeType type;
     if (rtype == R_NilValue)
       type = SmokeType(smokeBase()->smoke(), (Smoke::Index)0);
-    else type = SmokeType(smokeBase()->smoke(), CHAR(asChar(rtype)));
+    else type = SmokeType(smokeBase()->smoke(), CHAR(STRING_ELT(rtype, 0)));
     prop = new RProperty(name, type, VECTOR_ELT(rprop, R_PROP_READER),
                          VECTOR_ELT(rprop, R_PROP_WRITER));
   }
