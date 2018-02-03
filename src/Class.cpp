@@ -55,6 +55,7 @@ const Class* Class::fromSexp(SEXP sexp, bool forceNew) {
   if (inherits(sexp, "RQtClass")) {
     const char *name = CHAR(asChar(getAttrib(sexp, nameSym)));
     klass = _classMap[name];
+    // FIXME: forceNew will leak; who cares?
     if (!klass || forceNew) {
       if (inherits(sexp, "RQtSmokeClass"))
         klass = Class::fromSmokeName(NULL, name);
