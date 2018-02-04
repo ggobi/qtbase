@@ -48,8 +48,10 @@ SEXP qt_qmethods(SEXP klass)
   int i;
 
   for (i = 0; i < methods.size();)
-    if (methods[i]->qualifiers() & Method::Destructor)
-      methods.removeAt(i);
+      if (methods[i]->qualifiers() & Method::Destructor) {
+	  delete methods[i];
+	  methods.removeAt(i);
+      }
     else i++;
   i = 0;
   

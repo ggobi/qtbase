@@ -90,3 +90,9 @@ bool DynamicQObject::emitDynamicSignal(const char *signal, void **arguments)
         return false;
     }
 }
+
+DynamicQObject::~DynamicQObject() {
+    foreach (DynamicSlot *slot, slotList) {
+	delete slot;
+    }
+}

@@ -40,6 +40,8 @@ class DynamicQObject: public QObject
 public:
     DynamicQObject(QObject *parent = 0) : QObject(parent) { }
 
+    virtual ~DynamicQObject();
+    
     virtual int qt_metacall(QMetaObject::Call c, int id, void **arguments);
 
     bool emitDynamicSignal(const char *signal, void **arguments);	
