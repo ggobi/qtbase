@@ -17,12 +17,12 @@ public:
   /* Call an object method */
   DynamicBinding(const char *methodName, bool super = false,
                  QVector<SmokeType> types = QVector<SmokeType>())
-      : _methodName(methodName), _flags(None), _types(types), _super(super) { }
+      : _methodName(methodName), _types(types), _flags(None), _super(super) { }
   /* Call a static method */
   DynamicBinding(const Class *klass, const char *methodName,
                  QVector<SmokeType> types = QVector<SmokeType>())
-    : _klass(klass), _methodName(methodName), _flags(Static),
-      _types(types), _super(false) { }
+    : _klass(klass), _methodName(methodName),
+      _types(types), _flags(Static), _super(false) { }
   /* Obtain parameters from an existing Method */
   DynamicBinding(const Method &method)
     : _klass(method.klass()), _methodName(method.name()),
