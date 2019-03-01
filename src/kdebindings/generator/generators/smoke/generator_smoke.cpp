@@ -232,6 +232,8 @@ int generate()
         Util::typeMap["size_t"] = "ulong";
     }
 
+    Util::typeMap["qsizetype"] = Util::typeMap["size_t"];
+    
     qDebug() << "Generating SMOKE sources...";
     
     SmokeDataFile smokeData;

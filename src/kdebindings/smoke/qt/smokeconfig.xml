@@ -142,6 +142,11 @@
 	<signature>.*QXmlStreamNotationDeclaration</signature>
 	<signature>.*QDateTime</signature>
 	<signature>.*QOAuth1Signature</signature>
+	<signature>.*QJsonArray</signature>
+	<signature>.*QJsonDocument</signature>
+	<signature>.*QJsonObject</signature>
+	<signature>.*QJsonValue</signature>
+	<signature>.*QSqlError</signature>
 	
 	<!-- QByteArray would need to be Qt:: qualified, just ignore -->
 	<signature>.*QMetaType::type\(const QByteArray&amp;\).*</signature>
@@ -396,7 +401,6 @@
 	<class>QOperatingSystemVersion</class>
 	<class>QStringView</class>
 	<class>QRandomGenerator</class>
-	<class>QSemaphoreReleaser</class>
 
         <!-- QtGui -->
         <class>QInputMethodEvent::Attribute</class>

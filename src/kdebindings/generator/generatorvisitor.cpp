@@ -419,7 +419,7 @@ void GeneratorVisitor::visitDeclarator(DeclaratorAST* node)
         Typedef tdef = Typedef(currentTypeRef, declName, nspace.join("::"), parent);
         tdef.setFileName(m_header);
         QString name = tdef.toString();
-        if (!typedefs.contains(name)) {
+        if (!typedefs.contains(name) && !name.endsWith("iterator")) {
             QHash<QString, Typedef>::iterator it = typedefs.insert(name, tdef);
             if (parent)
                 parent->appendChild(&it.value());
