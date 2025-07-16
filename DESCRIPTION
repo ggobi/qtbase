@@ -4,7 +4,7 @@ Title: Interface Between R and 'Qt'
 Author: Michael Lawrence, Deepayan Sarkar
 Depends: R (>= 2.10.0), methods, utils
 URL: http://qtinterfaces.r-forge.r-project.org
-Maintainer: Michael Lawrence <michafla@gene.com>
+Maintainer: Michael Lawrence <lawremi@gmail.com>
 Description: Dynamic bindings to the 'Qt' library for calling 'Qt'
     methods and extending 'Qt' classes from R. Other packages build upon 'qtbase'
     to provide special-purpose high-level interfaces to specific parts of 'Qt'.
